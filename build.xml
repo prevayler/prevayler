@@ -53,6 +53,8 @@
 
     <path id="build.classpath" >
         <pathelement location="${skaringa.jar}"/>
+        <pathelement location="${xstream.jar}"/>
+        <pathelement location="${xpp3.jar}"/>
         <pathelement location="${jgroups.jar}"/>
         <pathelement location="${log4j.jar}"/>
         <pathelement location="${commons-jxpath.jar}"/>
@@ -338,6 +340,14 @@
             <param name="sourcefile" value="${skaringa.loc}"/>
             <param name="destfile"   value="${skaringa.jar}"/>
         </antcall>
+        <antcall target="-downloadfile">
+            <param name="sourcefile" value="${xstream.loc}"/>
+            <param name="destfile"   value="${xstream.jar}"/>
+        </antcall>
+        <antcall target="-downloadfile">
+            <param name="sourcefile" value="${xpp3.loc}"/>
+            <param name="destfile"   value="${xpp3.jar}"/>
+        </antcall>
     </target>
     <target name="download.dependencies.test"
             description="Download binary packages needed by the test packages" >
@@ -413,6 +423,14 @@
     <target name="run.demo.bank.skaringa" depends="compile.core, -demo.init"
             description="Same as simple bank demo, but uses Skaringa xml serialization" >
         <java dir="${cachedir.demo}" fork="true" classname="org.prevayler.demos.demo2.MainXml" >
+            <classpath refid="build.run.classpath" />
+            <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
+        </java>
+    </target>
+
+    <target name="run.demo.bank.xstream" depends="compile.core, -demo.init"
+            description="Same as simple bank demo, but uses XStream xml serialization" >
+        <java dir="${cachedir.demo}" fork="true" classname="org.prevayler.demos.demo2.MainXStream" >
             <classpath refid="build.run.classpath" />
             <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
         </java>

@@ -13,28 +13,45 @@ import org.prevayler.foundation.*;
  */
 public class SnapshotManager {
 
+    //only here to allow for subclases to call init method rather than super
+    //please don't use.
+    SnapshotManager() {}
+
 	SnapshotManager(Object newPrevalentSystem) {
+		nullInit(newPrevalentSystem);
+	}
+
+    // this is only here for NullSnapshotManager support
+	protected void nullInit(Object newPrevalentSystem) {
 		_recoveredPrevalentSystem = newPrevalentSystem;
 		_recoveredVersion = 0;
 		_directory = null;
 	}
 
+	private File _directory;
+	private Object _recoveredPrevalentSystem;
+	private long _recoveredVersion;
 
-	private final File _directory;
-	private final Object _recoveredPrevalentSystem;
-	private final long _recoveredVersion;
 
-
-	/** @param snapshotDirectoryName The path of the directory where the last snapshot file will be read and where the new snapshot files will be created.
-	*/
+	/**
+     * @param newPrevalentSystem The prevalentSystem to serialize/deserialize
+     * @param snapshotDirectoryName The path of the directory where the last snapshot file will be read and where the new snapshot files will be created.
+	 */
 	public SnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
+		init(newPrevalentSystem, snapshotDirectoryName);
+	}
+
+    /**
+     * @param newPrevalentSystem The prevalentSystem to serialize/deserialize
+     * @param snapshotDirectoryName The path of the directory where the last snapshot file will be read and where the new snapshot files will be created.
+	 */
+	protected void init(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
 		_directory = FileManager.produceDirectory(snapshotDirectoryName);
 		_recoveredVersion = latestVersion();
 		_recoveredPrevalentSystem = _recoveredVersion == 0
 			? newPrevalentSystem
 			: readSnapshot(_recoveredVersion);
 	}
-
 
 	public Object recoveredPrevalentSystem() { return _recoveredPrevalentSystem; }
 
