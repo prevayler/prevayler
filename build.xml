@@ -265,6 +265,8 @@
             </sequential>
         </macrodef>
 
+        <ant target="clean"/>
+
         <ant target="dist" inheritAll="false">
             <property name="app.version" value="SNAPSHOT"/>
         </ant>
