@@ -14,6 +14,7 @@ import org.prevayler.foundation.Cool;
 public class NetworkMock implements Network {
 
 	private final Map _serverSocketByPort = new HashMap();
+	private Permit _permit = new Permit();
 	
 	public synchronized ObjectSocket openSocket(String serverIpAddress, int serverPort) throws IOException {
 		if (!serverIpAddress.equals("localhost")) throw new IllegalArgumentException("Only localhost connections are supported by the NetworkMock.");
@@ -32,13 +33,22 @@ public class NetworkMock implements Network {
 		ObjectServerSocketMock old = server(serverPort);
 		if (old != null) throw new IOException("Port already in use.");
 
-		ObjectServerSocketMock result = new ObjectServerSocketMock();
+		ObjectServerSocketMock result = new ObjectServerSocketMock(_permit);
 		_serverSocketByPort.put(new Integer(serverPort), result);
 		
 		return result;
 	}
 
+	public void crash() {
+		_permit.expire();
+	}
+
+	public void recover() {
+		_permit = new Permit();
+	}
+
 	private ObjectServerSocketMock server(int serverPort) {
 		return (ObjectServerSocketMock) _serverSocketByPort.get(new Integer(serverPort));
 	}
+
 }

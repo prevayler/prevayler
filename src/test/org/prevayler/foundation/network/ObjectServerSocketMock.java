@@ -13,13 +13,22 @@ public class ObjectServerSocketMock implements ObjectServerSocket {
 
 	private boolean _isWaiting;
 	private ObjectSocket _counterpart;
+	private final Permit _permit;
+
+
+	public ObjectServerSocketMock(Permit permit) {
+		_permit = permit;
+		_permit.addObjectToNotify(this);
+	}
 
 	public synchronized ObjectSocket accept() throws IOException {
+		_permit.check();
 		if (_isWaiting) throw new IOException("Port already in use.");
 	
 		_isWaiting = true;
 		Cool.wait(this);
 		_isWaiting = false;
+		_permit.check();
 		
 		ObjectSocket result = _counterpart;
 		_counterpart = null;
@@ -27,10 +36,12 @@ public class ObjectServerSocketMock implements ObjectServerSocket {
 	}
 
 	synchronized ObjectSocket openClientSocket() throws IOException {
+		_permit.check();
 		if (!_isWaiting) throw new IOException("No thread is accepting connections on this port.");
-		ObjectSocketMock result = new ObjectSocketMock();
+		ObjectSocketMock result = new ObjectSocketMock(_permit);
 		_counterpart = result.counterpart();
 		notify();
 		return result;
 	}
+
 }

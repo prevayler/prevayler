@@ -28,6 +28,8 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 	private TransactionCapsule _remoteCapsule;
 
 	private final ObjectSocket _remote;
+	private Thread _clockTickSender = createClockTickSender();
+	private boolean _isClosing = false;
 
 
 	ServerConnection(TransactionPublisher publisher, ObjectSocket remoteSocket) throws IOException {
@@ -48,33 +50,39 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 			sendClockTicks();
 			while (true) publishRemoteTransaction();
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			close();
 		}
 	}
 
 
 	private void sendClockTicks() {
-		Thread clockTickSender = new Thread() {
-			public void run() {
-				try {
-					while (true) {
-						synchronized (_remote) {
-							_remote.writeObject(CLOCK_TICK);
-							_remote.writeObject(_publisher.clock().time());
-						}
-						Thread.sleep(1000);
-					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		};
-		clockTickSender.setDaemon(true);
-		clockTickSender.start();
+		_clockTickSender.setDaemon(true);
+		_clockTickSender.start();
 	}
 
 
-	void publishRemoteTransaction() throws Exception {
+	private Thread createClockTickSender() {
+		return new Thread() { //TODO Create foundation.Daemon.
+					public void run() {
+						try {
+							while (true) {
+								synchronized (_remote) {
+									_remote.writeObject(CLOCK_TICK);
+									_remote.writeObject(_publisher.clock().time());
+								}
+								Thread.sleep(1000);
+							}
+						} catch (InterruptedException ix) {
+						} catch (IOException iox) {
+							close();
+						}
+					}
+				};
+	}
+
+
+
+	void publishRemoteTransaction() throws IOException, ClassNotFoundException {
 		_remoteCapsule = (TransactionCapsule)_remote.readObject();
 		try {
 			_publisher.publish(_remoteCapsule);
@@ -100,11 +108,18 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 				_remote.writeObject(executionTime);
 				_remote.writeObject(new Long(systemVersion));
 			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			//TODO Cancel subscription.
+		} catch (IOException ex) {
+			close();
 		}
 	}
+
+
+	private synchronized void close() {
+		_clockTickSender.interrupt();
+		this.interrupt();
+		_publisher.cancelSubscription(this);
+	}
+
 
 
 	private void send(Object object) {

@@ -13,17 +13,26 @@ import org.prevayler.foundation.Cool;
 
 public class ObjectSocketMock implements ObjectSocket {
 
-	private final ObjectSocketMock _counterpart;
+	private ObjectSocketMock _counterpart;
+	private List _receivedObjects = new LinkedList();
+	private Permit _permit;
 
-	ObjectSocketMock() {
-		_counterpart = new ObjectSocketMock(this);
+	ObjectSocketMock(Permit permit) {
+		initialize(permit, new ObjectSocketMock(this, permit));
 	}
 
-	private ObjectSocketMock(ObjectSocketMock counterpart) {
+	private ObjectSocketMock(ObjectSocketMock counterpart, Permit permit) {
+		initialize(permit, counterpart);
+	}
+
+	private void initialize(Permit permit, ObjectSocketMock counterpart) {
+		_permit = permit;
+		_permit.addObjectToNotify(this);
 		_counterpart = counterpart;
 	}
 
 	public void writeObject(Object object) throws IOException {
+		_permit.check();
 		_counterpart.receive(object);
 	}
 
@@ -33,7 +42,9 @@ public class ObjectSocketMock implements ObjectSocket {
 	}
 
 	public synchronized Object readObject() throws IOException, ClassNotFoundException {
+		_permit.check();
 		if (_receivedObjects.isEmpty()) Cool.wait(this);
+		_permit.check();
 		return _receivedObjects.remove(0);
 	}
 
@@ -45,5 +56,4 @@ public class ObjectSocketMock implements ObjectSocket {
 		return _counterpart;
 	}
 	
-	private List _receivedObjects = new LinkedList();
 }

@@ -8,7 +8,6 @@ import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.FileIOTest;
-import org.prevayler.foundation.network.Network;
 import org.prevayler.foundation.network.NetworkMock;
 
 import java.io.File;
@@ -16,7 +15,7 @@ import java.io.IOException;
 
 public class ReplicationTest extends FileIOTest {
 
-	private static final Network NETWORK_MOCK = new NetworkMock();
+	private static final NetworkMock NETWORK_MOCK = new NetworkMock();
 
 	private Prevayler _server;
 	private Prevayler _client;
@@ -46,7 +45,7 @@ public class ReplicationTest extends FileIOTest {
 
 
 	private void networkCrash() {
-		// TODO Simulate a network crash.
+		//TODO NETWORK_MOCK.crash();    Implement a FaultTolerantNetwork so Prevayler doesn't have to worry about it. (!!!!)
 	}
 
 
@@ -54,7 +53,7 @@ public class ReplicationTest extends FileIOTest {
 		return new Thread() {
 			public void run() {
 				Cool.sleep(300);
-				//TODO Simulate a network recovery.
+				//TODO NETWORK_MOCK.recover();
 			}
 		};
 	}
