@@ -28,6 +28,7 @@ public class Suite extends TestCase {
 		suite.addTestSuite(ReplicationTest.class);
 		suite.addTestSuite(DurableOutputStreamTest.class);
 		suite.addTestSuite(GenericSnapshotManagerTest.class);
+		suite.addTestSuite(TransactionWithQueryTest.class);
 		suite.addTestSuite(JournalSerializerTest.class);
 		suite.addTestSuite(SnapshotSerializerTest.class);
 		suite.addTestSuite(MultiMemberGZIPTest.class);

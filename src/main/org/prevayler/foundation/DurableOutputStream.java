@@ -5,7 +5,6 @@
 package org.prevayler.foundation;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.TransactionTimestamp;
-import org.prevayler.implementation.TransactionWithQueryExecuter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -89,7 +88,7 @@ public class DurableOutputStream {
 
 			try {
 				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-				_serializer.writeObject(bytes, TransactionWithQueryExecuter.strip(timestamp.transaction()));
+				_serializer.writeObject(bytes, timestamp.transaction());
 				Chunk chunk = new Chunk(bytes.toByteArray());
 				chunk.setParameter("timestamp", String.valueOf(timestamp.timestamp().getTime()));
 				Chunking.writeChunk(_active, chunk);
