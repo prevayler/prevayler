@@ -103,7 +103,7 @@ public class ReplicationTest extends PrevalenceTest {
 
 	private String clientValue() {
 		try {
-			Thread.sleep(10);  //The client is notified assynchronously.
+			Thread.sleep(100);  //The client is notified assynchronously.
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

@@ -13,10 +13,10 @@ import junit.framework.TestCase;
 public abstract class PrevalenceTest extends TestCase {
 
 	protected String _testDirectory;
+	static private long counter = 0;
 
 	protected void setUp() throws Exception {
-		File tempFile = File.createTempFile("Prevalence", "Base");
-		tempFile.delete();  //I don't want a file. I want a directory.
+		File tempFile = new File("PrevalenceBase" + System.currentTimeMillis() + counter++);
 		assertTrue("Unable to create directory " + tempFile, tempFile.mkdirs());
 		_testDirectory = tempFile.getAbsolutePath();
 	}
@@ -35,7 +35,10 @@ public abstract class PrevalenceTest extends TestCase {
 
 	static private void delete(File file) {
 	    if (file.isDirectory()) deleteDirectoryContents(file);
-		assertTrue("Unable to delete " + file, file.delete());
+	    if (!file.delete()) {
+	    	System.gc();
+	    	assertTrue("Unable to delete " + file, file.delete());
+	    }
 	}
 
 	static private void deleteDirectoryContents(File directory) {
