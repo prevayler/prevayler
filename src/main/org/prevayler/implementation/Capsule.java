@@ -47,7 +47,19 @@ public abstract class Capsule implements Serializable {
 	 * Execute a freshly deserialized copy of the transaction. This method will synchronize on the prevalentSystem
 	 * while running the transaction but after deserializing it.
 	 */
-	public abstract void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer);
+	public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer) {
+		Object transaction = deserialize(journalSerializer);
+
+		synchronized (prevalentSystem) {
+			justExecute(transaction, prevalentSystem, executionTime);
+		}
+	}
+
+	/**
+	 * Actually execute the Transaction or TransactionWithQuery. The caller
+	 * is responsible for synchronizing on the prevalentSystem.
+	 */
+	protected abstract void justExecute(Object transaction, Object prevalentSystem, Date executionTime);
 
 	/**
 	 * Make a clean copy of this capsule that will have its own query result fields.

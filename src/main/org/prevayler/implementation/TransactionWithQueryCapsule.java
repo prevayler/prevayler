@@ -18,13 +18,9 @@ public class TransactionWithQueryCapsule extends Capsule { //TODO TransactionWit
 		super(serialized);
 	}
 
-	public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer) {
-		TransactionWithQuery transactionWithQuery = (TransactionWithQuery) deserialize(journalSerializer);
-
+	protected void justExecute(Object transaction, Object prevalentSystem, Date executionTime) {
 		try {
-			synchronized (prevalentSystem) {
-				_queryResult = transactionWithQuery.executeAndQuery(prevalentSystem, executionTime);
-			}
+			_queryResult = ((TransactionWithQuery) transaction).executeAndQuery(prevalentSystem, executionTime);
 		} catch (RuntimeException rx) {
 			_queryException = rx;
 			throw rx;   //This is necessary because of the rollback feature.

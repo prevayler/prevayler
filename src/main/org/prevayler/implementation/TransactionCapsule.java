@@ -15,12 +15,8 @@ public class TransactionCapsule extends Capsule {
 		super(serialized);
 	}
 
-	public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer) {
-		Transaction transaction = (Transaction) deserialize(journalSerializer);
-
-		synchronized (prevalentSystem) {
-			transaction.executeOn(prevalentSystem, executionTime);
-		}
+	protected void justExecute(Object transaction, Object prevalentSystem, Date executionTime) {
+		((Transaction) transaction).executeOn(prevalentSystem, executionTime);
 	}
 
 	public Capsule cleanCopy() {
