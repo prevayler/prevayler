@@ -43,4 +43,18 @@ public class TaskList implements Serializable {
     public List getTasks() {
         return Collections.unmodifiableList(tasks);
     }
+
+    /**
+     * @param task
+     * @param description
+     * @param priority
+     */
+    public void changeTask(Task task, String description, int priority) {
+        if (tasks.contains(task)) {
+            task.setDescription(description);
+            task.setPriority(priority);
+        } else
+            throw new IllegalArgumentException(
+                    "task doesn't exist in the system");
+    }
 }

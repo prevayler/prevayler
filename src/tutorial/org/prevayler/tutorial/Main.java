@@ -6,7 +6,7 @@
  */
 package org.prevayler.tutorial;
 
-import java.io.IOException;
+import java.util.Iterator;
 
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
@@ -19,40 +19,48 @@ import org.prevayler.PrevaylerFactory;
  */
 public class Main {
 
-    public static void main(String[] args) throws IOException,
-            ClassNotFoundException {
-
+    public static void main(String[] args) throws Exception {
+        // START SNIPPET: creating
         // Let's create a new TaskList. This is our 'prevalent system'.
         TaskList list = new TaskList();
 
         // Create a new prevayler. /tasklist-base is the tx-log directory.
-        Prevayler prevayler = PrevaylerFactory.createPrevayler(list,
-                "/tasklist-base");
+        Prevayler prevayler = PrevaylerFactory.createPrevayler(list, "/tasklist-base");
 
         /*
          * IMPORTANT: Your prevalent system is going to be empty after a
          * snapshot if you don't reassign it here.
          */
         list = (TaskList) prevayler.prevalentSystem();
+        // END SNIPPET: creating
 
-        // create some tasks...
-        Task dishes = new Task("do the dishes", Task.MAX_PRIORITY);
-        Task dog = new Task("walk the dog", Task.MED_PRIORITY);        
-        Task laundry = new Task("do the laundry", Task.MIN_PRIORITY);
+        System.out.println("Tasks: " + list.getTasks().size() + ", adding ");
 
-        System.out.println("Tasks: " + list.getTasks().size());
-        
-        prevayler.execute(new AddTask(dishes));
-        prevayler.execute(new AddTask(dog));
-        prevayler.execute(new AddTask(laundry));
+        // START SNIPPET: adding
+        Task dishes = (Task) prevayler.execute(new AddTask("do the dishes", Task.MAX_PRIORITY));
+        Task dog = (Task) prevayler.execute(new AddTask("walk the dog", Task.MED_PRIORITY));
+        Task laundry = (Task) prevayler.execute(new AddTask("do the laundry", Task.MIN_PRIORITY));
+        // END SNIPPET: adding
 
-        System.out.println("Tasks: " + list.getTasks().size());
+        // START SNIPPET: iterating
+        for (Iterator i = list.getTasks().iterator(); i.hasNext();) {
+            Task t = (Task) i.next();
+            System.out.println("Task: " + t.getDescription() + ", " + t.getPriority());
+        }
+        // END SNIPPET: iterating
+
+        System.out.println("Tasks: " + list.getTasks().size() + ", removing...");
+
+        // START SNIPPET: removing
         prevayler.execute(new RemoveTask(dishes));
         prevayler.execute(new RemoveTask(dog));
         prevayler.execute(new RemoveTask(laundry));
-
+        // END SNIPPET: removing
+        
         System.out.println("Tasks: " + list.getTasks().size());
 
+        // START SNIPPET: snapshotting
         prevayler.takeSnapshot();
+        // END SNIPPET: snapshotting
     }
 }

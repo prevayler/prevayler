@@ -21,7 +21,6 @@ public class Task implements Serializable {
     public static final int MIN_PRIORITY = 0;
 
     private String description;
-
     private int priority;
 
     /**
