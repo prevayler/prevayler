@@ -9,6 +9,7 @@ import java.util.Date;
 
 import org.prevayler.Clock;
 import org.prevayler.Transaction;
+import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.Turn;
 import org.prevayler.implementation.clock.PausableClock;
 import org.prevayler.implementation.logging.TransactionLogger;
@@ -26,6 +27,10 @@ public class CentralPublisher extends AbstractPublisher {
 
 	private Turn _nextTurn = Turn.first();
 	private final Object _nextTurnMonitor = new Object();
+
+	private boolean _foodTasterIsDead = false;
+	private int _pipelinedTransactions = 0;
+	private final Object _pipelinedTransactionsMonitor = new Object();
 
 
 	public CentralPublisher(Clock clock, TransactionCensor censor, TransactionLogger logger) {
@@ -86,10 +91,32 @@ public class CentralPublisher extends AbstractPublisher {
 	private void approve(Transaction transaction, Date executionTime, Turn myTurn) throws RuntimeException, Error {
 		try {
 			myTurn.start();
+
+			if (_foodTasterIsDead) {
+				synchronized (_pipelinedTransactionsMonitor) {
+					while (_pipelinedTransactions > 0) {
+						Cool.wait(_pipelinedTransactionsMonitor);
+					}
+				}
+			}
+
 			_censor.approve(transaction, executionTime);
+
+			_foodTasterIsDead = false;
+
+			synchronized (_pipelinedTransactionsMonitor) {
+				_pipelinedTransactions++;
+			}
+
 			myTurn.end();
-		} catch (RuntimeException r) { myTurn.alwaysSkip(); throw r;
-		} catch (Error e) {	myTurn.alwaysSkip(); throw e; }
+		} catch (RuntimeException r) { dealWithError(myTurn); throw r;
+		} catch (Error e) {	dealWithError(myTurn); throw e; }
+	}
+
+	
+	private void dealWithError(Turn myTurn) {
+		_foodTasterIsDead = true;
+		myTurn.alwaysSkip();
 	}
 
 
@@ -98,6 +125,13 @@ public class CentralPublisher extends AbstractPublisher {
 			myTurn.start();
 			_pausableClock.advanceTo(executionTime);
 			notifySubscribers(transaction, executionTime);
+
+			synchronized (_pipelinedTransactionsMonitor) {
+				_pipelinedTransactions--;
+				if (_pipelinedTransactions == 0) {
+					_pipelinedTransactionsMonitor.notifyAll();
+				}
+			}
 		} finally {	myTurn.end(); }
 	}
 

@@ -20,6 +20,7 @@ public class Suite extends TestCase {
 		suite.addTestSuite(RollbackTest.class);
 		suite.addTestSuite(ReplicationTest.class);
 		suite.addTestSuite(DurableOutputStreamTest.class);
+		suite.addTestSuite(ConfusedFoodTasterStressTest.class);
 		return suite;
 	}
 }
