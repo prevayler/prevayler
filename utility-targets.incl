@@ -1,0 +1,84 @@
+<!-- ====================================================================== -->
+<!-- ==================== General Utility Targets ========================= -->
+<!-- ====================================================================== -->
+
+
+<!-- ==================== Download Targets ================================ -->
+
+    <target name="clean.dependencies"
+            description="Removes downloaded library dependencies" >
+        <delete dir="${dependencies.home}" />
+    </target>
+
+    <target name="-proxyflags">
+        <!-- check proxy parameters. -->
+        <condition property="useproxy">
+            <equals arg1="${proxy.use}" arg2="on" />
+        </condition>
+    </target>
+
+    <target name="-setproxy" if="useproxy">
+        <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"/> 
+        <echo message="Using ${proxy.host}:${proxy.port} to download ${sourcefile}"/>
+    </target>
+
+    <target name="-testdestfileexist">
+        <echo message="Testing  for ${destfile}"/>
+        <available file="${destfile}" property="destfileexists!"/>
+    </target>
+
+    <target name="-downloadfile" unless="destfileexists!" depends="-setproxy, -testdestfileexist">
+        <get src="${sourcefile}" dest="${dependencies.home}/file" />
+        <move file="${dependencies.home}/file" tofile="${destfile}" />
+    </target>
+
+    <target name="-downloadzip" unless="destfileexists!" depends="-setproxy, -testdestfileexist">
+        <!-- Download and extract the package -->
+        <get src="${sourcefile}" dest="${dependencies.home}/file.zip" />
+        <unzip src="${dependencies.home}/file.zip" dest="${dependencies.home}"/>
+        <delete file="${dependencies.home}/file.zip"/>
+    </target>
+
+    <target name="-downloadgz" unless="destfileexists!" depends="-setproxy, -testdestfileexist">
+        <!-- Download and extract the package -->
+        <get src="${sourcefile}" dest="${dependencies.home}/file.tar.gz" />
+        <gunzip src="${dependencies.home}/file.tar.gz" dest="${dependencies.home}/file.tar"/>
+        <untar src="${dependencies.home}/file.tar" dest="${dependencies.home}"/>
+        <delete file="${dependencies.home}/file.tar"/>
+        <delete file="${dependencies.home}/file.tar.gz"/>
+    </target>
+
+
+<!-- ==================== VizAnt Targets ================================== -->
+
+    <target name="clean.vizant"
+            description="Removes VizAnt generated files" >
+        <delete>
+            <fileset dir="${basedir}" >
+                <include name="build.dot" />
+                <include name="build.png" />
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="download.vizant" depends="-proxyflags"
+            description="Download binary package needed to run vizant" >
+        <mkdir dir="${dependencies.home}" />
+        <!-- Downdown any sub package or tools needed. -->
+        <antcall target="-downloadfile">
+            <param name="sourcefile" value="${vizant.loc}"/>
+            <param name="destfile" value="${vizant.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="vizant" depends="download.vizant">
+        <taskdef name="vizant" classname="net.sourceforge.vizant.Vizant" classpath="${vizant.jar}"/>
+        <vizant antfile="build.xml" outfile="build.dot"/>
+        <exec executable="dot" failifexecutionfails="false" resultproperty="graphvizSuccess!">
+            <arg line="-Tpng build.dot -o build.png"/>
+        </exec>
+        <fail unless="graphvizSuccess!">
+        You probably need to install GraphViz which is a native program,
+        not a Java library &gt;&gt;&gt; http://www.research.att.com/sw/tools/graphviz/
+        </fail>
+    </target>
