@@ -1,4 +1,4 @@
-Copyright 2002, 2003 (C) The Skaringa team. All Rights Reserved.
+Copyright 2002, 2004 (C) The Skaringa team. All Rights Reserved.
 
 Redistribution and use of this software and associated documentation
 ("Software"), with or without modification, are permitted provided
