@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 
-public class TransactionGuide extends Guided { //TODO Make TransactionGuide, Capsule and TransactionTimestamp into a single thing.
+public class TransactionGuide extends Guided {
 
 	private final TransactionTimestamp _transactionTimestamp;
 
@@ -34,6 +34,7 @@ public class TransactionGuide extends Guided { //TODO Make TransactionGuide, Cap
 
 	public void writeTo(OutputStream stream) throws IOException {
 		Chunk chunk = new Chunk(_transactionTimestamp.capsule().serialized());
+		chunk.setParameter("withQuery", String.valueOf(_transactionTimestamp.capsule() instanceof TransactionWithQueryCapsule));
 		chunk.setParameter("systemVersion", String.valueOf(_transactionTimestamp.systemVersion()));
 		chunk.setParameter("executionTime", String.valueOf(_transactionTimestamp.executionTime().getTime()));
 		Chunking.writeChunk(stream, chunk);

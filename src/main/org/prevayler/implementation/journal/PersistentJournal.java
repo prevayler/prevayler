@@ -15,6 +15,7 @@ import org.prevayler.implementation.PrevaylerDirectory;
 import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
+import org.prevayler.implementation.TransactionWithQueryCapsule;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 import java.io.EOFException;
@@ -200,10 +201,16 @@ public class PersistentJournal implements Journal {
 	}
 
 	private TransactionTimestamp timestamp(Chunk chunk) {
+		boolean withQuery = Boolean.valueOf(chunk.getParameter("withQuery")).booleanValue();
 		long systemVersion = Long.parseLong(chunk.getParameter("systemVersion"));
 		long executionTime = Long.parseLong(chunk.getParameter("executionTime"));
 
-		Capsule capsule = new TransactionCapsule(chunk.getBytes());
+		Capsule capsule;
+		if (withQuery) {
+			capsule = new TransactionWithQueryCapsule(chunk.getBytes());
+		} else {
+			capsule = new TransactionCapsule(chunk.getBytes());
+		}
 
 		return new TransactionTimestamp(capsule, systemVersion, new Date(executionTime));
 	}

@@ -59,7 +59,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 
 			try {
 				// Don't synchronize on _prevalentSystem here so that the capsule can deserialize a fresh
-				// copy of the transaction without blocking queries. 
+				// copy of the transaction without blocking queries.
 				capsule.executeOn(_prevalentSystem, executionTime, _journalSerializer);
 			} catch (RuntimeException rx) {
 				if (!_ignoreRuntimeExceptions) throw rx;  //TODO Guarantee that transactions received from pending transaction recovery don't ever throw RuntimeExceptions. Maybe use a wrapper for that.
