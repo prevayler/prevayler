@@ -47,8 +47,9 @@ public class SimpleInputStream {
 	}
 
 	private void message(Exception exception) {
-		System.out.println(
-			"\n" + exception + " (File: " + _file + ")" +
+		exception.printStackTrace();
+		System.err.println(
+			"\n   Thrown while reading file: " + _file + ")" +
 			"\n   The above is a stream corruption that can be caused by:" +
 			"\n      - A system crash while writing to the file (that is OK)." +
 			"\n      - A corruption in the file system (that is NOT OK)." +
