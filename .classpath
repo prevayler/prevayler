@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="src" path="src/main"/>
+    <classpathentry kind="src" path="contrib/socketServer/client"/>
+    <classpathentry kind="src" path="contrib/socketServer/server"/>
+    <classpathentry kind="src" path="contrib/socketServer/example"/>
+    <classpathentry kind="src" path="contrib/socketServer/common"/>
+    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+    <classpathentry kind="output" path="bin"/>
+</classpath>
