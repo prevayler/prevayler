@@ -287,8 +287,8 @@
 
     <target name="jar" depends="-jar.init, -jar.core, -jar.full"
             description="Creates all jars" />
-    <target name="-jar.core"
-            description="Creates a JAR containing only essential Prevayler files" >
+    <target name="-jar.core" >
+            <!--description="Creates a JAR containing only essential Prevayler files" -->
         <antcall target="-jar.sub">
             <param name="jarfile" value="${jar.name.core}" />
             <param name="excludes" value="**/demo/**,
@@ -297,8 +297,8 @@
                                           log4j.xml" />
         </antcall>
     </target>
-    <target name="-jar.full"
-            description="Creates a JAR containing all compiled files" >
+    <target name="-jar.full" >
+            <!--description="Creates a JAR containing all compiled files" -->
         <antcall target="-jar.sub">
             <param name="jarfile" value="${jar.name.full}" />
             <param name="excludes" value="log4j.xml" />
@@ -318,6 +318,7 @@
 
         <java fork="true" classname="org.prevayler.test.Main" >
             <classpath refid="build.test.classpath" />
+            <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
         </java>
 
     </target>
@@ -327,6 +328,7 @@
 
         <java fork="true" classname="org.prevayler.test.scalability.Main" >
             <classpath refid="build.test.classpath" />
+            <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
         </java>
 
     </target>
@@ -355,8 +357,8 @@
 
     </target>
 
-    <target name="-test.report.html"
-            description="Convert the junit xml files to html" >
+    <target name="-test.report.html" >
+            <!--description="Convert the junit xml files to html" -->
 
         <junitreport todir="${unit.test.report.home}" >
             <fileset dir="${unit.test.report.home}" >
@@ -377,6 +379,7 @@
 
         <java fork="false" classname="org.prevayler.demos.demo1.Main" >
             <classpath refid="build.test.classpath" />
+            <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
         </java>
 
     </target>
@@ -387,6 +390,7 @@
 
         <java fork="true" classname="org.prevayler.demos.demo2.Main" >
             <classpath refid="build.test.classpath" />
+            <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
         </java>
 
     </target>
@@ -406,6 +410,7 @@
 
         <java fork="true" classname="org.prevayler.demos.demo2.MainTransient" >
             <classpath refid="build.test.classpath" />
+            <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
         </java>
 
     </target>
@@ -415,6 +420,7 @@
 
         <java fork="true" classname="org.prevayler.demos.demo2.MainRollback" >
             <classpath refid="build.test.classpath" />
+            <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
         </java>
 
     </target>
@@ -425,12 +431,14 @@
         <parallel>
             <java fork="true" classname="org.prevayler.demos.demo2.MainReplicaServer" >
                 <classpath refid="build.test.classpath" />
+                <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
             </java>
             <sequential>
                 <sleep seconds="3"/>
                 <java fork="true" classname="org.prevayler.demos.demo2.MainReplica" >
                     <arg value="localhost" />
                     <classpath refid="build.test.classpath" />
+                    <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
                 </java>
             </sequential>
         </parallel>
@@ -442,6 +450,7 @@
 
         <java fork="true" classname="org.prevayler.demos.memento.TestErrorRecoveryWithMementos" >
             <classpath refid="build.test.classpath" />
+            <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
         </java>
 
     </target>
