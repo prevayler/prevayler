@@ -5,7 +5,6 @@ import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.foundation.serialization.JavaSerializer;
-import org.prevayler.foundation.serialization.PLSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
@@ -57,13 +56,6 @@ public class SnapshotSerializerTest extends FileIOTest {
 
 		takeSnapshot(serializer);
 		recover(serializer);
-	}
-
-	public void testPLSnapshot() throws IOException, ClassNotFoundException {
-		Serializer serializer = new PLSerializer();
-
-		// takeSnapshot(serializer); //TODO Jacob, please uncomment and fix.
-		// recover(serializer); //TODO Jacob, please uncomment and fix.
 	}
 
 	private void takeSnapshot(Serializer snapshotSerializer)

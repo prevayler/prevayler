@@ -5,7 +5,6 @@ import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.foundation.serialization.JavaSerializer;
-import org.prevayler.foundation.serialization.PLSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
@@ -72,13 +71,6 @@ public class JournalSerializerTest extends FileIOTest {
 
 	public void testSkaringaJournal() throws IOException, ClassNotFoundException {
 		Serializer strategy = new SkaringaSerializer();
-
-		startAndCrash("journal", strategy);
-		recover("journal", strategy);
-	}
-
-	public void testPLJournal() throws IOException, ClassNotFoundException {
-		Serializer strategy = new PLSerializer();
 
 		startAndCrash("journal", strategy);
 		recover("journal", strategy);
