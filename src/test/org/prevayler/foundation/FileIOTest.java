@@ -32,7 +32,7 @@ public abstract class FileIOTest extends TestCase {
 	    delete(new File(fileName));
 	}
 
-	static private void delete(File file) {
+	protected static void delete(File file) {
 	    if (file.isDirectory()) deleteDirectoryContents(file);
 	    if (!file.delete()) {
 	    	System.gc();
