@@ -44,4 +44,8 @@ public class ObjectServerSocketMock implements ObjectServerSocket {
 		return result;
 	}
 
+	public void close() throws IOException {
+		// TODO Auto-generated method stub
+	}
+
 }

@@ -19,4 +19,8 @@ public class ObjectServerSocketImpl implements ObjectServerSocket {
 	public ObjectSocket accept() throws IOException {
 		return new ObjectSocketImpl(_serverSocket.accept());
 	}
+
+	public void close() throws IOException {
+		_serverSocket.close();
+	}
 }
