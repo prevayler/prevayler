@@ -59,12 +59,18 @@ public class Main {
 	}
 
 	static private void runPrevaylerTransaction() throws Exception {
+		PrevaylerTransactionSubject subject = new PrevaylerTransactionSubject(prevaylerTransactionLogDirectory());
 		new TransactionTestRun(
-			new PrevaylerTransactionSubject(prevaylerTransactionLogDirectory()),
+			subject,
 			numberOfObjects(),
 			prevaylerTransactionThreadsMin(),
 			prevaylerTransactionThreadsMax()
 		);
+		if (isPrevaylerTransactionConsistencyChecked()) {
+			out("Checking transaction log consistency.");
+			if (!subject.isConsistent()) throw new RuntimeException("Transaction log consistency check failed.");
+			out("Transaction log OK.\n");
+		}
 	}
 
 	static private void runJdbcQuery() {
@@ -148,8 +154,15 @@ public class Main {
 			"\n" +
 			"PrevaylerTransactionThreadsMinimum = 1\n" +
 			"PrevaylerTransactionThreadsMaximum = 5\n" +
+			"#\n" +
 			"# More threads can produce better results on machines with\n" +
 			"# multiple disks.\n" +
+			"\n" +
+			"TransactionTestCheckConsistency = YES\n" +
+			"# TransactionTestCheckConsistency = NO\n" +
+			"#\n" +
+			"# Verifies the integrity of the journal files produced in\n" +
+			"# your particular environment.\n" +
 			"\n" +
 			"TransactionLogDirectory = TransactionTest\n" +
 			"#\n" +
@@ -241,6 +254,10 @@ public class Main {
 		return intProperty("PrevaylerTransactionThreadsMaximum");
 	}
 
+	static private boolean isPrevaylerTransactionConsistencyChecked() {
+		return booleanProperty("TransactionTestCheckConsistency");
+	}
+	
 	static private String prevaylerTransactionLogDirectory() {
 		String result = property("TransactionLogDirectory");
 		out("\n\nPrevayler TransactionLog Directory: " + result);

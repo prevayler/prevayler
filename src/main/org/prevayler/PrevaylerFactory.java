@@ -163,7 +163,7 @@ public class PrevaylerFactory {
 	}
 
 
-	/** Configures the SnapshotManager to be used by the Prevayler created by this factory. The default is a SnapshotManager which uses plain Java serialization to create its .snapshot files.
+	/** Configures the SnapshotManager to be used by the Prevayler created by this factory. The default is a SnapshotManager which uses plain Java serialization to create its .snapshot files. This SnapshotManager is also used to create deep copies of the transactions, so they must be serializable by this SnapshotManager.
 	 */
 	public void configureSnapshotManager(SnapshotManager snapshotManager) {
 		_snapshotManager = snapshotManager;

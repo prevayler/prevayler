@@ -30,4 +30,9 @@ class TransactionSystem implements ScalabilitySystem {
 			put(newRecords.next());
 		}
 	}
+	
+
+	public int hashCode() {
+		return recordsById.hashCode();
+	}
 }
