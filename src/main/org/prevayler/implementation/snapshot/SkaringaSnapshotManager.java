@@ -4,11 +4,13 @@
 //Contributions: Alexandre Nodari
 
 package org.prevayler.implementation.snapshot;
+
 import java.io.*;
 
 import javax.xml.transform.stream.*;
 
 import com.skaringa.javaxml.*;
+
 
 /**
  * Writes and reads snapshots to/from XML files.
@@ -29,12 +31,28 @@ import com.skaringa.javaxml.*;
  * everything mentioned above on the classpath.</p>
  *
  * @see org.prevayler.implementation.snapshot.SnapshotManager
+ * @see org.prevayler.implementation.snapshot.AbstractBaseSnapshotManager
  */
-public class XmlSnapshotManager extends SnapshotManager {
+public class SkaringaSnapshotManager extends AbstractBaseSnapshotManager {
 
-
-	public XmlSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
+	public SkaringaSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
 		super(newPrevalentSystem, snapshotDirectoryName);
+	}
+
+
+    /**
+	 * @see org.prevayler.implementation.snapshot.SnapshotManager#writeSnapshot(Object, OutputStream)
+	 */
+	public void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
+		StreamResult result = new StreamResult(out);
+		try {
+			transformer().serialize(prevalentSystem, result);
+		} catch (SerializerException se) {
+			throw new IOException("Unable to serialize with Skaringa: " + se.getMessage());
+		} finally {
+			OutputStream stream = result.getOutputStream(); 
+            if (stream != null) stream.close();
+		}
 	}
 
 
@@ -48,31 +66,17 @@ public class XmlSnapshotManager extends SnapshotManager {
 		} catch (DeserializerException de) {
 			throw new IOException("Unable to deserialize with Skaringa: " + de.getMessage());
 		} finally {
-			source.getInputStream().close();
+            InputStream stream = source.getInputStream(); 
+			if (stream != null) stream.close();
 		}
 	}
 
 
 	/**
-	 * @see org.prevayler.implementation.snapshot.SnapshotManager#suffix()
+	 * @see org.prevayler.implementation.snapshot.AbstractBaseSnapshotManager#suffix()
 	 */
 	protected String suffix() {
-		return "xml";
-	}
-
-
-	/**
-	 * @see org.prevayler.implementation.snapshot.SnapshotManager#writeSnapshot(Object, OutputStream)
-	 */
-	public void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
-		StreamResult result = new StreamResult(out);
-		try {
-			transformer().serialize(prevalentSystem, result);
-		} catch (SerializerException se) {
-			throw new IOException("Unable to serialize with Skaringa: " + se.getMessage());
-		} finally {
-			result.getOutputStream().close();
-		}
+		return "skaringasnapshot";
 	}
 
 
@@ -88,4 +92,5 @@ public class XmlSnapshotManager extends SnapshotManager {
 			throw new IOException("Unable to start Skaringa: " + nie.getMessage());
 		}
 	}
+
 }

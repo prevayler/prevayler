@@ -21,6 +21,7 @@ import org.prevayler.implementation.replication.ServerListener;
 import org.prevayler.implementation.replication.ClientPublisher;
 import org.prevayler.implementation.snapshot.NullSnapshotManager;
 import org.prevayler.implementation.snapshot.SnapshotManager;
+import org.prevayler.implementation.snapshot.JavaSnapshotManager;
 
 /** Provides easy access to all Prevayler configurations and implementations available in this distribution.
  * Static methods are also provided as short-cuts for the most common configurations. 
@@ -223,7 +224,7 @@ public class PrevaylerFactory {
 	private SnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
 		return _snapshotManager != null
 			? _snapshotManager
-			: new SnapshotManager(prevalentSystem(), prevalenceBase());
+			: new JavaSnapshotManager(prevalentSystem(), prevalenceBase());
 	}
 
 
