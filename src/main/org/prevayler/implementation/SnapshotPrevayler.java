@@ -27,6 +27,7 @@ public class SnapshotPrevayler implements Prevayler {
 
     protected final TransactionPublisher _publisher;
     private final TransactionSubscriber _subscriber = subscriber();
+    private boolean _ignoreExceptions;
 
 
     /** Creates a SnapshotPrevayler that will use the current directory to read and write its snapshot files.
@@ -54,7 +55,11 @@ public class SnapshotPrevayler implements Prevayler {
         _prevalentSystem = _snapshotManager.readSnapshot(newPrevalentSystem, _systemVersion);
 
         _publisher = transactionPublisher;
+        
+        // ignore exceptions during startup 
+        _ignoreExceptions = true;
         _publisher.addSubscriber(_subscriber, _systemVersion + 1);
+        _ignoreExceptions = false;
     }
 
 
@@ -88,9 +93,14 @@ public class SnapshotPrevayler implements Prevayler {
         return new TransactionSubscriber() {
             public synchronized void receive(Transaction transaction) {
                 _systemVersion++;
-                try {
+                if (_ignoreExceptions) {
+                    try {
+                        transaction.executeOn(_prevalentSystem);
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                } else {
                     transaction.executeOn(_prevalentSystem);
-                } catch (Throwable e) {
                 }
             }
         };
