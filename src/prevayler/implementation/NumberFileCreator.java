@@ -11,8 +11,9 @@ import java.text.*;
 */
 public class NumberFileCreator {
 
-    public static final DecimalFormat SNAPSHOT_FORMAT = new DecimalFormat("000000000000000000000'.'snapshot");  //21 zeros (enough for a long number).
-    public static final DecimalFormat LOG_FORMAT = new DecimalFormat("000000000000000000000'.'log");  //21 zeros (enough for a long number).
+    public static final String SNAPSHOT_SUFFIX = "snapshot";
+    public static final DecimalFormat SNAPSHOT_FORMAT = new DecimalFormat("000000000000000000000'.'" + SNAPSHOT_SUFFIX); //21 zeros (enough for a long number).
+    public static final DecimalFormat LOG_FORMAT = new DecimalFormat("000000000000000000000'.'commandLog");  //21 zeros (enough for a long number).
 
     private File directory;
     private long nextFileNumber;
@@ -22,18 +23,22 @@ public class NumberFileCreator {
         this.nextFileNumber = firstFileNumber;
 	}
 
-    public File newLog() throws IOException {
+    File newLog() throws IOException {
         File log = new File(directory, LOG_FORMAT.format(nextFileNumber));
-        log.createNewFile();
+        if(!log.createNewFile()) throw new IOException("Attempt to create command log file that already existed: " + log);;
 
         ++nextFileNumber;
-
         return log;
     }
 
-    public File newSnapshot() throws IOException {
+    File newSnapshot() throws IOException {
         File snapshot = new File(directory, SNAPSHOT_FORMAT.format(nextFileNumber - 1));
-        snapshot.createNewFile();
+        snapshot.delete();   //If no commands are logged, the same snapshot file will be created over and over.
         return snapshot;
     }
+
+    File newTempSnapshot() throws IOException {
+        return File.createTempFile("temp","generatingSnapshot",directory);
+    }
+
 }

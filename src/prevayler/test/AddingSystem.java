@@ -18,8 +18,9 @@ class AddingSystem implements PrevalentSystem {
         return clock;
     }
 
-    void add(long value) {
+    Long add(long value) {
         total += value;
+        return new Long(total);
     }
 
 

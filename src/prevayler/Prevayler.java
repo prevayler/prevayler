@@ -8,43 +8,48 @@ import java.util.Date;
 import java.io.*;
 import prevayler.implementation.*;
 
-/** Provides transparent persistence and fault-tolerance for business objects.
+/** Provides transparent persistence for business objects.
 * This applies to any deterministic system implementing the PrevalentSystem interface.
 * All commands to the system must be represented as objects implementing the Command interface and must be executed using Prevayler.executeCommand(Command).
-* Take a look at the demo application distributed with Prevayler for examples.
+* Take a look at the demo application included with the Prevayler distribution for examples.
 * @see PrevaylerFactory
 */
 public class Prevayler {
 
-    private PrevalentSystem system;
-    private AlarmClock clock;
-    private CommandOutputStream output;
-    private Date lastTime;
+    private final PrevalentSystem system;
+    private final AlarmClock clock;
+    private final CommandOutputStream output;
 
-    /** Creates a Prevayler for the received system, using the received CommandOutputStream.
+    /** Returns a new Prevayler for the given PrevalentSystem.
+    * @param newSystem The newly started, "empty" PrevalentSystem that will be used as a starting point for every system startup, until the first snapshot is taken.
+    * @param directory The full path of the directory where the snapshot and log files shall be created and read.
     */
-    Prevayler(PrevalentSystem system, CommandOutputStream output) {
-        this.system = system;
-        this.clock  = system.clock();
-        this.output = output;
+    public Prevayler(PrevalentSystem newSystem, String directory) throws IOException, ClassNotFoundException {
+
+        CommandInputStream input = new CommandInputStream(directory);
+
+        PrevalentSystem savedSystem = input.readLastSnapshot();
+        system = (savedSystem == null)
+            ? newSystem
+            : savedSystem;
+
+        recoverCommands(input);
+
+        output = input.commandOutputStream();
+        clock = system.clock();
+        clock.resume();
 	}
 
-    /** Logs the received command for crash recovery and shutdown recovery and executes it on the underlying PrevalentSystem.
+    /** Logs the received command for crash or shutdown recovery and executes it on the underlying PrevalentSystem.
     * @see system()
+    * @return The serializable object that was returned by the execution of command.
     * @throws IOException if there is trouble writing the command to the log.
-    * @throws Exception if command.execute() throws exception.
+    * @throws Exception if command.execute() throws an exception.
     */
     public synchronized Serializable executeCommand(Command command) throws Exception {
         clock.pause();  //To be deterministic, the system must know exactly at what time the command is being executed.
-        
         try {
-            Date thisTime = clock.time();
-            if (thisTime != lastTime) {
-                output.writeCommand(new ClockRecoveryCommand(thisTime));
-                lastTime = thisTime;
-            }
-
-            output.writeCommand(command);
+            output.writeCommand(new ClockRecoveryCommand(command, clock.time()));
 
             return command.execute(system);
 
@@ -53,10 +58,10 @@ public class Prevayler {
         }
 	}
 
-    /** Produces a complete serialized image of the underlying PrevalentSystem for crash recovery and shutdown recovery.
+    /** Produces a complete serialized image of the underlying PrevalentSystem.
     * This will accelerate future system startups. Taking a snapshot once a day is enough for most applications.
     * @see system()
-    * @throws IOException if there is trouble writing the command to the log.
+    * @throws IOException if there is trouble writing to the snapshot file.
     */
     public synchronized void takeSnapshot() throws IOException {
         clock.pause();
@@ -72,4 +77,41 @@ public class Prevayler {
     public PrevalentSystem system() {
         return system;
     }
+
+    private void recoverCommands(CommandInputStream input) throws IOException, ClassNotFoundException {
+        Command command;
+        while(true) {
+            try {
+                command = input.readCommand();
+            } catch (EOFException eof) {
+                break;
+            }
+
+            try {
+                command.execute(system);
+            } catch (RuntimeException rx) {
+                throw rx;
+            } catch (Exception e) {
+                //Don't do anything at all. Commands may throw exceptions normally.
+            }
+        }
+	}
+}
+
+/** A command for executing another command at a specific moment in time.
+*/
+class ClockRecoveryCommand implements Command {
+
+    public ClockRecoveryCommand(Command command, Date date) {
+        this.command = command;
+        this.millis = date.getTime();
+    }
+
+    public Serializable execute(PrevalentSystem system) throws Exception {
+        system.clock().recover(millis);
+        return command.execute(system);
+    }
+
+    private Command command;
+    private long millis;
 }

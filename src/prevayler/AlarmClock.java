@@ -7,8 +7,8 @@ package prevayler;
 import java.io.Serializable;
 import java.util.Date;
 
-/** A clock that can be used by a deterministic system for ALL its date/time related functions.
-* An AlarmClock can be used to wake up other objects in a similar way as javax.swing.Timer or java.util.Timer.
+/** A clock that can be used in a PrevalentSystem for ALL its date/time related functions.
+* The next version of AlarmClock will be able to wake up other objects in a similar way as javax.swing.Timer or java.util.Timer.
 */
 public class AlarmClock implements Serializable {
 
@@ -31,34 +31,34 @@ public class AlarmClock implements Serializable {
         return time;
     }
 
-    /** Sets the time forward, recovering some of the time that was "lost" since the clock was paused. The clock must be paused.
-    * @param newTime cannot be earlier than time() and cannot be later than the current machine time (new Date()).
+    /** Sets the time forward, recovering some of the time that was "lost" since the clock was paused. The clock must be paused. This method is called by the PrevaylerFactory when recovering Commands from the log file so that they can be re-executed in the "same" time as they had been originally.
+    * @param newMillis cannot be earlier than time().getTime() and cannot be later than the current machine time (new Date().getTime() or System.currentTimeMillis()).
     */
-    public synchronized void recover(Date newTime) {
-        if (!isPaused) throw new RuntimeException("AlarmClock must be paused for advancing.");
+    synchronized void recover(long newMillis) {
+        if (!isPaused) throw new RuntimeException("AlarmClock must be paused for recovering.");
 
-        long newMillis = newTime.getTime();
-        if (newMillis <= millis) throw new RuntimeException("AlarmClock's time cannot move forwards.");
+        if (newMillis == millis) return;
+        if (newMillis < millis) throw new RuntimeException("AlarmClock's time cannot move forwards.");
         if (newMillis > currentTimeMillis()) throw new RuntimeException("AlarmClock's time cannot be set after the current time.");
 
-        set(newTime);
+        set(new Date(newMillis));
     }
 
     /** Causes time() to return always the same value as if the clock had stopped.
-    * The clock does NOT STOP internally though.
+    * The clock does NOT STOP internally though. This method is called by Prevayler before each Command is executed so that it can be executed in a known moment in time.
     * @see resume()
     */
-    public synchronized void pause() {
+    synchronized void pause() {
         if (isPaused) throw new RuntimeException("AlarmClock was already paused.");
 
         time();           //Guarantees the time is up-to-date.
         isPaused = true;
     }
 
-    /** Causes time() to return the actual current time again.
+    /** Causes time() to return the actual current time again. This method is called by Prevayler after each Command is executed so that the clock can run again.
     * @see pause()
     */
-    public synchronized void resume() {
+    synchronized void resume() {
         if (!isPaused) throw new RuntimeException("AlarmClock was not paused.");
 
         isPaused = false;

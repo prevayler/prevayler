@@ -16,10 +16,8 @@ class Addition implements Command {
     }
 
     public Serializable execute(PrevalentSystem system) {
-        ((AddingSystem)system).add(value);
-        return null;
+        return ((AddingSystem)system).add(value);
     }
 
     private long value;
-
 }

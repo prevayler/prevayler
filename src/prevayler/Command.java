@@ -10,7 +10,7 @@ import java.io.Serializable;
 */
 public interface Command extends Serializable {
 
-    /** Executes this command on the received PrevalentSystem.
+    /** Executes this command on the received PrevalentSystem. See the demo application for examples.
     */
     Serializable execute(PrevalentSystem system) throws Exception;
 

@@ -4,13 +4,17 @@
 
 package prevayler.implementation;
 
+import prevayler.*;
 import java.io.*;
 
 /** Provides a simple API for writing commands and snapshots.
 */
 public class CommandOutputStream {
 
-    private NumberFileCreator fileCreator;
+    /** This number determines the size of the log files produces by the system.
+    */
+    public static final long LOG_FILE_SIZE = 100000L;
+    private final NumberFileCreator fileCreator;
 	private ObjectOutputStream logStream;
     private ByteCountStream fileStream;
 
@@ -18,26 +22,29 @@ public class CommandOutputStream {
         this.fileCreator = fileCreator;
     }
 
-    public void writeCommand(Serializable command) throws IOException{
+    public void writeCommand(Command command) throws IOException{
         ObjectOutputStream oos = logStream();
         try {
             oos.writeObject(command);
+            oos.reset();    //You can comment this line if your free RAM is large compared to the size of each commandLog file. If you comment this line, commands will occupy much less space in the log file because their class descriptions will only be written once. Your application will therefore produce much fewer log files. If you comment this line, you must make sure that no command INSTANCE is used more than once in your application with different internal values. "Reset will disregard the state of any objects already written to the stream. The state is reset to be the same as a new ObjectOutputStream. ... Objects previously written to the stream will not be refered to as already being in the stream. They will be written to the stream again." - JDK1.2.2 API documentation.
+            oos.flush();
         } catch (IOException iox) {
-            oos.close();
+            closeLogStream();
             throw iox;
         }
-		oos.flush();
 	}
 
-    public synchronized void writeSnapshot(Serializable system) throws IOException{
-        closeLogStream();
+    public synchronized void writeSnapshot(PrevalentSystem system) throws IOException{
+        closeLogStream();    //After every snapshot, a new commandLog file must be started.
 
-        ObjectOutputStream snapshot = snapshotStream();
-        try {
-            snapshot.writeObject(system);
-        } finally {
-			snapshot.close();
-		}
+        File tempSnapshot = fileCreator.newTempSnapshot();
+
+        ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(tempSnapshot));
+        stream.writeObject(system);
+        stream.close();
+
+        File snapshot = fileCreator.newSnapshot();
+        if (!tempSnapshot.renameTo(snapshot)) throw new IOException("Unable to rename " + tempSnapshot + " to " + snapshot);
     }
 
 	private ObjectOutputStream logStream() throws IOException{
@@ -46,7 +53,7 @@ public class CommandOutputStream {
             logStream = new ObjectOutputStream(fileStream);
 		}
 
-        if(fileStream.bytesWritten() >= 100000L) {  //This number determines the size of your log files. You can change it at will.
+        if(fileStream.bytesWritten() >= LOG_FILE_SIZE) {
             closeLogStream();
             return logStream();  //Recursive call.
 		}
@@ -55,12 +62,10 @@ public class CommandOutputStream {
 	}
 
 	private void closeLogStream() throws IOException {
-        if (logStream != null) logStream.close();
+        if (logStream == null) return;
+
+        logStream.close();
         logStream = null;
     }
 
-	private ObjectOutputStream snapshotStream() throws IOException{
-        File file = fileCreator.newSnapshot();
-        return new ObjectOutputStream(new FileOutputStream(file));
-	}
 }

@@ -17,30 +17,40 @@ public class PersistenceTest {
 
         crashRecover(); //There is nothing to recover at first. A new system will be created.
         crashRecover();
-        add(40);  //1
-        add(30);  //2
-        total(70);
+        add(40,40);     //1
+        add(30,70);     //2
+        verify(70);
 
         crashRecover();
-        total(70);
+        verify(70);
 
-        add(20);  //3
-        add(15);  //4
+        add(20,90);     //3
+        add(15,105);    //4
         snapshot();
         snapshot();
-        total(105);
-
-        crashRecover();
-        snapshot();
-        add(10);  //5
-        snapshot();
-        add(5);   //6
-        add(4);   //7
-        total(124);
+        verify(105);
 
         crashRecover();
-        add(3);   //8
-        total(127);
+        snapshot();
+        add(10,115);    //5
+        snapshot();
+        add(5,120);     //6
+        add(4,124);     //7
+        verify(124);
+
+        crashRecover();
+        add(3,127);     //8
+        verify(127);
+
+        snapshot();
+        clearPrevalenceBase();
+        snapshot();
+        crashRecover();
+        verify(127);
+
+        add(2,129);     //9
+        crashRecover();
+        verify(129);
 
         clearPrevalenceBase(); //Check if all files were properly closed and can be deleted.
 
@@ -48,7 +58,7 @@ public class PersistenceTest {
 
     static private void crashRecover() throws Exception {
         out("CrashRecovery.");
-        prevayler = new PrevaylerFactory().create(new AddingSystemFactory(), prevalenceBase);
+        prevayler = new Prevayler(new AddingSystem(), prevalenceBase);
         prevaylers.add(prevayler);
     }
 
@@ -57,14 +67,15 @@ public class PersistenceTest {
         prevayler.takeSnapshot();
     }
 
-    static private void add(long value) throws Exception {
+    static private void add(long value, long expectedTotal) throws Exception {
         out("Adding " + value);
-        prevayler.executeCommand(new Addition(value));
+        Long total = (Long)prevayler.executeCommand(new Addition(value));
+        compare(total.longValue(), expectedTotal, "Total");
     }
 
-    static private void total(long value) {
-        out("Expecting total: " + value);
-        compare(system().total(), value, "Total");
+    static private void verify(long expectedTotal) {
+        out("Expecting total: " + expectedTotal);
+        compare(system().total(), expectedTotal, "Total");
     }
 
     static private AddingSystem system() {
@@ -87,16 +98,16 @@ public class PersistenceTest {
 
     static private void delete(File[] files) {
         for(int i = 0; i < files.length; ++i){
-            assert(files[i].delete(), "Unable to delete " + files[i]);
+            verify(files[i].delete(), "Unable to delete " + files[i]);
         }
     }
 
 
     static private void compare(long observed, long expected, String measurement) {
-        assert(observed == expected, measurement + ": " + observed + "   Expected: " + expected);
+        verify(observed == expected, measurement + ": " + observed + "   Expected: " + expected);
 	}
 
-    static private void assert(boolean condition, String message) {
+    static private void verify(boolean condition, String message) {
         if (!condition) {
             throw new RuntimeException(message);
 		}

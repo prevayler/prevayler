@@ -6,13 +6,18 @@ package prevayler.implementation;
 
 import java.io.*;
 
-/** A FileOutputStream with a counter for the number of written bytes.
+/** A FileOutputStream that counts the number of bytes written and forces all buffers to synchronize with the underlying device when flushed.
 */
 public final class ByteCountStream extends FileOutputStream {
 
     public ByteCountStream(File file) throws IOException {
 		super(file);
 	}
+
+    public void flush() throws IOException {
+        super.flush();   //"The flush method of OutputStream does nothing." - JDK1.3 API documentation. I'm calling it just in case it starts doing something in a future version of FileOutputStream or OutputStream.
+        getFD().sync();  //"Force all system buffers to synchronize with the underlying device." - JDK1.3 API documentation. 
+    }
 
     public void write(byte[] b) throws IOException {
 		super.write(b);

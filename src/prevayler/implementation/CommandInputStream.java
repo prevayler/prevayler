@@ -5,7 +5,7 @@
 package prevayler.implementation;
 
 import java.io.*;
-import prevayler.Command;
+import prevayler.*;
 
 /** Provides an easy API for reading commands and snapshots.
 */
@@ -13,30 +13,38 @@ public class CommandInputStream {
 
     public CommandInputStream(String directory) throws IOException {
         fileFinder = new NumberFileFinder(directory);
+        out("Recovering system state...");
     }
 
-    public Object readLastSnapshot() throws IOException, ClassNotFoundException {
+    public PrevalentSystem readLastSnapshot() throws IOException, ClassNotFoundException {
         File snapshotFile = fileFinder.lastSnapshot();
         if (snapshotFile == null) return null;
+        out(snapshotFile);
 
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(snapshotFile));
         try {
-            return ois.readObject();
+            return (PrevalentSystem)ois.readObject();
         } finally {
             ois.close();
         }
     }
 
     public Command readCommand() throws IOException, ClassNotFoundException {
-        if (currentLogStream == null) currentLogStream = newLogStream();
+        if (currentLogStream == null) currentLogStream = newLogStream();  //Throws EOFException if there are no more log streams.
 
         try {
             return (Command)currentLogStream.readObject();
         } catch (EOFException eof) {
-            currentLogStream.close();
-            currentLogStream = null;
-            return readCommand();
+            //No more commands in this file.
+        } catch (ObjectStreamException osx) {
+            logStreamExceptionMessage(osx);
+        } catch (RuntimeException rx) {
+            logStreamExceptionMessage(rx);    //Some stream corruptions cause runtime exceptions!
         }
+
+        currentLogStream.close();
+        currentLogStream = null;
+        return readCommand();
     }
 
     public CommandOutputStream commandOutputStream() {
@@ -44,8 +52,22 @@ public class CommandInputStream {
     }
 
     private ObjectInputStream newLogStream() throws IOException {
-        File logFile = fileFinder.nextPendingLog();
+        File logFile = fileFinder.nextPendingLog();  //Throws EOFException if there are no more pending log files.
+        out(logFile);
         return new ObjectInputStream(new FileInputStream(logFile));
+    }
+
+    private void logStreamExceptionMessage(Exception exception) {
+        out("   " + exception);
+        out("   Some commands might have been lost. Looking for the next file..." );
+    }
+
+    private static void out(File file) {
+        out("Reading " + file + "...");
+    }
+
+    private static void out(Object obj) {
+        System.out.println(obj);
     }
 
     private NumberFileFinder fileFinder;

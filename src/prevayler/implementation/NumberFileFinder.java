@@ -60,12 +60,11 @@ public class NumberFileFinder {
             : number(lastSnapshot);
 	}
 
-    private long number(File snapshot) {
-        try {
-            return (NumberFileCreator.SNAPSHOT_FORMAT.parse(snapshot.getName())).longValue();
-        } catch(ParseException pe) {
-            throw new InternalParseException();
-		}
+    private long number(File snapshot) throws NumberFormatException {  //NumberFomatException is a RuntimeException.
+        String name = snapshot.getName();
+        if (!name.endsWith("." + NumberFileCreator.SNAPSHOT_SUFFIX)) throw new NumberFormatException();
+        return Long.parseLong(name.substring(0,name.indexOf('.')));    // "00000.snapshot" becomes "00000".
+        //The following doesn't work! It throws ParseException (UnparseableNumber): return (NumberFileCreator.SNAPSHOT_FORMAT.parse(snapshot.getName())).longValue();
 	}
 
     private void findLastSnapshot() throws IOException {
@@ -85,13 +84,11 @@ public class NumberFileFinder {
         public boolean accept(File file) {
             try {
                 number(file);
-            } catch (InternalParseException ipe) {
+            } catch (NumberFormatException nfx) {
                 return false;
             }
             return true;
 		}
 	}
 
-    private static class InternalParseException extends RuntimeException {
-    }
 }

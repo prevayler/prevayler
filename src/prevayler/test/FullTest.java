@@ -4,18 +4,18 @@
 
 package prevayler.test;
 
+                    import java.util.*;
+
 /** The main class for testing Prevayler.
 */
 public class FullTest {
 
     static public void main(String[] args) {
         try {
-
             header("Persistence Test...");
             PersistenceTest.run();
 
             header("S U C C E S S ! ! !  Can't you think of any more tests?");
-
 
         } catch (Exception e) {
             e.printStackTrace();

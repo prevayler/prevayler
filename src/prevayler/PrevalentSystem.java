@@ -7,7 +7,7 @@ package prevayler;
 import java.io.Serializable;
 
 /**
-* A system than implements this interface can be made transparently persistent and fault-tolerant with Prevayler.
+* A system than implements this interface can be made transparently persistent with Prevayler.
 * All implementing systems must be deterministic.
 * i.e.: Any two PrevalentSystems of the same class must produce the same results given the same commands.
 * @see prevayler.PrevaylerFactory
