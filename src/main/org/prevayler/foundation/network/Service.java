@@ -7,10 +7,10 @@ package org.prevayler.foundation.network;
 import java.io.IOException;
 
 
-public interface ObjectReceiver {
+public interface Service {
 	
-	public void receive(Object object) throws IOException;
-
+	ObjectReceiver serverFor(ObjectReceiver client);
+	
 	public void close() throws IOException;
 	
 }

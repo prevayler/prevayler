@@ -9,7 +9,8 @@ import java.io.IOException;
 
 public interface Network {
 
-	ObjectReceiver openRemoteReceiver(String serverIpAddress, int serverPort, ObjectReceiver localReceiver) throws IOException;
-	ObjectReceiver listenForRemoteReceiver(int portToListen, ObjectReceiver localReceiver) throws IOException;
+	void start(Service service, int port) throws IOException;
+
+	ObjectReceiver findServer(String ipAddress, int port, ObjectReceiver client) throws IOException;
 
 }
