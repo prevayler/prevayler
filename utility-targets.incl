@@ -2,6 +2,14 @@
 <!-- ==================== General Utility Targets ========================= -->
 <!-- ====================================================================== -->
 
+<!-- ==================== Prepare Targets ================================ -->
+
+    <target name="-prepare.build" depends="download.dependencies.build" >
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                 classpath="${ant-contrib.jar}" />
+    </target>
+
+
 <!-- ==================== Compile Targets ================================ -->
 
     <target name="-compile.sub" >
@@ -61,9 +69,6 @@
             <map from="${basedir}${file.separator}" to=""/>
         </pathconvert>
         <!--<echo>[${srcdir.unix}]</echo>-->
-        <taskdef resource="net/sf/antcontrib/antcontrib.properties" >
-            <classpath refid="build.classpath" />
-        </taskdef>
         <foreach list="${csrcdir.unix}" target="-post.compile" param="cresdir" delimiter=":" trim="true" >
             <param name="cdestdir"  value="${cdestdir}" />
             <param name="cincludes" value="${cincludes}" />
@@ -162,36 +167,58 @@
         <delete dir="${dependenciesdir}" />
     </target>
 
-    <target name="-proxyflags">
+    <target name="download.dependencies.build"
+            description="Download binary packages needed by the Ant build system" >
+        <!-- Download any sub package or tools needed. -->
+        <antcall target="-downloadgz">
+            <param name="sourcefile" value="${ant-contrib.loc}"/>
+            <param name="destfile" value="${ant-contrib.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="download.dependencies.vizant"
+            description="Download binary package needed to run vizant" >
+        <!-- Downdown any sub package or tools needed. -->
+        <antcall target="-downloadfile">
+            <param name="sourcefile" value="${vizant.loc}"/>
+            <param name="destfile" value="${vizant.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="-download.init" >
+        <mkdir dir="${dependenciesdir}" />
+    </target>
+
+    <target name="-proxyflags" unless="destfileexists!">
         <!-- check proxy parameters. -->
         <condition property="useproxy">
             <equals arg1="${proxy.use}" arg2="on" />
         </condition>
     </target>
 
-    <target name="-setproxy" if="useproxy">
-        <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"/> 
+    <target name="-setproxy" if="useproxy" unless="destfileexists!" depends="-proxyflags">
+        <setproxy proxyhost="${proxy.host}" nonproxyhosts="${proxy.hosts.non}" proxyport="${proxy.port}"/> 
         <echo message="Using ${proxy.host}:${proxy.port} to download ${sourcefile}"/>
     </target>
 
     <target name="-testdestfileexist">
-        <echo message="Testing  for ${destfile}"/>
+        <echo message="Testing for ${destfile}"/>
         <available file="${destfile}" property="destfileexists!"/>
     </target>
 
-    <target name="-downloadfile" unless="destfileexists!" depends="-setproxy, -testdestfileexist">
+    <target name="-downloadfile" unless="destfileexists!" depends="-download.init, -testdestfileexist, -setproxy">
         <get src="${sourcefile}" dest="${dependenciesdir}/file" />
         <move file="${dependenciesdir}/file" tofile="${destfile}" />
     </target>
 
-    <target name="-downloadzip" unless="destfileexists!" depends="-setproxy, -testdestfileexist">
+    <target name="-downloadzip" unless="destfileexists!" depends="-download.init, -testdestfileexist, -setproxy">
         <!-- Download and extract the package -->
         <get src="${sourcefile}" dest="${dependenciesdir}/file.zip" />
         <unzip src="${dependenciesdir}/file.zip" dest="${dependenciesdir}"/>
         <delete file="${dependenciesdir}/file.zip"/>
     </target>
 
-    <target name="-downloadgz" unless="destfileexists!" depends="-setproxy, -testdestfileexist">
+    <target name="-downloadgz" unless="destfileexists!" depends="-download.init, -testdestfileexist, -setproxy">
         <!-- Download and extract the package -->
         <get src="${sourcefile}" dest="${dependenciesdir}/file.tar.gz" />
         <gunzip src="${dependenciesdir}/file.tar.gz" dest="${dependenciesdir}/file.tar"/>
@@ -213,17 +240,7 @@
         </delete>
     </target>
 
-    <target name="download.vizant" depends="-proxyflags"
-            description="Download binary package needed to run vizant" >
-        <mkdir dir="${dependenciesdir}" />
-        <!-- Downdown any sub package or tools needed. -->
-        <antcall target="-downloadfile">
-            <param name="sourcefile" value="${vizant.loc}"/>
-            <param name="destfile" value="${vizant.jar}"/>
-        </antcall>
-    </target>
-
-    <target name="vizant" depends="download.vizant">
+    <target name="vizant" depends="download.dependencies.vizant">
         <taskdef name="vizant" classname="net.sourceforge.vizant.Vizant" classpath="${vizant.jar}"/>
         <vizant antfile="build.xml" outfile="build.dot"/>
         <exec executable="dot" failifexecutionfails="false" resultproperty="graphvizSuccess!">

@@ -55,7 +55,6 @@
         <pathelement location="${skaringa.jar}"/>
         <pathelement location="${log4j.jar}"/>
         <pathelement location="${commons-jxpath.jar}"/>
-        <pathelement location="${ant-contrib.jar}"/>
     </path>
 
     <path id="build.core.classpath" >
@@ -113,7 +112,7 @@
 
 <!-- ==================== Prepare Target ================================== -->
 
-    <target name="prepare" >
+    <target name="prepare" depends="-prepare.build" >
         <mkdir  dir="target" />
         <mkdir  dir="${classesdir.main}" />
         <mkdir  dir="${classesdir.test}" />
@@ -138,7 +137,7 @@
 
     <target name="compile" depends="compile.core, compile.test, compile.contrib"
             description="Compile all specified sources" />
-    <target name="compile.core" depends="prepare, download.core.dependencies"
+    <target name="compile.core" depends="prepare, download.dependencies.core"
             description="Compile core sources" >
         <antcall target="-compile.sub">
             <param name="csrcdir"   value="${srcdir.main}" />
@@ -153,7 +152,7 @@
             <param name="cdestdir"  value="${classesdir.test}" />
         </antcall>
     </target>
-    <target name="compile.contrib" depends="download.contrib.dependencies, compile.core"
+    <target name="compile.contrib" depends="download.dependencies.contrib, compile.core"
             description="Compile contrib sources" >
         <antcall target="-compile.sub">
             <param name="csrcdir"   value="${src.contrib.projects}" />
@@ -259,22 +258,16 @@
 
 <!-- ==================== Dependency Targets ================================== -->
 
-    <target name="download" depends="download.contrib.dependencies, download.contrib.dependencies, download.vizant"
+    <target name="download" depends="download.dependencies.core, download.dependencies.contrib, download.dependencies.build, download.dependencies.vizant"
             description="Download all specified binary packages" />
 
-    <target name="download.core.dependencies" depends="-proxyflags"
+    <target name="download.dependencies.core"
             description="Download binary packages needed by the core packages" >
-        <mkdir dir="${dependenciesdir}" />
         <!-- Download any sub package or tools needed. -->
-        <antcall target="-downloadgz">
-            <param name="sourcefile" value="${ant-contrib.loc}"/>
-            <param name="destfile" value="${ant-contrib.jar}"/>
-        </antcall>
     </target>
 
-    <target name="download.contrib.dependencies" depends="-proxyflags"
+    <target name="download.dependencies.contrib"
             description="Download binary packages needed by the contrib packages" >
-        <mkdir dir="${dependenciesdir}" />
         <!-- Download any sub package or tools needed. -->
         <antcall target="-downloadgz">
             <param name="sourcefile" value="${skaringa.loc}"/>
