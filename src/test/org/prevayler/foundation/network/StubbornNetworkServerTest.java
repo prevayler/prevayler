@@ -1,7 +1,5 @@
 package org.prevayler.foundation.network;
 
-import java.io.IOException;
-
 import junit.framework.TestCase;
 
 

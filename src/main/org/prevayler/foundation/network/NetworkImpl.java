@@ -8,8 +8,6 @@
 package org.prevayler.foundation.network;
 
 import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Map;
 
 /**
  * Provides a Basic Network Service, no recovery of failure, and no

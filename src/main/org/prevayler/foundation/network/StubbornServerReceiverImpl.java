@@ -7,8 +7,6 @@ package org.prevayler.foundation.network;
 
 import java.io.IOException;
 
-import org.prevayler.foundation.Cool;
-
 /**
  * Inbound channel for a Server's network.
  * 
