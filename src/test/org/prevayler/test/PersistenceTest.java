@@ -133,7 +133,7 @@ public class PersistenceTest extends TestCase {
 	}
 
 	private static void out(Object obj) {
-		//System.out.println(obj);   //Uncomment this line to see what the test is doing.
+//		System.out.println(obj);   //Uncomment this line to see what the test is doing.
 	}
 
 

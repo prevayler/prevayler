@@ -65,7 +65,7 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 	}
 
 
-	private void outputToLog(Object object) {
+	protected void outputToLog(Object object) {
 		try {
 			_outputLog.writeObject(object);
 			_outputLog.sync();
@@ -83,7 +83,7 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 			_nextTransactionKnown = true;
 		} else {
 System.out.println("TODO"); //We must find a way to uncomment this next line so that Prevayler can detect missing transactions. Probably we'll have to make the SnapshotPrevayler not count ClockTicks or not count the redundant ones.
-//			if (initialTransaction > _nextTransaction) throw new IOException("Unable to find transactions from " + _nextTransaction + " to " + (initialTransaction - 1) + "."); 
+//			if (initialTransaction > _nextTransaction) throw new IOException("Unable to find transactions from " + _nextTransaction + " to " + (initialTransaction - 1) + ".");
 			long initialFileCandidate = initialTransaction;
 			while (!transactionLogFile(initialFileCandidate).exists()) {
 				initialFileCandidate--;
@@ -95,7 +95,7 @@ System.out.println("TODO"); //We must find a way to uncomment this next line so 
 	}
 
 
-	private File lastTransactionFile() throws IOException {		
+	private File lastTransactionFile() throws IOException {
 		File[] files = _directory.listFiles(this);
 		if (files == null) throw new IOException("Error reading file list from directory " + _directory);
 		if (files.length == 0) return null;
@@ -119,7 +119,7 @@ System.out.println("TODO"); //We must find a way to uncomment this next line so 
 	}
 
 
-	private void createNewOutputLog() {
+	protected void createNewOutputLog() {
 		File file = transactionLogFile(_nextTransaction - _skippedTicks.getCount());
 		try {
 			_outputLog = new SimpleOutputStream(file);
@@ -138,7 +138,7 @@ System.out.println("TODO"); //We must find a way to uncomment this next line so 
 
 	private void update(TransactionSubscriber subscriber, long initialTransaction, long initialFile) throws IOException, ClassNotFoundException {
 		long recoveringTransaction = initialFile;
-		
+
 		SimpleInputStream inputLog = new SimpleInputStream(transactionLogFile(recoveringTransaction));
 		while(recoveringTransaction < _nextTransaction) {
 			try {
@@ -157,13 +157,14 @@ System.out.println("TODO"); //We must find a way to uncomment this next line so 
 
 					transaction = buffer._lastClockTick;
 				} else {
-					transaction = (Transaction)logEntry;
-				}
+                    transaction = transactionFromLogEntry(logEntry);
+                }
 
 				if (recoveringTransaction >= initialTransaction)
 					subscriber.receive(transaction);
+
 				recoveringTransaction++;
-									
+
 			} catch (EOFException eof) {
 				File logFile = transactionLogFile(recoveringTransaction);
 System.out.println("TODO"); //We must find a way to uncomment this next line. Since the ClockTick log optimization, it causes trouble when called by the replication logic for example.
@@ -174,8 +175,12 @@ System.out.println("TODO"); //We must find a way to uncomment this next line. Si
 		}
 	}
 
+    protected Transaction transactionFromLogEntry(Object logEntry) {
+        return (Transaction)logEntry;
+    }
 
-	/** Returns the number of objects left in the stream and closes it.
+
+    /** Returns the number of objects left in the stream and closes it.
 	 */
 	static private long transactionCount(File logFile) throws IOException, ClassNotFoundException {
 		SimpleInputStream inputLog = new SimpleInputStream(logFile);
@@ -183,7 +188,7 @@ System.out.println("TODO"); //We must find a way to uncomment this next line. Si
 		while (true) {
 			try {
 				Object logEntry = inputLog.readObject();
-				if (logEntry instanceof ClockTickBuffer) 
+				if (logEntry instanceof ClockTickBuffer)
 					result += ((ClockTickBuffer)logEntry).getCount() - 1;
 			} catch (EOFException eof) {
 				return result;

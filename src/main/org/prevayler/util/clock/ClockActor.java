@@ -55,5 +55,4 @@ public class ClockActor extends Thread {
 		_lastTime = newTime;
 		_prevayler.execute(new ClockTick(newTime));
 	}
-
 }

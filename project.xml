@@ -10,6 +10,11 @@
             <id>junit</id>
             <version>3.8.1</version>
         </dependency>
+
+        <dependency>
+            <id>skaringa</id>
+            <version>r1p8</version>
+        </dependency>
     </dependencies>
 
     <build>
