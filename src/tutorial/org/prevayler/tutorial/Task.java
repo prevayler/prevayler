@@ -8,25 +8,16 @@ package org.prevayler.tutorial;
 
 import java.io.Serializable;
 
-// START SNIPPET: task
+//START SNIPPET: task
 public class Task implements Serializable {
 
-    // END SNIPPET: task
-
     public static final int MAX_PRIORITY = 10;
-
     public static final int MED_PRIORITY = 5;
-
     public static final int MIN_PRIORITY = 0;
 
-    // START SNIPPET: fields
     private String description;
-
     private int priority;
 
-    // END SNIPPET: fields
-
-    // START SNIPPET: ctors
     public Task() {
     }
 
@@ -35,9 +26,6 @@ public class Task implements Serializable {
         this.priority = priority;
     }
 
-    //  END SNIPPET: ctors
-
-    // START SNIPPET: equals
     public boolean equals(Object obj) {
         if (obj instanceof Task) {
             Task t = (Task) obj;
@@ -45,8 +33,6 @@ public class Task implements Serializable {
         }
         return false;
     }
-
-    // END SNIPPET: equals
 
     public String getDescription() {
         return description;
@@ -64,3 +50,4 @@ public class Task implements Serializable {
         this.priority = priority;
     }
 }
+// END SNIPPET: task
