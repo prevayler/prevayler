@@ -6,7 +6,6 @@
 package org.prevayler.implementation.publishing;
 
 import org.prevayler.foundation.Cool;
-import org.prevayler.foundation.Daemon;
 import org.prevayler.implementation.TransactionTimestamp;
 
 import java.util.LinkedList;
@@ -24,7 +23,7 @@ public class POBox implements TransactionSubscriber, Runnable {
 
 	public POBox(TransactionSubscriber delegate) {
 		_delegate = delegate;
-		new Daemon(this);
+		Cool.startDaemon(this);
 	}
 
 

@@ -1,5 +1,6 @@
 package org.prevayler.foundation;
 
+
 /** Cool things that are often needed.
  */
 public class Cool {
@@ -22,6 +23,12 @@ public class Cool {
 
     public static void unexpected(Exception e) {
         throw new RuntimeException("Unexpected Exception was thrown.", e);
+    }
+
+    public static void startDaemon(Runnable runnable) {
+        Thread daemon = new Thread(runnable);
+        daemon.setDaemon(true);
+        daemon.start();
     }
 
 }

@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.prevayler.foundation.Cool;
-
 
 public class NetworkMock implements OldNetwork {
 
@@ -21,12 +19,7 @@ public class NetworkMock implements OldNetwork {
 		
 		ObjectServerSocketMock server = server(serverPort); 
 		if (server == null) throw new IOException("No server is listening on this port.");
-		try {
-			return server.openClientSocket();
-		} catch (IOException e) {
-			Cool.sleep(5);
-			return server.openClientSocket(); //TODO Eliminate this retry because client must try and reconnect anyway.
-		}
+		return server.openClientSocket();
 	}
 
 	public synchronized ObjectServerSocket openObjectServerSocket(int serverPort) throws IOException {
