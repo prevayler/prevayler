@@ -2,8 +2,10 @@
 <classpath>
     <classpathentry kind="src" path="src/test"/>
     <classpathentry kind="src" path="src/main"/>
+    <classpathentry kind="src" path="contrib/socketServer/common"/>
+    <classpathentry kind="src" path="contrib/socketServer/client"/>
+    <classpathentry kind="src" path="contrib/socketServer/example"/>
+    <classpathentry kind="src" path="contrib/socketServer/server"/>
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-    <classpathentry kind="lib" path="C:/eclipse/plugins/org.junit_3.8.1/junit.jar"/>
-    <classpathentry kind="lib" path="C:/maven/repository/skaringa/jars/skaringa-r1p8.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
