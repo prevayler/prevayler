@@ -3,16 +3,13 @@ package org.prevayler.foundation.serialization;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.zip.GZIPInputStream;
 
 public class MultiMemberGZIPInputStream extends InputStream {
 
-	private InputStream _stream;
-	private GZIPInputStream _gzip;
+	private ContinuableGZIPInputStream _gzip;
 
 	public MultiMemberGZIPInputStream(InputStream stream) throws IOException {
-		_stream = stream;
-		_gzip = new GZIPInputStream(stream, 1);
+		_gzip = new ContinuableGZIPInputStream(stream);
 	}
 
 	public int available() throws IOException {
@@ -33,7 +30,7 @@ public class MultiMemberGZIPInputStream extends InputStream {
 		int n = _gzip.read(b, off, len);
 		if (n == -1) {
 			try {
-				_gzip = new GZIPInputStream(_stream, 1);
+				_gzip = new ContinuableGZIPInputStream(_gzip.remainingInput());
 			} catch (EOFException e) {
 				return -1;
 			}
