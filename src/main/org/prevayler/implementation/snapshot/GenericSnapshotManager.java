@@ -37,7 +37,7 @@ public class GenericSnapshotManager {
 			throws IOException, ClassNotFoundException {
 		for (Iterator iterator = strategies.keySet().iterator(); iterator.hasNext();) {
 			String suffix = (String) iterator.next();
-			checkValidSuffix(suffix);
+			FileManager.checkValidSnapshotSuffix(suffix);
 		}
 
 		if (!strategies.containsKey(primarySuffix)) {
@@ -49,8 +49,8 @@ public class GenericSnapshotManager {
 
 		_directory = FileManager.produceDirectory(snapshotDirectoryName);
 
-		File latestSnapshot = latestSnapshot(_directory);
-		_recoveredVersion = latestSnapshot == null ? 0 : version(latestSnapshot);
+		File latestSnapshot = FileManager.latestSnapshot(_directory);
+		_recoveredVersion = latestSnapshot == null ? 0 : FileManager.snapshotVersion(latestSnapshot);
 		_recoveredPrevalentSystem = latestSnapshot == null
 				? newPrevalentSystem
 				: readSnapshot(latestSnapshot);
@@ -99,12 +99,7 @@ public class GenericSnapshotManager {
 
 
 	private File snapshotFile(long version) {
-		return snapshotFile(version, _directory, _primarySuffix);
-	}
-
-	private static File snapshotFile(long version, File directory, String suffix) {
-		String fileName = "0000000000000000000" + version;
-		return new File(directory, fileName.substring(fileName.length() - DIGITS_IN_SNAPSHOT_FILENAME) + "." + suffix);
+		return FileManager.snapshotFile(version, _directory, _primarySuffix);
 	}
 
 	private Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {
@@ -119,48 +114,6 @@ public class GenericSnapshotManager {
 		} finally {
 			in.close();
 		}
-	}
-
-
-	private static final int DIGITS_IN_SNAPSHOT_FILENAME = 19;
-	private static final String SNAPSHOT_SUFFIX_PATTERN = "[a-zA-Z0-9]*[Ss]napshot";
-	private static final String SNAPSHOT_FILENAME_PATTERN = "\\d{" + DIGITS_IN_SNAPSHOT_FILENAME + "}\\." +
-			SNAPSHOT_SUFFIX_PATTERN;
-
-	private static void checkValidSuffix(String suffix) {
-		if (!suffix.matches(SNAPSHOT_SUFFIX_PATTERN)) {
-			throw new IllegalArgumentException(
-					"Snapshot filename suffix must match /" + SNAPSHOT_SUFFIX_PATTERN + "/, but '" + suffix + "' does not");
-		}
-	}
-
-	/**
-	 * Returns -1 if fileName is not the name of a snapshot file.
-	 */
-	private static long version(File file) {
-		String fileName = file.getName();
-		if (!fileName.matches(SNAPSHOT_FILENAME_PATTERN)) return -1;
-		return Long.parseLong(fileName.substring(0, fileName.indexOf(".")));    // "00000.snapshot" becomes "00000".
-	}
-
-	/**
-	 * Find the latest snapshot file. Returns null if no snapshot file was found.
-	 */
-	public static File latestSnapshot(File directory) throws IOException {
-		File[] files = directory.listFiles();
-		if (files == null) throw new IOException("Error reading file list from directory " + directory);
-
-		File latestSnapshot = null;
-		long latestVersion = 0;
-		for (int i = 0; i < files.length; i++) {
-			File candidateSnapshot = files[i];
-			long candidateVersion = version(candidateSnapshot);
-			if (candidateVersion > latestVersion) {
-				latestVersion = candidateVersion;
-				latestSnapshot = candidateSnapshot;
-			}
-		}
-		return latestSnapshot;
 	}
 
 }
