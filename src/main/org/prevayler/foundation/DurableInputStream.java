@@ -19,6 +19,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.UTFDataFormatException;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.util.Date;
 
 
@@ -28,13 +30,13 @@ public class DurableInputStream {
 	private final Serializer _serializer;
 	private boolean _EOF = false;
 	private Monitor _monitor;
-	private FileInputStream _fileStream;
+	private InputStream _fileStream;
 
 
 	public DurableInputStream(File file, Serializer serializer, Monitor monitor) throws IOException {
 		_monitor = monitor;
 		_file = file;
-		_fileStream = new FileInputStream(file);
+		_fileStream = new BufferedInputStream(new FileInputStream(file));
 		_serializer = serializer;
 	}
 
