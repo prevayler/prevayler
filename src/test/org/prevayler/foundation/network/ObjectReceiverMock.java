@@ -7,18 +7,32 @@
 package org.prevayler.foundation.network;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.prevayler.foundation.Cool;
 
 
 public class ObjectReceiverMock implements ObjectReceiver {
 
-    private Object received = null;
+    private List received;
     
     private boolean closed = false;
 
+    private boolean permit = true;
+    
+    public ObjectReceiverMock() {
+        List receiveList = new ArrayList();
+        received = Collections.synchronizedList(receiveList);
+    }
     public void receive(Object object) throws IOException {
-        received = object;
+        System.out.println("received " + object);
+        if (!permit) {
+            permit = true;
+            throw new IOException("network failure");
+        }
+        received.add(object);
     }
 
     public void close() throws IOException {
@@ -30,9 +44,24 @@ public class ObjectReceiverMock implements ObjectReceiver {
     }
     
     public boolean check(Object expected) {
-        while (this.received == null) {
+        while (this.received.isEmpty()) {
             Cool.sleep(2);
         }
-        return (expected.equals(this.received));
+        return (expected.equals(this.received.remove(0)));
+    }
+    
+    public Object selfCheck() {
+        while (this.received.isEmpty()) {
+            Thread.yield();
+        }
+        return received.remove(0);
+    }
+
+    /**
+     * 
+     */
+    public void receiveCrash() {
+        permit = false;
+        
     }
 }

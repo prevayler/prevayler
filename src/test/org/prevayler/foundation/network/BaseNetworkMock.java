@@ -1,11 +1,3 @@
-/*
- * BaseNetworkMock.java
- *
- * Copyright (c) 2004 MoneySwitch Ltd.
- * Level 5, 55 Lavender St, Milsons Point 2061.
- * All rights reserved.
- *
- */
 package org.prevayler.foundation.network;
 
 import java.io.IOException;
@@ -15,13 +7,6 @@ import java.util.Map;
 import org.prevayler.foundation.Cool;
 
 
-/**
- * Useful class comments should go here
- *
- * $Revision: 1.3 $
- * $Date: 2005/02/16 04:28:34 $
- * $Author: peter_mxgroup $
- */
 public class BaseNetworkMock {
     protected final Map _serverSocketByPort = new HashMap();
     protected Permit _permit = new Permit();
@@ -32,6 +17,7 @@ public class BaseNetworkMock {
     public void crash() {
         _permit.expire();
     }
+    
 
     public void recover() {
         _permit = new Permit();

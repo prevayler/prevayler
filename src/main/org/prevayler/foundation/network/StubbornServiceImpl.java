@@ -1,7 +1,6 @@
 package org.prevayler.foundation.network;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,8 +11,8 @@ import org.prevayler.foundation.Cool;
 /**
  * Useful class comments should go here
  *
- * $Revision: 1.1 $
- * $Date: 2005/02/16 04:28:34 $
+ * $Revision: 1.2 $
+ * $Date: 2005/02/25 04:29:29 $
  * $Author: peter_mxgroup $
  */
 public class StubbornServiceImpl extends Thread 
@@ -31,20 +30,20 @@ public class StubbornServiceImpl extends Thread
         return new StubbornServerReceiverImpl(client, _service, this);
     }
     
-    public synchronized ObjectReceiver find (int sessionId) {
+    protected synchronized ObjectReceiver find (int sessionId) {
         return (ObjectReceiver) _sessions.get(new Integer(sessionId));
     }
     
-    public synchronized int add (ObjectReceiver receiver) {
+    protected synchronized int add (ObjectReceiver receiver) {
         int key = _masterSessionId++;
         _sessions.put(new Integer(key), receiver);
         return key;
     }
 
     public StubbornServiceImpl(Network provider, Service service, int port) {
-        this._provider = provider;
-        this._service = service;
-        this._port = port;
+        _provider = provider;
+        _service = service;
+        _port = port;
         _wantedOpen = true;
         setName("Prevayler Stubborn Service");
         setDaemon(true);
@@ -78,7 +77,7 @@ public class StubbornServiceImpl extends Thread
         }
     }
 
-    public synchronized void shutdown() {
+    protected synchronized void shutdown() {
         _wantedOpen = false;
         this.notify();
     }

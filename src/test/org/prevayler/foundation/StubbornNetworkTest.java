@@ -30,9 +30,10 @@ public class StubbornNetworkTest extends TestCase {
 
     private Network network;
     
-    private int port = 4000;
+    private int port = 9876;
     
     private ServiceMock mockService;
+    private NewNetworkMock networkMock;
     
     private Client client1;
     
@@ -61,9 +62,26 @@ public class StubbornNetworkTest extends TestCase {
 
     private Network setNetworkToTest() {
         if (mockTest) {
-            return  new NewNetworkMock();
+            networkMock = new NewNetworkMock();
+            return  networkMock;
         }
         return new NetworkImpl();
+    }
+    
+    public void donttestFailure() throws Exception {
+        if (!mockTest) {return;}
+        System.out.println("Starting TestFailure");
+        network.startService(mockService,port);
+        client1.connect(port);
+        Server server = new Server(1, mockService);
+        networkMock.crash();
+        networkMock.recover();
+        server.send(testObject1);
+        client1.received(testObject1);
+        server.close();
+        client1.close();
+        network.stopService(port);
+        System.out.println("Stopping TestFailure");
     }
     
     
@@ -151,12 +169,13 @@ public class StubbornNetworkTest extends TestCase {
         protected ObjectReceiver networkReceiver;
 
         public void send (Object o) throws Exception {
+            System.out.println("sending " + o);
             networkReceiver.receive(o);
             Thread.sleep(NETWORK_MSG_MSEC_DELAY);
         }
         
         public void received (Object o) {
-             assertTrue(mock.check(o));
+             assertTrue("Expecting: ? Actual: "+ o, mock.check(o));
         }
         
     }

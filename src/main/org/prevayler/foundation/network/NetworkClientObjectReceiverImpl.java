@@ -16,6 +16,8 @@ public class NetworkClientObjectReceiverImpl implements ObjectReceiver {
     /** the upper layer who we give what we receive to */
     private ObjectReceiver _client;
 
+    private volatile boolean _closing;
+    
     public NetworkClientObjectReceiverImpl (String ipAddress, int port,
             ObjectReceiver client) throws IOException {
         this(new ObjectSocketImpl(ipAddress, port), client);
@@ -43,7 +45,7 @@ public class NetworkClientObjectReceiverImpl implements ObjectReceiver {
     private void startReading()  {
         Thread reader = new Thread() {
             public void run() {
-                while (true) receiveFromNetwork();
+                while (!_closing) receiveFromNetwork();
             }
         };
         reader.setName("Prevayler Network Client Receiver");
@@ -55,14 +57,15 @@ public class NetworkClientObjectReceiverImpl implements ObjectReceiver {
      * When something is read give it to our client, also give it the exception
      */
     private void receiveFromNetwork() {
-        Object object = null;
         try {
-            object = _provider.readObject();
-        } catch (Exception ex) {
-            object = ex;
-        } finally {
+            Object object = _provider.readObject();
             passToClient(object);
-        }
+        } catch (Exception ex) {
+            if (_closing) {
+                return;
+            }
+            passToClient(ex);
+        } 
     }
 
     private void passToClient(Object object) {
@@ -83,7 +86,7 @@ public class NetworkClientObjectReceiverImpl implements ObjectReceiver {
      * @see org.prevayler.foundation.network.ObjectReceiver#close()
      */
     public void close() throws IOException {
+        _closing = true;
         _provider.close();
     }
-
 }

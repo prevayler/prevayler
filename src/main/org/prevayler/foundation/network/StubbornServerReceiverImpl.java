@@ -20,6 +20,7 @@ public class StubbornServerReceiverImpl implements ObjectReceiver {
     private Service _clientService;
     private StubbornServiceImpl _stubbornService;
     private boolean _isOpen;
+    private Object _unsentMessage;
     /** 
      * Provider has called in with a connection, need to get it going.
      * First, I wait for their session id. If it matches an existing 
@@ -28,13 +29,17 @@ public class StubbornServerReceiverImpl implements ObjectReceiver {
      */
 
     public StubbornServerReceiverImpl(ObjectReceiver provider, Service service, StubbornServiceImpl stubbornService) {
-        this._provider = provider;
-        this._clientService = service;
-        this._stubbornService = stubbornService;
-        this._isOpen = false;
+        _provider = provider;
+        _clientService = service;
+        _stubbornService = stubbornService;
+        _isOpen = false;
     }
 
     public void receive(Object object) throws IOException {
+        if (object instanceof IOException) {
+            closeSession();
+            return;
+        }
         if (_isOpen) {
             _client.receive(object);
             return;
@@ -54,11 +59,28 @@ public class StubbornServerReceiverImpl implements ObjectReceiver {
     }
     
     private void reestablishSession (int sessionId) {
-        this._client = _stubbornService.find(sessionId);
+        _client = _stubbornService.find(sessionId);
         if (_client == null) {
             establishNewSession();
         } else {
             send(sessionId);
+            if (!_isOpen) {
+                return;
+            }
+            if (_unsentMessage != null) {
+                Object unsent = _unsentMessage;
+                _unsentMessage = null;
+                send(unsent);
+            }
+        }
+    }
+    
+    private void closeSession () {
+        try {
+            _provider.close();
+        } catch (IOException ignore) {
+        } finally {
+            _isOpen = false;
         }
     }
     
@@ -67,7 +89,7 @@ public class StubbornServerReceiverImpl implements ObjectReceiver {
             _provider.receive(new Integer(sessionId));
             open();
         } catch (IOException unex) {
-            //TODO: Handle failure on handshake
+            closeSession();
         }
     }
     
@@ -75,9 +97,11 @@ public class StubbornServerReceiverImpl implements ObjectReceiver {
         try {
             _provider.receive(object);
         } catch (IOException unex) {
-            //TODO: Handle failure on message io
+            _unsentMessage = object;
+            closeSession();
         }
     }
+    
     public void clientRequestsReceive(Object object) {
         waitTillOpen();
         send(object);
@@ -109,13 +133,13 @@ public class StubbornServerReceiverImpl implements ObjectReceiver {
         private StubbornServerReceiverImpl _controller;
 
         public ClientProxy (StubbornServerReceiverImpl controller) {
-            this._controller = controller;
+            _controller = controller;
         }
         public void receive(Object object) throws IOException {
-            this._controller.clientRequestsReceive(object);
+            _controller.clientRequestsReceive(object);
         }
         public void close() throws IOException {
-            this._controller.clientRequestsClose();
+            _controller.clientRequestsClose();
         }
         
     }
