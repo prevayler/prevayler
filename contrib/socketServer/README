@@ -12,7 +12,7 @@ and fast, yet full-featured, including:
 
 - Treating Prevayler transactions as simple remote method 
   invocations.
-- Providing transparant exception handling, propogation,
+- Providing transparent exception handling, propogation,
   and (optionally) logging.
 - Implementing a client-server Observer framework so that 
   clients can be notified when "interesting" changes occur 
@@ -95,7 +95,7 @@ at startup.  See the example application for more on options
 provided in Config.ini.
 
 The main() class for the socket server is
-org.prevayler.sockeetserver.server.Main.
+org.prevayler.socketserver.server.Main.
 
 The root of the callback notification framework on the server is
 the static methods on the Notification object.
