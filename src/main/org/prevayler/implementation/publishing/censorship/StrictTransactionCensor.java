@@ -51,7 +51,7 @@ public class StrictTransactionCensor implements TransactionCensor {
 	}
 
 	private void letTheFoodTasterDie() {
-		_royalFoodTaster = null;  // At this moment the pipeline might contain transactions that have already been approved by this censor but not yet applied to the _king. It is a requirement, therefore, that the _royalFoodTaster must not be initialized now, but only when the next transaction arrives to be approved.
+		_royalFoodTaster = null;  // At this moment there might be transactions that have already been approved by this censor but have not yet been applied to the _king. It is a requirement, therefore, that the _royalFoodTaster must not be initialized now, but only when the next transaction arrives to be approved.
 	}
 
 	private Object royalFoodTaster() {
