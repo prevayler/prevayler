@@ -3,10 +3,10 @@ package org.prevayler.implementation.snapshot;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
-import org.prevayler.foundation.serialization.JavaSerializationStrategy;
-import org.prevayler.foundation.serialization.SerializationStrategy;
-import org.prevayler.foundation.serialization.SkaringaSerializationStrategy;
-import org.prevayler.foundation.serialization.XStreamSerializationStrategy;
+import org.prevayler.foundation.serialization.JavaSerializer;
+import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.foundation.serialization.SkaringaSerializer;
+import org.prevayler.foundation.serialization.XStreamSerializer;
 import org.prevayler.implementation.AppendTransaction;
 
 import java.io.File;
@@ -15,39 +15,39 @@ import java.io.IOException;
 public class GenericSnapshotManagerTest extends FileIOTest {
 
 	public void testNoExistingSnapshot() throws IOException, ClassNotFoundException {
-		Prevayler prevayler = createPrevayler("snapshot", new JavaSerializationStrategy());
+		Prevayler prevayler = createPrevayler("snapshot", new JavaSerializer());
 		assertEquals("initial", prevayler.prevalentSystem().toString());
 	}
 
 	public void testRoundtripJava() throws IOException, ClassNotFoundException {
-		checkRoundtrip("snapshot", new JavaSerializationStrategy());
+		checkRoundtrip("snapshot", new JavaSerializer());
 	}
 
 	public void testRoundtripXStream() throws IOException, ClassNotFoundException {
-		checkRoundtrip("xstreamsnapshot", new XStreamSerializationStrategy());
+		checkRoundtrip("xstreamsnapshot", new XStreamSerializer());
 	}
 
 	public void testRoundtripSkaringa() throws IOException, ClassNotFoundException {
-		checkRoundtrip("skaringasnapshot", new SkaringaSerializationStrategy());
+		checkRoundtrip("skaringasnapshot", new SkaringaSerializer());
 	}
 
-	private void checkRoundtrip(String suffix, SerializationStrategy strategy) throws IOException, ClassNotFoundException {
-		Prevayler first = createPrevayler(suffix, strategy);
+	private void checkRoundtrip(String suffix, Serializer serializer) throws IOException, ClassNotFoundException {
+		Prevayler first = createPrevayler(suffix, serializer);
 		appendTakeSnapshotAndClose(first);
 
 		checkSnapshotAndDeleteJournal("0000000000000000002." + suffix, "0000000000000000001.journal");
 
-		Prevayler second = createPrevayler(suffix, strategy);
+		Prevayler second = createPrevayler(suffix, serializer);
 		assertEquals("initial one two", second.prevalentSystem().toString());
 		second.close();
 	}
 
 	public void testDetectExistingSnapshotFromUnknownSnapshotManager() throws IOException, ClassNotFoundException {
-		Prevayler first = createPrevayler("xstreamsnapshot", new XStreamSerializationStrategy());
+		Prevayler first = createPrevayler("xstreamsnapshot", new XStreamSerializer());
 		appendTakeSnapshotAndClose(first);
 
 		try {
-			createPrevayler("snapshot", new JavaSerializationStrategy());
+			createPrevayler("snapshot", new JavaSerializer());
 			fail();
 		} catch (IOException e) {
 			// This is good because if we only looked for .snapshot files we could silently ignore an existing snapshot.
@@ -57,7 +57,7 @@ public class GenericSnapshotManagerTest extends FileIOTest {
 	}
 
 	public void testMultipleSerializationStrategiesFromXStream() throws IOException, ClassNotFoundException {
-		Prevayler prevayler = createPrevayler("xstreamsnapshot", new XStreamSerializationStrategy());
+		Prevayler prevayler = createPrevayler("xstreamsnapshot", new XStreamSerializer());
 		appendTakeSnapshotAndClose(prevayler);
 
 		checkSnapshotAndDeleteJournal("0000000000000000002.xstreamsnapshot", "0000000000000000001.journal");
@@ -66,7 +66,7 @@ public class GenericSnapshotManagerTest extends FileIOTest {
 	}
 
 	public void testMultipleSerializationStrategiesFromJava() throws IOException, ClassNotFoundException {
-		Prevayler prevayler = createPrevayler("snapshot", new JavaSerializationStrategy());
+		Prevayler prevayler = createPrevayler("snapshot", new JavaSerializer());
 		appendTakeSnapshotAndClose(prevayler);
 
 		checkSnapshotAndDeleteJournal("0000000000000000002.snapshot", "0000000000000000001.journal");
@@ -79,7 +79,7 @@ public class GenericSnapshotManagerTest extends FileIOTest {
 		appendTakeSnapshotAndClose(first);
 		checkSnapshotAndDeleteJournal("0000000000000000002.xstreamsnapshot", "0000000000000000001.journal");
 
-		Prevayler second = createPrevayler("xstreamsnapshot", new XStreamSerializationStrategy());
+		Prevayler second = createPrevayler("xstreamsnapshot", new XStreamSerializer());
 		assertEquals("initial one two", second.prevalentSystem().toString());
 		second.close();
 	}
@@ -94,17 +94,17 @@ public class GenericSnapshotManagerTest extends FileIOTest {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new StringBuffer("initial"));
 		factory.configurePrevalenceDirectory(_testDirectory);
-		factory.configureSnapshotSerializationStrategy("xstreamsnapshot", new XStreamSerializationStrategy());
-		factory.configureSnapshotSerializationStrategy("snapshot", new JavaSerializationStrategy());
+		factory.configureSnapshotSerializer("xstreamsnapshot", new XStreamSerializer());
+		factory.configureSnapshotSerializer("snapshot", new JavaSerializer());
 		return factory.create();
 	}
 
-	private Prevayler createPrevayler(String suffix, SerializationStrategy strategy) throws IOException,
+	private Prevayler createPrevayler(String suffix, Serializer serializer) throws IOException,
 			ClassNotFoundException {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new StringBuffer("initial"));
 		factory.configurePrevalenceDirectory(_testDirectory);
-		factory.configureSnapshotSerializationStrategy(suffix, strategy);
+		factory.configureSnapshotSerializer(suffix, serializer);
 		return factory.create();
 	}
 

@@ -6,7 +6,8 @@
 package org.prevayler.implementation.publishing.censorship;
 
 import org.prevayler.Transaction;
-import org.prevayler.foundation.serialization.SerializationStrategy;
+import org.prevayler.foundation.DeepCopier;
+import org.prevayler.foundation.serialization.JournalSerializationStrategy;
 import org.prevayler.implementation.snapshot.*;
 
 import java.util.Date;
@@ -17,10 +18,10 @@ public class StrictTransactionCensor implements TransactionCensor {
 	private Object _royalFoodTaster;
 	private final GenericSnapshotManager _snapshotManager;
 
-	private final SerializationStrategy _journalSerializationStrategy;
+	private final JournalSerializationStrategy _journalSerializationStrategy;
 
 
-	public StrictTransactionCensor(GenericSnapshotManager snapshotManager, SerializationStrategy journalSerializationStrategy) {
+	public StrictTransactionCensor(GenericSnapshotManager snapshotManager, JournalSerializationStrategy journalSerializationStrategy) {
 		_snapshotManager = snapshotManager;
 		_journalSerializationStrategy = journalSerializationStrategy;
 		_king = _snapshotManager.recoveredPrevalentSystem();
@@ -61,7 +62,7 @@ public class StrictTransactionCensor implements TransactionCensor {
 	private void produceNewFoodTaster() {
 		try {
 			synchronized (_king) {
-				_royalFoodTaster = _snapshotManager.primaryStrategy().deepCopy(_king);
+				_royalFoodTaster = DeepCopier.deepCopy(_king, _snapshotManager.primarySerializer());
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();

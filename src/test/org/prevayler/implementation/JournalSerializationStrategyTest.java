@@ -4,12 +4,8 @@ import junit.framework.AssertionFailedError;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
-import org.prevayler.foundation.serialization.AbstractSerializationStrategy;
-import org.prevayler.foundation.serialization.Deserializer;
-import org.prevayler.foundation.serialization.SerializationStrategy;
 import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.foundation.serialization.SkaringaSerializationStrategy;
-import org.prevayler.foundation.serialization.XStreamSerializationStrategy;
+import org.prevayler.foundation.serialization.XStreamSerializer;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
@@ -28,37 +24,36 @@ import java.util.Date;
 public class JournalSerializationStrategyTest extends FileIOTest {
 
 	public void testConfigureJournalSerializationStrategy() throws IOException, ClassNotFoundException {
-		SerializationStrategy strategy = new MySerializationStrategy();
+		Serializer strategy = new MySerializer();
 
 		startAndCrash(strategy);
 
-		assertEquals("TransactionTimestamp\n" +
+		assertEquals("1C\r\n" +
+				"TransactionTimestamp\n" +
 				" first\n" +
+				"\r\n" +
+				"1D\r\n" +
 				"TransactionTimestamp\n" +
 				" second\n" +
+				"\r\n" +
+				"1C\r\n" +
 				"TransactionTimestamp\n" +
-				" third\n", journalContents());
+				" third\n" +
+				"\r\n", journalContents());
 
 		recover(strategy);
 	}
 
 	public void testXStreamJournal() throws IOException, ClassNotFoundException {
-		SerializationStrategy strategy = new XStreamSerializationStrategy();
+		Serializer strategy = new XStreamSerializer();
 
 		startAndCrash(strategy);
 		recover(strategy);
 	}
 
-	public void NOT_WORKING_YET_testSkaringaJournal() throws IOException, ClassNotFoundException {
-		SerializationStrategy strategy = new SkaringaSerializationStrategy();
-
-		startAndCrash(strategy);
-		recover(strategy);
-	}
-
-	private void startAndCrash(SerializationStrategy journalSerializationStrategy)
+	private void startAndCrash(Serializer journalSerializer)
 			throws IOException, ClassNotFoundException {
-		Prevayler prevayler = createPrevayler(journalSerializationStrategy);
+		Prevayler prevayler = createPrevayler(journalSerializer);
 
 		prevayler.execute(new AppendTransaction(" first"));
 		prevayler.execute(new AppendTransaction(" second"));
@@ -67,18 +62,18 @@ public class JournalSerializationStrategyTest extends FileIOTest {
 		prevayler.close();
 	}
 
-	private void recover(SerializationStrategy journalSerializationStrategy)
+	private void recover(Serializer journalSerializer)
 			throws IOException, ClassNotFoundException {
-		Prevayler prevayler = createPrevayler(journalSerializationStrategy);
+		Prevayler prevayler = createPrevayler(journalSerializer);
 		assertEquals("the system first second third", prevayler.prevalentSystem().toString());
 	}
 
-	private Prevayler createPrevayler(SerializationStrategy journalSerializationStrategy)
+	private Prevayler createPrevayler(Serializer journalSerializer)
 			throws IOException, ClassNotFoundException {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new StringBuffer("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);
-		factory.configureJournalSerializationStrategy(journalSerializationStrategy);
+		factory.configureJournalSerializer(journalSerializer);
 		return factory.create();
 	}
 
@@ -103,50 +98,39 @@ public class JournalSerializationStrategyTest extends FileIOTest {
 		return string.toString();
 	}
 
-	private static class MySerializationStrategy extends AbstractSerializationStrategy {
+	private static class MySerializer implements Serializer {
 
-		public Serializer createSerializer(final OutputStream stream) throws IOException {
-			final Writer writer = new OutputStreamWriter(stream, "UTF-8");
-			return new Serializer() {
-				public void writeObject(Object object) throws IOException {
-					if (object instanceof TransactionTimestamp) {
-						TransactionTimestamp timestamp = (TransactionTimestamp) object;
-						AppendTransaction transaction = (AppendTransaction) timestamp.transaction();
-						writer.write("TransactionTimestamp\n");
-						writer.write(transaction.toAdd);
-						writer.write('\n');
-					} else {
-						AppendTransaction transaction = (AppendTransaction) object;
-						writer.write("AppendTransaction\n");
-						writer.write(transaction.toAdd);
-						writer.write('\n');
-					}
-				}
-
-				public void flush() throws IOException {
-					writer.flush();
-				}
-			};
+		public void writeObject(OutputStream stream, Object object) throws IOException {
+			Writer writer = new OutputStreamWriter(stream, "UTF-8");
+			if (object instanceof TransactionTimestamp) {
+				TransactionTimestamp timestamp = (TransactionTimestamp) object;
+				AppendTransaction transaction = (AppendTransaction) timestamp.transaction();
+				writer.write("TransactionTimestamp\n");
+				writer.write(transaction.toAdd);
+				writer.write('\n');
+			} else {
+				AppendTransaction transaction = (AppendTransaction) object;
+				writer.write("AppendTransaction\n");
+				writer.write(transaction.toAdd);
+				writer.write('\n');
+			}
+			writer.flush();
 		}
 
-		public Deserializer createDeserializer(final InputStream stream) throws IOException {
-			final BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
-			return new Deserializer() {
-				public Object readObject() throws IOException {
-					String type = reader.readLine();
-					if ("TransactionTimestamp".equals(type)) {
-						String toAdd = reader.readLine();
-						return new TransactionTimestamp(new AppendTransaction(toAdd), new Date(87527359273L));
-					} else if ("AppendTransaction".equals(type)) {
-						String toAdd = reader.readLine();
-						return new AppendTransaction(toAdd);
-					} else if (type == null) {
-						throw new EOFException();
-					} else {
-						throw new AssertionFailedError("got type=" + type);
-					}
-				}
-			};
+		public Object readObject(InputStream stream) throws IOException, ClassNotFoundException {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+			String type = reader.readLine();
+			if ("TransactionTimestamp".equals(type)) {
+				String toAdd = reader.readLine();
+				return new TransactionTimestamp(new AppendTransaction(toAdd), new Date(87527359273L));
+			} else if ("AppendTransaction".equals(type)) {
+				String toAdd = reader.readLine();
+				return new AppendTransaction(toAdd);
+			} else if (type == null) {
+				throw new EOFException();
+			} else {
+				throw new AssertionFailedError("got type=" + type);
+			}
 		}
 
 	}

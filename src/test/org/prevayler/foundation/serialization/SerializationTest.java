@@ -9,10 +9,10 @@ import java.io.IOException;
 
 public abstract class SerializationTest extends TestCase {
 
-	private SerializationStrategy strategy;
+	private JournalSerializationStrategy strategy;
 	private ByteArrayOutputStream out;
-	private Serializer serializer;
-	private Deserializer deserializer;
+	private JournalSerializer serializer;
+	private JournalDeserializer deserializer;
 
 	protected void setUp() throws IOException {
 		strategy = createStrategy();
@@ -20,7 +20,7 @@ public abstract class SerializationTest extends TestCase {
 		serializer = strategy.createSerializer(out);
 	}
 
-	protected abstract SerializationStrategy createStrategy();
+	protected abstract JournalSerializationStrategy createStrategy();
 
 	protected void writeObject(Object original) throws IOException {
 		serializer.writeObject(original);

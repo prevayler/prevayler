@@ -1,4 +1,6 @@
-package org.prevayler.foundation.serialization;
+package org.prevayler.foundation.gzip;
+
+import junit.framework.TestCase;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -6,11 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class GZIPSerializationTest extends SerializationTest {
-
-	protected SerializationStrategy createStrategy() {
-		return new GZIPSerializationStrategy(new XStreamSerializationStrategy());
-	}
+public class MultiMemberGZIPTest extends TestCase {
 
 	public void testMultiMemberGZIPStreams() throws IOException {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -40,27 +38,6 @@ public class GZIPSerializationTest extends SerializationTest {
 			buf.append(Integer.toHexString(((int) b) & 0xFF));
 		}
 		return buf.toString();
-	}
-
-	public void testOneObject() throws IOException, ClassNotFoundException {
-		writeObject("a string to be written");
-
-		createDeserializer();
-
-		assertNextObject("a string to be written");
-	}
-
-	public void testManyObjects() throws IOException, ClassNotFoundException {
-		writeObject("first string");
-		writeObject("second string");
-		writeObject("third string");
-
-		createDeserializer();
-
-		assertNextObject("first string");
-		assertNextObject("second string");
-		assertNextObject("third string");
-		assertEOF();
 	}
 
 }

@@ -1,25 +1,24 @@
 package org.prevayler.foundation;
 
-import org.prevayler.foundation.FileIOTest;
-import org.prevayler.foundation.DurableOutputStream;
-import org.prevayler.foundation.Turn;
-import org.prevayler.foundation.serialization.JavaSerializationStrategy;
+import org.prevayler.foundation.monitor.NullMonitor;
+import org.prevayler.foundation.serialization.JournalSerializationStrategy;
+import org.prevayler.foundation.serialization.JavaSerializer;
 
-import java.io.File;
-import java.io.ObjectInputStream;
-import java.io.FileInputStream;
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 
 public class DurableOutputStreamTest extends FileIOTest {
 
 	public void testSingleThreaded() throws Exception {
+		JournalSerializationStrategy strategy = new JournalSerializationStrategy(new JavaSerializer());
+
 		for (int i = 0; i < 10 /*5000*/; i++) {
 //            System.out.println("i=" + i);
 
 			File file = new File(_testDirectory, "stream" + i + ".bin");
 
-			DurableOutputStream out = new DurableOutputStream(file, new JavaSerializationStrategy(null));
+			DurableOutputStream out = new DurableOutputStream(file, strategy);
 
 			Turn myTurn = Turn.first();
 			out.sync("first", myTurn);
@@ -29,7 +28,7 @@ public class DurableOutputStreamTest extends FileIOTest {
 			assertTrue(out.reallyClosed());
 			assertEquals(2, out.fileSyncCount());
 
-			ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
+			SimpleInputStream in = new SimpleInputStream(file, strategy, new NullMonitor());
 			assertEquals("first", in.readObject());
 			assertEquals("second", in.readObject());
 			try {
@@ -45,10 +44,12 @@ public class DurableOutputStreamTest extends FileIOTest {
 	}
 
 	public void testMultiThreaded() throws Exception {
+		JournalSerializationStrategy strategy = new JournalSerializationStrategy(new JavaSerializer());
+
 		for (int i = 0; i < 10 /*5000*/; i++) {
 //            System.out.println("i=" + i);
 			File file = new File(_testDirectory, "stream" + i + ".bin");
-			DurableOutputStream out = new DurableOutputStream(file, new JavaSerializationStrategy(null));
+			DurableOutputStream out = new DurableOutputStream(file, strategy);
 
 			Turn one = Turn.first();
 			Turn two = one.next();
@@ -78,7 +79,7 @@ public class DurableOutputStreamTest extends FileIOTest {
 			assertTrue(out.reallyClosed());
 			assertEquals(syncsBeforeClose, out.fileSyncCount());
 
-			ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
+			SimpleInputStream in = new SimpleInputStream(file, strategy, new NullMonitor());
 			assertEquals("2.first", in.readObject());
 			assertEquals("1.first", in.readObject());
 			assertEquals("2.second", in.readObject());

@@ -17,7 +17,7 @@ import org.prevayler.foundation.FileManager;
 import org.prevayler.foundation.SimpleInputStream;
 import org.prevayler.foundation.StopWatch;
 import org.prevayler.foundation.Turn;
-import org.prevayler.foundation.serialization.SerializationStrategy;
+import org.prevayler.foundation.serialization.JournalSerializationStrategy;
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
@@ -38,7 +38,7 @@ public class PersistentJournal implements FileFilter, Journal {
 	private boolean _nextTransactionInitialized = false;
 	private Monitor _monitor;
 
-	private final SerializationStrategy _journalSerializationStrategy;
+	private final JournalSerializationStrategy _journalSerializationStrategy;
 
 
 	/**
@@ -47,7 +47,7 @@ public class PersistentJournal implements FileFilter, Journal {
 	 * @param journalAgeThresholdInMillis Age of the current journal file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful journal backup purposes.
 	 */
 	public PersistentJournal(String directory, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis,
-							 SerializationStrategy journalSerializationStrategy, Monitor monitor) throws IOException {
+							 JournalSerializationStrategy journalSerializationStrategy, Monitor monitor) throws IOException {
 	    _monitor = monitor;
 		_directory = FileManager.produceDirectory(directory);
 		_journalSizeThresholdInBytes = journalSizeThresholdInBytes;

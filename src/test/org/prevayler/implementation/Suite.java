@@ -11,7 +11,7 @@ import org.prevayler.implementation.snapshot.GenericSnapshotManagerTest;
 import org.prevayler.implementation.journal.ChunkingTest;
 import org.prevayler.foundation.DurableOutputStreamTest;
 import org.prevayler.foundation.serialization.XStreamSerializationTest;
-import org.prevayler.foundation.serialization.GZIPSerializationTest;
+import org.prevayler.foundation.gzip.MultiMemberGZIPTest;
 
 public class Suite extends TestCase {
 	public static Test suite() {
@@ -28,9 +28,9 @@ public class Suite extends TestCase {
 		suite.addTestSuite(DurableOutputStreamTest.class);
 		suite.addTestSuite(GenericSnapshotManagerTest.class);
 		suite.addTestSuite(JournalSerializationStrategyTest.class);
-		suite.addTestSuite(SnapshotSerializationStrategyTest.class);
+		suite.addTestSuite(SnapshotSerializerTest.class);
 		suite.addTestSuite(XStreamSerializationTest.class);
-		suite.addTestSuite(GZIPSerializationTest.class);
+		suite.addTestSuite(MultiMemberGZIPTest.class);
 		return suite;
 	}
 }

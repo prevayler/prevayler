@@ -4,15 +4,14 @@ import java.io.IOException;
 
 public class XStreamSerializationTest extends SerializationTest {
 
-	protected SerializationStrategy createStrategy() {
-		return new XStreamSerializationStrategy();
+	protected JournalSerializationStrategy createStrategy() {
+		return new JournalSerializationStrategy(new XStreamSerializer());
 	}
 
 	public void testOneObject() throws IOException, ClassNotFoundException {
 		writeObject("a string to be written");
 
-		assertSerializedAs("<string>a string to be written</string>\n" +
-				"<!--PREVAYLER RULES!-->\n");
+		assertSerializedAs("27\r\n<string>a string to be written</string>\r\n");
 
 		createDeserializer();
 
@@ -24,12 +23,9 @@ public class XStreamSerializationTest extends SerializationTest {
 		writeObject("second string");
 		writeObject("third string");
 
-		assertSerializedAs("<string>first string</string>\n" +
-				"<!--PREVAYLER RULES!-->\n" +
-				"<string>second string</string>\n" +
-				"<!--PREVAYLER RULES!-->\n" +
-				"<string>third string</string>\n" +
-				"<!--PREVAYLER RULES!-->\n");
+		assertSerializedAs("1D\r\n<string>first string</string>\r\n" +
+				"1E\r\n<string>second string</string>\r\n" +
+				"1D\r\n<string>third string</string>\r\n");
 
 		createDeserializer();
 

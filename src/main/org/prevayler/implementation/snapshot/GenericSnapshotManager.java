@@ -1,9 +1,7 @@
 package org.prevayler.implementation.snapshot;
 
 import org.prevayler.foundation.FileManager;
-import org.prevayler.foundation.serialization.Deserializer;
-import org.prevayler.foundation.serialization.JavaSerializationStrategy;
-import org.prevayler.foundation.serialization.SerializationStrategy;
+import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 
 import java.io.File;
@@ -23,15 +21,15 @@ public class GenericSnapshotManager {
 	private long _recoveredVersion;
 	private Object _recoveredPrevalentSystem;
 
-	public GenericSnapshotManager(SerializationStrategy strategy, Object newPrevalentSystem, String snapshotDirectoryName)
+	public GenericSnapshotManager(Serializer serializer, Object newPrevalentSystem, String snapshotDirectoryName)
 			throws IOException, ClassNotFoundException {
-		this(strategy, "snapshot", newPrevalentSystem, snapshotDirectoryName);
+		this(serializer, "snapshot", newPrevalentSystem, snapshotDirectoryName);
 	}
 
-	public GenericSnapshotManager(SerializationStrategy strategy, String suffix, Object newPrevalentSystem,
+	public GenericSnapshotManager(Serializer serializer, String suffix, Object newPrevalentSystem,
 								  String snapshotDirectoryName)
 			throws IOException, ClassNotFoundException {
-		this(Collections.singletonMap(suffix, strategy), suffix, newPrevalentSystem, snapshotDirectoryName);
+		this(Collections.singletonMap(suffix, serializer), suffix, newPrevalentSystem, snapshotDirectoryName);
 	}
 
 	public GenericSnapshotManager(Map strategies, String primarySuffix, Object newPrevalentSystem,
@@ -59,7 +57,7 @@ public class GenericSnapshotManager {
 	}
 
 	GenericSnapshotManager(Object newPrevalentSystem) {
-		_strategies = Collections.singletonMap("snapshot", new JavaSerializationStrategy());
+		_strategies = Collections.singletonMap("snapshot", new JavaSerializer());
 		_primarySuffix = "snapshot";
 		_directory = null;
 		_recoveredVersion = 0;
@@ -67,8 +65,8 @@ public class GenericSnapshotManager {
 	}
 
 
-	public SerializationStrategy primaryStrategy() {
-		return (SerializationStrategy) _strategies.get(_primarySuffix);
+	public Serializer primarySerializer() {
+		return (Serializer) _strategies.get(_primarySuffix);
 	}
 
 	public Object recoveredPrevalentSystem() {
@@ -93,18 +91,9 @@ public class GenericSnapshotManager {
 	private void writeSnapshot(Object prevalentSystem, File snapshotFile) throws IOException {
 		OutputStream out = new FileOutputStream(snapshotFile);
 		try {
-			writeSnapshot(prevalentSystem, out);
+			primarySerializer().writeObject(out, prevalentSystem);
 		} finally {
 			out.close();
-		}
-	}
-
-	private void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
-		Serializer serializer = primaryStrategy().createSerializer(out);
-		try {
-			serializer.writeObject(prevalentSystem);
-		} finally {
-			serializer.flush();
 		}
 	}
 
@@ -123,11 +112,10 @@ public class GenericSnapshotManager {
 		if (!_strategies.containsKey(suffix)) throw new IOException(
 				snapshotFile.toString() + " cannot be read; only " + _strategies.keySet().toString() + " supported");
 
-		SerializationStrategy strategy = (SerializationStrategy) _strategies.get(suffix);
+		Serializer serializer = (Serializer) _strategies.get(suffix);
 		FileInputStream in = new FileInputStream(snapshotFile);
 		try {
-			Deserializer deserializer = strategy.createDeserializer(in);
-			return deserializer.readObject();
+			return serializer.readObject(in);
 		} finally {
 			in.close();
 		}
