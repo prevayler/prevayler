@@ -7,19 +7,24 @@ package org.prevayler.util;
 import java.util.Date;
 
 
-/** A Clock that always returns the same time until it is forced to advance.
+/** A Clock that always returns the same time until it is forced to advance. A new BrokenClock's time() starts off at new Date(Long.MIN_VALUE);
  */
-class BrokenClock implements Clock {
+class BrokenClock implements Clock, java.io.Serializable {
 
-	private Date _time = new Date(Long.MIN_VALUE);
+	private long _millis = Long.MIN_VALUE;
+	private Date _time = new Date(_millis);
+
 
 	public Date time() {
 		return _time;
 	}
 
-	void advanceTo(Date newTime) {
-		if (newTime.getTime() < _time.getTime()) throw new RuntimeException("Attempt to set Clock to the past. From: " + _time + " to: " + newTime);
-		_time = newTime;
+
+	void advanceTo(long newMillis) {
+		if (newMillis < _millis) throw new RuntimeException("Attempt to set Clock to the past. From: " + _time + " back to: " + new Date(newMillis));
+		if (newMillis == _millis) return;
+		_millis = newMillis;
+		_time = new Date(_millis);
 	}
 
 }

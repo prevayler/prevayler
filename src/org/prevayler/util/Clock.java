@@ -4,16 +4,15 @@
 
 package org.prevayler.util;
 
-import java.util.Date;
-
 
 /** The clock used by every business object in a PrevalentSystem for ALL its date/time related functions.
  * If any business object were to access the system clock directly, with methods like new Date() and System.currentTimeMillis(), its behaviour would NOT be deterministic.
  */
-public interface Clock extends java.io.Serializable {
+public interface Clock {
 
-  /** Tells the time. The same value will be returned for every call, throughout the execution of a transaction, ensuring that each transaction is executed in a single moment in time. Without this, the transactions could not be deterministically re-executed during crash-recovery.
-   * @return A Date greater or equal to the one returned by the last call to this method. As of Prevayler 1.03.005 it is NO LONGER guaranteed that if the time is the same as the last call, the SAME Date object is returned rather than a new, equal one.
-   */
-  public Date time();
+	/** Tells the time. The same value will be returned for every call, throughout the execution of a transaction, ensuring that each transaction is executed in a single moment in time. Without this, the transactions could not be deterministically re-executed during crash-recovery.
+	 * @return A Date greater or equal to the one returned by the last call to this method. As of Prevayler 1.03.005 it is NO LONGER guaranteed that if the time is the same as the last call, the SAME Date object is returned rather than a new, equal one.
+	 */
+	public java.util.Date time();
+
 }

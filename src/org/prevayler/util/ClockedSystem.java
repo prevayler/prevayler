@@ -13,6 +13,5 @@ public abstract class ClockedSystem implements java.io.Serializable {
 	/** Returns the clock used by this system for ALL its date/time related functions.
 	 */
 	public Clock clock() { return _clock; }
-	
 
 }
