@@ -32,7 +32,6 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	private StopWatch _logAgeTimer;
 	
 	private long _nextTransaction;
-	private final Object _nextTransactionMonitor = new Object();
 	private boolean _nextTransactionInitialized = false;
 
 
@@ -51,19 +50,37 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	public void log(Transaction transaction, Date executionTime, Turn myTurn) {
 		if (!_nextTransactionInitialized) throw new IllegalStateException("TransactionLogger.update() has to be called at least once before TransactionLogger.log().");
 
-		prepareOutputLog();
+		DurableOutputStream myOutputJournal;
+		DurableOutputStream outputJournalToClose = null;
+		
 		try {
-			_outputLog.sync(new TransactionTimestamp(transaction, executionTime), myTurn);
+			myTurn.start();
+			if (!isOutputLogValid()) {
+				outputJournalToClose = _outputLog;
+				_outputLog = createNewOutputLog(_nextTransaction);
+				_logAgeTimer = StopWatch.start();
+			}
+			_nextTransaction++;
+			myOutputJournal = _outputLog;
+		} finally {
+			myTurn.end();
+		}
+
+		try {
+			myOutputJournal.sync(new TransactionTimestamp(transaction, executionTime), myTurn);
 		} catch (IOException iox) {
 			handleExceptionWhileWriting(iox, _outputLog.file());
 		}
-	}
 
-
-	private void prepareOutputLog() {
-		synchronized (_nextTransactionMonitor) {
-			if (!isOutputLogValid()) createNewOutputLog(_nextTransaction);   //TODO Create new output log when size threshold surpassed or age expires.
-			_nextTransaction++;  //The transaction count is increased but, because of thread concurrency, it is not guaranteed that this transaction is the _nextTransaction'th transaction, so don't trust that. It is myTurn that will guarantee execution in the correct order.
+		try {
+			myTurn.start();
+			try {
+				if (outputJournalToClose != null) outputJournalToClose.close();
+			} catch (IOException iox) {
+				handleExceptionWhileClosing(iox, outputJournalToClose.file());
+			}
+		} finally {
+			myTurn.end();
 		}
 	}
 
@@ -87,14 +104,13 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	}
 
 
-	private void createNewOutputLog(long transactionNumber) {
+	private DurableOutputStream createNewOutputLog(long transactionNumber) {
 		File file = transactionLogFile(transactionNumber);
 		try {
-			if (_outputLog != null) _outputLog.close();
-			_outputLog = new DurableOutputStream(file);
-			_logAgeTimer = StopWatch.start();
+			return new DurableOutputStream(file);
 		} catch (IOException iox) {
 			handleExceptionWhileCreating(iox, file);
+			return null;
 		}
 	}
 
@@ -200,7 +216,10 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	protected void handleExceptionWhileWriting(IOException iox, File logFile) {
 		hang(iox, "\nThe exception above was thrown while trying to write to file " + logFile + " . Prevayler's default behavior is to display this message and block all transactions. You can change this behavior by extending the PersistentLogger class and overriding the method called: handleExceptionWhileWriting(IOException iox, File logFile).");
 	}
-
+	
+	protected void handleExceptionWhileClosing(IOException iox, File logFile) {
+		hang(iox, "\nThe exception above was thrown while trying to close file " + logFile + " . Prevayler's default behavior is to display this message and block all transactions. You can change this behavior by extending the PersistentLogger class and overriding the method called: handleExceptionWhileClosing(IOException iox, File logFile).");
+	}
 
 	static private void hang(IOException iox, String message) {
 		iox.printStackTrace();
