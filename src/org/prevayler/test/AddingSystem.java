@@ -4,6 +4,9 @@
 
 package org.prevayler.test;
 
+import java.io.Serializable;
+
+import org.prevayler.*;
 import org.prevayler.implementation.AbstractPrevalentSystem;
 
 /** A simple system that only adds up numbers.

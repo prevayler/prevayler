@@ -1,26 +1,51 @@
-I) Compatibility
+Prevayler 1.02
+==================
+Prevayler is the free-software prevalence layer for Java. It is ridiculously simple (therefore robust) and provides transparent persistence for native Java objects. Allows object queries to run 3 to 4 orders of magnitude faster than using a database through JDBC.
+
+This release uses the same mature implementation as release 1.00 with a new interface-based API.
+
+
+Requirements
 ================
-
 Prevayler requires Java 1.2 or greater.
-This version of Prevayler was tested with JDK1.3.1_01.
-The GUIs for some of Prevayler's demo applications require Java 1.3.
+The GUIs for some of Prevayler's demo applications require Java 1.3 or greater.
+
+This version of Prevayler was tested using JDK1.3.1_01.
 
 
-II) Building Procedure
-======================
+Build Procedure
+===================
+To build and run Prevayler you compile the source code directly. This ensures maximum JDK compatibility.
 
-To build and use Prevayler you compile the source code directly. This ensures maximum JDK compatibility.
 
-
-III) Main Prevayler Classes
-===========================
-
+Main Prevayler Classes
+==========================
 The following classes have the main() method and can be run directly. They are self explanatory.
 
-1) org.prevayler.demos.demo1.Main - A very simple demo that calculates prime numbers and stores them using Prevayler.
+1) org.prevayler.demos.demo1.Main - A tiny application that calculates prime numbers and stores them using Prevayler.
 
-2) org.prevayler.demo.PrevaylerDemo - A demo bank application using Prevayler. It requires JDK1.3 or greater because of the GUI classes it uses.
+2) org.prevayler.demos.demo2.Main - A bank application using Prevayler. Requires Java 1.3 or greater because of the GUI classes used.
 
 3) org.prevayler.test.scalability.ScalabilityTest - Runs manipulation and query scalability tests against Prevayler and any JDBC database. Just follow the instructions.
 
-4) org.prevayler.test.FullTest - The functional tests used to test Prevayler during develoment.
+4) org.prevayler.test.FullTest - The functional tests used to test Prevayler during development.
+
+
+More Learning Resources
+===========================
+1) Javadoc - Included in this distribution.
+
+2) Source Code - Prevayler's implementation (org.prevayler.implementation) has less than 300 statements.
+
+3) http://www.prevayler.org - Access to all other Prevayler resources.
+
+
+Contact Information
+=======================
+If you have any trouble or doubt running Prevayler, please mail us at prevayler-discussion@lists.sourceforge.net.
+
+Ideas and suggestions on how to simplify the project are welcome too.
+
+Thanks,
+The Prevayler Team
+http://www.prevayler.org

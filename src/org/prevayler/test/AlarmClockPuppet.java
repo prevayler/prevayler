@@ -4,29 +4,23 @@
 
 package org.prevayler.test;
 
-import org.prevayler.implementation.SystemClock;
+import org.prevayler.implementation.SystemAlarmClock;
 
-/** A controllable AlarmClock that can be used for running functional tests for business rules involving time.
+/** A controllable AlarmClock that can be used for running time-sensitive functional tests.
 */
-public class AlarmClockPuppet extends SystemClock {
+class AlarmClockPuppet extends SystemAlarmClock {
 
-	private long currentTimeMillis;
+    /** Sets the internal "current" time of the clock.
+    * @throws IllegalArgumentException if newMillis is smaller or equal to the current time. An AlarmClock's time can only progress forwards.
+    */
+    public synchronized void currentTimeMillis(long newMillis) {
+	if (newMillis <= currentTimeMillis) throw new IllegalArgumentException("AlarmClock's time can only be set forwards.");
+	currentTimeMillis = newMillis;
+    }
 
-	/** Creates an AlarmClockPuppet with the internal "current" time set to currentTimeMillis.
-	*/
-	public AlarmClockPuppet(long currentTimeMillis) {
-		this.currentTimeMillis = currentTimeMillis;
+    protected long currentTimeMillis() {
+	return currentTimeMillis;
 	}
 
-	/** Sets the internal "current" time of the clock.
-	* @throws IllegalArgumentException if newMillis is smaller or equal to the current time. An AlarmClock's time can only progress forwards.
-	*/
-	public synchronized void currentTimeMillis(long newMillis) {
-		if (newMillis <= currentTimeMillis) throw new IllegalArgumentException("AlarmClock's time can only be set forwards.");
-		currentTimeMillis = newMillis;
-	}
-
-	public long currentTimeMillis() {
-		return currentTimeMillis;
-	}
+    long currentTimeMillis;
 }
