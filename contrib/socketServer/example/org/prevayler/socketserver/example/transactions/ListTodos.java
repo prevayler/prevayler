@@ -23,6 +23,7 @@ package org.prevayler.socketserver.example.transactions;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+import java.util.Date;
 import org.prevayler.socketserver.transactions.RemoteTransaction;
 
 /**
@@ -33,9 +34,9 @@ import org.prevayler.socketserver.transactions.RemoteTransaction;
 public class ListTodos extends RemoteTransaction {
 
 	/**
-	 * @see org.prevayler.util.TransactionWithQuery#executeAndQuery(Object)
+	 * @see org.prevayler.util.TransactionWithQuery#executeOn(Object, Date)
 	 */
-	protected Object executeAndQuery(Object prevalentSystem) throws Exception {
+	public Object executeOn(Object prevalentSystem, Date timestamp) throws Exception {
 		return prevalentSystem;
 	}
 

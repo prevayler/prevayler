@@ -9,7 +9,7 @@ import java.util.Date;
 import org.prevayler.*;
 
 
-class TransactionWithQueryExecuter implements Transaction {
+public class TransactionWithQueryExecuter implements Transaction {
 
 	TransactionWithQuery _delegate;
 
@@ -17,7 +17,7 @@ class TransactionWithQueryExecuter implements Transaction {
 	private transient Exception _exception;
 
 
-	TransactionWithQueryExecuter(TransactionWithQuery transactionWithQuery) {
+	public TransactionWithQueryExecuter(TransactionWithQuery transactionWithQuery) {
 		_delegate = transactionWithQuery;
 	}
 

@@ -24,6 +24,7 @@ package org.prevayler.socketserver.transactions;
  */
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.prevayler.Transaction;
 import org.prevayler.util.TransactionWithQuery;
@@ -35,7 +36,7 @@ import org.prevayler.util.TransactionWithQuery;
  * 
  * @author DaveO
  */
-public abstract class RemoteTransaction extends TransactionWithQuery implements IRemoteTransaction {
+public abstract class RemoteTransaction implements TransactionWithQuery, IRemoteTransaction {
 
     protected Long senderID;
     
@@ -46,5 +47,7 @@ public abstract class RemoteTransaction extends TransactionWithQuery implements 
 	public void setSenderID(Long connectionID) {
 		this.senderID = connectionID;
 	}
+
+    public abstract Object executeOn(Object prevalentSystem, Date timestamp) throws Exception;
 }
 

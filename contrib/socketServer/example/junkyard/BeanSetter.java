@@ -24,6 +24,7 @@ package junkyard;
  */
 
 import java.beans.PropertyDescriptor;
+import java.util.Date;
 
 import org.prevayler.socketserver.transactions.RemoteTransaction;
 
@@ -79,9 +80,9 @@ public abstract class BeanSetter extends RemoteTransaction {
     protected abstract Object lookup(Object prevalentSystem) throws Exception;
     
     /**
-	 * @see org.prevayler.util.TransactionWithQuery#executeAndQuery(Object)
+	 * @see org.prevayler.util.TransactionWithQuery#executeOn(Object, Date)
 	 */
-	protected Object executeAndQuery(Object prevalentSystem) throws Exception {
+	public Object executeOn(Object prevalentSystem, Date timestamp) throws Exception {
         Object subject = lookup(prevalentSystem);
         callSetter(subject);
 		return null;

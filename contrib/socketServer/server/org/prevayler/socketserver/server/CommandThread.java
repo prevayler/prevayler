@@ -85,7 +85,7 @@ public class CommandThread extends Thread {
                 Serializable result;
                 TransactionWithQuery transaction = (TransactionWithQuery) t;
                 try {
-                    result = (Serializable) transaction.executeUsing(prevayler);
+                    result = (Serializable) transaction.executeOn(prevayler.prevalentSystem(), prevayler.clock().time());
                 } catch (Exception e) {
                     result = new ThrownException(e);
                 }

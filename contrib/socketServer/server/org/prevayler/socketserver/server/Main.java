@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 import org.prevayler.implementation.SnapshotPrevayler;
+import org.prevayler.util.PrevaylerFactory;
 import org.prevayler.socketserver.util.Log;
 
 /**
@@ -55,7 +56,7 @@ public class Main {
         Class rootObjectClass = Class.forName(rootObjectClassName);
 
         // Create an instance of the root object class and start the server
-        prevayler = new SnapshotPrevayler(rootObjectClass.newInstance(), prevalenceBase);
+        prevayler = PrevaylerFactory.createSnapshotPrevayler(rootObjectClass.newInstance(), prevalenceBase);
         snapshotThread = new SnapshotThread(prevayler);
         snapshotThread.start();
     }

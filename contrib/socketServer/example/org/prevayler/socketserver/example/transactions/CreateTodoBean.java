@@ -23,7 +23,7 @@ package org.prevayler.socketserver.example.transactions;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
+import java.util.Date;
 import org.prevayler.socketserver.example.server.Todo;
 import org.prevayler.socketserver.example.server.TodoList;
 import org.prevayler.socketserver.server.Notification;
@@ -43,9 +43,9 @@ public class CreateTodoBean extends RemoteTransaction {
     }
 
 	/**
-     * @see org.prevayler.util.TransactionWithQuery#executeAndQuery(Object)
+     * @see org.prevayler.util.TransactionWithQuery#executeOn(Object, Date)
 	 */
-	public Object executeAndQuery(Object prevalentSystem) throws Exception {
+	public Object executeOn(Object prevalentSystem, Date timestamp) throws Exception {
         TodoList todoList = (TodoList) prevalentSystem;
         Todo todo = todoList.newTodo();
         todo.setDesc(desc);

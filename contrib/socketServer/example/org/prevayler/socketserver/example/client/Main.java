@@ -23,6 +23,7 @@ package org.prevayler.socketserver.example.client;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+import org.prevayler.util.TransactionWithQueryExecuter;
 import org.prevayler.socketserver.client.IModelCallback;
 import org.prevayler.socketserver.client.Remote;
 import org.prevayler.socketserver.example.server.Todo;
@@ -100,14 +101,14 @@ public class Main {
         }
         
         // Add the new todo item
-        Remote.conn.execl(new CreateTodoBean(response), "Unable to add Todo");
+        Remote.conn.execl(new TransactionWithQueryExecuter(new CreateTodoBean(response)), "Unable to add Todo");
     }
     
     public static void mainMenu() {
         try {
             // Print the current todo list
             System.out.println();
-            printList(Remote.conn.execl(new ListTodos(), "Unable to list todos"));
+            printList(Remote.conn.execl(new TransactionWithQueryExecuter(new ListTodos()), "Unable to list todos"));
             
             // Display the menu the first time
             printMenu();
@@ -128,7 +129,7 @@ public class Main {
                 // Process it
                 switch (response) {
                     case 'L':
-                        printList(Remote.conn.execl(new ListTodos(), "Unable to list todos"));
+                        printList(Remote.conn.execl(new TransactionWithQueryExecuter(new ListTodos()), "Unable to list todos"));
                         break;
                     case 'A':
                         addTodo();
