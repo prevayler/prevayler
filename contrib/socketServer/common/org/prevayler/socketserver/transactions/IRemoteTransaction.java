@@ -9,11 +9,11 @@ package org.prevayler.socketserver.transactions;
  * 
  * All Command objects that pass through the Prevayler server must implement
  * this interface.  An easy way to accomplish this is to have them inherit
- * from DBTransaction, which provides a default implementation of this interface.
+ * from RemoteTransaction, which provides a default implementation of this interface.
  * 
  * @author DaveO
  */
-public interface IDBTransaction {
+public interface IRemoteTransaction {
 
 	/**
 	 * Sets the connectionID.

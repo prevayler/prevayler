@@ -6,13 +6,13 @@ import org.prevayler.Transaction;
 import org.prevayler.util.TransactionWithQuery;
 
 /**
- * A default implementation of IDBTransaction.  Instead of implementing the interface
+ * A default implementation of IRemoteTransaction.  Instead of implementing the interface
  * yourself, you can inherit from this class.  If you don't want a single-rooted
  * Transaction hierarchy, however, just implement the interface.
  * 
  * @author DaveO
  */
-public abstract class DBTransaction extends TransactionWithQuery implements IDBTransaction {
+public abstract class RemoteTransaction extends TransactionWithQuery implements IRemoteTransaction {
 
     protected Long senderID;
     

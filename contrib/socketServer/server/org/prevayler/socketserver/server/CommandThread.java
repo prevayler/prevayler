@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.net.Socket;
 
 import org.prevayler.socketserver.transactions.*;
-import org.prevayler.socketserver.transactions.IDBTransaction;
+import org.prevayler.socketserver.transactions.IRemoteTransaction;
 import org.prevayler.socketserver.transactions.ThrownException;
 
 import org.prevayler.implementation.SnapshotPrevayler;
@@ -58,7 +58,7 @@ public class CommandThread extends Thread {
             } else if (t instanceof UnregisterCallback) {
                 Notification.unregisterCallback(myId, ((UnregisterCallback)t).message );
             } else {
-            	((IDBTransaction)t).setSenderID(new Long(myId));
+            	((IRemoteTransaction)t).setSenderID(new Long(myId));
                 Serializable result;
                 TransactionWithQuery transaction = (TransactionWithQuery) t;
                 try {

@@ -16,10 +16,6 @@ Ideally both Swing and SWT examples should be provided.
 This should be implemented in such a way that it gracefully
 falls back to Prevayler 1.0 behavior if failover is not desired.
 
-Our application has been up for over 6 months without a crash
-or reboot.  The last (and only) time it ever went down was
-due to a power failure, something from which transparant 
-failover can't protect.
 
 
 Features not yet supported (but that would be cool to support)
@@ -47,6 +43,8 @@ two choices here: you're trading speed for interoperability.
 
 
 - Document the standard XML serialization format so that other
-prevalent servers can support the same standard.  Then you could
-interchange client and server languages at will.  ;-)
+prevalent clients and servers can support the same standard.  
+Then you could interchange client and server languages at 
+will.  ;-)
+
 
