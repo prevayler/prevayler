@@ -47,7 +47,7 @@ public class XStreamSnapshotManager extends GenericSnapshotManager {
      * @throws IOException if there's a problem reading the latest snapshot.
 	 */
 	public XStreamSnapshotManager(XStream xstream, Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
-		super(new XStreamSerializationStrategy(xstream), newPrevalentSystem, snapshotDirectoryName);
+		super(new XStreamSerializationStrategy(xstream), SUFFIX, newPrevalentSystem, snapshotDirectoryName);
 	}
 
 

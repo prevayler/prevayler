@@ -23,7 +23,7 @@ public class JavaSnapshotManager extends GenericSnapshotManager {
      * @param snapshotDirectoryName The path of the directory where the last snapshot file will be read and where the new snapshot files will be created.
 	 */
 	public JavaSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName, ClassLoader loader) throws ClassNotFoundException, IOException {
-		super(new JavaSerializationStrategy(loader), newPrevalentSystem, snapshotDirectoryName);
+		super(new JavaSerializationStrategy(loader), SUFFIX, newPrevalentSystem, snapshotDirectoryName);
 	}
 
 	// this is only here for NullSnapshotManager support

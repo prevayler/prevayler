@@ -10,6 +10,7 @@ import junit.framework.Test;
 import org.prevayler.implementation.snapshot.XStreamSnapshotManagerTest;
 import org.prevayler.implementation.snapshot.JavaSnapshotManagerTest;
 import org.prevayler.implementation.snapshot.SkaringaSnapshotManagerTest;
+import org.prevayler.implementation.snapshot.GenericSnapshotManagerTest;
 import org.prevayler.foundation.DurableOutputStreamTest;
 import org.prevayler.foundation.serialization.XStreamSerializationTest;
 
@@ -28,6 +29,7 @@ public class Suite extends TestCase {
 		suite.addTestSuite(XStreamSnapshotManagerTest.class);
 		suite.addTestSuite(JavaSnapshotManagerTest.class);
 		suite.addTestSuite(SkaringaSnapshotManagerTest.class);
+		suite.addTestSuite(GenericSnapshotManagerTest.class);
 		suite.addTestSuite(JournalSerializationStrategyTest.class);
 		suite.addTestSuite(SnapshotSerializationStrategyTest.class);
 		suite.addTestSuite(XStreamSerializationTest.class);

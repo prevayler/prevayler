@@ -83,7 +83,7 @@ public abstract class AbstractSnapshotManager implements SnapshotManager {
 	}
 
 
-	private Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {
+	protected Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {
 		if (!snapshotFile.getName().endsWith("." + suffix())) throw new IOException(snapshotFile.toString() + " cannot be read by " + this.getClass().getName());
 
         FileInputStream in = new FileInputStream(snapshotFile);

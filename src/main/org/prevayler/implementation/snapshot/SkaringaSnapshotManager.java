@@ -37,7 +37,7 @@ public class SkaringaSnapshotManager extends GenericSnapshotManager {
 	public static final String SUFFIX = "skaringasnapshot";
 
 	public SkaringaSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
-		super(new SkaringaSerializationStrategy(), newPrevalentSystem, snapshotDirectoryName);
+		super(new SkaringaSerializationStrategy(), SUFFIX, newPrevalentSystem, snapshotDirectoryName);
 	}
 
 
