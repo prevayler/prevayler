@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main"/>
+	<classpathentry kind="src" path="src/test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="root/lib/commons-logging.jar"/>
+	<classpathentry kind="lib" path="root/lib/junit.jar"/>
+	<classpathentry kind="lib" path="root/lib/skaringa-r2p6.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
