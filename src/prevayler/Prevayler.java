@@ -89,8 +89,6 @@ public class Prevayler {
 
             try {
                 command.execute(system);
-            } catch (RuntimeException rx) {
-                throw rx;
             } catch (Exception e) {
                 //Don't do anything at all. Commands may throw exceptions normally.
             }
