@@ -21,19 +21,17 @@ public class GenericSnapshotManager {
 	private long _recoveredVersion;
 	private Object _recoveredPrevalentSystem;
 
-	public GenericSnapshotManager(Serializer serializer, Object newPrevalentSystem, String snapshotDirectoryName)
+	public GenericSnapshotManager(Serializer serializer, Object newPrevalentSystem, FileManager fileManager)
 			throws IOException, ClassNotFoundException {
-		this(serializer, "snapshot", newPrevalentSystem, snapshotDirectoryName);
+		this(serializer, "snapshot", newPrevalentSystem, fileManager);
 	}
 
-	public GenericSnapshotManager(Serializer serializer, String suffix, Object newPrevalentSystem,
-								  String snapshotDirectoryName)
+	public GenericSnapshotManager(Serializer serializer, String suffix, Object newPrevalentSystem, FileManager fileManager)
 			throws IOException, ClassNotFoundException {
-		this(Collections.singletonMap(suffix, serializer), suffix, newPrevalentSystem, snapshotDirectoryName);
+		this(Collections.singletonMap(suffix, serializer), suffix, newPrevalentSystem, fileManager);
 	}
 
-	public GenericSnapshotManager(Map strategies, String primarySuffix, Object newPrevalentSystem,
-								  String snapshotDirectoryName)
+	public GenericSnapshotManager(Map strategies, String primarySuffix, Object newPrevalentSystem, FileManager fileManager)
 			throws IOException, ClassNotFoundException {
 		for (Iterator iterator = strategies.keySet().iterator(); iterator.hasNext();) {
 			String suffix = (String) iterator.next();
@@ -47,7 +45,7 @@ public class GenericSnapshotManager {
 		_strategies = strategies;
 		_primarySuffix = primarySuffix;
 
-		_fileManager = new FileManager(snapshotDirectoryName);
+		_fileManager = fileManager;
 		_fileManager.produceDirectory();
 
 		File latestSnapshot = _fileManager.latestSnapshot();

@@ -41,14 +41,15 @@ public class PersistentJournal implements Journal {
 
 
 	/**
-	 * @param directory Where transaction journal files will be read and written.
+	 * @param fileManager
 	 * @param journalSizeThresholdInBytes Size of the current journal file beyond which it is closed and a new one started. Zero indicates no size threshold. This is useful journal backup purposes.
 	 * @param journalAgeThresholdInMillis Age of the current journal file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful journal backup purposes.
+
 	 */
-	public PersistentJournal(String directory, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis,
+	public PersistentJournal(FileManager fileManager, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis,
 							 Serializer journalSerializer, Monitor monitor) throws IOException {
 	    _monitor = monitor;
-		_fileManager = new FileManager(directory);
+		_fileManager = fileManager;
 		_fileManager.produceDirectory();
 		_journalSizeThresholdInBytes = journalSizeThresholdInBytes;
 		_journalAgeThresholdInMillis = journalAgeThresholdInMillis;

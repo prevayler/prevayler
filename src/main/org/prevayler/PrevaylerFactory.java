@@ -11,6 +11,7 @@ import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
+import org.prevayler.foundation.FileManager;
 import org.prevayler.implementation.PrevaylerImpl;
 import org.prevayler.implementation.clock.MachineClock;
 import org.prevayler.implementation.journal.Journal;
@@ -292,9 +293,12 @@ public class PrevaylerFactory {
 
 
 	private Journal journal() throws IOException {
-		return _transientMode
-			? (Journal)new TransientJournal()
-			: new PersistentJournal(prevalenceDirectory(), _journalSizeThreshold, _journalAgeThreshold, journalSerializer(), monitor());
+		if (_transientMode) {
+			return (Journal) new TransientJournal();
+		} else {
+			FileManager fileManager = new FileManager(prevalenceDirectory());
+			return new PersistentJournal(fileManager, _journalSizeThreshold, _journalAgeThreshold, journalSerializer(), monitor());
+		}
 	}
 
 	
@@ -305,9 +309,16 @@ public class PrevaylerFactory {
 
 
 	private GenericSnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
-		if (_nullSnapshotManager != null) return _nullSnapshotManager;
-		if (!_snapshotSerializers.isEmpty()) return new GenericSnapshotManager(_snapshotSerializers, _primarySnapshotSuffix, prevalentSystem(), prevalenceDirectory());
-		return new GenericSnapshotManager(new JavaSerializer(_classLoader), prevalentSystem(), prevalenceDirectory());
+		if (_nullSnapshotManager != null) {
+			return _nullSnapshotManager;
+		} else {
+			FileManager fileManager = new FileManager(prevalenceDirectory());
+			if (!_snapshotSerializers.isEmpty()) {
+				return new GenericSnapshotManager(_snapshotSerializers, _primarySnapshotSuffix, prevalentSystem(), fileManager);
+			} else {
+				return new GenericSnapshotManager(new JavaSerializer(_classLoader), prevalentSystem(), fileManager);
+			}
+		}
 	}
 
 	
