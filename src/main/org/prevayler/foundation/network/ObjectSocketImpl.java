@@ -30,7 +30,9 @@ public class ObjectSocketImpl implements ObjectSocket {
 	public void writeObject(Object object) throws IOException {
 		//TODO Consider eliminating the POBox and putting a buffer here.
 		_outputStream.writeObject(object);
+		_outputStream.reset();
 		_outputStream.flush();
+		
 	}
 
 	public Object readObject() throws IOException, ClassNotFoundException {

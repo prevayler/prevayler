@@ -13,7 +13,6 @@ import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 import java.io.IOException;
-import java.util.Date;
 
 
 /** Reserved for future implementation.
@@ -22,10 +21,9 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 
 	static final String SUBSCRIBER_UP_TO_DATE = "SubscriberUpToDate";
 	static final String REMOTE_TRANSACTION = "RemoteTransaction";
-	static final String CLOCK_TICK = "ClockTick";
 
 	private final TransactionPublisher _publisher;
-	private TransactionCapsule _remoteCapsule;
+	private Capsule _remoteCapsule;
 
 	private final ObjectSocket _remote;
 	private Thread _clockTickSender = createClockTickSender();
@@ -44,7 +42,11 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 	public void run() {
 		try {		
 			long initialTransaction = ((Long)_remote.readObject()).longValue();
-			_publisher.subscribe(new POBox(this), initialTransaction);
+			
+			POBox poBox = new POBox(this);
+			_publisher.subscribe(poBox, initialTransaction);
+			poBox.waitToEmpty();
+			
 			send(SUBSCRIBER_UP_TO_DATE);
 			
 			sendClockTicks();
@@ -67,7 +69,6 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 						try {
 							while (true) {
 								synchronized (_remote) {
-									_remote.writeObject(CLOCK_TICK);
 									_remote.writeObject(_publisher.clock().time());
 								}
 								Thread.sleep(1000);
@@ -94,19 +95,14 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 	}
 
 
-	public void receive(TransactionTimestamp transactionTimestamp) {
-		Capsule capsule = transactionTimestamp.capsule();
-		long systemVersion = transactionTimestamp.systemVersion();
-		Date executionTime = transactionTimestamp.executionTime();
-
+	public void receive(TransactionTimestamp tt) {
+		
+		if (tt.capsule() == _remoteCapsule)
+			tt = new TransactionTimestamp(null, tt.systemVersion(), tt.executionTime()); //TODO This is really ugly. It is using a null capsule inside the TransactionTimestamp to signal that the remote Capsule should be executed.
+		
 		try {
 			synchronized (_remote) {
-				_remote.writeObject(capsule == _remoteCapsule
-					? (Object)REMOTE_TRANSACTION
-					: capsule
-				);
-				_remote.writeObject(executionTime);
-				_remote.writeObject(new Long(systemVersion));
+				_remote.writeObject(tt);
 			}
 		} catch (IOException ex) {
 			close();

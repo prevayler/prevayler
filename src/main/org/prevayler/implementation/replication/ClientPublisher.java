@@ -109,6 +109,12 @@ public class ClientPublisher implements TransactionPublisher {
 			return;
 		}
 
+		if (transactionCandidate instanceof Date) {
+			Date clockTick = (Date)transactionCandidate;
+			_clock.advanceTo(clockTick);
+			 return;
+		}
+		
 		if (transactionCandidate instanceof RuntimeException) {
 			_myTransactionRuntimeException = (RuntimeException)transactionCandidate;
 			notifyMyTransactionMonitor();
@@ -120,21 +126,19 @@ public class ClientPublisher implements TransactionPublisher {
 			return;
 		}
 
-		Date timestamp = (Date)_server.readObject();
+		TransactionTimestamp transactionTimestamp = (TransactionTimestamp)transactionCandidate;
+		Date timestamp = transactionTimestamp.executionTime();
+		long systemVersion = transactionTimestamp.systemVersion();
+		
 		_clock.advanceTo(timestamp);
-
-		if (transactionCandidate.equals(ServerConnection.CLOCK_TICK)) return;
-
-		long systemVersion = ((Long)_server.readObject()).longValue();
-
-		if (transactionCandidate.equals(ServerConnection.REMOTE_TRANSACTION)) {
+		
+		if (transactionTimestamp.capsule() == null) {
 			_subscriber.receive(new TransactionTimestamp(_myCapsule, systemVersion, timestamp));
 			notifyMyTransactionMonitor();
 			return;
 		}
 
-		Capsule capsule = (Capsule) transactionCandidate;
-		_subscriber.receive(new TransactionTimestamp(capsule, systemVersion, timestamp));
+		_subscriber.receive(new TransactionTimestamp(transactionTimestamp.capsule(), systemVersion, timestamp));
 	}
 
 

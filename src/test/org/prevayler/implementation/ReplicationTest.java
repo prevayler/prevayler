@@ -31,6 +31,8 @@ public class ReplicationTest extends FileIOTest {
 		serverAppend("e", "abcde");
 
 		clientCrashRecover(0);
+		assertEquals("abcde", clientValue());
+
 		clientAppend("f", "abcdef");
 		serverAppend("g", "abcdefg");
 

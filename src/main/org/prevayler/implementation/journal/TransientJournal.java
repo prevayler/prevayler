@@ -25,7 +25,7 @@ public class TransientJournal implements Journal {
 		guide.startTurn();
 		try {
 			guide.checkSystemVersion(_initialTransaction + journal.size());
-			journal.add(guide.timestamp());
+			journal.add(guide.timestamp().cleanCopy());
 		} finally {
 			guide.endTurn();
 		}

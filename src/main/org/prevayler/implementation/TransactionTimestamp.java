@@ -4,7 +4,6 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.foundation.serialization.Serializer;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -39,7 +38,7 @@ public class TransactionTimestamp implements Serializable {
 		return new Date(_executionTime);
 	}
 
-	public TransactionTimestamp cleanCopy(Serializer journalSerializer) {
+	public TransactionTimestamp cleanCopy() {
 		return new TransactionTimestamp(_capsule.cleanCopy(), _systemVersion, _executionTime);
 	}
 

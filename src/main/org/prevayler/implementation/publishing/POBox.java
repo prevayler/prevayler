@@ -17,6 +17,8 @@ public class POBox extends Thread implements TransactionSubscriber {
 	
 	private final LinkedList _queue = new LinkedList();
 	private final TransactionSubscriber _delegate;
+	
+	private final Object _emptynessMonitor = new Object();
   
 
 	public POBox(TransactionSubscriber delegate) {
@@ -41,8 +43,18 @@ public class POBox extends Thread implements TransactionSubscriber {
 
 
 	private synchronized TransactionTimestamp waitForNotification() {
-		while (_queue.size() == 0) Cool.wait(this);
+		while (_queue.size() == 0) {
+			synchronized (_emptynessMonitor) { _emptynessMonitor.notify(); }
+			Cool.wait(this);
+		}
 		return (TransactionTimestamp)_queue.removeFirst();
+	}
+
+
+	public void waitToEmpty() {
+		synchronized (_emptynessMonitor) {
+			while (_queue.size() != 0) Cool.wait(_emptynessMonitor);
+		}
 	}
 
 
