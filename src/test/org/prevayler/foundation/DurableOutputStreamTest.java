@@ -1,4 +1,4 @@
-package org.prevayler.implementation;
+package org.prevayler.foundation;
 
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.foundation.DurableOutputStream;

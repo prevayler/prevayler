@@ -10,6 +10,7 @@ import junit.framework.Test;
 import org.prevayler.implementation.snapshot.XStreamSnapshotManagerTest;
 import org.prevayler.implementation.snapshot.JavaSnapshotManagerTest;
 import org.prevayler.implementation.snapshot.SkaringaSnapshotManagerTest;
+import org.prevayler.foundation.DurableOutputStreamTest;
 
 public class Suite extends TestCase {
 	public static Test suite() {
