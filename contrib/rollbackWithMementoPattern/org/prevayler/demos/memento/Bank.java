@@ -2,26 +2,19 @@ package org.prevayler.demos.memento;
 	
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import org.prevayler.util.clock.AbstractClockedSystem;
 import org.prevayler.util.memento.Memento;
 import org.prevayler.util.memento.MementoCollector;
 
 /**
  * The Bank class without the notification to a listener and including a memento.
  */
-public class Bank extends AbstractClockedSystem {
+public class Bank implements java.io.Serializable {
 
 	private long nextAccountNumber = 1;
-	private final Map accountsByNumber = new HashMap();
-  
+	private Map accountsByNumber = new HashMap();
+
   /**
    * The memento of bank. Only (persistent) changeable fields/containers need to be stored.
    * In this case this means all fields.
@@ -58,16 +51,17 @@ public class Bank extends AbstractClockedSystem {
   }
     
 	public Account createAccount(String holder) throws Account.InvalidHolder {
-		Account account = new Account(nextAccountNumber, holder, clock());
+		Account account = new Account(nextAccountNumber, holder);
 		accountsByNumber.put(new Long(nextAccountNumber++), account);
 		
 		return account;
 	}
-  
+
 	public void deleteAccount(long number) throws AccountNotFound {
+		Account account = findAccount(number);
 		accountsByNumber.remove(new Long(number));
 	}
-  
+    
 	public List accounts() {
 		List accounts = new ArrayList(accountsByNumber.values());
 
@@ -86,12 +80,12 @@ public class Bank extends AbstractClockedSystem {
 		return account;
 	}
 
-	public void transfer(long sourceNumber, long destinationNumber, long amount) throws AccountNotFound, Account.InvalidAmount {
+	public void transfer(long sourceNumber, long destinationNumber, long amount, Date timestamp) throws AccountNotFound, Account.InvalidAmount {
 		Account source = findAccount(sourceNumber);
 		Account destination = findAccount(destinationNumber);
 
-		source.withdraw(amount);
-		destination.deposit(amount);
+		source.withdraw(amount, timestamp);
+		destination.deposit(amount, timestamp);
 	}
 
 	private Account searchAccount(long number) {
@@ -103,7 +97,7 @@ public class Bank extends AbstractClockedSystem {
 			super("Account not found: " + Account.numberString(number) + ".\nMight have been deleted.");
 		}
 	}
-  
+    
   public String toString() {
     StringWriter stringWriter = new StringWriter();
     PrintWriter writer = new PrintWriter(stringWriter);

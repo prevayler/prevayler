@@ -4,6 +4,7 @@
 
 package org.prevayler.util.memento;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,15 +17,14 @@ import org.prevayler.util.TransactionWithQuery;
  * @author Johan Stuyts
  * @version 2.0
  */
-public class MementoManagerCommand extends TransactionWithQuery implements MementoCollector {
+public class MementoManagerCommand implements TransactionWithQuery, MementoCollector {
+
 	/**
 	 * Create a memento manager transaction.
 	 * 
 	 * @param transaction The actual transaction to execute.
 	 */
 	public MementoManagerCommand(MementoTransaction transaction) {
-		super();
-
 		this.transaction = transaction;
 	}
 
@@ -38,7 +38,7 @@ public class MementoManagerCommand extends TransactionWithQuery implements Memen
 	 * @param system The prevalent system on which to execute the transaction.
 	 * @return The object returned by the execution of this transaction. Most commands simply return null.
 	 */
-	public Object executeAndQuery(Object prevalentSystem) throws Exception {
+	public Object executeOn(Object prevalentSystem, Date timestamp) throws Exception {
 		mementos = new HashMap();
 		try {
 			return transaction.execute(this, prevalentSystem);

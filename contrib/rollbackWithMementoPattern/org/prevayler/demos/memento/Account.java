@@ -1,9 +1,6 @@
 package org.prevayler.demos.memento;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import org.prevayler.util.clock.Clock;
+import java.util.*;
 import org.prevayler.util.memento.Memento;
 import org.prevayler.util.memento.MementoCollector;
 
@@ -12,18 +9,19 @@ import org.prevayler.util.memento.MementoCollector;
  */
 public class Account implements java.io.Serializable {
 
-	private final long number;
-	private final Clock clock;
+	private long number;
 	private String holder;
 	private long balance = 0;
 	private List transactionHistory = new ArrayList();
     
-	Account(long number, String holder, Clock clock) throws InvalidHolder {
-		this.clock = clock;
+    private Account() {
+    }
+    
+	Account(long number, String holder) throws InvalidHolder {
 		this.number = number;
 		holder(holder);
 	}
-  
+    
   /**
    * The memento of account. Only (persistent) changeable fields/containers need to be stored. In this case this means the holder, the balance and the transaction history.
    */
@@ -89,19 +87,19 @@ public class Account implements java.io.Serializable {
 		return balance;
 	}
 
-	public void deposit(long amount) throws InvalidAmount {
+	public void deposit(long amount, Date timestamp) throws InvalidAmount {
 		verify(amount);
-        register(amount);
+        register(amount, timestamp);
 	}
 
-	public void withdraw(long amount) throws InvalidAmount {
+	public void withdraw(long amount, Date timestamp) throws InvalidAmount {
 		verify(amount);
-        register(-amount);
+        register(-amount, timestamp);
 	}
 
-    private void register(long amount) {
+    private void register(long amount, Date timestamp) {
 		balance += amount;
-        transactionHistory.add(new Transaction(amount));
+        transactionHistory.add(new Transaction(amount, timestamp));
 	}
     
 	private void verify(long amount) throws InvalidAmount {
@@ -114,7 +112,7 @@ public class Account implements java.io.Serializable {
     }
 
 	public class InvalidAmount extends Exception {
-		public InvalidAmount(String message) {
+		InvalidAmount(String message) {
 			super(message);
 		}
 	}
@@ -124,7 +122,7 @@ public class Account implements java.io.Serializable {
 	}
 
 	public class InvalidHolder extends Exception {
-		public InvalidHolder() {
+		InvalidHolder() {
 			super("Invalid holder name.");
 		}
 	}
@@ -134,9 +132,9 @@ public class Account implements java.io.Serializable {
         private final long amount;
         private final Date timestamp;
 
-        private Transaction(long amount) {
+        private Transaction(long amount, Date timestamp) {
             this.amount = amount;
-            this.timestamp = clock.time();
+            this.timestamp = timestamp;
         }
 
         public String toString() {

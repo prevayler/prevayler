@@ -8,6 +8,7 @@ import org.prevayler.demos.memento.commands.AccountDeletion;
 import org.prevayler.demos.memento.commands.Deposit;
 import org.prevayler.demos.memento.commands.Transfer;
 import org.prevayler.implementation.SnapshotPrevayler;
+import org.prevayler.util.PrevaylerFactory;
 
 /**
  * A simple test of the error recovery using mementos.
@@ -35,7 +36,7 @@ public class TestErrorRecoveryWithMementos {
   
   static {
     try {
-      prevayler = new SnapshotPrevayler(new Bank());
+      prevayler = PrevaylerFactory.createSnapshotPrevayler(new Bank());
       bank = (Bank)prevayler.prevalentSystem();
     } catch (Exception e) {
       System.out.println("FAILED TO CREATE PREVAYLER!");
