@@ -1,5 +1,7 @@
 package org.prevayler.foundation;
 
+import org.prevayler.foundation.serialization.JavaSerializationStrategy;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -10,7 +12,7 @@ import java.io.IOException;
 public class SimpleOutputStream extends DurableOutputStream {
 
 	public SimpleOutputStream(File file) throws IOException {
-		super(file);
+		super(file, new JavaSerializationStrategy());
 	}
 
 }

@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.prevayler.foundation.monitor.*;
+import org.prevayler.foundation.serialization.JavaSerializationStrategy;
+import org.prevayler.foundation.serialization.SerializationStrategy;
 import org.prevayler.implementation.PrevaylerImpl;
 import org.prevayler.implementation.clock.MachineClock;
 import org.prevayler.implementation.journal.PersistentJournal;
@@ -50,7 +52,9 @@ public class PrevaylerFactory {
 	private int _remoteServerPort;
     private Monitor _monitor;
 	private ClassLoader _classLoader;
-	
+
+	private SerializationStrategy _journalSerializationStrategy;
+
 	public static final int DEFAULT_REPLICATION_PORT = 8756;
 
 
@@ -213,7 +217,20 @@ public class PrevaylerFactory {
 	
 	public void configureClassLoader(ClassLoader classLoader) {
 		_classLoader = classLoader;
+		if (_journalSerializationStrategy == null) {
+			_journalSerializationStrategy = new JavaSerializationStrategy(_classLoader);
+		}
 	}
+
+
+	private SerializationStrategy journalSerializationStrategy() {
+		return _journalSerializationStrategy != null ? _journalSerializationStrategy : new JavaSerializationStrategy();
+	}
+	
+	public void configureJournalSerializationStrategy(SerializationStrategy strategy) {
+		_journalSerializationStrategy = strategy;
+	}
+
 
 	/** Returns a Prevayler created according to what was defined by calls to the configuration methods above.
 	 * @throws IOException If there is trouble creating the Prevalence Base directory or reading a .journal or .snapshot file.
@@ -223,7 +240,7 @@ public class PrevaylerFactory {
 		SnapshotManager snapshotManager = snapshotManager();
 		TransactionPublisher publisher = publisher(snapshotManager);
 		if (_serverPort != -1) new ServerListener(publisher, _serverPort);
-		return new PrevaylerImpl(snapshotManager, publisher, monitor());
+		return new PrevaylerImpl(snapshotManager, publisher, monitor(), journalSerializationStrategy());
 	}
 
 
@@ -246,7 +263,7 @@ public class PrevaylerFactory {
 
 	private TransactionCensor censor(SnapshotManager snapshotManager) {
 		return _transactionFiltering
-			? (TransactionCensor) new StrictTransactionCensor(snapshotManager)
+			? (TransactionCensor) new StrictTransactionCensor(snapshotManager, journalSerializationStrategy())
 			: new LiberalTransactionCensor(); 
 	}
 
@@ -254,7 +271,7 @@ public class PrevaylerFactory {
 	private Journal journal() throws IOException {
 		return _transientMode
 			? (Journal)new TransientJournal()
-			: new PersistentJournal(prevalenceBase(), _journalSizeThreshold, _journalAgeThreshold, classLoader(), monitor());		
+			: new PersistentJournal(prevalenceBase(), _journalSizeThreshold, _journalAgeThreshold, journalSerializationStrategy(), monitor());
 	}
 
 

@@ -3,8 +3,8 @@
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //Contributions: Justin Sampson.
 package org.prevayler.foundation;
-import org.prevayler.foundation.serialization.JavaSerializationStrategy;
 import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.foundation.serialization.SerializationStrategy;
 
 import java.io.*;
 
@@ -50,7 +50,7 @@ public class DurableOutputStream {
 	/** All access guarded by _syncLock. */
 	private int _fileSyncCount = 0;
 
-	public DurableOutputStream(File file) throws IOException {
+	public DurableOutputStream(File file, SerializationStrategy strategy) throws IOException {
 		_file = file;
 		_fileOutputStream = new FileOutputStream(file);
 		_fileDescriptor = _fileOutputStream.getFD();
@@ -76,7 +76,7 @@ public class DurableOutputStream {
 			}
 		};
 
-		_serializer = new JavaSerializationStrategy().createSerializer(swappableStream);
+		_serializer = strategy.createSerializer(swappableStream);
 	}
 
 	public void sync(Object object, Turn myTurn) throws IOException {

@@ -13,7 +13,7 @@ import org.prevayler.Query;
 import org.prevayler.SureTransactionWithQuery;
 import org.prevayler.Transaction;
 import org.prevayler.TransactionWithQuery;
-import org.prevayler.foundation.*;
+import org.prevayler.foundation.serialization.SerializationStrategy;
 import org.prevayler.foundation.monitor.*;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
@@ -33,14 +33,18 @@ public class PrevaylerImpl implements Prevayler {
 	private boolean _ignoreRuntimeExceptions;
     private Monitor _monitor;
 
+	private final SerializationStrategy _journalSerializationStrategy;
+
 
 	/** Creates a new Prevayler
 	 * 
 	 * @param snapshotManager The SnapshotManager that will be used for reading and writing snapshot files.
 	 * @param transactionPublisher The TransactionPublisher that will be used for publishing transactions executed with this PrevaylerImpl.
 	 * @param prevaylerMonitor The Monitor that will be used to monitor interesting calls to this PrevaylerImpl.
+	 * @param journalSerializationStrategy
 	 */
-	public PrevaylerImpl(SnapshotManager snapshotManager, TransactionPublisher transactionPublisher, Monitor prevaylerMonitor) throws IOException, ClassNotFoundException {
+	public PrevaylerImpl(SnapshotManager snapshotManager, TransactionPublisher transactionPublisher,
+						 Monitor prevaylerMonitor, SerializationStrategy journalSerializationStrategy) throws IOException, ClassNotFoundException {
 	    _monitor = prevaylerMonitor;
 		_snapshotManager = snapshotManager;
 
@@ -54,6 +58,8 @@ public class PrevaylerImpl implements Prevayler {
 		_ignoreRuntimeExceptions = true;     //During pending transaction recovery (rolling forward), RuntimeExceptions are ignored because they were already thrown and handled during the first transaction execution.
 		_publisher.addSubscriber(subscriber(), _systemVersion + 1);
 		_ignoreRuntimeExceptions = false;
+
+		_journalSerializationStrategy = journalSerializationStrategy;
 	}
 
 	public Object prevalentSystem() { return _prevalentSystem; }
@@ -108,7 +114,12 @@ public class PrevaylerImpl implements Prevayler {
 	public void close() throws IOException { _publisher.close(); }
 
 	private Object deepCopy(Object transaction) {
-		return DeepCopier.deepCopy(transaction, "Unable to produce a deep copy of a transaction. Deep copies of transactions are executed instead of the transactions themselves so that the behaviour of the system during transaction execution is exactly the same as during transaction recovery from the journal.");
+		try {
+			return _journalSerializationStrategy.deepCopy(transaction);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("Unable to produce a deep copy of a transaction. Deep copies of transactions are executed instead of the transactions themselves so that the behaviour of the system during transaction execution is exactly the same as during transaction recovery from the journal.");
+		}
 	}
 
 	private TransactionSubscriber subscriber() {

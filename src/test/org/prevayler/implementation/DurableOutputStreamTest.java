@@ -3,6 +3,7 @@ package org.prevayler.implementation;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.foundation.DurableOutputStream;
 import org.prevayler.foundation.Turn;
+import org.prevayler.foundation.serialization.JavaSerializationStrategy;
 
 import java.io.File;
 import java.io.ObjectInputStream;
@@ -18,7 +19,7 @@ public class DurableOutputStreamTest extends FileIOTest {
 
 			File file = new File(_testDirectory, "stream" + i + ".bin");
 
-			DurableOutputStream out = new DurableOutputStream(file);
+			DurableOutputStream out = new DurableOutputStream(file, new JavaSerializationStrategy());
 
 			Turn myTurn = Turn.first();
 			out.sync("first", myTurn);
@@ -47,7 +48,7 @@ public class DurableOutputStreamTest extends FileIOTest {
 		for (int i = 0; i < 10 /*5000*/; i++) {
 //            System.out.println("i=" + i);
 			File file = new File(_testDirectory, "stream" + i + ".bin");
-			DurableOutputStream out = new DurableOutputStream(file);
+			DurableOutputStream out = new DurableOutputStream(file, new JavaSerializationStrategy());
 
 			Turn one = Turn.first();
 			Turn two = one.next();

@@ -1,12 +1,12 @@
 //Prevayler(TM) - The Free-Software Prevalence Layer.
 //Copyright (C) 2001-2003 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-//Contributions: Jon Tirsén.
+//Contributions: Jon Tirsï¿½n.
 
 package org.prevayler.implementation.publishing.censorship;
 
 import org.prevayler.Transaction;
-import org.prevayler.foundation.DeepCopier;
+import org.prevayler.foundation.serialization.SerializationStrategy;
 import org.prevayler.implementation.snapshot.*;
 
 import java.io.ByteArrayInputStream;
@@ -19,16 +19,19 @@ public class StrictTransactionCensor implements TransactionCensor {
 	private Object _royalFoodTaster;
 	private final SnapshotManager _snapshotManager;
 
-	
-	public StrictTransactionCensor(SnapshotManager snapshotManager) {
+	private final SerializationStrategy _journalSerializationStrategy;
+
+
+	public StrictTransactionCensor(SnapshotManager snapshotManager, SerializationStrategy journalSerializationStrategy) {
 		_snapshotManager = snapshotManager;
+		_journalSerializationStrategy = journalSerializationStrategy;
 		_king = _snapshotManager.recoveredPrevalentSystem();
 		//The _royalFoodTaster cannot be initialized here, or else the pending transactions will not be applied to it.
 	}
 
 	public void approve(Transaction transaction, Date executionTime) throws RuntimeException, Error {
 		try {
-			Transaction transactionCopy = (Transaction)DeepCopier.deepCopy(transaction, "Unable to produce a copy of the transaction for trying out before applying it to the real system.");
+			Transaction transactionCopy = deepCopy(transaction);
 			transactionCopy.executeOn(royalFoodTaster(), executionTime);
 		} catch (RuntimeException rx) {
 			letTheFoodTasterDie();
@@ -36,6 +39,15 @@ public class StrictTransactionCensor implements TransactionCensor {
 		} catch (Error error) {
 			letTheFoodTasterDie();
 			throw error;
+		}
+	}
+
+	private Transaction deepCopy(Transaction transaction) {
+		try {
+			return (Transaction) _journalSerializationStrategy.deepCopy(transaction);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("Unable to produce a copy of the transaction for trying out before applying it to the real system.");
 		}
 	}
 
