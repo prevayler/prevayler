@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import org.prevayler.util.clock.ClockedSystem;
 import org.prevayler.util.TransactionWithQuery;
-import org.prevayler.Prevayler;
 
 public abstract class ClockedTransaction extends TransactionWithQuery {
     static final long serialVersionUID = -7058059425197071976L;

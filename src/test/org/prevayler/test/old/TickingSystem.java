@@ -2,24 +2,23 @@
 // Copyright (C) 2001 Klaus Wuestefeld.
 // This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License version 2.1 as published by the Free Software Foundation. This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 
-package org.prevayler.test.scalability.prevayler;
+package org.prevayler.test.old;
 
-import org.prevayler.implementation.*;
-import org.prevayler.test.old.PersistenceTest;
+import org.prevayler.util.clock.AbstractClockedSystem;
 
-public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject {
+import java.util.Date;
 
-	static final String LOG_DIRECTORY = "QueryTest";
+/** A simple system that only keeps track of the time.
+*/
+class TickingSystem extends AbstractClockedSystem implements java.io.Serializable {
 
+	private Date _time = new Date(0L);
 
-	public PrevaylerQuerySubject() throws java.io.IOException, ClassNotFoundException {
-		PersistenceTest.deletePrevalenceFiles(LOG_DIRECTORY);
-
-		prevayler = new SnapshotPrevayler(new QuerySystem(), LOG_DIRECTORY);
+	public void setTime(long newTime) {
+		_time = new Date(newTime);
 	}
 
-
-	public Object createTestConnection() {
-		return new PrevaylerQueryConnection((QuerySystem)prevayler.prevalentSystem());
+	public Date time() {
+		return _time;
 	}
 }

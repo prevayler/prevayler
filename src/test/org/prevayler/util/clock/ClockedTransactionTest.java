@@ -6,12 +6,12 @@ import junit.framework.TestCase;
 import org.prevayler.util.clock.ClockedSystem;
 import org.prevayler.util.clock.ClockedTransaction;
 
-import org.prevayler.implementation.NullPrevayler;
+import org.prevayler.implementation.TransientPrevayler;
 
 public class ClockedTransactionTest extends TestCase {
     private Date executedTime;
     private ClockedSystem prevalentSystem;
-    private NullPrevayler prevayler;
+    private TransientPrevayler prevayler;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -21,7 +21,7 @@ public class ClockedTransactionTest extends TestCase {
 
     private void newPrevayler() {
         prevalentSystem = new AbstractClockedSystem() {};
-        prevayler = new NullPrevayler(prevalentSystem);
+        prevayler = new TransientPrevayler(prevalentSystem);
     }
 
     public void testExecute() throws Exception {

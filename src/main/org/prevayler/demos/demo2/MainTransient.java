@@ -14,7 +14,7 @@ public class MainTransient {
 	
 	public static void main(String[] ignored) throws Exception {
 		out(    "This demo shows how persistence can be turned off"
-			+ "\nwithout changing ONE SINGLE LINE OF CODE from the"
+			+ "\nwithout changing ONE SINGLE LINE OF CODE in the"
 			+ "\nbusiness classes or GUI. This is useful for"
 			+ "\nrunning automated test scripts orders of magnitude"
 			+ "\nfaster than with persistence turned on."

@@ -93,6 +93,11 @@ System.out.println("TODO"); //We must find a way to uncomment this next line so 
 		}
 		super.addSubscriber(subscriber, -1);
 	}
+	
+	
+	public void close() throws IOException {
+		_outputLog.close();
+	}
 
 
 	private File lastTransactionFile() throws IOException {

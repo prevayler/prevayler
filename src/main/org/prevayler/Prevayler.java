@@ -17,7 +17,6 @@ public interface Prevayler {
 
 	/**
 	 * Logs the given transaction for crash or shutdown recovery and executes it on the underlying prevalent system.
-	 * @throws IOException if there is trouble writing the transaction to disk or replicating it to remote Prevaylers.
 	 */
 	public void execute(Transaction transaction);
 

@@ -4,6 +4,8 @@
 
 package org.prevayler.test;
 
+import org.prevayler.test.old.OldTestSuite;
+
 import junit.textui.TestRunner;
 
 
@@ -12,7 +14,7 @@ import junit.textui.TestRunner;
 public class Main {
 
 	static public void main(String[] args) throws Exception {
-		TestRunner.run(AllTestSuite.suite()); 
+		TestRunner.run(OldTestSuite.suite()); 
 	}
 
 }

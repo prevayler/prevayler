@@ -5,7 +5,7 @@
 package org.prevayler.test.scalability.prevayler;
 
 import org.prevayler.implementation.SnapshotPrevayler;
-import org.prevayler.test.PersistenceTest;
+import org.prevayler.test.old.PersistenceTest;
 
 public class PrevaylerTransactionSubject extends PrevaylerScalabilitySubject {
 
