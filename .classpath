@@ -2,7 +2,7 @@
 <classpath>
     <classpathentry kind="src" path="src/main"/>
     <classpathentry kind="src" path="src/test"/>
-    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
-    <classpathentry kind="lib" path="C:/eclipse/workspace/junit3.8.1/junit.jar"/>
+    <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
+    <classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.junit_3.8.1/junit.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
