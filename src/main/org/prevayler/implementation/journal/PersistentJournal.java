@@ -222,7 +222,12 @@ public class PersistentJournal implements FileFilter, Journal {
 	}
 
 	static private void hang() {
-		while (true) Thread.yield();
+		while (true) {
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException ignored) {
+			}
+		}
 	}
 
 
