@@ -17,7 +17,6 @@ import java.io.Writer;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.StreamException;
-import com.thoughtworks.xstream.io.xml.XppDriver;
 
 
 /**
@@ -27,7 +26,14 @@ import com.thoughtworks.xstream.io.xml.XppDriver;
  * Java and XML language binding framework which provides for Java object XML serialization.</p>
  *
  * <p>Note that XStream has some dependencies of its own.  It requires the standard XML API's
- * (xml-apis.jar from the <a href="http://xml.apache.org/xerces2-j/">Apache Xerces-j</a> project or j2sdk1.4.x).</p>
+ * (xml-apis.jar from the <a href="http://xml.apache.org/xerces2-j/">Apache Xerces2-j</a> project or j2sdk1.4+)
+ * and an XML implementation (again, provided by Xerces2 or j2sdk1.4+).</p>
+ *
+ * <p>To make XStream up to 10x faster, add <a href="http://www.extreme.indiana.edu/xgws/xsoap/xpp/mxp1/">XPP3</a>
+ * to the classpath. XStream has the concept of a
+ * <a href="http://xstream.codehaus.org/javadoc/com/thoughtworks/xstream/io/HierarchicalStreamDriver.html">HierarchicalStreamDriver</a>
+ * and the default implementation for XStream is the highly performant XppDriver.  However, XStream will fall back to the DomDriver if XPP3 is
+ * not found in the classpath making the XPP3 library entirely optional.</p>
  *
  * @see org.prevayler.implementation.snapshot.SnapshotManager
  * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager
@@ -39,25 +45,24 @@ public class XStreamSnapshotManager extends AbstractSnapshotManager {
     /**
      * Creates a new XStreamSnapshotManager using a default XStream instance.
      * 
-     * This default instance uses the XppDriver for XStream.
+     * <p>This default instance uses the XppDriver for XStream if the XPP3 library is
+     * available on the classpath.</p>
      * 
-     * @see com.thoughtworks.xstream.io.xml.XppDriver 
      * @param newPrevalentSystem the prevalent system to snapshot.
      * @param snapshotDirectoryName the directory name where the snapshot must be stored.
      * @throws ClassNotFoundException if some class from the system cannot be found. 
      * @throws IOException if there's a problem reading the latest snapshot.
      */
 	public XStreamSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
-		this(new XStream(new XppDriver()), newPrevalentSystem, snapshotDirectoryName);
+		this(new XStream(), newPrevalentSystem, snapshotDirectoryName);
 	}
 
 	/**
 	 * Creates a new XStreamSnapshotManager using a pre-configured XStream instance.
 	 * 
-	 * <b>Tip</b>: It's possible to achieve a substantial performance improvement using the XppDriver
-	 * (com.thoughtworks.xstream.io.xml.XppDriver) with XStream.
-	 * 
-     * @see com.thoughtworks.xstream.io.xml.XppDriver 
+	 * <p>It is recommended to use the XStream XppDriver (used in XStream by default)
+     * to achieve maximum performance</p>
+	 *  
 	 * @param xstream a pre-configured XStream instance.
      * @param newPrevalentSystem the prevalent system to snapshot.
      * @param snapshotDirectoryName the directory name where the snapshot must be stored.
