@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Comparator;
 
 public class FileManager {
 
@@ -106,35 +107,30 @@ public class FileManager {
 		return latestSnapshot;
 	}
 
-	public long findInitialJournalFile(long initialTransactionWanted) {
+	public File findInitialJournalFile(long initialTransactionWanted) {
 		File[] journals = _directory.listFiles(new FileFilter() {
 			public boolean accept(File pathname) {
 				return pathname.getName().matches(JOURNAL_FILENAME_PATTERN);
 			}
 		});
 
-		long[] versions = new long[journals.length];
-		for (int i = 0; i < journals.length; i++) {
-			versions[i] = journalVersion(journals[i]);
-		}
+		Arrays.sort(journals, new Comparator() {
+			public int compare(Object o1, Object o2) {
+				File f1 = (File) o1;
+				File f2 = (File) o2;
+				return new Long(journalVersion(f1)).compareTo(new Long(journalVersion(f2)));
+			}
+		});
 
-		Arrays.sort(versions);
-		int match = Arrays.binarySearch(versions, initialTransactionWanted);
-
-		if (match >= 0) {
-			// Exact match was found.
-			return initialTransactionWanted;
-		} else {
-			// match == -insertionPoint - 1
-			int insertionPoint = -(match + 1);
-			if (insertionPoint == 0) {
-				// There is no appropriate log file.
-				return 0L;
-			} else {
-				// Use the next lower version.
-				return versions[insertionPoint - 1];
+		for (int i = journals.length - 1; i >= 0; i--) {
+			File journal = journals[i];
+			long version = journalVersion(journal);
+			if (version <= initialTransactionWanted) {
+				return journal;
 			}
 		}
+
+		return null;
 	}
 
 

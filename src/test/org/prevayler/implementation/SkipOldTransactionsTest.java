@@ -4,9 +4,11 @@ import org.prevayler.Clock;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
+import org.prevayler.foundation.FileManager;
 import org.prevayler.foundation.serialization.Serializer;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,7 +20,7 @@ import java.util.Date;
 public class SkipOldTransactionsTest extends FileIOTest {
 
 	public void testSkipOldTransactions() throws IOException, ClassNotFoundException {
-		Prevayler original = createPrevayler(new MySerializer(false));
+		Prevayler original = createPrevayler("MyJournal", new MySerializer(false));
 
 		original.execute(new AppendTransaction(" first"));
 		original.execute(new AppendTransaction(" second"));
@@ -36,16 +38,45 @@ public class SkipOldTransactionsTest extends FileIOTest {
 				"6;timestamp=1000006\r\n" +
 				" third\r\n", journalContents("MyJournal"));
 
-		Prevayler recovered = createPrevayler(new MySerializer(true));
+		Prevayler recovered = createPrevayler("MyJournal", new MySerializer(true));
 		assertEquals("the system first second third", recovered.prevalentSystem().toString());
 	}
 
-	private Prevayler createPrevayler(Serializer journalSerializer)
+	public void testDetectOldJournalSuffix() throws IOException, ClassNotFoundException {
+		Prevayler original = createPrevayler("OldJournal", new MySerializer(false));
+
+		original.execute(new AppendTransaction(" first"));
+		original.execute(new AppendTransaction(" second"));
+
+		original.takeSnapshot();
+
+		original.execute(new AppendTransaction(" third"));
+		assertEquals("the system first second third", original.prevalentSystem().toString());
+		original.close();
+
+		assertEquals("6;timestamp=1000002\r\n" +
+				" first\r\n" +
+				"7;timestamp=1000004\r\n" +
+				" second\r\n" +
+				"6;timestamp=1000006\r\n" +
+				" third\r\n", journalContents("OldJournal"));
+
+		try {
+			createPrevayler("NewJournal", new MySerializer(true));
+			fail();
+		} catch (IOException exception) {
+			File journal = new FileManager(_testDirectory).journalFile(1, "OldJournal");
+			assertEquals("There are transactions needing to be recovered from " + journal +
+					", but only NewJournal files are supported", exception.getMessage());
+		}
+	}
+
+	private Prevayler createPrevayler(String suffix, Serializer journalSerializer)
 			throws IOException, ClassNotFoundException {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new StringBuffer("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);
-		factory.configureJournalSerializer("MyJournal", journalSerializer);
+		factory.configureJournalSerializer(suffix, journalSerializer);
 		factory.configureClock(new Clock() {
 			private long time = 1000000;
 

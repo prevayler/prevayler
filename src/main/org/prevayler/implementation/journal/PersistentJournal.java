@@ -50,7 +50,7 @@ public class PersistentJournal implements Journal {
 	public PersistentJournal(FileManager fileManager, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis,
 							 String journalSuffix, Serializer journalSerializer, Monitor monitor) throws IOException {
 		FileManager.checkValidJournalSuffix(journalSuffix);
-		
+
 	    _monitor = monitor;
 		_fileManager = fileManager;
 		_fileManager.produceDirectory();
@@ -134,14 +134,14 @@ public class PersistentJournal implements Journal {
 	 * If there are no journal files in the directory (when a snapshot is taken and all journal files are manually deleted, for example), the initialTransaction parameter in the first call to this method will define what the next transaction number will be. We have to find clearer/simpler semantics.
 	 */
 	public void update(TransactionSubscriber subscriber, long initialTransactionWanted) throws IOException, ClassNotFoundException {
-		long initialLogFile = _fileManager.findInitialJournalFile(initialTransactionWanted);
-		
-		if (initialLogFile == 0) {
+		File initialJournal = _fileManager.findInitialJournalFile(initialTransactionWanted);
+
+		if (initialJournal == null) {
 			initializeNextTransaction(initialTransactionWanted, 1);
 			return;
 		}
 
-		long nextTransaction = recoverPendingTransactions(subscriber, initialTransactionWanted, initialLogFile);
+		long nextTransaction = recoverPendingTransactions(subscriber, initialTransactionWanted, initialJournal);
 		
 		initializeNextTransaction(initialTransactionWanted, nextTransaction);
 	}
@@ -161,28 +161,34 @@ public class PersistentJournal implements Journal {
 	}
 
 
-	private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, long initialLogFile)	throws IOException, ClassNotFoundException {
-		long recoveringTransaction = initialLogFile;
-		File logFile = _fileManager.journalFile(recoveringTransaction, _journalSuffix);
-		DurableInputStream inputLog = new DurableInputStream(logFile, _journalSerializer, _monitor);
+	private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, File initialJournal)
+			throws IOException, ClassNotFoundException {
+		long recoveringTransaction = FileManager.journalVersion(initialJournal);
+		File journal = initialJournal;
+		DurableInputStream input = new DurableInputStream(journal, _journalSerializer, _monitor);
 
 		while(true) {
 			try {
 				if (recoveringTransaction >= initialTransaction) {
-					TransactionTimestamp entry = inputLog.read();
+					if (!journal.getName().endsWith(_journalSuffix)) {
+						throw new IOException("There are transactions needing to be recovered from " +
+								journal + ", but only " + _journalSuffix + " files are supported");
+					}
+
+					TransactionTimestamp entry = input.read();
 					subscriber.receive(entry.transaction(), entry.timestamp());
 				} else {
-					inputLog.skip();
+					input.skip();
 				}
 
 				recoveringTransaction++;
 		
 			} catch (EOFException eof) {
 				File nextFile = _fileManager.journalFile(recoveringTransaction, _journalSuffix);
-				if (logFile.equals(nextFile)) FileManager.renameUnusedFile(logFile);  //The first transaction in this log file is incomplete. We need to reuse this file name.
-				logFile = nextFile;
-				if (!logFile.exists()) break;
-				inputLog = new DurableInputStream(logFile, _journalSerializer, _monitor);
+				if (journal.equals(nextFile)) FileManager.renameUnusedFile(journal);  //The first transaction in this log file is incomplete. We need to reuse this file name.
+				journal = nextFile;
+				if (!journal.exists()) break;
+				input = new DurableInputStream(journal, _journalSerializer, _monitor);
 			}
 		}
 		return recoveringTransaction;
