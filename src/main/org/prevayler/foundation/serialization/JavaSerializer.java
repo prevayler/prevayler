@@ -13,6 +13,10 @@ public class JavaSerializer implements Serializer {
 	}
 
 	public void writeObject(Object object) throws IOException {
+		_stream.writeObject(object);
+	}
+
+	public void flush() throws IOException {
 		// Resetting an ObjectOutputStream allows it to forget all of
 		// the objects it has seen, which could improve memory usage
 		// during long periods of uptime. Otherwise, the
@@ -23,11 +27,7 @@ public class JavaSerializer implements Serializer {
 		// course, that's not what we would want anyway, since
 		// transactions are supposed to be completely independent.
 
-		_stream.writeObject(object);
 		_stream.reset();
-	}
-
-	public void flush() throws IOException {
 		_stream.flush();
 	}
 
