@@ -137,7 +137,7 @@
 
     <target name="compile" depends="compile.core, compile.test, compile.contrib"
             description="Compile all specified sources" />
-    <target name="compile.core" depends="prepare, download.dependencies.core"
+    <target name="compile.core" depends="prepare"
             description="Compile core sources" >
         <antcall target="-compile.sub">
             <param name="csrcdir"   value="${srcdir.main}" />
