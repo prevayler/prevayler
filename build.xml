@@ -59,6 +59,7 @@
 
     <path id="build.classpath" >
         <pathelement location="${skaringa.jar}"/>
+        <pathelement location="${javagroups.jar}"/>
         <pathelement location="${log4j.jar}"/>
         <pathelement location="${commons-jxpath.jar}"/>
         <pathelement location="${commons-logging.jar}"/>
@@ -277,7 +278,7 @@
 
 <!-- ==================== Dependency Targets ================================== -->
 
-    <target name="download" depends="-download.dist, download.dependencies.build, download.dependencies.vizant"
+    <target name="download" depends="-download.dist, download.dependencies.utilities, download.dependencies.vizant"
             description="Download all specified binary packages" />
     <target name="-download.dist" depends="download.dependencies.core, download.dependencies.test, download.dependencies.contrib, download.dependencies.runtime" />
     <target name="download.dependencies.core"
@@ -298,6 +299,10 @@
         <antcall target="-downloadgz">
             <param name="sourcefile" value="${commons-jxpath.loc}"/>
             <param name="destfile"   value="${commons-jxpath.jar}"/>
+        </antcall>
+        <antcall target="-downloadzip">
+            <param name="sourcefile" value="${javagroups.loc}"/>
+            <param name="destfile"   value="${javagroups.jar}"/>
         </antcall>
     </target>
     <target name="download.dependencies.runtime"

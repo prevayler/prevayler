@@ -4,7 +4,7 @@
 
 <!-- ==================== Prepare Targets ================================ -->
 
-    <target name="-prepare.build" depends="download.dependencies.build" >
+    <target name="-prepare.build" depends="download.dependencies.utilities" >
         <taskdef resource="net/sf/antcontrib/antcontrib.properties"
                  classpath="${ant-contrib.jar}" />
     </target>
@@ -191,7 +191,7 @@
         <delete dir="${dependenciesdir}" />
     </target>
 
-    <target name="download.dependencies.build"
+    <target name="download.dependencies.utilities"
             description="Download binary packages needed by the Ant build system" >
         <!-- Download any sub package or tools needed. -->
         <antcall target="-downloadgz">
