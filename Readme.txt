@@ -35,7 +35,7 @@ More Learning Resources
 
 Contact Information
 =======================
-If you have any trouble or doubt running Prevayler, please mail us at prevayler-english@lists.sourceforge.net.
+If you have any trouble or doubt running Prevayler, please mail us at prevayler-discussion@lists.sourceforge.net.
 
 Ideas and suggestions on how to simplify the project are welcome too.
 

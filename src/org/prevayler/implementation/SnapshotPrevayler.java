@@ -13,13 +13,15 @@ import org.prevayler.*;
  * Provides transparent persistence for business objects.
  * This applies to any deterministic system implementing the PrevalentSystem interface.
  * All commands to the system must be represented as objects implementing the Command interface and must be executed using Prevayler.executeCommand(Command).
- * Take a look at the demo application included with the Prevayler distribution for examples.
-
- * Forces a FileDescriptor.sync() to guarantee ... . This can be turned off, for improved performance, by setting the org.prevayler.SafeCommandLogs system property to "OFF".
- * "org.prevayler.SafeCommandLogs"
- * "org.prevayler.CommandLogsThresholdBytes"
- * "org.prevayler.CommandLogsThresholdMinutes"
- * @see #java.io.FileDescriptor.sync()
+ * Take a look at the demo application included with the Prevayler distribution for examples.<br>
+ * <br>
+ * Before executing each command, it is written to a commandLog file and a FileDescriptor.sync() is called to "force all system buffers to synchronize with the underlying device. This method returns after all modified data and attributes of this FileDescriptor have been written to the relevant device(s). In particular, if this FileDescriptor refers to a physical storage medium, such as a file in a file system, sync will not return until all in-memory modified copies of buffers associated with this FileDesecriptor have been written to the physical medium." - J2SE 1.3.3 API documentation.
+. This sync() can be turned off, for improved performance, by setting the <b>org.prevayler.SafeCommandLogs</b> system property to "OFF". This will cause most command executions to return BEFORE their command object was actually written to disk.<br>
+ * <br>
+ * Two system properties can be used to control the size and duration of the commandLog files:<br>
+ * <b>- org.prevayler.CommandLogsThresholdBytes<br>
+ * - org.prevayler.CommandLogsThresholdMinutes</b><br>
+ * Once the size or duration threshold is exceeded for a commandLog file, it is closed and a new commandLog file is created.
  */
 public class SnapshotPrevayler implements Prevayler {
 
