@@ -21,17 +21,9 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         // START SNIPPET: creating
-        // Let's create a new TaskList. This is our 'prevalent system'.
-        TaskList list = new TaskList();
-
         // Create a new prevayler. /tasklist-base is the tx-log directory.
-        Prevayler prevayler = PrevaylerFactory.createPrevayler(list, "/tasklist-base");
-
-        /*
-         * IMPORTANT: Your prevalent system is going to be empty after a
-         * snapshot if you don't reassign it here.
-         */
-        list = (TaskList) prevayler.prevalentSystem();
+        Prevayler prevayler = PrevaylerFactory.createPrevayler(new TaskList(), "/tasklist-base");
+        TaskList list = (TaskList) prevayler.prevalentSystem();
         // END SNIPPET: creating
 
         System.out.println("Tasks: " + list.getTasks().size() + ", adding ");
