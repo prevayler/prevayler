@@ -12,8 +12,8 @@ import org.prevayler.foundation.StopWatch;
 import org.prevayler.foundation.Turn;
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.PrevaylerDirectory;
+import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 import java.io.EOFException;
@@ -171,6 +171,7 @@ public class PersistentJournal implements Journal {
 			try {
 				if (recoveringTransaction >= initialTransaction) {
 					if (!journal.getName().endsWith(_journalSuffix)) {
+						input.skip(); // If this throws EOF, we're at the end of the journal, which is okay...
 						throw new IOException("There are transactions needing to be recovered from " +
 								journal + ", but only " + _journalSuffix + " files are supported");
 					}

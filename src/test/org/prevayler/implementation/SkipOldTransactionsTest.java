@@ -70,6 +70,28 @@ public class SkipOldTransactionsTest extends FileIOTest {
 		}
 	}
 
+	public void testAllowOldJournalSuffix() throws IOException, ClassNotFoundException {
+		Prevayler original = createPrevayler("OldJournal", new MySerializer(false));
+
+		original.execute(new AppendTransaction(" first"));
+		original.execute(new AppendTransaction(" second"));
+		original.execute(new AppendTransaction(" third"));
+		original.takeSnapshot();
+
+		assertEquals("the system first second third", original.prevalentSystem().toString());
+		original.close();
+
+		assertEquals("6;timestamp=1000002\r\n" +
+				" first\r\n" +
+				"7;timestamp=1000004\r\n" +
+				" second\r\n" +
+				"6;timestamp=1000006\r\n" +
+				" third\r\n", journalContents("OldJournal"));
+
+		Prevayler recovered = createPrevayler("NewJournal", new MySerializer(true));
+		assertEquals("the system first second third", recovered.prevalentSystem().toString());
+	}
+
 	private Prevayler createPrevayler(String suffix, Serializer journalSerializer)
 			throws IOException, ClassNotFoundException {
 		PrevaylerFactory factory = new PrevaylerFactory();
