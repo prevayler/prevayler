@@ -1,4 +1,4 @@
-The copyright of all files included in this Prevayler distribution is held by Klaus Wuestefeld, except the files that specifically state otherwise. All rights are reserved. "PREVAYLER" is a trademark of Klaus Wuestefeld.
+The copyright of all source code included in this Prevayler distribution is held by Klaus Wuestefeld, except the files that specifically state otherwise. All rights are reserved. "PREVAYLER" is a trademark of Klaus Wuestefeld.
 
 Prevayler is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License version 2.1 as published by the Free Software Foundation. Prevayler is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  

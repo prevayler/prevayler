@@ -3,9 +3,9 @@
 
 
 ==================
-PREVAYLER 2.00
+PREVAYLER (TM)
 ==================
-Welcome to release 2.00 of Prevayler, the free software Prevalence Layer for Java.
+The Free Software Prevalence Layer for Java.
 
 
 Documentation Index

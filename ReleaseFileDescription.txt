@@ -1,0 +1,43 @@
+Name
+========
+
+prevaylerX.XX.XXXalpha.zip
+
+Example: prevayler1.00.003alpha.zip
+
+First number - incremented when a major functional or architectural goal is reached.
+
+Second number - incremented when backward compatibility is broken.
+
+Third number - incremented when backward compatibility is maintained. This means all 1.02.XXX builds, for example, are backward compatible with 1.02.000.
+
+Builds are generated as "alpha" and later renamed to "beta" and "production" as they mature.
+
+
+Directory Contents
+======================
+
+/prevayler - All files in the project directory named "root" and its subdirectories.
+
+/prevayler/prevaylerX.XX.XXX.jar - .class files compiled from "src/main" except the demos. Demos will be available in source-code only.
+
+/prevayler/src - All files from "src/main" and its subdirectories.
+
+/prevayler/docs/api - Javadoc generated for package org.prevayler in "src/main" only, for now. See javadoc parameters below.
+
+/prevayler/lib - Required jars. Ex: The Skaringa jar and XML processing jars (to run on JDK 1.3).
+
+
+Javadoc
+===========
+
+Only public and protected elements are generated (javadoc default).
+
+Parameters:
+	-windowtitle "Prevayler(TM) vX.XX.XXX API Documentation"
+	-header "<b>Prevayler<sup><font size=-2>TM</font></sup><br>The Free Software<br>Prevalence Layer</b>"
+	-footer "</EM><a href=http://www.prevayler.org><font color="#BB0033"><b>Prevayler Online</b></font></a><EM>"
+	-bottom "<font size=-1>'Prevayler' is a trademark of Klaus Wuestefeld.<br>Copyleft 2001-2003 Klaus Wuestefeld.</font>"
+
+
+<end>
