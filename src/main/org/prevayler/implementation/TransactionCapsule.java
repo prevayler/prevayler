@@ -13,7 +13,6 @@ public class TransactionCapsule implements Serializable {
 
 	private final boolean _withQuery;
 	private final byte[] _serialized;
-	private transient Serializer _journalSerializer;
 	private transient Object _queryResult;
 	private transient Exception _queryException;
 
@@ -35,14 +34,11 @@ public class TransactionCapsule implements Serializable {
 		} catch (Exception exception) {
 			throw new Error("Unable to serialize transaction", exception);
 		}
-
-		_journalSerializer = journalSerializer;
 	}
 
-	public TransactionCapsule(boolean withQuery, byte[] serialized, Serializer journalSerializer) {
+	public TransactionCapsule(boolean withQuery, byte[] serialized) {
 		_withQuery = withQuery;
 		_serialized = serialized;
-		_journalSerializer = journalSerializer;
 	}
 
 	public boolean withQuery() {
@@ -53,9 +49,9 @@ public class TransactionCapsule implements Serializable {
 		return _serialized;
 	}
 
-	public void executeOn(Object prevalentSystem, Date executionTime) {
+	public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer) {
 		if (_withQuery) {
-			TransactionWithQuery transactionWithQuery = (TransactionWithQuery) deserialize();
+			TransactionWithQuery transactionWithQuery = (TransactionWithQuery) deserialize(journalSerializer);
 
 			try {
 				_queryResult = transactionWithQuery.executeAndQuery(prevalentSystem, executionTime);
@@ -66,15 +62,15 @@ public class TransactionCapsule implements Serializable {
 				_queryException = ex;
 			}
 		} else {
-			Transaction transaction = (Transaction) deserialize();
+			Transaction transaction = (Transaction) deserialize(journalSerializer);
 
 			transaction.executeOn(prevalentSystem, executionTime);
 		}
 	}
 
-	public Object deserialize() {
+	public Object deserialize(Serializer journalSerializer) {
 		try {
-			return _journalSerializer.readObject(new ByteArrayInputStream(_serialized));
+			return journalSerializer.readObject(new ByteArrayInputStream(_serialized));
 		} catch (Exception exception) {
 			throw new Error("Unable to deserialize transaction", exception);
 		}
@@ -87,14 +83,7 @@ public class TransactionCapsule implements Serializable {
 	}
 
 	public TransactionCapsule cleanCopy() {
-		return new TransactionCapsule(_withQuery, _serialized, _journalSerializer);
-	}
-
-	/**
-	 * Restore the internal journal serializer after deserializing the capsule itself.
-	 */
-	public TransactionCapsule withSerializer(Serializer journalSerializer) {
-		return new TransactionCapsule(_withQuery, _serialized, journalSerializer);
+		return new TransactionCapsule(_withQuery, _serialized);
 	}
 
 }

@@ -81,7 +81,7 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 
 
 	void publishRemoteTransaction() throws Exception {
-		_remoteTransactionCapsule = ((TransactionCapsule)_fromRemote.readObject()).withSerializer(_journalSerializer);
+		_remoteTransactionCapsule = (TransactionCapsule)_fromRemote.readObject();
 		try {
 			_publisher.publish(_remoteTransactionCapsule);
 		} catch (RuntimeException rx) {

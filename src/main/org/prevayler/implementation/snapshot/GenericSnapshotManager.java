@@ -21,29 +21,19 @@ public class GenericSnapshotManager {
 	private PrevaylerDirectory _directory;
 	private PrevalentSystemGuard _recoveredPrevalentSystem;
 
-	public GenericSnapshotManager(Serializer serializer, Object newPrevalentSystem, PrevaylerDirectory directory)
+	public GenericSnapshotManager(Map snapshotSerializers, String primarySnapshotSuffix, Object newPrevalentSystem, PrevaylerDirectory directory, Serializer journalSerializer)
 			throws IOException, ClassNotFoundException {
-		this(serializer, "snapshot", newPrevalentSystem, directory);
-	}
-
-	public GenericSnapshotManager(Serializer serializer, String suffix, Object newPrevalentSystem, PrevaylerDirectory directory)
-			throws IOException, ClassNotFoundException {
-		this(Collections.singletonMap(suffix, serializer), suffix, newPrevalentSystem, directory);
-	}
-
-	public GenericSnapshotManager(Map strategies, String primarySuffix, Object newPrevalentSystem, PrevaylerDirectory directory)
-			throws IOException, ClassNotFoundException {
-		for (Iterator iterator = strategies.keySet().iterator(); iterator.hasNext();) {
+		for (Iterator iterator = snapshotSerializers.keySet().iterator(); iterator.hasNext();) {
 			String suffix = (String) iterator.next();
 			PrevaylerDirectory.checkValidSnapshotSuffix(suffix);
 		}
 
-		if (!strategies.containsKey(primarySuffix)) {
-			throw new IllegalArgumentException("Primary suffix '" + primarySuffix + "' does not appear in strategies map");
+		if (!snapshotSerializers.containsKey(primarySnapshotSuffix)) {
+			throw new IllegalArgumentException("Primary suffix '" + primarySnapshotSuffix + "' does not appear in strategies map");
 		}
 
-		_strategies = strategies;
-		_primarySuffix = primarySuffix;
+		_strategies = snapshotSerializers;
+		_primarySuffix = primarySnapshotSuffix;
 
 		_directory = directory;
 		_directory.produceDirectory();
@@ -53,14 +43,14 @@ public class GenericSnapshotManager {
 		Object recoveredPrevalentSystem = latestSnapshot == null
 				? newPrevalentSystem
 				: readSnapshot(latestSnapshot);
-		_recoveredPrevalentSystem = new PrevalentSystemGuard(recoveredPrevalentSystem, recoveredVersion);
+		_recoveredPrevalentSystem = new PrevalentSystemGuard(recoveredPrevalentSystem, recoveredVersion, journalSerializer);
 	}
 
 	GenericSnapshotManager(Object newPrevalentSystem) {
 		_strategies = Collections.singletonMap("snapshot", new JavaSerializer());
 		_primarySuffix = "snapshot";
 		_directory = null;
-		_recoveredPrevalentSystem = new PrevalentSystemGuard(newPrevalentSystem, 0);
+		_recoveredPrevalentSystem = new PrevalentSystemGuard(newPrevalentSystem, 0, new JavaSerializer());
 	}
 
 

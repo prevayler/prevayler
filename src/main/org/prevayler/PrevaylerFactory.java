@@ -29,6 +29,7 @@ import org.prevayler.implementation.snapshot.NullSnapshotManager;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -345,9 +346,11 @@ public class PrevaylerFactory {
 		} else {
 			PrevaylerDirectory directory = new PrevaylerDirectory(prevalenceDirectory());
 			if (!_snapshotSerializers.isEmpty()) {
-				return new GenericSnapshotManager(_snapshotSerializers, _primarySnapshotSuffix, prevalentSystem(), directory);
+				return new GenericSnapshotManager(_snapshotSerializers, _primarySnapshotSuffix, prevalentSystem(), directory, journalSerializer());
 			} else {
-				return new GenericSnapshotManager(new JavaSerializer(_classLoader), prevalentSystem(), directory);
+				String snapshotSuffix = "snapshot";
+				JavaSerializer snapshotSerializer = new JavaSerializer(_classLoader);
+				return new GenericSnapshotManager(Collections.singletonMap(snapshotSuffix, snapshotSerializer), snapshotSuffix, prevalentSystem(), directory, journalSerializer());
 			}
 		}
 	}

@@ -140,7 +140,7 @@ public class ClientPublisher implements TransactionPublisher {
 			return;
 		}
 
-		TransactionCapsule capsule = ((TransactionCapsule) transactionCandidate).withSerializer(_journalSerializer);
+		TransactionCapsule capsule = (TransactionCapsule) transactionCandidate;
 		_subscriber.receive(new TransactionTimestamp(capsule, systemVersion, timestamp));
 	}
 

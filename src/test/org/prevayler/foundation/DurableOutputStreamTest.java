@@ -2,6 +2,7 @@ package org.prevayler.foundation;
 
 import org.prevayler.foundation.monitor.NullMonitor;
 import org.prevayler.foundation.serialization.JavaSerializer;
+import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.AppendTransaction;
 import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionGuide;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.util.Date;
 
 public class DurableOutputStreamTest extends FileIOTest {
+
+	private final Serializer _journalSerializer = new JavaSerializer();
 
 	public void testSingleThreaded() throws Exception {
 		for (int i = 0; i < 10 /*5000*/; i++) {
@@ -48,11 +51,11 @@ public class DurableOutputStreamTest extends FileIOTest {
 	private long _systemVersion = 42;
 
 	private TransactionTimestamp timestamp(String value) {
-		return new TransactionTimestamp(new TransactionCapsule(new AppendTransaction(value), new JavaSerializer()), _systemVersion++, new Date());
+		return new TransactionTimestamp(new TransactionCapsule(new AppendTransaction(value), _journalSerializer), _systemVersion++, new Date());
 	}
 
 	private String value(TransactionTimestamp timestamp) {
-		return ((AppendTransaction) timestamp.capsule().deserialize()).toAdd;
+		return ((AppendTransaction) timestamp.capsule().deserialize(_journalSerializer)).toAdd;
 	}
 
 	public void testMultiThreaded() throws Exception {

@@ -17,11 +17,13 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 	private final Object _prevalentSystem; // All access is synchronized on itself
 	private long _systemVersion; // All access is synchronized on "this"
 	private boolean _ignoreRuntimeExceptions; // All access is synchronized on "this"
+	private final Serializer _journalSerializer;
 
-	public PrevalentSystemGuard(Object prevalentSystem, long systemVersion) {
+	public PrevalentSystemGuard(Object prevalentSystem, long systemVersion, Serializer journalSerializer) {
 		_prevalentSystem = prevalentSystem;
 		_systemVersion = systemVersion;
 		_ignoreRuntimeExceptions = false;
+		_journalSerializer = journalSerializer;
 	}
 
 	public Object prevalentSystem() {
@@ -57,7 +59,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 
 			try {
 				synchronized (_prevalentSystem) {
-					capsule.executeOn(_prevalentSystem, executionTime);
+					capsule.executeOn(_prevalentSystem, executionTime, _journalSerializer);
 				}
 			} catch (RuntimeException rx) {
 				if (!_ignoreRuntimeExceptions) throw rx;  //TODO Guarantee that transactions received from pending transaction recovery don't ever throw RuntimeExceptions. Maybe use a wrapper for that.
@@ -92,7 +94,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 			}
 
 			synchronized (_prevalentSystem) {
-				return new PrevalentSystemGuard(DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion);
+				return new PrevalentSystemGuard(DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer);
 			}
 		}
 	}

@@ -47,7 +47,7 @@ public class DurableInputStream {
 		boolean withQuery = Boolean.valueOf(chunk.getParameter("withQuery")).booleanValue();
 		long systemVersion = Long.parseLong(chunk.getParameter("systemVersion"));
 		long executionTime = Long.parseLong(chunk.getParameter("executionTime"));
-		return new TransactionTimestamp(new TransactionCapsule(withQuery, chunk.getBytes(), _serializer), systemVersion, new Date(executionTime));
+		return new TransactionTimestamp(new TransactionCapsule(withQuery, chunk.getBytes()), systemVersion, new Date(executionTime));
 	}
 
 	private Chunk readChunk() throws IOException {
