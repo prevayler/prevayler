@@ -8,6 +8,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 import org.prevayler.implementation.snapshot.GenericSnapshotManagerTest;
+import org.prevayler.implementation.journal.ChunkingTest;
 import org.prevayler.foundation.DurableOutputStreamTest;
 import org.prevayler.foundation.serialization.XStreamSerializationTest;
 import org.prevayler.foundation.serialization.GZIPSerializationTest;
@@ -20,6 +21,7 @@ public class Suite extends TestCase {
 		suite.addTestSuite(QueryExecutionTest.class);
 		suite.addTestSuite(PersistenceTest.class);
 		suite.addTestSuite(JournalFileRollingTest.class);
+		suite.addTestSuite(ChunkingTest.class);
 		suite.addTestSuite(CheckpointTest.class);
 		suite.addTestSuite(RollbackTest.class);
 		suite.addTestSuite(ReplicationTest.class);
