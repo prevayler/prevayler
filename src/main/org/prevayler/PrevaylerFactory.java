@@ -65,7 +65,7 @@ public class PrevaylerFactory {
 	 * 
 	 * Attempts to take snapshots on this transient Prevayler will throw an IOException.
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system.
-	 * @see createCheckpointPrevayler(Serializable newPrevalentSystem, String snapshotDirectory)
+	 * @see #createCheckpointPrevayler(Serializable newPrevalentSystem, String snapshotDirectory)
 	 */
 	public static Prevayler createTransientPrevayler(Serializable newPrevalentSystem) {
 		PrevaylerFactory factory = new PrevaylerFactory();
