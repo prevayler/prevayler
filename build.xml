@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE project [
     <!ENTITY general-utility-targets SYSTEM "file:./utility-targets.incl">
+    <!ENTITY self-customized-targets SYSTEM "file:./custom-targets.incl">
 ]>
 
 <project name="Prevayler" default="compile.core" basedir=".">
@@ -549,5 +550,6 @@
 
     <!-- custom XML entity include of general utility targets including download and vizAnt stuff -->
     &general-utility-targets;
+    &self-customized-targets;
 
 </project>
