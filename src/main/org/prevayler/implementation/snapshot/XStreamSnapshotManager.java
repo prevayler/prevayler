@@ -5,10 +5,19 @@
 
 package org.prevayler.implementation.snapshot;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.StreamException;
+import com.thoughtworks.xstream.io.xml.XppDriver;
 
 
 /**
@@ -28,7 +37,7 @@ public class XStreamSnapshotManager extends AbstractSnapshotManager {
     private XStream _xstream;
     
 	public XStreamSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
-		this(new XStream(), newPrevalentSystem, snapshotDirectoryName);
+		this(new XStream(new XppDriver()), newPrevalentSystem, snapshotDirectoryName);
 	}
 
 	public XStreamSnapshotManager(XStream xstream, Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {

@@ -8,6 +8,7 @@ import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.implementation.snapshot.XStreamSnapshotManager;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.XppDriver;
 
 public class MainXStream {
 
@@ -17,7 +18,7 @@ public class MainXStream {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalenceBase("demo2XStream");
 		
-		XStream xstream = new XStream();
+		XStream xstream = new XStream(new XppDriver());
 		xstream.alias("bank", Bank.class);
 		xstream.alias("account", Account.class);
 		xstream.alias("accountEntry", AccountEntry.class);
