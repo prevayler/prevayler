@@ -21,7 +21,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Date;
 
-public class JournalSerializationStrategyTest extends FileIOTest {
+public class JournalSerializerTest extends FileIOTest {
 
 	public void testConfigureJournalSerializationStrategy() throws IOException, ClassNotFoundException {
 		Serializer strategy = new MySerializer();

@@ -3,15 +3,15 @@
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //Contributions: Justin Sampson.
 package org.prevayler.foundation;
-import org.prevayler.foundation.serialization.JournalSerializationStrategy;
-import org.prevayler.foundation.serialization.JournalSerializer;
+import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.implementation.journal.Chunk;
+import org.prevayler.implementation.journal.Chunking;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class DurableOutputStream {
 	/**
@@ -29,7 +29,7 @@ public class DurableOutputStream {
 	private final File _file;
 
 	/** All access guarded by _writeLock. */
-	private final JournalSerializer _serializer;
+	private final Serializer _serializer;
 
 	/** All access guarded by _syncLock. */
 	private final FileOutputStream _fileOutputStream;
@@ -55,33 +55,11 @@ public class DurableOutputStream {
 	/** All access guarded by _syncLock. */
 	private int _fileSyncCount = 0;
 
-	public DurableOutputStream(File file, JournalSerializationStrategy strategy) throws IOException {
+	public DurableOutputStream(File file, Serializer serializer) throws IOException {
 		_file = file;
 		_fileOutputStream = new FileOutputStream(file);
 		_fileDescriptor = _fileOutputStream.getFD();
-
-		// All writes by _serializer go straight through to the _active
-		// buffer. Note that we can't just pass _active into the constructor
-		// because it gets swapped with _inactive, and we must always be
-		// writing to the current _active buffer. Accessing _active here is
-		// safe because we only write to or flush _serializer when we
-		// are already holding the _writeLock.
-
-		OutputStream swappableStream = new OutputStream() {
-			public void write(byte[] b) throws IOException {
-				_active.write(b);
-			}
-
-			public void write(byte[] b, int off, int len) {
-				_active.write(b, off, len);
-			}
-
-			public void write(int b) {
-				_active.write(b);
-			}
-		};
-
-		_serializer = strategy.createSerializer(swappableStream);
+		_serializer = serializer;
 	}
 
 	public void sync(Object object, Turn myTurn) throws IOException {
@@ -110,7 +88,9 @@ public class DurableOutputStream {
 			}
 
 			try {
-				_serializer.writeObject(object);
+				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+				_serializer.writeObject(bytes, object);
+				Chunking.writeChunk(_active, new Chunk(bytes.toByteArray()));
 			} catch (IOException exception) {
 				internalClose();
 				throw exception;
@@ -155,13 +135,6 @@ public class DurableOutputStream {
 				synchronized (_writeLock) {
 					if (_closed) {
 						throw new IOException("already closed");
-					}
-
-					try {
-						_serializer.flush();
-					} catch (IOException exception) {
-						internalClose();
-						throw exception;
 					}
 
 					ByteArrayOutputStream swap = _active;

@@ -17,7 +17,7 @@ import org.prevayler.foundation.FileManager;
 import org.prevayler.foundation.SimpleInputStream;
 import org.prevayler.foundation.StopWatch;
 import org.prevayler.foundation.Turn;
-import org.prevayler.foundation.serialization.JournalSerializationStrategy;
+import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
@@ -38,7 +38,7 @@ public class PersistentJournal implements FileFilter, Journal {
 	private boolean _nextTransactionInitialized = false;
 	private Monitor _monitor;
 
-	private final JournalSerializationStrategy _journalSerializationStrategy;
+	private final Serializer _journalSerializer;
 
 
 	/**
@@ -47,12 +47,12 @@ public class PersistentJournal implements FileFilter, Journal {
 	 * @param journalAgeThresholdInMillis Age of the current journal file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful journal backup purposes.
 	 */
 	public PersistentJournal(String directory, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis,
-							 JournalSerializationStrategy journalSerializationStrategy, Monitor monitor) throws IOException {
+							 Serializer journalSerializer, Monitor monitor) throws IOException {
 	    _monitor = monitor;
 		_directory = FileManager.produceDirectory(directory);
 		_journalSizeThresholdInBytes = journalSizeThresholdInBytes;
 		_journalAgeThresholdInMillis = journalAgeThresholdInMillis;
-		_journalSerializationStrategy = journalSerializationStrategy;
+		_journalSerializer = journalSerializer;
 	}
 
 
@@ -117,7 +117,7 @@ public class PersistentJournal implements FileFilter, Journal {
 	private DurableOutputStream createOutputJournal(long transactionNumber) {
 		File file = journalFile(transactionNumber);
 		try {
-			return new DurableOutputStream(file, _journalSerializationStrategy);
+			return new DurableOutputStream(file, _journalSerializer);
 		} catch (IOException iox) {
 			handle(iox, file, "creating");
 			return null;
@@ -169,7 +169,7 @@ public class PersistentJournal implements FileFilter, Journal {
 	private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, long initialLogFile)	throws IOException, ClassNotFoundException {
 		long recoveringTransaction = initialLogFile;
 		File logFile = journalFile(recoveringTransaction);
-		SimpleInputStream inputLog = new SimpleInputStream(logFile, _journalSerializationStrategy, _monitor);
+		SimpleInputStream inputLog = new SimpleInputStream(logFile, _journalSerializer, _monitor);
 
 		while(true) {
 			try {
@@ -185,7 +185,7 @@ public class PersistentJournal implements FileFilter, Journal {
 				if (logFile.equals(nextFile)) renameUnusedFile(logFile);  //The first transaction in this log file is incomplete. We need to reuse this file name.
 				logFile = nextFile;
 				if (!logFile.exists()) break;
-				inputLog = new SimpleInputStream(logFile, _journalSerializationStrategy, _monitor);
+				inputLog = new SimpleInputStream(logFile, _journalSerializer, _monitor);
 			}
 		}
 		return recoveringTransaction;

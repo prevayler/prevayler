@@ -11,7 +11,6 @@ import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
-import org.prevayler.foundation.serialization.JournalSerializationStrategy;
 import org.prevayler.implementation.PrevaylerImpl;
 import org.prevayler.implementation.clock.MachineClock;
 import org.prevayler.implementation.journal.Journal;
@@ -58,7 +57,7 @@ public class PrevaylerFactory {
     private Monitor _monitor;
 	private ClassLoader _classLoader;
 
-	private JournalSerializationStrategy _journalSerializationStrategy;
+	private Serializer _journalSerializer;
 	private Map _snapshotSerializers = new HashMap();
 	private String _primarySnapshotSuffix;
 
@@ -226,7 +225,7 @@ public class PrevaylerFactory {
 
 
 	public void configureJournalSerializer(Serializer serializer) {
-		_journalSerializationStrategy = new JournalSerializationStrategy(serializer);
+		_journalSerializer = serializer;
 	}
 
 	
@@ -264,7 +263,7 @@ public class PrevaylerFactory {
 		GenericSnapshotManager snapshotManager = snapshotManager();
 		TransactionPublisher publisher = publisher(snapshotManager);
 		if (_serverPort != -1) new ServerListener(publisher, _serverPort);
-		return new PrevaylerImpl(snapshotManager, publisher, monitor(), journalSerializationStrategy());
+		return new PrevaylerImpl(snapshotManager, publisher, monitor(), journalSerializer());
 	}
 
 
@@ -287,7 +286,7 @@ public class PrevaylerFactory {
 
 	private TransactionCensor censor(GenericSnapshotManager snapshotManager) {
 		return _transactionFiltering
-			? (TransactionCensor) new StrictTransactionCensor(snapshotManager, journalSerializationStrategy())
+			? (TransactionCensor) new StrictTransactionCensor(snapshotManager, journalSerializer())
 			: new LiberalTransactionCensor(); 
 	}
 
@@ -295,13 +294,13 @@ public class PrevaylerFactory {
 	private Journal journal() throws IOException {
 		return _transientMode
 			? (Journal)new TransientJournal()
-			: new PersistentJournal(prevalenceDirectory(), _journalSizeThreshold, _journalAgeThreshold, journalSerializationStrategy(), monitor());
+			: new PersistentJournal(prevalenceDirectory(), _journalSizeThreshold, _journalAgeThreshold, journalSerializer(), monitor());
 	}
 
 	
-	private JournalSerializationStrategy journalSerializationStrategy() {
-		if (_journalSerializationStrategy != null) return _journalSerializationStrategy;
-		return new JournalSerializationStrategy(new JavaSerializer(_classLoader));
+	private Serializer journalSerializer() {
+		if (_journalSerializer != null) return _journalSerializer;
+		return new JavaSerializer(_classLoader);
 	}
 
 

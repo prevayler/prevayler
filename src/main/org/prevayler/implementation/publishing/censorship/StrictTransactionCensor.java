@@ -7,8 +7,8 @@ package org.prevayler.implementation.publishing.censorship;
 
 import org.prevayler.Transaction;
 import org.prevayler.foundation.DeepCopier;
-import org.prevayler.foundation.serialization.JournalSerializationStrategy;
-import org.prevayler.implementation.snapshot.*;
+import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
 import java.util.Date;
 
@@ -18,12 +18,12 @@ public class StrictTransactionCensor implements TransactionCensor {
 	private Object _royalFoodTaster;
 	private final GenericSnapshotManager _snapshotManager;
 
-	private final JournalSerializationStrategy _journalSerializationStrategy;
+	private final Serializer _journalSerializer;
 
 
-	public StrictTransactionCensor(GenericSnapshotManager snapshotManager, JournalSerializationStrategy journalSerializationStrategy) {
+	public StrictTransactionCensor(GenericSnapshotManager snapshotManager, Serializer journalSerializer) {
 		_snapshotManager = snapshotManager;
-		_journalSerializationStrategy = journalSerializationStrategy;
+		_journalSerializer = journalSerializer;
 		_king = _snapshotManager.recoveredPrevalentSystem();
 		//The _royalFoodTaster cannot be initialized here, or else the pending transactions will not be applied to it.
 	}
@@ -43,7 +43,7 @@ public class StrictTransactionCensor implements TransactionCensor {
 
 	private Transaction deepCopy(Transaction transaction) {
 		try {
-			return (Transaction) _journalSerializationStrategy.deepCopy(transaction);
+			return (Transaction) DeepCopier.deepCopy(transaction, _journalSerializer);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new RuntimeException("Unable to produce a copy of the transaction for trying out before applying it to the real system.");

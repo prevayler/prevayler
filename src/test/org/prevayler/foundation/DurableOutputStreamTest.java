@@ -1,7 +1,6 @@
 package org.prevayler.foundation;
 
 import org.prevayler.foundation.monitor.NullMonitor;
-import org.prevayler.foundation.serialization.JournalSerializationStrategy;
 import org.prevayler.foundation.serialization.JavaSerializer;
 
 import java.io.EOFException;
@@ -11,14 +10,12 @@ import java.io.IOException;
 public class DurableOutputStreamTest extends FileIOTest {
 
 	public void testSingleThreaded() throws Exception {
-		JournalSerializationStrategy strategy = new JournalSerializationStrategy(new JavaSerializer());
-
 		for (int i = 0; i < 10 /*5000*/; i++) {
 //            System.out.println("i=" + i);
 
 			File file = new File(_testDirectory, "stream" + i + ".bin");
 
-			DurableOutputStream out = new DurableOutputStream(file, strategy);
+			DurableOutputStream out = new DurableOutputStream(file, new JavaSerializer());
 
 			Turn myTurn = Turn.first();
 			out.sync("first", myTurn);
@@ -28,7 +25,7 @@ public class DurableOutputStreamTest extends FileIOTest {
 			assertTrue(out.reallyClosed());
 			assertEquals(2, out.fileSyncCount());
 
-			SimpleInputStream in = new SimpleInputStream(file, strategy, new NullMonitor());
+			SimpleInputStream in = new SimpleInputStream(file, new JavaSerializer(), new NullMonitor());
 			assertEquals("first", in.readObject());
 			assertEquals("second", in.readObject());
 			try {
@@ -44,12 +41,10 @@ public class DurableOutputStreamTest extends FileIOTest {
 	}
 
 	public void testMultiThreaded() throws Exception {
-		JournalSerializationStrategy strategy = new JournalSerializationStrategy(new JavaSerializer());
-
 		for (int i = 0; i < 10 /*5000*/; i++) {
 //            System.out.println("i=" + i);
 			File file = new File(_testDirectory, "stream" + i + ".bin");
-			DurableOutputStream out = new DurableOutputStream(file, strategy);
+			DurableOutputStream out = new DurableOutputStream(file, new JavaSerializer());
 
 			Turn one = Turn.first();
 			Turn two = one.next();
@@ -79,7 +74,7 @@ public class DurableOutputStreamTest extends FileIOTest {
 			assertTrue(out.reallyClosed());
 			assertEquals(syncsBeforeClose, out.fileSyncCount());
 
-			SimpleInputStream in = new SimpleInputStream(file, strategy, new NullMonitor());
+			SimpleInputStream in = new SimpleInputStream(file, new JavaSerializer(), new NullMonitor());
 			assertEquals("2.first", in.readObject());
 			assertEquals("1.first", in.readObject());
 			assertEquals("2.second", in.readObject());

@@ -4,21 +4,21 @@
 
 package org.prevayler.implementation;
 
-import java.io.IOException;
-import java.util.Date;
-
 import org.prevayler.Clock;
 import org.prevayler.Prevayler;
 import org.prevayler.Query;
 import org.prevayler.SureTransactionWithQuery;
 import org.prevayler.Transaction;
 import org.prevayler.TransactionWithQuery;
-import org.prevayler.foundation.monitor.*;
-import org.prevayler.foundation.serialization.JournalSerializationStrategy;
+import org.prevayler.foundation.DeepCopier;
+import org.prevayler.foundation.monitor.Monitor;
+import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
+import java.io.IOException;
+import java.util.Date;
 
 public class PrevaylerImpl implements Prevayler {
 
@@ -33,7 +33,7 @@ public class PrevaylerImpl implements Prevayler {
 	private boolean _ignoreRuntimeExceptions;
     private Monitor _monitor;
 
-	private final JournalSerializationStrategy _journalSerializationStrategy;
+	private final Serializer _journalSerializer;
 
 
 	/** Creates a new Prevayler
@@ -41,10 +41,10 @@ public class PrevaylerImpl implements Prevayler {
 	 * @param snapshotManager The SnapshotManager that will be used for reading and writing snapshot files.
 	 * @param transactionPublisher The TransactionPublisher that will be used for publishing transactions executed with this PrevaylerImpl.
 	 * @param prevaylerMonitor The Monitor that will be used to monitor interesting calls to this PrevaylerImpl.
-	 * @param journalSerializationStrategy
+	 * @param journalSerializer
 	 */
 	public PrevaylerImpl(GenericSnapshotManager snapshotManager, TransactionPublisher transactionPublisher,
-						 Monitor prevaylerMonitor, JournalSerializationStrategy journalSerializationStrategy) throws IOException, ClassNotFoundException {
+						 Monitor prevaylerMonitor, Serializer journalSerializer) throws IOException, ClassNotFoundException {
 	    _monitor = prevaylerMonitor;
 		_snapshotManager = snapshotManager;
 
@@ -59,7 +59,7 @@ public class PrevaylerImpl implements Prevayler {
 		_publisher.addSubscriber(subscriber(), _systemVersion + 1);
 		_ignoreRuntimeExceptions = false;
 
-		_journalSerializationStrategy = journalSerializationStrategy;
+		_journalSerializer = journalSerializer;
 	}
 
 	public Object prevalentSystem() { return _prevalentSystem; }
@@ -115,7 +115,7 @@ public class PrevaylerImpl implements Prevayler {
 
 	private Object deepCopy(Object transaction) {
 		try {
-			return _journalSerializationStrategy.deepCopy(transaction);
+			return DeepCopier.deepCopy(transaction, _journalSerializer);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new RuntimeException("Unable to produce a deep copy of a transaction. Deep copies of transactions are executed instead of the transactions themselves so that the behaviour of the system during transaction execution is exactly the same as during transaction recovery from the journal.");

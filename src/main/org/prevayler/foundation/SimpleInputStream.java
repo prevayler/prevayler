@@ -5,6 +5,12 @@
 
 package org.prevayler.foundation;
 
+import org.prevayler.foundation.monitor.Monitor;
+import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.implementation.journal.Chunk;
+import org.prevayler.implementation.journal.Chunking;
+
+import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,33 +18,32 @@ import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.UTFDataFormatException;
 
-import org.prevayler.foundation.monitor.Monitor;
-import org.prevayler.foundation.serialization.JournalDeserializer;
-import org.prevayler.foundation.serialization.JournalSerializationStrategy;
-
 
 public class SimpleInputStream {
 
 	private final File _file;
-	private final JournalDeserializer _delegate;
+	private final Serializer _serializer;
 	private boolean _EOF = false;
-    private Monitor _monitor;
+	private Monitor _monitor;
 	private FileInputStream _fileStream;
 
 
-	public SimpleInputStream(File file, JournalSerializationStrategy strategy, Monitor monitor) throws IOException {
-	    _monitor = monitor;
+	public SimpleInputStream(File file, Serializer serializer, Monitor monitor) throws IOException {
+		_monitor = monitor;
 		_file = file;
 		_fileStream = new FileInputStream(file);
-		_delegate = strategy.createDeserializer(_fileStream);
+		_serializer = serializer;
 	}
 
 
 	public Object readObject() throws IOException, ClassNotFoundException {
-        if (_EOF) throw new EOFException();
+		if (_EOF) throw new EOFException();
 
 		try {
-			return _delegate.readObject();
+			Chunk chunk = Chunking.readChunk(_fileStream);
+			if (chunk != null) {
+				return _serializer.readObject(new ByteArrayInputStream(chunk.getBytes()));
+			}
 		} catch (EOFException eofx) {
 			// Do nothing.
 		} catch (ObjectStreamException scx) {
@@ -65,4 +70,5 @@ public class SimpleInputStream {
 		_fileStream.close();
 		_EOF = true;
 	}
+
 }
