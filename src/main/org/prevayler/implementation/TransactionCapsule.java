@@ -49,12 +49,18 @@ public class TransactionCapsule implements Serializable {
 		return _serialized;
 	}
 
+	/**
+	 * Execute a freshly deserialized copy of the transaction. This method will synchronize on the prevalentSystem
+	 * while running the transaction but after deserializing it.
+	 */
 	public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer) {
 		if (_withQuery) {
 			TransactionWithQuery transactionWithQuery = (TransactionWithQuery) deserialize(journalSerializer);
 
 			try {
-				_queryResult = transactionWithQuery.executeAndQuery(prevalentSystem, executionTime);
+				synchronized (prevalentSystem) {
+					_queryResult = transactionWithQuery.executeAndQuery(prevalentSystem, executionTime);
+				}
 			} catch (RuntimeException rx) {
 				_queryException = rx;
 				throw rx;   //This is necessary because of the rollback feature.
@@ -64,7 +70,9 @@ public class TransactionCapsule implements Serializable {
 		} else {
 			Transaction transaction = (Transaction) deserialize(journalSerializer);
 
-			transaction.executeOn(prevalentSystem, executionTime);
+			synchronized (prevalentSystem) {
+				transaction.executeOn(prevalentSystem, executionTime);
+			}
 		}
 	}
 
@@ -82,6 +90,9 @@ public class TransactionCapsule implements Serializable {
 		return _queryResult;
 	}
 
+	/**
+	 * Make a clean copy of this capsule that will have its own query result fields.
+	 */
 	public TransactionCapsule cleanCopy() {
 		return new TransactionCapsule(_withQuery, _serialized);
 	}
