@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Vector;
 
-import org.javagroups.*;
-import org.javagroups.util.Util;
-import org.javagroups.blocks.*;
+import org.jgroups.*;
+import org.jgroups.util.Util;
+import org.jgroups.blocks.*;
 import org.prevayler.cluster.ClusterListener;
 
 public class Node implements RequestHandler, MessageListener, MembershipListener {

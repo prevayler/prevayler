@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE project [
     <!ENTITY general-utility-targets SYSTEM "file:./utility-targets.incl">
     <!ENTITY self-customized-targets SYSTEM "file:./custom-targets.incl">
@@ -40,12 +40,6 @@
     <property name="log4j.system.variable.name" value="${app.Name}.log.home" />
     <property name="log4j.log.path" location="${targetdir}/logs" />
 
-    <!-- Fileset for unit tests.  Default values specified in sample.build.properties.  Override in build.properties -->
-    <fileset id="unit.test.files"
-        dir="${srcdir.test}"
-        includes="${unit.test.includes}"
-        excludes="${unit.test.excludes}" />
-
 <!-- === Compilation Control Option Defaults. Override in build.properties === -->
 
     <property name="build.sysclasspath" value="last" />
@@ -59,7 +53,7 @@
 
     <path id="build.classpath" >
         <pathelement location="${skaringa.jar}"/>
-        <pathelement location="${javagroups.jar}"/>
+        <pathelement location="${jgroups.jar}"/>
         <pathelement location="${log4j.jar}"/>
         <pathelement location="${commons-jxpath.jar}"/>
         <pathelement location="${commons-logging.jar}"/>
@@ -131,6 +125,15 @@
             <mapper type="glob" from="sample.*" to="*" />
         </copy>
         <copy file="${basedir}/log4j.xml" todir="${classesdir.main}" />
+        <!-- Fileset for unit tests.  Default values specified in sample.build.properties.  Override in build.properties -->
+        <fileset id="unit.test.files"
+            dir="${srcdir.test}"
+            includes="${unit.test.includes}"
+            excludes="${unit.test.excludes}" />
+        <fileset id="unit.test.files.contrib"
+            dir="${classesdir.contrib}"
+            includes="${unit.test.includes.contrib}"
+            excludes="${unit.test.excludes.contrib}" />
         <tstamp/>
     </target>
 
@@ -260,6 +263,7 @@
                 usefile="yes" />
             <batchtest todir="${testreportdir}" >
                 <fileset refid="unit.test.files" />
+                <fileset refid="unit.test.files.contrib" />
             </batchtest>
         </junit>
         <antcall target="-test.report.html" />
@@ -301,8 +305,8 @@
             <param name="destfile"   value="${commons-jxpath.jar}"/>
         </antcall>
         <antcall target="-downloadzip">
-            <param name="sourcefile" value="${javagroups.loc}"/>
-            <param name="destfile"   value="${javagroups.jar}"/>
+            <param name="sourcefile" value="${jgroups.loc}"/>
+            <param name="destfile"   value="${jgroups.jar}"/>
         </antcall>
     </target>
     <target name="download.dependencies.runtime"
