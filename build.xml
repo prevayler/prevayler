@@ -17,6 +17,7 @@
     <property name="dist.home"              location="${basedir}/dist" />
     <property name="doc.home"               location="${basedir}/docs" />
     <property name="lib.home"               location="${basedir}/lib" />
+    <property name="contrib.home"           location="${contrib.path}" />
     <property name="dependencies.home"      location="${dependencies.path}" />
     <property name="src.home"               location="${basedir}/src" />
     <property name="src.core.home"          location="${src.home}/main" />
@@ -169,15 +170,26 @@
     <target name="dist" depends="jar,javadoc"
             description="Create binary distribution" >
 
-        <delete dir="${dependencies.home}" />
+        <mkdir dir="${dist.home}" />
 
         <!-- Generate ZIP distribution -->
-        <zip destfile="${dist.home}/${zip.name.dist}">
-            <zipfileset dir="${basedir}"        prefix="${app.name}" includes="*.xml, *.properties"/>
+        <zip destfile="${dist.home}/${file.name.dist}.zip">
+            <zipfileset dir="${basedir}"        prefix="${app.name}" includes="*.xml, *.incl, *.properties, *.txt"/>
+            <zipfileset dir="${contrib.home}"   prefix="${app.name}/${contrib.path}"/>
             <zipfileset dir="${doc.home}"       prefix="${app.name}/docs"/>
             <zipfileset dir="${lib.home}"       prefix="${app.name}/lib"/>
-            <zipfileset dir="${src.home}"       prefix="${app.name}/src" includes="**/*.java"/>
+            <zipfileset dir="${src.home}"       prefix="${app.name}/src"/>
         </zip>
+
+        <tar destfile="${dist.home}/${file.name.dist}.tar" longfile="gnu">
+            <tarfileset dir="${basedir}"        prefix="${app.name}" includes="*.xml, *.incl, *.properties, *.txt"/>
+            <tarfileset dir="${contrib.home}"   prefix="${app.name}/${contrib.path}"/>
+            <tarfileset dir="${doc.home}"       prefix="${app.name}/docs"/>
+            <tarfileset dir="${lib.home}"       prefix="${app.name}/lib"/>
+            <tarfileset dir="${src.home}"       prefix="${app.name}/src"/>
+        </tar>
+        <gzip src="${dist.home}/${file.name.dist}.tar" zipfile="${dist.home}/${file.name.dist}.tar.gz"/>
+        <delete file="${dist.home}/${file.name.dist}.tar" />
 
     </target>
 
@@ -243,33 +255,34 @@
 
 <!-- ==================== Jar Targets ================================== -->
 
-    <target name="jar" depends="jar.core, jar.full"
-            description="Creates all jars" />
-
-    <target name="jar.init" >
-
+    <target name="-jar.init" depends="clean, compile.core" >
         <mkdir dir="${lib.home}" />
-        <mkdir dir="${dist.home}" />
-
     </target>
 
-    <target name="jar.core" depends="compile.core, jar.init"
+    <target name="jar" depends="-jar.init, -jar.core, -jar.full"
+            description="Creates all jars" />
+    <target name="-jar.core"
             description="Creates a JAR containing only essential Prevayler files" >
-
-        <jar jarfile="${lib.home}/${jar.name.core}"
-             basedir="${build.home}"
-             excludes="**/demo/**,
-                      **/demos/**,
-                      **/test/**" />
-
+        <antcall target="-jar.sub">
+            <param name="jarfile" value="${jar.name.core}" />
+            <param name="excludes" value="**/demo/**,
+                                          **/demos/**,
+                                          **/test/**,
+                                          log4j.xml" />
+        </antcall>
+    </target>
+    <target name="-jar.full"
+            description="Creates a JAR containing all compiled files" >
+        <antcall target="-jar.sub">
+            <param name="jarfile" value="${jar.name.full}" />
+            <param name="excludes" value="log4j.xml" />
+        </antcall>
     </target>
 
-    <target name="jar.full" depends="compile, jar.init"
-            description="Creates a JAR containing all compiled files" >
-
-        <jar jarfile="${lib.home}/${jar.name.full}"
-             basedir="${build.home}" />
-
+    <target name="-jar.sub" if="jarfile" >
+        <jar jarfile="${lib.home}/${jarfile}"
+             basedir="${build.home}"
+             excludes="${excludes}" />
     </target>
 
 <!-- ==================== Test Targets ================================== -->
@@ -363,15 +376,6 @@
             description="Runs memento bank demonstration" >
 
         <java fork="true" classname="org.prevayler.demos.memento.TestErrorRecoveryWithMementos" >
-            <classpath refid="build.test.classpath" />
-        </java>
-
-    </target>
-    
-    <target name="run.demo.btree" depends="compile.contrib"
-            description="Runs btree demonstration" >
-
-        <java fork="true" classname="com.safedataco.util.stringpool.Main" >
             <classpath refid="build.test.classpath" />
         </java>
 
