@@ -5,6 +5,8 @@ import junit.framework.TestCase;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ChunkingTest extends TestCase {
 
@@ -60,6 +62,23 @@ public class ChunkingTest extends TestCase {
 		} catch (IOException exception) {
 			assertEquals(message, exception.getMessage());
 		}
+	}
+
+	public void testParameters() throws IOException {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		ChunkedOutputStream output = new ChunkedOutputStream(bytes);
+
+		Map parameters = new LinkedHashMap();
+		parameters.put("one", "uno");
+		parameters.put("two", "dos");
+		output.writeChunk("foo".getBytes("US-ASCII"), parameters);
+
+		assertEquals("3;one=uno;two=dos\r\nfoo\r\n", bytes.toString("US-ASCII"));
+
+		ChunkedInputStream input = new ChunkedInputStream(new ByteArrayInputStream(bytes.toByteArray()));
+
+		assertEquals("foo", new String(input.readChunk(), "US-ASCII"));
+		assertEquals(parameters, input.getParameters());
 	}
 
 }
