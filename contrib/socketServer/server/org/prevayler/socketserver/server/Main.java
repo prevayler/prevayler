@@ -56,7 +56,11 @@ public class Main {
         Class rootObjectClass = Class.forName(rootObjectClassName);
 
         // Create an instance of the root object class and start the server
-        prevayler = PrevaylerFactory.createPrevayler(rootObjectClass.newInstance(), prevalenceBase);
+        //prevayler = PrevaylerFactory.createPrevayler(rootObjectClass.newInstance(), prevalenceBase);
+        PrevaylerFactory factory = new PrevaylerFactory();
+        factory.configurePrevalentSystem(rootObjectClass.newInstance());
+        factory.configurePrevalenceBase(prevalenceBase);
+        prevayler = factory.create();
         snapshotThread = new SnapshotThread(prevayler);
         snapshotThread.start();
     }
