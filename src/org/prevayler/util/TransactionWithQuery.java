@@ -20,8 +20,11 @@ public abstract class TransactionWithQuery implements Transaction {
 	 * @throws Exception if the executeAndQuery(Object prevalentSystem) method implemented by the subclass throws an Exception.
 	 */
 	public Object executeUsing(Prevayler prevayler) throws Exception {
-		prevayler.execute(this);
-		if (_exception != null) throw _exception;
+        try {
+            prevayler.execute(this);
+        } catch (Exception e) {
+        }
+        if (_exception != null) throw _exception;
 		return _result;
 	}
 
@@ -33,6 +36,7 @@ public abstract class TransactionWithQuery implements Transaction {
 			_result = executeAndQuery(prevalentSystem);
 		} catch (Exception ex) {
 			_exception = ex;
+            throw new RuntimeException();
 		}
 	}
 

@@ -13,7 +13,6 @@ abstract class RobustAction extends AbstractAction {
 		try {
 			action();
 		} catch (Exception exception) {
-            if (exception instanceof RuntimeException) throw (RuntimeException)exception;
 			display(exception);
 		}
 	}

@@ -19,12 +19,12 @@ import org.prevayler.implementation.log.TransactionLogger;
  */
 public class SnapshotPrevayler implements Prevayler {
 
-	private final Object _prevalentSystem;
+	protected final Object _prevalentSystem;
 	long _systemVersion = 0;
 
-	private final SnapshotManager _snapshotManager;
+	protected final SnapshotManager _snapshotManager;
 
-	private final TransactionPublisher _publisher;
+	protected final TransactionPublisher _publisher;
 	private final TransactionSubscriber _subscriber = subscriber();
 
 

@@ -40,14 +40,22 @@ public class SnapshotManager {
 
 	/** Serializes prevalentSystem and writes it to snapshotFile. You can overload this method to use a serialization mechanism other than Java's. E.g: XML.
 	*/
-	protected void writeSnapshot(Object prevalentSystem, File snapshotFile) throws IOException {
-		SimpleOutputStream stream = new SimpleOutputStream(snapshotFile);
-		stream.writeObject(prevalentSystem);
-		stream.close();
+	void writeSnapshot(Object prevalentSystem, File snapshotFile) throws IOException {
+        OutputStream out = new FileOutputStream(snapshotFile);
+        try {
+            writeSnapshot(prevalentSystem, out);
+        } finally {
+            out.close();
+        }
 	}
 
+    protected void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
+        ObjectOutputStream stream = new ObjectOutputStream(out);
+        stream.writeObject(prevalentSystem);
+    }
 
-	/** Returns "snapshot", the default suffix/extension for snapshot files. You can overload this method and return a different suffix if you want. E.g: "XmlSnapshot"
+
+    /** Returns "snapshot", the default suffix/extension for snapshot files. You can overload this method and return a different suffix if you want. E.g: "XmlSnapshot"
 	*/
 	protected String suffix() {
 		return "snapshot";
@@ -68,7 +76,6 @@ public class SnapshotManager {
 		return result;
 	}
 
-
 	Object readSnapshot(Object initialVersion, long version) throws ClassNotFoundException, IOException {
 		if (version == 0) return initialVersion;
 
@@ -79,13 +86,20 @@ public class SnapshotManager {
 
 	/** Deserializes and returns the object contained in snapshotFile. You can overload this method to use a deserialization mechanism other than Java's. E.g: XML.
 	*/
-	protected Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {
-		SimpleInputStream ois = new SimpleInputStream(snapshotFile);
-		try {	return ois.readObject(); } finally { ois.close(); }
+	Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {
+        FileInputStream in = new FileInputStream(snapshotFile);
+        try {
+            return readSnapshot(in);
+        } finally { in.close(); }
 	}
 
+    protected Object readSnapshot(InputStream in) throws IOException, ClassNotFoundException {
+        ObjectInputStream ois = new ObjectInputStream(in);
+        return ois.readObject();
+    }
 
-	private File snapshotFile(long version) {
+
+    private File snapshotFile(long version) {
 		String fileName = "0000000000000000000" + version;
 		return new File(directory, fileName.substring(fileName.length() - 19) + "." + suffix());
 	}
