@@ -14,20 +14,25 @@ import java.io.ObjectStreamException;
 import java.io.UTFDataFormatException;
 
 import org.prevayler.foundation.monitor.*;
+import org.prevayler.foundation.serialization.JavaSerializationStrategy;
+import org.prevayler.foundation.serialization.Deserializer;
+import org.prevayler.foundation.serialization.SerializationStrategy;
 
 
 public class SimpleInputStream {
 
 	private final File _file;
-	private final ObjectInputStream _delegate;
+	private final Deserializer _delegate;
 	private boolean _EOF = false;
     private Monitor _monitor;
+	private FileInputStream _fileStream;
 
 
-	public SimpleInputStream(File file, ClassLoader loader, Monitor monitor) throws IOException {
+	public SimpleInputStream(File file, SerializationStrategy strategy, Monitor monitor) throws IOException {
 	    _monitor = monitor;
 		_file = file;
-		_delegate = new ObjectInputStreamWithClassLoader(new FileInputStream(file), loader);
+		_fileStream = new FileInputStream(file);
+		_delegate = strategy.createDeserializer(_fileStream);
 	}
 
 
@@ -46,7 +51,7 @@ public class SimpleInputStream {
 			ignoreStreamCorruption(rx);
 		}
 
-		_delegate.close();
+		_fileStream.close();
 		_EOF = true;
 		throw new EOFException();
 	}
@@ -59,7 +64,7 @@ public class SimpleInputStream {
 
 
 	public void close() throws IOException {
-		_delegate.close();
+		_fileStream.close();
 		_EOF = true;
 	}
 }

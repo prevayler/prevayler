@@ -1,4 +1,242 @@
-//Prevayler(TM) - The Free-Software Prevalence Layer.//Copyright (C) 2001-2004 Klaus Wuestefeld//This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.//Contributions: Justin Sampson.
+//Prevayler(TM) - The Free-Software Prevalence Layer.
+//Copyright (C) 2001-2004 Klaus Wuestefeld
+//This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//Contributions: Justin Sampson.
 package org.prevayler.foundation;
-import java.io.*;
-public class DurableOutputStream {	/**	 * These two locks allow the two main activities of this class,	 * serializing transactions to a buffer on the one hand and flushing	 * the buffer and syncing to disk on the other hand, to proceed	 * concurrently. Note that where both locks are required, we always	 * acquire the _syncLock before acquiring the _writeLock to avoid	 * deadlock.	 */	private final Object _writeLock = new Object();	private final Object _syncLock = new Object();	/** The File object is only stashed for the sake of the file() getter. */	private final File _file;	/** All access guarded by _writeLock. */	private final ObjectOutputStream _objectOutputStream;	/** All access guarded by _syncLock. */	private final FileOutputStream _fileOutputStream;	/** All access guarded by _syncLock. */	private final FileDescriptor _fileDescriptor;	/** All access guarded by _writeLock. */	private ByteArrayOutputStream _active = new ByteArrayOutputStream();	/** All access guarded by _syncLock. */	private ByteArrayOutputStream _inactive = new ByteArrayOutputStream();	/** All access guarded by _writeLock. */	private boolean _closed = false;	/** All access guarded by _writeLock. */	private int _objectsWritten = 0;	/** All access guarded by _syncLock. */	private int _objectsSynced = 0;	/** All access guarded by _syncLock. */	private int _fileSyncCount = 0;	public DurableOutputStream(File file) throws IOException {		_file = file;		_fileOutputStream = new FileOutputStream(file);		_fileDescriptor = _fileOutputStream.getFD();		// All writes by _objectOutputStream go straight through to the _active		// buffer. Note that we can't just pass _active into the constructor		// because it gets swapped with _inactive, and we must always be		// writing to the current _active buffer. Accessing _active here is		// safe because we only write to or flush _objectOutputStream when we		// are already holding the _writeLock.		_objectOutputStream = new ObjectOutputStream(new OutputStream() {			public void write(byte[] b) throws IOException {				_active.write(b);			}			public void write(byte[] b, int off, int len) throws IOException {				_active.write(b, off, len);			}			public void write(int b) throws IOException {				_active.write(b);			}		});	}	public void sync(Object object, Turn myTurn) throws IOException {		int thisWrite;		// When a thread arrives here, all we care about at first is that it		// gets properly sequenced according to its turn.		try {			myTurn.start();			thisWrite = writeObject(object);		} finally {			myTurn.end();		}		// Now, having ended the turn, the next thread is allowed to come in		// and try to write its object before we get to the sync.		waitUntilSynced(thisWrite);	}	private int writeObject(Object object) throws IOException {		synchronized (_writeLock) {			if (_closed) {				throw new IOException("already closed");			}			try {				// Resetting an ObjectOutputStream allows it to forget all of				// the objects it has seen, which could improve memory usage				// during long periods of uptime. Otherwise, the				// ObjectOutputStream would have to remember the identity of				// every single object it had ever written out, just in case it				// were to be written again, so that it could write a				// back-reference instead of writing the object itself. Of				// course, that's not what we would want anyway, since				// transactions are supposed to be completely independent.				_objectOutputStream.writeObject(object);				_objectOutputStream.reset();			} catch (IOException exception) {				internalClose();				throw exception;			}			_objectsWritten++;			return _objectsWritten;		}	}	private void waitUntilSynced(int thisWrite) throws IOException {		// Here's the real magic. If this thread is the first to have written		// an object after a period of inactivity, and there are no other		// threads coming in, then thisWrite is trivially one greater than		// _objectsSynced, so this thread goes right ahead to sync its own		// object alone. But then, if another thread comes along and writes		// another object while this thread is syncing, it will write to the		// _active buffer and then promply block on the _syncLock until this		// thread finishes the sync. If threads continue to come in at just		// about the rate that syncs can happen, each thread will wait for the		// previous sync to complete and then initiate its own sync. The		// latency for the first thread is exactly the time for one sync, which		// is the minimum possible latency; the latency for any later thread is		// somewhere between that minimum and a maximum of two syncs, with the		// average being closer to the minimum end.		//		// Now, consider the steady state under heavy load. Some thread will		// always be syncing the _inactive buffer to disk, so every thread that		// arrives will write its object to the _active buffer and then wait		// here on the _syncLock. If 10 threads arrive during a given sync		// operation, then _active will hold 10 objects when that sync		// completes. As soon as that earlier thread releases _syncLock, one of		// those 10 new threads will acquire the lock and notice that its		// object has not yet been synced; it will then swap the buffers and		// flush and sync all 10 objects at once. Each of the 10 threads will		// acquire _syncLock in turn and now see that their object has already		// been synced and do nothing.		synchronized (_syncLock) {			if (_objectsSynced < thisWrite) {				int objectsWritten;				synchronized (_writeLock) {					if (_closed) {						throw new IOException("already closed");					}					try {						_objectOutputStream.flush();					} catch (IOException exception) {						internalClose();						throw exception;					}					ByteArrayOutputStream swap = _active;					_active = _inactive;					_inactive = swap;					objectsWritten = _objectsWritten;				}				try {					// Resetting the buffer clears its contents but keeps the					// allocated space. Therefore the buffers should quickly					// reach a steady state of an appropriate size and then not					// need to grow any more.					_inactive.writeTo(_fileOutputStream);					_inactive.reset();					_fileOutputStream.flush();					// Dropping the priority around the sync seems to have a					// somewhat favorable effect on throughput, at least on					// some Windows machines. Whether the effect has survived					// the various rewrites of this class enough to justify					// the continuing maintanence of this bit of code needs					// to be investigated.					Thread currentThread = Thread.currentThread();					int originalPriority = currentThread.getPriority();					currentThread.setPriority(Thread.MIN_PRIORITY);					try {						_fileDescriptor.sync();					} finally {						currentThread.setPriority(originalPriority);					}				} catch (IOException exception) {					internalClose();					throw exception;				}				_objectsSynced = objectsWritten;				_fileSyncCount++;			}		}	}	public void close() throws IOException {		synchronized (_syncLock) {			synchronized (_writeLock) {				if (_closed) {					return;				}				internalClose();				_fileOutputStream.close();			}		}	}	private void internalClose() {		synchronized (_writeLock) {			_closed = true;			_active = null;			_inactive = null;		}	}	public File file() {		return _file;	}	public synchronized int fileSyncCount() {		synchronized (_syncLock) {			return _fileSyncCount;		}	}	public boolean reallyClosed() {		synchronized (_writeLock) {			return _closed;		}	}}
+import org.prevayler.foundation.serialization.JavaSerializationStrategy;
+import org.prevayler.foundation.serialization.Serializer;
+
+import java.io.*;
+
+public class DurableOutputStream {
+	/**
+	 * These two locks allow the two main activities of this class,
+	 * serializing transactions to a buffer on the one hand and flushing
+	 * the buffer and syncing to disk on the other hand, to proceed
+	 * concurrently. Note that where both locks are required, we always
+	 * acquire the _syncLock before acquiring the _writeLock to avoid
+	 * deadlock.
+	 */
+	private final Object _writeLock = new Object();
+	private final Object _syncLock = new Object();
+
+	/** The File object is only stashed for the sake of the file() getter. */
+	private final File _file;
+
+	/** All access guarded by _writeLock. */
+	private final Serializer _serializer;
+
+	/** All access guarded by _syncLock. */
+	private final FileOutputStream _fileOutputStream;
+
+	/** All access guarded by _syncLock. */
+	private final FileDescriptor _fileDescriptor;
+
+	/** All access guarded by _writeLock. */
+	private ByteArrayOutputStream _active = new ByteArrayOutputStream();
+
+	/** All access guarded by _syncLock. */
+	private ByteArrayOutputStream _inactive = new ByteArrayOutputStream();
+
+	/** All access guarded by _writeLock. */
+	private boolean _closed = false;
+
+	/** All access guarded by _writeLock. */
+	private int _objectsWritten = 0;
+
+	/** All access guarded by _syncLock. */
+	private int _objectsSynced = 0;
+
+	/** All access guarded by _syncLock. */
+	private int _fileSyncCount = 0;
+
+	public DurableOutputStream(File file) throws IOException {
+		_file = file;
+		_fileOutputStream = new FileOutputStream(file);
+		_fileDescriptor = _fileOutputStream.getFD();
+
+		// All writes by _serializer go straight through to the _active
+		// buffer. Note that we can't just pass _active into the constructor
+		// because it gets swapped with _inactive, and we must always be
+		// writing to the current _active buffer. Accessing _active here is
+		// safe because we only write to or flush _serializer when we
+		// are already holding the _writeLock.
+
+		OutputStream swappableStream = new OutputStream() {
+			public void write(byte[] b) throws IOException {
+				_active.write(b);
+			}
+
+			public void write(byte[] b, int off, int len) throws IOException {
+				_active.write(b, off, len);
+			}
+
+			public void write(int b) throws IOException {
+				_active.write(b);
+			}
+		};
+
+		_serializer = new JavaSerializationStrategy().createSerializer(swappableStream);
+	}
+
+	public void sync(Object object, Turn myTurn) throws IOException {
+		int thisWrite;
+
+		// When a thread arrives here, all we care about at first is that it
+		// gets properly sequenced according to its turn.
+
+		try {
+			myTurn.start();
+			thisWrite = writeObject(object);
+		} finally {
+			myTurn.end();
+		}
+
+		// Now, having ended the turn, the next thread is allowed to come in
+		// and try to write its object before we get to the sync.
+
+		waitUntilSynced(thisWrite);
+	}
+
+	private int writeObject(Object object) throws IOException {
+		synchronized (_writeLock) {
+			if (_closed) {
+				throw new IOException("already closed");
+			}
+
+			try {
+				_serializer.writeObject(object);
+			} catch (IOException exception) {
+				internalClose();
+				throw exception;
+			}
+
+			_objectsWritten++;
+			return _objectsWritten;
+		}
+	}
+
+	private void waitUntilSynced(int thisWrite) throws IOException {
+		// Here's the real magic. If this thread is the first to have written
+		// an object after a period of inactivity, and there are no other
+		// threads coming in, then thisWrite is trivially one greater than
+		// _objectsSynced, so this thread goes right ahead to sync its own
+		// object alone. But then, if another thread comes along and writes
+		// another object while this thread is syncing, it will write to the
+		// _active buffer and then promply block on the _syncLock until this
+		// thread finishes the sync. If threads continue to come in at just
+		// about the rate that syncs can happen, each thread will wait for the
+		// previous sync to complete and then initiate its own sync. The
+		// latency for the first thread is exactly the time for one sync, which
+		// is the minimum possible latency; the latency for any later thread is
+		// somewhere between that minimum and a maximum of two syncs, with the
+		// average being closer to the minimum end.
+		//
+		// Now, consider the steady state under heavy load. Some thread will
+		// always be syncing the _inactive buffer to disk, so every thread that
+		// arrives will write its object to the _active buffer and then wait
+		// here on the _syncLock. If 10 threads arrive during a given sync
+		// operation, then _active will hold 10 objects when that sync
+		// completes. As soon as that earlier thread releases _syncLock, one of
+		// those 10 new threads will acquire the lock and notice that its
+		// object has not yet been synced; it will then swap the buffers and
+		// flush and sync all 10 objects at once. Each of the 10 threads will
+		// acquire _syncLock in turn and now see that their object has already
+		// been synced and do nothing.
+
+		synchronized (_syncLock) {
+			if (_objectsSynced < thisWrite) {
+				int objectsWritten;
+				synchronized (_writeLock) {
+					if (_closed) {
+						throw new IOException("already closed");
+					}
+
+					try {
+						_serializer.flush();
+					} catch (IOException exception) {
+						internalClose();
+						throw exception;
+					}
+
+					ByteArrayOutputStream swap = _active;
+					_active = _inactive;
+					_inactive = swap;
+
+					objectsWritten = _objectsWritten;
+				}
+
+				try {
+					// Resetting the buffer clears its contents but keeps the
+					// allocated space. Therefore the buffers should quickly
+					// reach a steady state of an appropriate size and then not
+					// need to grow any more.
+
+					_inactive.writeTo(_fileOutputStream);
+					_inactive.reset();
+					_fileOutputStream.flush();
+
+					// Dropping the priority around the sync seems to have a
+					// somewhat favorable effect on throughput, at least on
+					// some Windows machines. Whether the effect has survived
+					// the various rewrites of this class enough to justify
+					// the continuing maintanence of this bit of code needs
+					// to be investigated.
+
+					Thread currentThread = Thread.currentThread();
+					int originalPriority = currentThread.getPriority();
+					currentThread.setPriority(Thread.MIN_PRIORITY);
+
+					try {
+						_fileDescriptor.sync();
+					} finally {
+						currentThread.setPriority(originalPriority);
+					}
+				} catch (IOException exception) {
+					internalClose();
+					throw exception;
+				}
+
+				_objectsSynced = objectsWritten;
+				_fileSyncCount++;
+			}
+		}
+	}
+
+	public void close() throws IOException {
+		synchronized (_syncLock) {
+			synchronized (_writeLock) {
+				if (_closed) {
+					return;
+				}
+
+				internalClose();
+				_fileOutputStream.close();
+			}
+		}
+	}
+
+	private void internalClose() {
+		synchronized (_writeLock) {
+			_closed = true;
+			_active = null;
+			_inactive = null;
+		}
+	}
+
+	public File file() {
+		return _file;
+	}
+
+	public synchronized int fileSyncCount() {
+		synchronized (_syncLock) {
+			return _fileSyncCount;
+		}
+	}
+
+	public boolean reallyClosed() {
+		synchronized (_writeLock) {
+			return _closed;
+		}
+	}
+}
