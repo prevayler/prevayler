@@ -28,13 +28,12 @@ public class XStreamSnapshotManager extends AbstractSnapshotManager {
     private XStream _xstream;
     
 	public XStreamSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
-		super(newPrevalentSystem, snapshotDirectoryName);
-		_xstream = new XStream();
+		this(new XStream(), newPrevalentSystem, snapshotDirectoryName);
 	}
 
 	public XStreamSnapshotManager(XStream xstream, Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
-		super(newPrevalentSystem, snapshotDirectoryName);
 		_xstream = xstream;
+		init(newPrevalentSystem, snapshotDirectoryName);
 	}
 
     /**

@@ -15,30 +15,28 @@ import org.prevayler.foundation.*;
  */
 public abstract class AbstractSnapshotManager implements SnapshotManager {
 
-    private final File _directory;
-	private final Object _recoveredPrevalentSystem;
-	private final long _recoveredVersion;
+    private File _directory;
+	private Object _recoveredPrevalentSystem;
+	private long _recoveredVersion;
 
-    //this is only here for NullSnapshotManager support
-	AbstractSnapshotManager(Object newPrevalentSystem) {
+	// this is only here for NullSnapshotManager support
+	protected void nullInit(Object recoveredPrevalentSystem) {
 		_directory = null;
-        _recoveredVersion = 0;
-        _recoveredPrevalentSystem = newPrevalentSystem;
+		_recoveredVersion = 0;
+		_recoveredPrevalentSystem = recoveredPrevalentSystem;
 	}
-
 
 	/**
      * @param newPrevalentSystem The prevalentSystem to serialize/deserialize
      * @param snapshotDirectoryName The path of the directory where the last snapshot file will be read and where the new snapshot files will be created.
 	 */
-	public AbstractSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
+	protected void init(Object newPrevalentSystem, String snapshotDirectoryName) throws IOException, ClassNotFoundException {
 		_directory = FileManager.produceDirectory(snapshotDirectoryName);
 		_recoveredVersion = latestVersion();
 		_recoveredPrevalentSystem = _recoveredVersion == 0
 			? newPrevalentSystem
 			: readSnapshot(_recoveredVersion);
 	}
-
 
 	public Object recoveredPrevalentSystem() { return _recoveredPrevalentSystem; }
 

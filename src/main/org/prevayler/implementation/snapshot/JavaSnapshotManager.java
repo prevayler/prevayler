@@ -15,14 +15,15 @@ public class JavaSnapshotManager extends AbstractSnapshotManager {
 
     //this is only here for NullSnapshotManager support
     JavaSnapshotManager(Object newPrevalentSystem) {
-        super(newPrevalentSystem);
+        nullInit(newPrevalentSystem);
     }
 
 	/**
-     * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager#AbstractSnapshotManager(Object, String)
+     * @param newPrevalentSystem The prevalentSystem to serialize/deserialize
+     * @param snapshotDirectoryName The path of the directory where the last snapshot file will be read and where the new snapshot files will be created.
 	 */
 	public JavaSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
-		super(newPrevalentSystem, snapshotDirectoryName);
+		init(newPrevalentSystem, snapshotDirectoryName);
 	}
 
 

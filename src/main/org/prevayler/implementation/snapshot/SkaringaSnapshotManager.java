@@ -36,7 +36,7 @@ import com.skaringa.javaxml.*;
 public class SkaringaSnapshotManager extends AbstractSnapshotManager {
 
 	public SkaringaSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
-		super(newPrevalentSystem, snapshotDirectoryName);
+		init(newPrevalentSystem, snapshotDirectoryName);
 	}
 
 
