@@ -50,8 +50,10 @@ public class ReplicationTest extends FileIOTest {
 		serverAppend("c", "abc");
 	}
 */
+	
+//	 TODO Test Prevayler.execute() on the "clientWithServer" (middle of the replication chain).
 
-
+	
 	private void serverAppend(String appendix, String expectedResult) {
 		append(_server, appendix, expectedResult);
 	}
