@@ -125,6 +125,7 @@
             <mapper type="glob" from="sample.*" to="*" />
         </copy>
         <copy file="${basedir}/log4j.xml" todir="${classesdir.main}" />
+        <copy file="${rootdir}/docs/license.txt" tofile="${classesdir.main}/META-INF/Prevayler.license.txt" />
         <!-- Fileset for unit tests.  Default values specified in sample.build.properties.  Override in build.properties -->
         <fileset id="unit.test.files"
             dir="${srcdir.test}"
@@ -219,8 +220,10 @@
     <target name="dist" depends="-distvalidcheck, jar, javadoc, -download.dist"
             description="Create binary distribution" >
         <copy todir="${libdir}" file="${skaringa.jar}"/>
-        <!--<copy todir="${libdir}" file="${log4j.jar}"/>
         <copy todir="${libdir}" file="${commons-logging.jar}"/>
+        <copy tofile="${libdir}/Skaringa.license.txt" file="${skaringa.license}"/>
+        <copy tofile="${libdir}/commons-logging.license.txt" file="${commons-logging.license}"/>
+        <!--<copy todir="${libdir}" file="${log4j.jar}"/>
         <copy todir="${libdir}" file="${xml-apis.jar}"/>
         <copy todir="${libdir}" file="${xalan.jar}"/>-->
         <!-- Generate ZIP distribution -->
