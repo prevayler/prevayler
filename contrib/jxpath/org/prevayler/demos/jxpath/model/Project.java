@@ -81,4 +81,10 @@ public class Project
     public void setId(int id) {
         this.id = id;
     }
+
+    public String toString() {
+        return "Project Id: " + id
+             + "\n      Name: " + name
+             + "\n     Tasks:...\n" + tasks;
+    }
 }

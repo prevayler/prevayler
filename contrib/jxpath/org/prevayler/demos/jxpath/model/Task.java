@@ -87,4 +87,10 @@ public class Task implements Serializable {
 		this.id = id;
 	}
 
+        public String toString() {
+            return "\n   Task Id: " + id
+                 + "\n      Name: " + name
+                 + "\nDate start: " + start
+                 + "\n  Date end: " + end + "\n";
+        }
 }
