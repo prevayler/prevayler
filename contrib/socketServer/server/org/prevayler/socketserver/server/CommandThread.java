@@ -41,8 +41,6 @@ import org.prevayler.TransactionWithQuery;
  * @author DaveO
  */
 public class CommandThread extends Thread {
-    private static long id=0;
-
     private Prevayler prevayler;
     private Socket socket;
     private long myId;

@@ -147,8 +147,8 @@ public class Main {
         new ClientConfig();
         
         // Get the config options
-        int basePort = Integer.parseInt(ClientConfig.configFile.properties.getProperty("BasePort"));
-        String remoteHost = ClientConfig.configFile.properties.getProperty("RemoteHost");
+        int basePort = Integer.parseInt(Config.properties.getProperty("BasePort"));
+        String remoteHost = Config.properties.getProperty("RemoteHost");
         
         // Connect to the server
         try {

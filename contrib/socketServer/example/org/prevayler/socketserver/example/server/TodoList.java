@@ -28,8 +28,6 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.TreeMap;
 
-import org.prevayler.socketserver.server.Notification;
-
 /**
  * A simple Todo list
  * @author djo
