@@ -24,7 +24,7 @@ public class NetworkMock implements Network {
 			return server.openClientSocket();
 		} catch (IOException e) {
 			Cool.sleep(5);
-			return server.openClientSocket(); //Retry after a while.
+			return server.openClientSocket(); //TODO Eliminate this retry because client must try and reconnect anyway.
 		}
 	}
 
