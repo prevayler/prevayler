@@ -2,22 +2,25 @@
 // Copyright (C) 2001 Klaus Wuestefeld.
 // This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License version 2.1 as published by the Free Software Foundation. This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 
-package org.prevayler.test;
+package org.prevayler.test.scalability.prevayler;
 
-import java.io.Serializable;
+import org.prevayler.test.scalability.Record;
 import org.prevayler.*;
 
-/** The Addition command for the AddingSystem.
-*/
-class Addition implements Command {
+class ManipulationTransaction implements Command {
 
-    Addition(long value) {
-        this.value = value;
-    }
+	private final Record recordToInsert;
+	private final Record recordToUpdate;
+	private final long idToDelete;
 
-    public Serializable execute(PrevalentSystem system) {
-        return ((AddingSystem)system).add(value);
-    }
+	ManipulationTransaction(Record recordToInsert, Record recordToUpdate, long idToDelete) {
+		this.recordToInsert = recordToInsert;
+		this.recordToUpdate = recordToUpdate;
+		this.idToDelete = idToDelete;
+	}
 
-    private long value;
+	public java.io.Serializable execute(PrevalentSystem system) {
+		((ManipulationSystem)system).performTransaction(recordToInsert, recordToUpdate, idToDelete);
+		return null;
+	}
 }

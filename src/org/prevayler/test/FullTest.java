@@ -4,32 +4,35 @@
 
 package org.prevayler.test;
 
-import java.util.*;
+                    import java.util.*;
 
 /** The main class for testing Prevayler.
 */
 public class FullTest {
 
     static public void main(String[] args) {
-	try {
-	    header("Persistence Test...");
-	    PersistenceTest.run();
+        try {
+            header("PersistenceTest...");
+            PersistenceTest.run();
 
-	    header("S U C C E S S ! ! !  Can't you think of any more tests?");
+            header("AlarmClockTest...");
+            AlarmClockTest.run();
 
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
+            header("S U C C E S S ! ! !  Can't you think of any more tests?");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 
     static private void header(String head) {
-	out("");
-	out("");
-	out("> > > " + head);
+        out("");
+        out("");
+        out("> > > " + head);
 	}
 
     static private void out(Object obj) {
-	System.out.println(obj);
+        System.out.println(obj);
 	}
 
 }

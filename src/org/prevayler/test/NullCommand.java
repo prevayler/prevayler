@@ -7,17 +7,9 @@ package org.prevayler.test;
 import java.io.Serializable;
 import org.prevayler.*;
 
-/** The Addition command for the AddingSystem.
-*/
-class Addition implements Command {
-
-    Addition(long value) {
-        this.value = value;
-    }
+public class NullCommand implements Command {
 
     public Serializable execute(PrevalentSystem system) {
-        return ((AddingSystem)system).add(value);
+        return null;
     }
-
-    private long value;
 }
