@@ -7,6 +7,8 @@ package org.prevayler;
 
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.monitor.SimpleMonitor;
+import org.prevayler.foundation.network.Network;
+import org.prevayler.foundation.network.NetworkImpl;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.serialization.SkaringaSerializer;
@@ -53,18 +55,20 @@ public class PrevaylerFactory {
 	private long _journalSizeThreshold;
 	private long _journalAgeThreshold;
 	
+	private Network _network;
 	private int _serverPort = -1;
 	private String _remoteServerIpAddress;
 	private int _remoteServerPort;
-    private Monitor _monitor;
+	public static final int DEFAULT_REPLICATION_PORT = 8756;
+
+	private Monitor _monitor;
+	
 	private ClassLoader _classLoader;
 
 	private Serializer _journalSerializer;
 	private String _journalSuffix;
 	private Map _snapshotSerializers = new HashMap();
 	private String _primarySnapshotSuffix;
-
-	public static final int DEFAULT_REPLICATION_PORT = 8756;
 
 
 	/** Creates a Prevayler that will use a directory called "PrevalenceBase" under the current directory to read and write its .snapshot and .journal files.
@@ -254,6 +258,10 @@ public class PrevaylerFactory {
 	}
 
 
+	public void configureNetwork(Network network) {
+		_network = network;
+	}
+
 	public void configureSnapshotSerializer(JavaSerializer serializer) {
 		configureSnapshotSerializer("snapshot", serializer);
 	}
@@ -288,7 +296,7 @@ public class PrevaylerFactory {
 	public Prevayler create() throws IOException, ClassNotFoundException {
 		GenericSnapshotManager snapshotManager = snapshotManager();
 		TransactionPublisher publisher = publisher(snapshotManager);
-		if (_serverPort != -1) new ServerListener(publisher, _serverPort);
+		if (_serverPort != -1) new ServerListener(publisher, network(), _serverPort);
 		return new PrevaylerImpl(snapshotManager, publisher, monitor(), journalSerializer());
 	}
 
@@ -305,7 +313,7 @@ public class PrevaylerFactory {
 
 
 	private TransactionPublisher publisher(GenericSnapshotManager snapshotManager) throws IOException {
-		if (_remoteServerIpAddress != null) return new ClientPublisher(_remoteServerIpAddress, _remoteServerPort);
+		if (_remoteServerIpAddress != null) return new ClientPublisher(network(), _remoteServerIpAddress, _remoteServerPort);
 		return new CentralPublisher(clock(), censor(snapshotManager), journal()); 
 	}
 
@@ -333,24 +341,24 @@ public class PrevaylerFactory {
 	}
 
 	private String journalSuffix() {
-		if (_journalSuffix != null) return _journalSuffix;
-		return "journal";
+		return _journalSuffix != null ? _journalSuffix : "journal";
 	}
 
+	private Network network() {
+		return _network != null ? _network : new NetworkImpl();
+	}
 
 	private GenericSnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
-		if (_nullSnapshotManager != null) {
+		if (_nullSnapshotManager != null)
 			return _nullSnapshotManager;
-		} else {
-			PrevaylerDirectory directory = new PrevaylerDirectory(prevalenceDirectory());
-			if (!_snapshotSerializers.isEmpty()) {
-				return new GenericSnapshotManager(_snapshotSerializers, _primarySnapshotSuffix, prevalentSystem(), directory, journalSerializer());
-			} else {
-				String snapshotSuffix = "snapshot";
-				JavaSerializer snapshotSerializer = new JavaSerializer(_classLoader);
-				return new GenericSnapshotManager(Collections.singletonMap(snapshotSuffix, snapshotSerializer), snapshotSuffix, prevalentSystem(), directory, journalSerializer());
-			}
-		}
+		
+		PrevaylerDirectory directory = new PrevaylerDirectory(prevalenceDirectory());
+		if (!_snapshotSerializers.isEmpty())
+			return new GenericSnapshotManager(_snapshotSerializers, _primarySnapshotSuffix, prevalentSystem(), directory, journalSerializer());
+
+		String snapshotSuffix = "snapshot";
+		JavaSerializer snapshotSerializer = new JavaSerializer(_classLoader);
+		return new GenericSnapshotManager(Collections.singletonMap(snapshotSuffix, snapshotSerializer), snapshotSuffix, prevalentSystem(), directory, journalSerializer());
 	}
 
 	

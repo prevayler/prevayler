@@ -5,7 +5,6 @@
 package org.prevayler.implementation.replication;
 
 import org.prevayler.foundation.network.Network;
-import org.prevayler.foundation.network.NetworkImpl;
 import org.prevayler.foundation.network.ObjectServerSocket;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 
@@ -20,11 +19,7 @@ public class ServerListener extends Thread {
 	private final ObjectServerSocket _serverSocket;
 
 
-	public ServerListener(TransactionPublisher publisher, int port) throws IOException {
-		this(publisher, port, new NetworkImpl());
-	}
-
-	public ServerListener(TransactionPublisher publisher, int port, Network network) throws IOException {
+	public ServerListener(TransactionPublisher publisher, Network network, int port) throws IOException {
 		_serverSocket = network.openObjectServerSocket(port);
 		_publisher = publisher;
 		setDaemon(true);
