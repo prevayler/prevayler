@@ -13,7 +13,7 @@ import org.prevayler.foundation.network.Network;
 import org.prevayler.foundation.network.NetworkImpl;
 import org.prevayler.foundation.network.ObjectReceiver;
 import org.prevayler.foundation.network.Service;
-import org.prevayler.foundation.network.StubbornNetwork;
+import org.prevayler.foundation.network.StubbornNetworkImpl;
 
 
 /**
@@ -41,9 +41,9 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
     public void setUp() {
         serverService    = new MockService();
 //        NewNetworkMock mockNetwork = new NewNetworkMock();
-        serverNetwork  = new StubbornNetwork(new NetworkImpl());
-        clientNetwork1 = new StubbornNetwork(new NetworkImpl());
-        clientNetwork2 = new StubbornNetwork(new NetworkImpl());
+        serverNetwork  = new StubbornNetworkImpl();
+        clientNetwork1 = new StubbornNetworkImpl();
+        clientNetwork2 = new StubbornNetworkImpl();
         networkProxy   = new NetworkProxy();
         client1Receiver = new ClientReceiver("client1");
         client2Receiver = new ClientReceiver("client2");

@@ -60,6 +60,7 @@ public class NetworkTest extends TestCase {
     
     
     public void testMessageSendBothWays() throws Exception {
+        Thread.yield();
         network.startService(mockService,port);
         client1.connect(port);
         Server server = new Server(1, mockService);
@@ -82,6 +83,7 @@ public class NetworkTest extends TestCase {
         network.stopService(port);
     }
     public void testDuplicateStartCaught() throws Exception {
+        Thread.yield();
         network.startService(mockService, port);
         try {
             network.startService(mockService, port);

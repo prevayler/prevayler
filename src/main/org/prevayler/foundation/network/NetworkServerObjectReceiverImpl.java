@@ -17,18 +17,20 @@ import java.net.SocketException;
  */
 
 
-public class NetworkServerObjectReceiverImpl extends Thread  {
+public class NetworkServerObjectReceiverImpl extends Thread implements NetworkServerObjectReceiver  {
 
 
     private Service _service;
     private ObjectServerSocket _provider;
     private boolean _wantedOpen;
+    private NetworkReceiverFactory _factory;
 
-    public NetworkServerObjectReceiverImpl (Service service, int port) throws IOException{
-        this(service, new ObjectServerSocketImpl(port));
+    public NetworkServerObjectReceiverImpl (NetworkReceiverFactory factory, Service service, int port) throws IOException{
+        this(factory, service, new ObjectServerSocketImpl(port));
     }
     
-    public NetworkServerObjectReceiverImpl(Service service, ObjectServerSocket server) {
+    protected NetworkServerObjectReceiverImpl(NetworkReceiverFactory factory, Service service, ObjectServerSocket server) {
+        _factory = factory;
         _service = service;
         _provider = server;
         _wantedOpen = true;
@@ -40,13 +42,12 @@ public class NetworkServerObjectReceiverImpl extends Thread  {
     public void run () {
         while (_wantedOpen) {
             try {
-                new ServerConnection(_service, _provider.accept());
+                _factory.newReceiver(_service, _provider.accept());
             } catch (SocketException sox) {
                 _wantedOpen = false;
                 // socket closed so exit
-
             } catch (IOException iox) {
-//                iox.printStackTrace();
+                // ignore and continue to connect
             }
         }
     }
@@ -60,17 +61,4 @@ public class NetworkServerObjectReceiverImpl extends Thread  {
         }
     }
     
-    class ServerConnection  {
-
-        private ObjectReceiver _client;
-        
-        public ServerConnection (Service service,
-                                 ObjectSocket socket) throws IOException {
-            
-            this._client = new NetworkClientObjectReceiverImpl(socket,service);
-            
-            
-        }
-    }
-
 }

@@ -17,7 +17,7 @@ import org.prevayler.foundation.network.NewNetworkMock;
 import org.prevayler.foundation.network.ObjectReceiver;
 import org.prevayler.foundation.network.ObjectReceiverMock;
 import org.prevayler.foundation.network.ServiceMock;
-import org.prevayler.foundation.network.StubbornNetwork;
+import org.prevayler.foundation.network.StubbornNetworkImpl;
 
 
 /**
@@ -48,8 +48,8 @@ public class StubbornNetworkTest extends TestCase {
     private String testObject2 = "test Object 2";
     
     public void setUp () {
-        Network oldNetwork = setNetworkToTest();
-        network = new StubbornNetwork(oldNetwork);
+//        Network oldNetwork = setNetworkToTest();
+        network = new StubbornNetworkImpl();
         mockService = new ServiceMock();
         client1 = new Client();
         client2 = new Client();

@@ -1,11 +1,3 @@
-/*
- * StubbornNetworkReceiverTest.java
- *
- * Copyright (c) 2005 MoneySwitch Ltd.
- * Level 5, 55 Lavender St, Milsons Point 2061.
- * All rights reserved.
- *
- */
 package org.prevayler.foundation.network;
 
 import java.io.IOException;
@@ -13,30 +5,32 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.prevayler.foundation.Cool;
+
 import junit.framework.TestCase;
 
 
-/**
- * Useful class comments should go here
- *
- * $Revision: 1.1 $
- * $Date: 2005/02/25 04:29:29 $
- * $Author: peter_mxgroup $
- */
 public class StubbornNetworkReceiverTest extends TestCase {
 
-    private ObjectReceiverMock provider;
+    private MockObjectSocket provider;
     private ObjectReceiverMock client;
     private SimpleNetworkMock network;
     private StubbornClientReceiverImpl scri;
+    private final NetworkSessionId id0 = new NetworkSessionId(0,0);
+    private final String replacementProvider = "replaced provider";
 
     public void setUp () throws Exception {
-        provider = new ObjectReceiverMock();
+//        System.out.println("Starting " + this.getName());
         client   = new ObjectReceiverMock();
-        network      = new SimpleNetworkMock();
-        network.setProvider(provider);
-        scri = new StubbornClientReceiverImpl(network, "localhost", 9876, client);
+        network  = new SimpleNetworkMock();
+        provider = prepareNetwork("Initial Provider");
         Thread.yield();
+    }
+    
+    private MockObjectSocket prepareNetwork(String providerName) {
+        MockObjectSocket tempProvider = new MockObjectSocket(providerName);
+        network.setProvider(tempProvider);
+        return tempProvider;
     }
     
     private void endConnection() throws Exception {
@@ -48,21 +42,20 @@ public class StubbornNetworkReceiverTest extends TestCase {
     
     private void checkForSessionId(int id) {
         Object received = provider.selfCheck();
-        if (received instanceof Integer) {
-            assertEquals(new Integer(id),received);
+        if (received instanceof NetworkSessionId) {
+            assertEquals(new NetworkSessionId(0,id),received);
         } else {
             fail ("Did not receive the Session Id");
         }
     }
 
     private void startSession (int sessionId) {
-        network.releaseServer();
         Thread.yield();
         checkForSessionId(sessionId);
     }
     
     private void completeSession (int sessionId) throws Exception {
-        scri.networkRequestToReceive(new Integer(sessionId));
+        provider.read(new NetworkSessionId(0,sessionId));
         Thread.yield();
     }
     
@@ -72,42 +65,51 @@ public class StubbornNetworkReceiverTest extends TestCase {
     }
 
     public void testSessionStart() throws Exception {
+        scri = new StubbornClientReceiverImpl(network, "localhost", 9876, client);
         startSession(0);
         endConnection();
     }
     
     public void testSessionAbort() throws Exception {
-        provider.receiveCrash();
-        network.releaseServer();
+        provider.failWriteToNetwork();
+        scri = new StubbornClientReceiverImpl(network, "localhost", 9876, client);
         Thread.yield();
         assertTrue(provider.isClosed());
+        provider = prepareNetwork(replacementProvider);
         Thread.sleep(1100); /* the client waits a second to retry */
         startSession(0);
         endConnection();
     }
     
     public void testSessionFailResponse() throws Exception {
+        scri = new StubbornClientReceiverImpl(network, "localhost", 9876, client);
         startSession(0);
-        scri.networkRequestToReceive(new IOException("Network Lost"));
+        provider.failReadFromNetwork();
         Thread.yield();
         assertTrue(provider.isClosed());
+        provider = prepareNetwork(replacementProvider);
         Thread.sleep(1100);
         startSession(0);
         endConnection();
     }
     
     public void testFailAfterSessionEstablished() throws Exception {
+        scri = new StubbornClientReceiverImpl(network, "localhost", 9876, client);
         establishSession(0);
-        scri.networkRequestToReceive(new IOException("Network Lost"));
+        Thread.yield();
+        provider.failReadFromNetwork();
         Thread.yield();
         assertTrue(provider.isClosed());
-        startSession(100);
+        provider = prepareNetwork(replacementProvider);
+        Thread.sleep(1100);
+        checkForSessionId(100);
         endConnection();
     }
     public void testGoodReceiving() throws Exception {
+        scri = new StubbornClientReceiverImpl(network, "localhost", 9876, client);
         establishSession(0);
         String object1 = "A";
-        scri.networkRequestToReceive(object1);
+        provider.read(object1);
         client.check(object1);
         endConnection();
     }
@@ -115,6 +117,7 @@ public class StubbornNetworkReceiverTest extends TestCase {
     
 
     public void testSending() throws Exception {
+        scri = new StubbornClientReceiverImpl(network, "localhost", 9876, client);
         establishSession(0);
         String object1 = "A";
         scri.receive(object1);
@@ -124,15 +127,20 @@ public class StubbornNetworkReceiverTest extends TestCase {
     
     
     public void testSendIOException() throws Exception {
+        scri = new StubbornClientReceiverImpl(network, "localhost", 9876, client);
+        Thread.yield();
         MockClientSender sender = new MockClientSender(scri);
+        MockObjectSocket provider2 = prepareNetwork("Provider 2");
         Thread.yield();
         establishSession(0);
+        provider.failWriteToNetwork();
         String object1 = "A";
-        provider.receiveCrash();
         sender.send(object1);
         Thread.yield();
+        assertTrue(provider.checkEmpty());
         assertTrue(provider.isClosed());
-        Thread.yield(); /* the client waits a second to retry */
+        Thread.sleep(1100); /* the client waits a second to retry */
+        provider = provider2;
         establishSession(100);
         Thread.yield();
         provider.check(object1);
@@ -155,33 +163,18 @@ public class StubbornNetworkReceiverTest extends TestCase {
         }
     }
 */
-    private class SimpleNetworkMock implements Network {
+    private class SimpleNetworkMock implements StubbornNetwork {
 
-        private ObjectReceiver mockProvider; 
-        public void startService(Service service, int port) throws IOException {
-            // TODO Auto-generated method stub
-            
-        }
+        private MockObjectSocket mockProvider; 
 
-        public void stopService(int port) throws IOException {
-            // TODO Auto-generated method stub
-            
-        }
-
-        public synchronized ObjectReceiver findServer(String ipAddress, int port, ObjectReceiver client) throws IOException {
-            try {
-                wait();
-            } catch (InterruptedException unexpected) {}
+        public ObjectSocket newInstance(String ipAddress, int port) throws IOException {
             return mockProvider;
         }
         
-        public void setProvider(ObjectReceiver mock) {
+        public void setProvider(MockObjectSocket mock) {
             mockProvider = mock;
         }
         
-        public synchronized void releaseServer() {
-            notify();
-        }
         
     }
 
@@ -235,4 +228,126 @@ public class StubbornNetworkReceiverTest extends TestCase {
         }
     }
 
+    private class MockObjectSocket implements ObjectSocket {
+        private List received;
+        private List readQ;
+        
+        private volatile boolean closed = false;
+        private Permit permitRead  = new Permit();
+        private Permit permitWrite = new Permit();
+        private Permit permitClose = new Permit();
+        
+        private boolean shutdown = false;
+        private final String _name; 
+        
+
+        MockObjectSocket(String name) {
+            received = Collections.synchronizedList(new ArrayList());
+            readQ    = Collections.synchronizedList(new ArrayList());
+            _name = name;
+        }
+ 
+        public String getName() {
+            return _name;
+        }
+        public synchronized void failReadFromNetwork() {
+            permitRead.clear();
+            notify();
+        }
+        
+        public synchronized void failWriteToNetwork() {
+            permitWrite.clear();
+        }
+        
+        public synchronized void failClose() {
+            permitClose.clear();
+        }
+
+        public void checkPermission(Permit permit) throws IOException {
+            if (!permit.check()) {
+                 throw new IOException("network failure");
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.prevayler.foundation.network.ObjectSocket#writeObject(java.lang.Object)
+         */
+        public void writeObject(Object object) throws IOException {
+            checkPermission(permitWrite);
+            received.add(object);
+        }
+
+        /* (non-Javadoc)
+         * @see org.prevayler.foundation.network.ObjectSocket#readObject()
+         */
+        public Object readObject() throws IOException, ClassNotFoundException {
+            checkPermission(permitRead);
+            return readAnObject();
+        }
+        private synchronized Object readAnObject() throws IOException {
+            while (readQ.isEmpty()) {
+                try {
+                    wait();
+                    if (closed) {
+                        throw new IOException("Socket CLosed");
+                    }
+                    checkPermission(permitRead);
+                } catch (InterruptedException uhOh) {
+                    throw new RuntimeException(uhOh);
+                }
+            }
+            Object o = readQ.remove(0);
+            return o;
+        }
+        
+        public synchronized void read (Object o) {
+            readQ.add(o);
+            notify();
+        }
+
+        public synchronized void close() throws IOException {
+            closed = true;
+            notify();
+            checkPermission(permitClose);
+        }
+
+        public boolean isClosed() {
+            return closed;
+        }
+        
+        public boolean check(Object expected) {
+            while (this.received.isEmpty()) {
+                Cool.sleep(2);
+            }
+            return (expected.equals(this.received.remove(0)));
+        }
+        
+        public Object selfCheck() {
+            while (this.received.isEmpty()) {
+                Thread.yield();
+            }
+            return received.remove(0);
+        }
+
+
+        public boolean checkEmpty() {
+            return received.isEmpty();
+        }
+        
+        private class Permit {
+            private volatile boolean state = true;
+            
+            public synchronized boolean check() {
+                if (state) {
+                    return true;
+                }
+                state = true;
+                return false;
+            }
+            
+            public synchronized void clear() {
+                state = false;
+            }
+        }
+        
+    }
 }

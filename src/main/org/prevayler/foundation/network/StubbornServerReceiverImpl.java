@@ -1,9 +1,6 @@
 /*
  * StubbornServerReceiverImpl.java
  *
- * Copyright (c) 2004 MoneySwitch Ltd.
- * Level 5, 55 Lavender St, Milsons Point 2061.
- * All rights reserved.
  *
  */
 package org.prevayler.foundation.network;
@@ -12,15 +9,28 @@ import java.io.IOException;
 
 import org.prevayler.foundation.Cool;
 
+/**
+ * Inbound channel for a Server's network.
+ * 
+ * Completes SessionId exchange in order to reconnect to the correct
+ * session. Informs the outbound channel of network reconnection.
+ * 
+ * Forwards inbound data direct to the client. If an error occurs, closes
+ * the session and notifies the outbound channel (StubbornNetworkProxy). 
+ * 
+ *  
+ */
 
-public class StubbornServerReceiverImpl implements ObjectReceiver {
+public class StubbornServerReceiverImpl implements ObjectReceiver, StubbornNetworkClientConnector {
 
     private ObjectReceiver _provider; /* the network layer */
     private ObjectReceiver _client;   /* the replicator    */
+    private StubbornNetworkProxy _proxy;  /* the proxy for the client */
     private Service _clientService;
-    private StubbornServiceImpl _stubbornService;
+    private SessionsManager _sessionsManager;
     private boolean _isOpen;
-    private Object _unsentMessage;
+    private NetworkSessionId _sessionId;
+
     /** 
      * Provider has called in with a connection, need to get it going.
      * First, I wait for their session id. If it matches an existing 
@@ -28,51 +38,66 @@ public class StubbornServerReceiverImpl implements ObjectReceiver {
      * if it is zero (new session no history), I send them a new id.
      */
 
-    public StubbornServerReceiverImpl(ObjectReceiver provider, Service service, StubbornServiceImpl stubbornService) {
+    public StubbornServerReceiverImpl(ObjectReceiver provider, Service service, SessionsManager stubbornService) {
         _provider = provider;
         _clientService = service;
-        _stubbornService = stubbornService;
+        _sessionsManager = stubbornService;
+        _isOpen = false;
+    }
+    
+
+    public StubbornServerReceiverImpl(Service service, ObjectSocket socket, SessionsManager sessionsManager) {
+        _clientService = service;
+        _sessionsManager = sessionsManager;
+        _provider = new NetworkClientObjectReceiverImpl(socket, this);
         _isOpen = false;
     }
 
+
     public void receive(Object object) throws IOException {
-        if (object instanceof IOException) {
-            closeSession();
-            return;
-        }
         if (_isOpen) {
             _client.receive(object);
-            return;
-        } 
-        int sessionId = ((Integer)object).intValue();
-        if (sessionId == 0) {
-            establishNewSession();
         } else {
-            reestablishSession(sessionId);
+            handleSession(object);
         }
     }
 
-    private void establishNewSession() {
-        _client = _clientService.serverFor(new ClientProxy(this));
-        int sessionId = _stubbornService.add(_client);
-        send(sessionId);
+    public synchronized void close() throws IOException {
+        _isOpen = false;
+        _proxy.disconnect();
+    }
+
+    
+    private void handleSession (Object object) {
+        if (!(object instanceof NetworkSessionId)) {
+            closeSession();
+        }
+        StubbornNetworkProxy proxy = reestablishSession((NetworkSessionId)object);
+        _isOpen = true;
+        send(_sessionId);
+        if (!_isOpen) {
+            return;
+        }
+        _proxy = proxy;
+        _proxy.connect(_provider, this);
+    }
+
+    private StubbornNetworkProxy establishNewSession() {
+        StubbornNetworkProxy proxy = new StubbornNetworkProxy();
+        _client = _clientService.serverFor(proxy);
+        proxy.setClient(_client);
+        _sessionId = _sessionsManager.add(proxy);
+        return proxy;
     }
     
-    private void reestablishSession (int sessionId) {
-        _client = _stubbornService.find(sessionId);
-        if (_client == null) {
-            establishNewSession();
+    private StubbornNetworkProxy reestablishSession (NetworkSessionId sessionId) {
+        StubbornNetworkProxy proxy = _sessionsManager.find(sessionId);
+        if (proxy == null) {
+            proxy = establishNewSession();
         } else {
-            send(sessionId);
-            if (!_isOpen) {
-                return;
-            }
-            if (_unsentMessage != null) {
-                Object unsent = _unsentMessage;
-                _unsentMessage = null;
-                send(unsent);
-            }
+            _sessionId = sessionId;
         }
+        return proxy;
     }
     
     private void closeSession () {
@@ -84,64 +109,20 @@ public class StubbornServerReceiverImpl implements ObjectReceiver {
         }
     }
     
-    private void send(int sessionId) {
-        try {
-            _provider.receive(new Integer(sessionId));
-            open();
-        } catch (IOException unex) {
-            closeSession();
-        }
-    }
-    
     private void send (Object object) {
         try {
             _provider.receive(object);
         } catch (IOException unex) {
-            _unsentMessage = object;
             closeSession();
         }
     }
-    
-    public void clientRequestsReceive(Object object) {
-        waitTillOpen();
-        send(object);
-    }
-    
-    private synchronized void waitTillOpen() {
-        if (!_isOpen) {
-            Cool.wait(this);
-        }
+
+
+    public void disconnect() {
+        _sessionsManager.remove(_sessionId);
+        _sessionId = null;
+        _proxy = null;
+        _isOpen = false;
     }
     
-    private synchronized void open() {
-        _isOpen = true;
-        notify();
-    }
-
-    public void clientRequestsClose() {
-        System.out.println("Client (Server Replicator) Requested Close");
-        
-    }
-    /* (non-Javadoc)
-     * @see org.prevayler.foundation.network.ObjectReceiver#close()
-     */
-    public void close() throws IOException {
-        System.out.println("Network (server) Requested Close");
-    }
-    class ClientProxy implements ObjectReceiver {
-
-        private StubbornServerReceiverImpl _controller;
-
-        public ClientProxy (StubbornServerReceiverImpl controller) {
-            _controller = controller;
-        }
-        public void receive(Object object) throws IOException {
-            _controller.clientRequestsReceive(object);
-        }
-        public void close() throws IOException {
-            _controller.clientRequestsClose();
-        }
-        
-    }
-
 }

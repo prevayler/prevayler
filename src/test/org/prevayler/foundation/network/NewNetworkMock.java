@@ -6,7 +6,7 @@ import java.util.Map;
 
 
 public class NewNetworkMock extends BaseNetworkMock
-                            implements Network {
+                            implements Network, NetworkReceiverFactory {
 
     private final Map _providerByPort = new Hashtable();
     /* (non-Javadoc)
@@ -16,7 +16,7 @@ public class NewNetworkMock extends BaseNetworkMock
         checkNotInUse(port);
         ObjectServerSocket server = startServer(port);
         _providerByPort.put(new Integer(port),
-                            new NetworkServerObjectReceiverImpl(service, server));
+                            new NetworkServerObjectReceiverImpl(this, service, server));
 
     }
 
@@ -48,6 +48,10 @@ public class NewNetworkMock extends BaseNetworkMock
         _serverSocketByPort.remove(new Integer(serverPort));
         return (NetworkServerObjectReceiverImpl) _providerByPort.remove(new Integer(serverPort));
 
+    }
+
+    public ObjectReceiver newReceiver(Service service, ObjectSocket socket) throws IOException {
+        return new NetworkClientObjectReceiverImpl(socket, service);
     }
 
 }

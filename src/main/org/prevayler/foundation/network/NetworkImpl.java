@@ -16,34 +16,16 @@ import java.util.Map;
  * reconnect support.
  */
 
-public class NetworkImpl implements Network {
-    private final Map _providerByPort = new Hashtable();
+public class NetworkImpl extends BaseNetworkImpl {
 
-    public void startService(Service service, int port) throws IOException {
-        checkNotInUse(port);
-
-        NetworkServerObjectReceiverImpl provider = new NetworkServerObjectReceiverImpl(service, port);
-        _providerByPort.put(new Integer(port), provider);
-    }
-
-    public ObjectReceiver findServer(String ipAddress, int port,
+    public ObjectReceiver newReceiver (String ipAddress, int port,
             ObjectReceiver client) throws IOException {
         return new NetworkClientObjectReceiverImpl(ipAddress, port, client);
     }
     
-    public void stopService (int port) throws IOException {
-        NetworkServerObjectReceiverImpl provider = removeServer(port); 
-        if (provider == null) {
-            throw new IOException("illegal port number used");
-        }
-        provider.shutdown();
-    }
-    private void checkNotInUse(int serverPort) throws IOException  {
-        Object old = _providerByPort.get(new Integer(serverPort));
-        if (old != null) throw new IOException("Port already in use.");
-    }
-    private NetworkServerObjectReceiverImpl removeServer(int serverPort) {
-        return (NetworkServerObjectReceiverImpl) _providerByPort.remove(new Integer(serverPort));
+    
+    public ObjectReceiver newReceiver(Service service, ObjectSocket socket) throws IOException {
+        return new NetworkClientObjectReceiverImpl(socket,service);
     }
 
 }

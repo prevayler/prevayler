@@ -22,22 +22,21 @@ public class NetworkClientObjectReceiverImpl implements ObjectReceiver {
             ObjectReceiver client) throws IOException {
         this(new ObjectSocketImpl(ipAddress, port), client);
     }
+    public NetworkClientObjectReceiverImpl(ObjectSocket objectSocket,
+                                           Service service) throws IOException {
+        _provider = objectSocket;
+        _client = service.serverFor(this);
+        startReading();
+    }
     
     public NetworkClientObjectReceiverImpl (ObjectSocket objectSocket,
-                                            ObjectReceiver client) throws IOException {
+                                            ObjectReceiver client) {
         _provider = objectSocket;
         _client = client;
         startReading();
         
     }
     
-    public NetworkClientObjectReceiverImpl (ObjectSocket objectSocket,
-                                            Service service) throws IOException {
-        _provider = objectSocket;
-        _client = service.serverFor(this);
-        startReading();
-        
-    }
     /**
      * Create a reader thread
      *
@@ -61,11 +60,21 @@ public class NetworkClientObjectReceiverImpl implements ObjectReceiver {
             Object object = _provider.readObject();
             passToClient(object);
         } catch (Exception ex) {
+            closeDown();
             if (_closing) {
                 return;
             }
             passToClient(ex);
         } 
+    }
+    
+    private void closeDown() {
+        try {
+            close();
+        } catch (IOException ignorable) {}
+        try {
+            _client.close();
+        } catch (IOException neverThrown) {}
     }
 
     private void passToClient(Object object) {

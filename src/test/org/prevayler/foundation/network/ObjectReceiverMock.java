@@ -27,7 +27,6 @@ public class ObjectReceiverMock implements ObjectReceiver {
         received = Collections.synchronizedList(receiveList);
     }
     public void receive(Object object) throws IOException {
-        System.out.println("received " + object);
         if (!permit) {
             permit = true;
             throw new IOException("network failure");
@@ -37,6 +36,10 @@ public class ObjectReceiverMock implements ObjectReceiver {
 
     public void close() throws IOException {
         closed = true;
+        if (!permit) {
+            permit = true;
+            throw new IOException("network failure");
+        }
     }
 
     public boolean isClosed() {
@@ -57,11 +60,11 @@ public class ObjectReceiverMock implements ObjectReceiver {
         return received.remove(0);
     }
 
-    /**
-     * 
-     */
     public void receiveCrash() {
         permit = false;
-        
+    }
+
+    public boolean checkEmpty() {
+        return received.isEmpty();
     }
 }

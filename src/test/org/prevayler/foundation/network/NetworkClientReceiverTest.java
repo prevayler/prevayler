@@ -17,8 +17,8 @@ import junit.framework.TestCase;
 /**
  * Useful class comments should go here
  *
- * $Revision: 1.1 $
- * $Date: 2005/02/25 04:29:29 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/02 06:04:08 $
  * $Author: peter_mxgroup $
  */
 public class NetworkClientReceiverTest extends TestCase {
@@ -47,7 +47,10 @@ public class NetworkClientReceiverTest extends TestCase {
     public void testReceiveIOException() throws Exception {
         provider.crash();
         Thread.yield();
-        ncor.close();
+        assertTrue(client.isClosed());
+        provider.checkClosed();
+        Thread.yield();
+        checkThreadGone();
         Thread.yield();
         provider.printRules();
     }
@@ -80,6 +83,10 @@ public class NetworkClientReceiverTest extends TestCase {
         provider.checkClosed();
         Thread.yield();
         provider.printRules();
+        checkThreadGone();
+    }
+ 
+    private void checkThreadGone() {
         Thread [] threads = new Thread[Thread.activeCount()];
         int threadCt = Thread.enumerate(threads);
         for (int i=0; i<threadCt; i++) {
@@ -88,7 +95,7 @@ public class NetworkClientReceiverTest extends TestCase {
             }
         }
     }
-    
+
     private class MockObjectSocket implements ObjectSocket {
         
         private ArrayList receiveQueue = new ArrayList();
@@ -97,11 +104,16 @@ public class NetworkClientReceiverTest extends TestCase {
 
         private boolean closed = false;
         private boolean permit = true;
+        private boolean print;
         
         private String monitoringRules = "";
         
         public MockObjectSocket() {
-            
+            this(false);
+        }
+        
+        public MockObjectSocket(boolean print) {
+            this.print = print;
         }
 
         /* (non-Javadoc)
@@ -166,7 +178,9 @@ public class NetworkClientReceiverTest extends TestCase {
             assertTrue(closed);
         }
         public void printRules() {
-            System.out.println(monitoringRules);
+            if (print) {
+                System.out.println(monitoringRules);
+            }
         }
         
         public synchronized void crash() {
