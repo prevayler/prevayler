@@ -9,12 +9,10 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectStreamException;
 import java.io.UTFDataFormatException;
 
-import org.prevayler.foundation.monitor.*;
-import org.prevayler.foundation.serialization.JavaSerializationStrategy;
+import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.serialization.Deserializer;
 import org.prevayler.foundation.serialization.SerializationStrategy;
 
