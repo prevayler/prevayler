@@ -3,7 +3,7 @@
     <classpathentry kind="src" path="src/main"/>
     <classpathentry kind="src" path="src/test"/>
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-    <classpathentry kind="lib" path="root/lib/skaringa-r2p7.jar"/>
+    <classpathentry kind="lib" path="root/lib/skaringa-r3p0.jar"/>
     <classpathentry kind="lib" path="root/lib/commons-logging-1.0.4.jar"/>
     <classpathentry kind="lib" path="root/lib/junit-3.8.1.jar"/>
     <classpathentry kind="lib" path="root/lib/xstream-1.0.1.jar"/>
