@@ -7,7 +7,7 @@ package org.prevayler.implementation.publishing;
 import org.prevayler.Clock;
 import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.Turn;
-import org.prevayler.implementation.TransactionCapsule;
+import org.prevayler.implementation.Capsule;
 import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.clock.PausableClock;
@@ -39,14 +39,14 @@ public class CentralPublisher extends AbstractPublisher {
 	}
 
 
-	public void publish(TransactionCapsule transactionCapsule) {
+	public void publish(Capsule capsule) {
 		synchronized (_pendingPublicationsMonitor) {  //Blocks all new subscriptions until the publication is over.
 			if (_pendingPublications == 0) _pausableClock.pause();
 			_pendingPublications++;
 		}
 
 		try {
-			publishWithoutWorryingAboutNewSubscriptions(transactionCapsule);  // Suggestions for a better method name are welcome.  :)
+			publishWithoutWorryingAboutNewSubscriptions(capsule);  // Suggestions for a better method name are welcome.  :)
 		} finally {
 			synchronized (_pendingPublicationsMonitor) {
 				_pendingPublications--;
@@ -59,15 +59,15 @@ public class CentralPublisher extends AbstractPublisher {
 	}
 
 
-	private void publishWithoutWorryingAboutNewSubscriptions(TransactionCapsule transactionCapsule) {
-		TransactionGuide guide = approve(transactionCapsule);
+	private void publishWithoutWorryingAboutNewSubscriptions(Capsule capsule) {
+		TransactionGuide guide = approve(capsule);
 		_journal.append(guide);
 		notifySubscribers(guide);
 	}
 
-	private TransactionGuide approve(TransactionCapsule transactionCapsule) {
+	private TransactionGuide approve(Capsule capsule) {
 		synchronized (_nextTurnMonitor) {
-			TransactionTimestamp timestamp = new TransactionTimestamp(transactionCapsule, _nextTransaction, _pausableClock.realTime());
+			TransactionTimestamp timestamp = new TransactionTimestamp(capsule, _nextTransaction, _pausableClock.realTime());
 
 			_censor.approve(timestamp);
 

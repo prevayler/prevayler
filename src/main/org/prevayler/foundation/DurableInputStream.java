@@ -7,8 +7,10 @@ package org.prevayler.foundation;
 
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.implementation.Capsule;
 import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionTimestamp;
+import org.prevayler.implementation.TransactionWithQueryCapsule;
 
 import java.io.BufferedInputStream;
 import java.io.EOFException;
@@ -47,7 +49,15 @@ public class DurableInputStream {
 		boolean withQuery = Boolean.valueOf(chunk.getParameter("withQuery")).booleanValue();
 		long systemVersion = Long.parseLong(chunk.getParameter("systemVersion"));
 		long executionTime = Long.parseLong(chunk.getParameter("executionTime"));
-		return new TransactionTimestamp(new TransactionCapsule(withQuery, chunk.getBytes()), systemVersion, new Date(executionTime));
+
+		Capsule capsule;
+		if (withQuery) {
+			capsule = new TransactionWithQueryCapsule(chunk.getBytes());
+		} else {
+			capsule = new TransactionCapsule(chunk.getBytes());
+		}
+
+		return new TransactionTimestamp(capsule, systemVersion, new Date(executionTime));
 	}
 
 	private Chunk readChunk() throws IOException {

@@ -5,7 +5,7 @@
 package org.prevayler.implementation.publishing;
 
 import org.prevayler.Clock;
-import org.prevayler.implementation.TransactionCapsule;
+import org.prevayler.implementation.Capsule;
 
 import java.io.IOException;
 
@@ -22,7 +22,7 @@ public interface TransactionPublisher {
 
 	/** Publishes transaction to the subscribers synchronously. This method will only return after all subscribers have received transaction. Note that no guarantee can be made as to wether the subscribers have actually executed it.
 	 */
-	public void publish(TransactionCapsule transactionCapsule);
+	public void publish(Capsule capsule);
 
 	/** Returns a Clock which is consistent with the Transaction publishing time.
 	 */

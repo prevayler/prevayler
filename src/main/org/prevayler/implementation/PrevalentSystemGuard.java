@@ -45,7 +45,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 	}
 
 	public void receive(TransactionTimestamp transactionTimestamp) {
-		TransactionCapsule capsule = transactionTimestamp.capsule();
+		Capsule capsule = transactionTimestamp.capsule();
 		long systemVersion = transactionTimestamp.systemVersion();
 		Date executionTime = transactionTimestamp.executionTime();
 

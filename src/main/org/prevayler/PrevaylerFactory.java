@@ -288,9 +288,8 @@ public class PrevaylerFactory {
 	public Prevayler create() throws IOException, ClassNotFoundException {
 		GenericSnapshotManager snapshotManager = snapshotManager();
 		TransactionPublisher publisher = publisher(snapshotManager);
-		Serializer journalSerializer = journalSerializer();
-		if (_serverPort != -1) new ServerListener(publisher, _serverPort, journalSerializer);
-		return new PrevaylerImpl(snapshotManager, publisher, monitor(), journalSerializer);
+		if (_serverPort != -1) new ServerListener(publisher, _serverPort);
+		return new PrevaylerImpl(snapshotManager, publisher, monitor(), journalSerializer());
 	}
 
 
@@ -306,7 +305,7 @@ public class PrevaylerFactory {
 
 
 	private TransactionPublisher publisher(GenericSnapshotManager snapshotManager) throws IOException {
-		if (_remoteServerIpAddress != null) return new ClientPublisher(_remoteServerIpAddress, _remoteServerPort, journalSerializer());
+		if (_remoteServerIpAddress != null) return new ClientPublisher(_remoteServerIpAddress, _remoteServerPort);
 		return new CentralPublisher(clock(), censor(snapshotManager), journal()); 
 	}
 

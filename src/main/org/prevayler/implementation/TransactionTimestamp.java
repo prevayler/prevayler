@@ -13,22 +13,22 @@ public class TransactionTimestamp implements Serializable {
 
 	static final long serialVersionUID = 1L;
 
-	private final TransactionCapsule _transactionCapsule;
+	private final Capsule _capsule;
 	private final long _systemVersion;
 	private final long _executionTime;
 
-	public TransactionTimestamp(TransactionCapsule transactionCapsule, long systemVersion, Date executionTime) {
-		this(transactionCapsule, systemVersion, executionTime.getTime());
+	public TransactionTimestamp(Capsule capsule, long systemVersion, Date executionTime) {
+		this(capsule, systemVersion, executionTime.getTime());
 	}
 
-	private TransactionTimestamp(TransactionCapsule transactionCapsule, long systemVersion, long executionTime) {
-		_transactionCapsule = transactionCapsule;
+	private TransactionTimestamp(Capsule capsule, long systemVersion, long executionTime) {
+		_capsule = capsule;
 		_systemVersion = systemVersion;
 		_executionTime = executionTime;
 	}
 
-	public TransactionCapsule capsule() {
-		return _transactionCapsule;
+	public Capsule capsule() {
+		return _capsule;
 	}
 
 	public long systemVersion() {
@@ -40,7 +40,7 @@ public class TransactionTimestamp implements Serializable {
 	}
 
 	public TransactionTimestamp cleanCopy(Serializer journalSerializer) {
-		return new TransactionTimestamp(_transactionCapsule.cleanCopy(), _systemVersion, _executionTime);
+		return new TransactionTimestamp(_capsule.cleanCopy(), _systemVersion, _executionTime);
 	}
 
 }

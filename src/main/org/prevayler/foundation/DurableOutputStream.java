@@ -5,6 +5,7 @@
 package org.prevayler.foundation;
 import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
+import org.prevayler.implementation.TransactionWithQueryCapsule;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -84,7 +85,7 @@ public class DurableOutputStream {
 
 			try {
 				Chunk chunk = new Chunk(timestamp.capsule().serialized());
-				chunk.setParameter("withQuery", String.valueOf(timestamp.capsule().withQuery()));
+				chunk.setParameter("withQuery", String.valueOf(timestamp.capsule() instanceof TransactionWithQueryCapsule));
 				chunk.setParameter("systemVersion", String.valueOf(timestamp.systemVersion()));
 				chunk.setParameter("executionTime", String.valueOf(timestamp.executionTime().getTime()));
 				Chunking.writeChunk(_active, chunk);
