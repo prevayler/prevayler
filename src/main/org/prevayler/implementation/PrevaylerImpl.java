@@ -10,7 +10,6 @@ import org.prevayler.Query;
 import org.prevayler.SureTransactionWithQuery;
 import org.prevayler.Transaction;
 import org.prevayler.TransactionWithQuery;
-import org.prevayler.foundation.DeepCopier;
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
@@ -98,14 +97,5 @@ public class PrevaylerImpl implements Prevayler {
 
 
 	public void close() throws IOException { _publisher.close(); }
-
-	private Object deepCopy(Object transaction) {
-		try {
-			return DeepCopier.deepCopy(transaction, _journalSerializer);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException("Unable to produce a deep copy of a transaction. Deep copies of transactions are executed instead of the transactions themselves so that the behaviour of the system during transaction execution is exactly the same as during transaction recovery from the journal.");
-		}
-	}
 
 }

@@ -92,7 +92,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 			}
 
 			synchronized (_prevalentSystem) {
-				return new PrevalentSystemGuard(DeepCopier.deepCopy(_prevalentSystem, snapshotSerializer), _systemVersion);
+				return new PrevalentSystemGuard(DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion);
 			}
 		}
 	}

@@ -8,6 +8,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.prevayler.foundation.ChunkingTest;
+import org.prevayler.foundation.DeepCopierTest;
 import org.prevayler.foundation.DurableOutputStreamTest;
 import org.prevayler.foundation.FileLockerTest;
 import org.prevayler.foundation.gzip.MultiMemberGZIPTest;
@@ -22,6 +23,7 @@ public class Suite extends TestCase {
 		suite.addTestSuite(PersistenceTest.class);
 		suite.addTestSuite(JournalFileRollingTest.class);
 		suite.addTestSuite(SkipOldTransactionsTest.class);
+		suite.addTestSuite(DeepCopierTest.class);
 		suite.addTestSuite(ChunkingTest.class);
 		suite.addTestSuite(CheckpointTest.class);
 		suite.addTestSuite(RollbackTest.class);
