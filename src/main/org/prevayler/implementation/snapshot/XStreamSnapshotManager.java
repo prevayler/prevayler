@@ -36,10 +36,34 @@ public class XStreamSnapshotManager extends AbstractSnapshotManager {
 
     private XStream _xstream;
     
+    /**
+     * Creates a new XStreamSnapshotManager using a default XStream instance.
+     * 
+     * This default instance uses the XppDriver for XStream.
+     * 
+     * @see com.thoughtworks.xstream.io.xml.XppDriver 
+     * @param newPrevalentSystem the prevalent system to snapshot.
+     * @param snapshotDirectoryName the directory name where the snapshot must be stored.
+     * @throws ClassNotFoundException if some class from the system cannot be found. 
+     * @throws IOException if there's a problem reading the latest snapshot.
+     */
 	public XStreamSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
 		this(new XStream(new XppDriver()), newPrevalentSystem, snapshotDirectoryName);
 	}
 
+	/**
+	 * Creates a new XStreamSnapshotManager using a pre-configured XStream instance.
+	 * 
+	 * <b>Tip</b>: It's possible to achieve a substantial performance improvement using the XppDriver
+	 * (com.thoughtworks.xstream.io.xml.XppDriver) with XStream.
+	 * 
+     * @see com.thoughtworks.xstream.io.xml.XppDriver 
+	 * @param xstream a pre-configured XStream instance.
+     * @param newPrevalentSystem the prevalent system to snapshot.
+     * @param snapshotDirectoryName the directory name where the snapshot must be stored.
+     * @throws ClassNotFoundException if some class from the system cannot be found. 
+     * @throws IOException if there's a problem reading the latest snapshot.
+	 */
 	public XStreamSnapshotManager(XStream xstream, Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
 		_xstream = xstream;
 		init(newPrevalentSystem, snapshotDirectoryName);
