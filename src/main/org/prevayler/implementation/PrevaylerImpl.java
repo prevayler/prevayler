@@ -32,28 +32,27 @@ public class PrevaylerImpl implements Prevayler {
 	 * @param snapshotManager The SnapshotManager that will be used for reading and writing snapshot files.
 	 * @param transactionPublisher The TransactionPublisher that will be used for publishing transactions executed with this PrevaylerImpl.
 	 */
-	public PrevaylerImpl(Object newPrevalentSystem, SnapshotManager snapshotManager, TransactionPublisher transactionPublisher) throws IOException, ClassNotFoundException {
+	public PrevaylerImpl(SnapshotManager snapshotManager, TransactionPublisher transactionPublisher) throws IOException, ClassNotFoundException {
 		_snapshotManager = snapshotManager;
-		_systemVersion = _snapshotManager.latestVersion();
-		_prevalentSystem = _snapshotManager.readSnapshot(newPrevalentSystem, _systemVersion); 
+		_prevalentSystem = _snapshotManager.recoveredPrevalentSystem();
+		_systemVersion = _snapshotManager.recoveredVersion();
 
-		_publisher = new TransactionCensor(_prevalentSystem, _snapshotManager, transactionPublisher);
+		_publisher = transactionPublisher;
 		_clock = _publisher.clock();
-        
-		_ignoreRuntimeExceptions = true;     //During old transaction recovery (rolling forward), RuntimeExceptions are ignored because they were already thrown and handled during the first transaction execution.
+
+		_ignoreRuntimeExceptions = true;     //During pending transaction recovery (rolling forward), RuntimeExceptions are ignored because they were already thrown and handled during the first transaction execution.
 		_publisher.addSubscriber(_subscriber, _systemVersion + 1);
 		_ignoreRuntimeExceptions = false;
 	}
 
-	public Clock clock() {
-		return _clock;
-	}
+
+	public Clock clock() { return _clock; }
+
 
 	/** Publishes transaction and executes it on the underlying prevalentSystem(). If a Logger is used as the publisher (default), this method will only return after transaction has been written to disk.
 	 */
-	public void execute(Transaction transaction) {
-		_publisher.publish(transaction);
-	}
+	public void execute(Transaction transaction) { _publisher.publish(transaction); }
+
 
 	/** Performs query making sure that no other transaction is being executed by prevayler() and no other query is being performed by this QueryExecuter at the same time. This is acheived by synchronizing on prevayler().prevalentSystem().
 		*/
@@ -63,6 +62,7 @@ public class PrevaylerImpl implements Prevayler {
 		}
 	}
 
+
 	public Object execute(TransactionWithQuery transactionWithQuery) throws Exception {
 		TransactionWithQueryExecuter executer = new TransactionWithQueryExecuter(transactionWithQuery);
 		execute(executer);
@@ -70,28 +70,8 @@ public class PrevaylerImpl implements Prevayler {
 	}
 
 
-	public Object prevalentSystem() {
-		return _prevalentSystem;
-	}
+	public Object prevalentSystem() { return _prevalentSystem; }
 
-
-	private TransactionSubscriber subscriber() {
-	    return new TransactionSubscriber() {
-	
-	        public void receive(Transaction transaction, Date executionTime) {
-	        	synchronized (_prevalentSystem) {
-	                _systemVersion++;
-	                try {
-	                    transaction.executeOn(_prevalentSystem, executionTime);
-	                } catch (RuntimeException rx) {
-	                	if (!_ignoreRuntimeExceptions) throw rx;
-	                    rx.printStackTrace();
-	                }
-	            }
-	        }
-	
-	    };
-	}
 
 	/** Produces a complete serialized image of the underlying PrevalentSystem.
 	     * This will accelerate future system startups. Taking a snapshot once a day is enough for most applications.
@@ -102,6 +82,25 @@ public class PrevaylerImpl implements Prevayler {
 	    synchronized (_prevalentSystem) {
 	        _snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
 	    }
+	}
+
+
+	private TransactionSubscriber subscriber() {
+		return new TransactionSubscriber() {
+	
+			public void receive(Transaction transaction, Date executionTime) {
+				synchronized (_prevalentSystem) {
+					_systemVersion++;
+					try {
+						transaction.executeOn(_prevalentSystem, executionTime);
+					} catch (RuntimeException rx) {
+						if (!_ignoreRuntimeExceptions) throw rx;
+						rx.printStackTrace();
+					}
+				}
+			}
+	
+		};
 	}
 
 }

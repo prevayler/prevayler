@@ -4,18 +4,20 @@
 
 package org.prevayler.demos.demo2;
 
+import org.prevayler.Prevayler;
+import org.prevayler.PrevaylerFactory;
 import org.prevayler.demos.demo2.business.Bank;
-import org.prevayler.implementation.PrevaylerImpl;
 import org.prevayler.implementation.XmlSnapshotManager;
-import org.prevayler.implementation.clock.MachineClock;
-import org.prevayler.implementation.log.TransactionLogger;
 
 public class MainXml {
 
 	public static void main(String[] args) throws Exception {
 		out("A snapshot using Skaringa's XML serialization will be taken every 20 seconds...");
 
-		PrevaylerImpl prevayler = new PrevaylerImpl(new Bank(), new XmlSnapshotManager("demo2Xml"), new TransactionLogger("demo2Xml", new MachineClock()));
+		PrevaylerFactory factory = new PrevaylerFactory();
+		factory.configurePrevalenceBase("demo2Xml");
+		factory.configureSnapshotManager(new XmlSnapshotManager(new Bank(), "demo2Xml"));
+		Prevayler prevayler = factory.create();
 
 		Main.startSnapshots(prevayler);
 

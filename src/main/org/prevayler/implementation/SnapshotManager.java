@@ -5,6 +5,7 @@
 package org.prevayler.implementation;
 
 import java.io.*;
+
 import org.prevayler.foundation.*;
 
 
@@ -13,12 +14,22 @@ import org.prevayler.foundation.*;
 public class SnapshotManager {
 
 	private final File _directory;
+	private final Object _recoveredPrevalentSystem;
+	private final long _recoveredVersion;
 
 	/** @param snapshotDirectoryName The path of the directory where the last snapshot file will be read and where the new snapshot files will be created.
 	*/
-	public SnapshotManager(String snapshotDirectoryName) throws IOException {
+	public SnapshotManager(Object originalPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
 		_directory = FileManager.produceDirectory(snapshotDirectoryName);
+		_recoveredVersion = latestVersion();
+		_recoveredPrevalentSystem = _recoveredVersion == 0
+			? originalPrevalentSystem
+			: readSnapshot(_recoveredVersion);
 	}
+
+	Object recoveredPrevalentSystem() { return _recoveredPrevalentSystem; }
+
+	long recoveredVersion() { return _recoveredVersion; }
 
 
 	void writeSnapshot(Object prevalentSystem, long version) throws IOException {
@@ -32,7 +43,7 @@ public class SnapshotManager {
 	}
 
 
-	void writeSnapshot(Object prevalentSystem, File snapshotFile) throws IOException {
+	private void writeSnapshot(Object prevalentSystem, File snapshotFile) throws IOException {
         OutputStream out = new FileOutputStream(snapshotFile);
         try {
             writeSnapshot(prevalentSystem, out);
@@ -55,10 +66,9 @@ public class SnapshotManager {
 		return "snapshot";
 	}
 
-
 	/** Returns zero if no snapshot file was found.
 	*/
-	long latestVersion() throws IOException {
+	private long latestVersion() throws IOException {
 		String[] fileNames = _directory.list();
 		if (fileNames == null) throw new IOException("Error reading file list from directory " + _directory);
 
@@ -70,15 +80,13 @@ public class SnapshotManager {
 		return result;
 	}
 
-	Object readSnapshot(Object initialVersion, long version) throws ClassNotFoundException, IOException {
-		if (version == 0) return initialVersion;
-
+	private Object readSnapshot(long version) throws ClassNotFoundException, IOException {
 		File snapshotFile = snapshotFile(version);
 		return readSnapshot(snapshotFile);
 	}
 
 
-	Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {
+	private Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {
         FileInputStream in = new FileInputStream(snapshotFile);
         try {
             return readSnapshot(in);

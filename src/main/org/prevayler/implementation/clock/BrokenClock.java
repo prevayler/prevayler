@@ -13,9 +13,17 @@ import org.prevayler.*;
  */
 public class BrokenClock implements Clock, java.io.Serializable {
 
-	protected long _millis = 0;
-	private Date _time = new Date(_millis);
+	private Date _time;
+	protected long _millis;
 
+	public BrokenClock() {
+			this(new Date(0));
+	}
+
+	public BrokenClock(Date time) {
+		_time = time;
+		_millis = time.getTime();
+	}
 
 	public Date time() { return _time; }
 

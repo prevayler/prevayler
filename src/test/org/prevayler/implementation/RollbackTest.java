@@ -12,13 +12,11 @@ public class RollbackTest extends PrevalenceTest {
 
 		append("a", "a");
 		
-		boolean thrown = false;
 		try {
 			append("rollback", "a");
+			throw new Exception("RuntimeException expected and not thrown.");
 		} catch (RuntimeException rx) {
-			thrown = true;
 		}
-		if (!thrown) throw new RuntimeException("RuntimeException expected and not thrown.");
 		
 		append("b", "ab");
 

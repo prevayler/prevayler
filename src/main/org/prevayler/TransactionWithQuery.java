@@ -12,7 +12,10 @@ import java.util.Date;
  */
 public interface TransactionWithQuery extends Serializable {
 	
-	/** Performs the necessary modifications on the given prevaylentSystem and also returns an Object or throws an Exception.
+	/** Performs the necessary modifications on the given prevalentSystem and also returns an Object or throws an Exception.
+	 * This method is called by Prevayler.execute(TransactionWithQuery) to execute this TransactionWithQuery on the given prevalent system. See org.prevayler.demos for usage examples.
+	 * @param prevalentSystem The system on which this TransactionWithQuery will execute.
+	 * @param executionTime The time at which this TransactionWithQuery is being executed. Every transaction executes completely within a single moment in time. Logically, a prevalent system's time does not pass during the execution of a transaction.
 	 */
 	public Object executeAndQuery(Object prevalentSystem, Date executionTime) throws Exception;
 

@@ -25,6 +25,11 @@ public class TransientPrevaylerTest extends PrevalenceTest {
 		assertState("abc");
 	}
 
+	protected void tearDown() throws Exception {
+		prevayler = null;
+		super.tearDown();
+	}
+
 	private void assertState(String expected) {
 		String result = ((AppendingSystem)prevayler.prevalentSystem()).value();
 		assertEquals(expected, result);

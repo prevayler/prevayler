@@ -4,7 +4,6 @@ import java.io.*;
 
 import javax.xml.transform.stream.*;
 
-
 import com.skaringa.javaxml.*;
 
 /**
@@ -16,13 +15,11 @@ import com.skaringa.javaxml.*;
 public class XmlSnapshotManager extends SnapshotManager {
 
 	private final ObjectTransformer trans;
-	
-	public XmlSnapshotManager() throws IOException {
-		this("PrevalenceBase");
-	}
 
-	public XmlSnapshotManager(String snapshotDirectoryName) throws IOException {
-		super(snapshotDirectoryName);
+
+	public XmlSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
+		super(newPrevalentSystem, snapshotDirectoryName);
+
 		try {
 			this.trans = ObjectTransformerFactory.getInstance().getImplementation();
 //			trans.setProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
@@ -39,18 +36,14 @@ public class XmlSnapshotManager extends SnapshotManager {
 	 * @see org.prevayler.implementation.SnapshotManager#readSnapshot(InputStream)
 	 */
 	protected Object readSnapshot(InputStream in) throws IOException {
-		Object system = null;
 		StreamSource source = new StreamSource(in);
 		try {
-			system = this.trans.deserialize(source);
-		}
-		catch (DeserializerException se) {
+			return this.trans.deserialize(source);
+		} catch (DeserializerException se) {
 			throw new IOException("Unable to deserialize with Skaringa: " + se.getMessage());
-		}
-		finally {
+		} finally {
 			source.getInputStream().close();
 		}
-		return system;
 	}
 
 	/**
@@ -67,11 +60,9 @@ public class XmlSnapshotManager extends SnapshotManager {
 		StreamResult result = new StreamResult(out);
 		try {
 			this.trans.serialize(prevalentSystem, result);
-		}
-		catch (SerializerException se) {
+		} catch (SerializerException se) {
 			throw new IOException("Unable to serialize with Skaringa: " + se.getMessage());
-		}
-		finally {
+		} finally {
 			result.getOutputStream().close();
 		}
 	}

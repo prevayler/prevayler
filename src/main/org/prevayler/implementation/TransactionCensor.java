@@ -1,37 +1,27 @@
 package org.prevayler.implementation;
 
-import org.prevayler.Clock;
 import org.prevayler.Transaction;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.util.Date;
 
-public class TransactionCensor implements TransactionPublisher {
+public class TransactionCensor {
 
 	private final Object _king;
 	private Object _royalFoodTaster;
 	private final SnapshotManager _snapshotManager;
-	private final TransactionPublisher _delegate;
 
-	public TransactionCensor(Object king, SnapshotManager snapshotManager, TransactionPublisher delegate) {
-		_king = king;
+
+	public TransactionCensor(SnapshotManager snapshotManager) {
 		_snapshotManager = snapshotManager;
-		_delegate = delegate;
+		_king = _snapshotManager.recoveredPrevalentSystem();
+		produceNewFoodTaster();
 	}
 
-	public Clock clock() {
-		return _delegate.clock();
-	}
-
-	public void addSubscriber(TransactionSubscriber subscriber,	long initialTransaction) throws IOException, ClassNotFoundException {
-		_delegate.addSubscriber(subscriber, initialTransaction);
-	}
-
-	public void publish(Transaction transaction) {
+	void approve(Transaction transaction, Date executionTime) throws RuntimeException, Error {
 		try {
-			transaction.executeOn(royalFoodTaster(), clock().time());
-			//TODO Make sure the transaction has the same timestamp when executed by the delegate.
+			transaction.executeOn(royalFoodTaster(), executionTime);
 		} catch (RuntimeException rx) {
 			letTheFoodTasterDie();
 			throw rx;
@@ -39,7 +29,6 @@ public class TransactionCensor implements TransactionPublisher {
 			letTheFoodTasterDie();
 			throw error;
 		}
-		_delegate.publish(transaction);
 	}
 
 	private void letTheFoodTasterDie() {
@@ -53,12 +42,12 @@ public class TransactionCensor implements TransactionPublisher {
 
 	private void produceNewFoodTaster() {
 		try {
-			// TODO Optimization: use some sort of producer-consumer stream so that serialization as deserialization can occur in parallel, avoiding the need for RAM for this array with the whole serialized system. 
+			// TODO Optimization: use some sort of producer-consumer stream so that serialization and deserialization can occur in parallel, avoiding the need for RAM for this array with the whole serialized system. 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			synchronized (_king) { _snapshotManager.writeSnapshot(_king, out); }
 			_royalFoodTaster = _snapshotManager.readSnapshot(new ByteArrayInputStream(out.toByteArray()));
-		} catch (Exception e) {
-			throw new RuntimeException("Could not rollback.");
+		} catch (Exception ex) {
+			throw new RuntimeException("Unable to produce a copy of the prevalent system for trying out transactions before applying them to the real system.", ex);
 		}
 	}
 

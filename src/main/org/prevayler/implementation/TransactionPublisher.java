@@ -19,7 +19,7 @@ public interface TransactionPublisher {
 	 */
 	public void publish(Transaction transaction);
 
-	/** Returns the Clock used to set the publishing time for each published Transaction.
+	/** Returns a Clock which is consistent with the Transaction publishing time.
 	 */
 	public Clock clock();
 

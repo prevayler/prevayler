@@ -4,9 +4,9 @@
 
 package org.prevayler.demos.demo2;
 
+import org.prevayler.Prevayler;
+import org.prevayler.PrevaylerFactory;
 import org.prevayler.demos.demo2.business.Bank;
-import org.prevayler.implementation.*;
-import org.prevayler.implementation.replica.RemotePublisher;
 
 
 public class MainReplica {
@@ -18,7 +18,7 @@ public class MainReplica {
 			+ "\nbalancing and system fault-tolerance.\n\n"
 		);
 
-		if (args.length == 0) {
+		if (args.length != 1) {
 			out(  "Usage:   java MainReplica <Server IP Address>"
 				+ "\nExample: java MainReplica 10.42.10.5"
 				+ "\nExample: java MainReplica localhost"
@@ -29,10 +29,12 @@ public class MainReplica {
 			return;
 		}
 
-		//Below are the two lines that were changed from Main.java (before calling the application code) to enable replication.
-		TransactionPublisher publisher = new RemotePublisher(args[0]);
-		PrevaylerImpl prevayler = new PrevaylerImpl(new Bank(), new SnapshotManager("demo2AcidReplica"), publisher);
-	
+		PrevaylerFactory factory = new PrevaylerFactory();
+		factory.configurePrevalentSystem(new Bank());
+		factory.configurePrevalenceBase("demo2AcidReplica");
+		factory.configureReplicationClient(args[0]);
+		Prevayler prevayler = factory.create();
+
 		Main.startGui(prevayler);
 	}
 

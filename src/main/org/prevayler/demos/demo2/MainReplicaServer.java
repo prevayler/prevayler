@@ -4,11 +4,9 @@
 
 package org.prevayler.demos.demo2;
 
+import org.prevayler.Prevayler;
+import org.prevayler.PrevaylerFactory;
 import org.prevayler.demos.demo2.business.Bank;
-import org.prevayler.implementation.*;
-import org.prevayler.implementation.clock.MachineClock;
-import org.prevayler.implementation.log.TransactionLogger;
-import org.prevayler.implementation.replica.PublishingServer;
 
 
 public class MainReplicaServer {
@@ -23,9 +21,11 @@ public class MainReplicaServer {
 			+ "\n  java org.prevayler.demos.demo2.MainReplica <This machine's IP Address>\n\n"
 		);
 
-		TransactionPublisher publisher = new TransactionLogger("demo2Acid", new MachineClock());
-		PrevaylerImpl prevayler = new PrevaylerImpl(new Bank(), new SnapshotManager("demo2Acid"), publisher);
-		new PublishingServer(publisher);
+		PrevaylerFactory factory = new PrevaylerFactory();
+		factory.configurePrevalentSystem(new Bank());
+		factory.configurePrevalenceBase("demo2Acid");
+		factory.configureReplicationServer(true);
+		Prevayler prevayler = factory.create();
 
 		Main.startGui(prevayler);
 	}

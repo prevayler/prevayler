@@ -18,23 +18,21 @@ public abstract class AbstractPublisher implements TransactionPublisher {
 	protected final Clock _clock;
 	private final Set _subscribers = new HashSet();
 
+	public Clock clock() {
+		return _clock;
+	}
+
 	public AbstractPublisher(Clock clock) {
 		_clock = clock;
 	}
 
-	public void addSubscriber(TransactionSubscriber subscriber, long initialTransactionIgnored) throws IOException, ClassNotFoundException {
-		synchronized (_subscribers) { _subscribers.add(subscriber);	}
+	public synchronized void addSubscriber(TransactionSubscriber subscriber) throws IOException, ClassNotFoundException {
+		 _subscribers.add(subscriber);
 	}
 
-	protected void notifySubscribers(Transaction transaction, Date timestamp) {
-		synchronized (_subscribers) {
-			Iterator i = _subscribers.iterator();
-			while (i.hasNext()) ((TransactionSubscriber)i.next()).receive(transaction, timestamp);
-		}
-	}
-
-	public Clock clock() {
-		return _clock;
+	protected synchronized void notifySubscribers(Transaction transaction, Date timestamp) {
+		Iterator i = _subscribers.iterator();
+		while (i.hasNext()) ((TransactionSubscriber)i.next()).receive(transaction, timestamp);
 	}
 
 }

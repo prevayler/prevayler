@@ -62,7 +62,7 @@ public class RemotePublisher extends Thread implements TransactionPublisher {
 	}
 
 	public Clock clock() {
-		// TODO Auto-generated method stub
+		//TODO Implement clock()
 		return null;
 	}
 

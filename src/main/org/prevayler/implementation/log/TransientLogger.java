@@ -5,23 +5,30 @@
 package org.prevayler.implementation.log;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.prevayler.Transaction;
 import org.prevayler.implementation.TransactionSubscriber;
 
-/**
- * @author ALEXANDRE LUIS
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-public interface TransactionLogger {
-	public abstract void log(Transaction transaction, Date executionTime);
-	/** If there are no log files in the directory (when a snapshot is taken and all log files are manually deleted, for example), the initialTransaction parameter in the first call to this method will define what the next transaction number will be. We have to find clearer/simpler semantics.
-	 */
-	public abstract void update(
-		TransactionSubscriber subscriber,
-		long initialTransaction)
-		throws IOException, ClassNotFoundException;
+
+//TODO Write tests for TransientLogger.
+public class TransientLogger implements TransactionLogger {
+
+	private final List log = new ArrayList();
+
+	public synchronized void log(Transaction transaction, Date executionTime) {
+		log.add(new TransactionLogEntry(transaction, executionTime));
+	}
+
+	public synchronized void update(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
+		int i = (int)initialTransaction - 1;  //Lists are zero based.
+		while (i < log.size()) {
+			TransactionLogEntry entry = (TransactionLogEntry)log.get(i);
+			subscriber.receive(entry.transaction, entry.timestamp);
+			i++;
+		}
+	}
+
 }
