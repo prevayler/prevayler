@@ -5,7 +5,7 @@ import org.prevayler.foundation.serialization.Serializer;
 
 import java.util.Date;
 
-public class TransactionWithQueryCapsule extends Capsule { //TODO TransactionWithQueryCapsule must extend TransactionCapsule. Three development bugs were found already because tests were only covering Transactions and not TransactionsWithQuery. It should not be necessary to duplicate all tests for TransactionWithQuery.
+class TransactionWithQueryCapsule extends Capsule {
 
 	private transient Object _queryResult;
 	private transient Exception _queryException;

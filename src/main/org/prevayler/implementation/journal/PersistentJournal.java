@@ -10,12 +10,9 @@ import org.prevayler.foundation.DurableInputStream;
 import org.prevayler.foundation.DurableOutputStream;
 import org.prevayler.foundation.StopWatch;
 import org.prevayler.foundation.monitor.Monitor;
-import org.prevayler.implementation.Capsule;
 import org.prevayler.implementation.PrevaylerDirectory;
-import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
-import org.prevayler.implementation.TransactionWithQueryCapsule;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 import java.io.EOFException;
@@ -178,7 +175,7 @@ public class PersistentJournal implements Journal {
 								journal + ", but only " + _journalSuffix + " files are supported");
 					}
 
-					TransactionTimestamp entry = timestamp(chunk);
+					TransactionTimestamp entry = TransactionTimestamp.fromChunk(chunk);
 
 					if (entry.systemVersion() != recoveringTransaction) {
 						throw new IOException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
@@ -198,21 +195,6 @@ public class PersistentJournal implements Journal {
 			}
 		}
 		return recoveringTransaction;
-	}
-
-	private TransactionTimestamp timestamp(Chunk chunk) {
-		boolean withQuery = Boolean.valueOf(chunk.getParameter("withQuery")).booleanValue();
-		long systemVersion = Long.parseLong(chunk.getParameter("systemVersion"));
-		long executionTime = Long.parseLong(chunk.getParameter("executionTime"));
-
-		Capsule capsule;
-		if (withQuery) {
-			capsule = new TransactionWithQueryCapsule(chunk.getBytes());
-		} else {
-			capsule = new TransactionCapsule(chunk.getBytes());
-		}
-
-		return new TransactionTimestamp(capsule, systemVersion, new Date(executionTime));
 	}
 
 	protected void handle(IOException iox, File journal, String action) {

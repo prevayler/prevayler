@@ -1,6 +1,5 @@
 package org.prevayler.implementation;
 
-import org.prevayler.foundation.Chunk;
 import org.prevayler.foundation.Chunking;
 import org.prevayler.foundation.Guided;
 import org.prevayler.foundation.Turn;
@@ -33,11 +32,7 @@ public class TransactionGuide extends Guided {
 	}
 
 	public void writeTo(OutputStream stream) throws IOException {
-		Chunk chunk = new Chunk(_transactionTimestamp.capsule().serialized());
-		chunk.setParameter("withQuery", String.valueOf(_transactionTimestamp.capsule() instanceof TransactionWithQueryCapsule));
-		chunk.setParameter("systemVersion", String.valueOf(_transactionTimestamp.systemVersion()));
-		chunk.setParameter("executionTime", String.valueOf(_transactionTimestamp.executionTime().getTime()));
-		Chunking.writeChunk(stream, chunk);
+		Chunking.writeChunk(stream, _transactionTimestamp.toChunk());
 	}
 
 }

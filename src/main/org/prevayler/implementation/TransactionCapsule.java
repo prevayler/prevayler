@@ -5,7 +5,7 @@ import org.prevayler.foundation.serialization.Serializer;
 
 import java.util.Date;
 
-public class TransactionCapsule extends Capsule {
+class TransactionCapsule extends Capsule {
 
 	public TransactionCapsule(Transaction transaction, Serializer journalSerializer) {
 		super(transaction, journalSerializer);

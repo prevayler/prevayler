@@ -4,6 +4,7 @@
 
 package org.prevayler.implementation;
 
+import org.prevayler.foundation.Chunk;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -40,6 +41,29 @@ public class TransactionTimestamp implements Serializable {
 
 	public TransactionTimestamp cleanCopy() {
 		return new TransactionTimestamp(_capsule.cleanCopy(), _systemVersion, _executionTime);
+	}
+
+	public Chunk toChunk() {
+		Chunk chunk = new Chunk(_capsule.serialized());
+		chunk.setParameter("withQuery", String.valueOf(_capsule instanceof TransactionWithQueryCapsule));
+		chunk.setParameter("systemVersion", String.valueOf(_systemVersion));
+		chunk.setParameter("executionTime", String.valueOf(_executionTime));
+		return chunk;
+	}
+
+	public static TransactionTimestamp fromChunk(Chunk chunk) {
+		boolean withQuery = Boolean.valueOf(chunk.getParameter("withQuery")).booleanValue();
+		long systemVersion = Long.parseLong(chunk.getParameter("systemVersion"));
+		long executionTime = Long.parseLong(chunk.getParameter("executionTime"));
+
+		Capsule capsule;
+		if (withQuery) {
+			capsule = new TransactionWithQueryCapsule(chunk.getBytes());
+		} else {
+			capsule = new TransactionCapsule(chunk.getBytes());
+		}
+
+		return new TransactionTimestamp(capsule, systemVersion, executionTime);
 	}
 
 }
