@@ -7,31 +7,98 @@ import java.io.InputStreamReader;
 
 public class FileLockerTest extends FileIOTest {
 
+	private FileLocker _sharedLocker;
+	private boolean _done;
+	private Exception _exception;
+
+	private synchronized void shareLocker(FileLocker locker) {
+		_sharedLocker = locker;
+		notifyAll();
+	}
+
+	private synchronized FileLocker waitForLocker() throws InterruptedException {
+		while (_sharedLocker == null) {
+			wait();
+		}
+		return _sharedLocker;
+	}
+
+	private synchronized void setDone() {
+		_done = true;
+		notifyAll();
+	}
+
+	private synchronized void waitForDone() throws InterruptedException {
+		while (!_done) {
+			wait();
+		}
+	}
+
+	private synchronized void stashException(Exception e) {
+		_exception = e;
+	}
+
 	public void testFileLock() throws Exception {
-		File lockFile = new File(_testDirectory, "test.lock");
+		final File lockFile = new File(_testDirectory, "test.lock");
 
 		// We can acquire a new lock...
-		assertNotNull(FileLocker.acquire(lockFile));
+		final FileLocker locker1 = new FileLocker(lockFile);
 
 		// We can't acquire again in the same JVM...
-		assertNull(FileLocker.acquire(lockFile));
+		try {
+			new FileLocker(lockFile);
+			fail();
+		} catch (IOException e) {
+			assertEquals("Already locked internally", e.getMessage());
+		}
 
 		// We can't acquire in another JVM...
-		runProcess(lockFile, "Failed!");
+		runProcess(lockFile, "Failed! Already locked externally");
 
 		// We can acquire again in the same JVM after releasing...
-		FileLocker.release(lockFile);
-		assertNotNull(FileLocker.acquire(lockFile));
+		locker1.release();
+		final FileLocker locker2 = new FileLocker(lockFile);
 
 		// We can acquire in another JVM after releasing...
-		FileLocker.release(lockFile);
+		locker2.release();
 		runProcess(lockFile, "Locked!");
 
 		// We can acquire in this JVM after other JVM exited without explicitly releasing...
-		assertNotNull(FileLocker.acquire(lockFile));
+		final FileLocker locker3 = new FileLocker(lockFile);
+		locker3.release();
 
-		// Just be nice to tearDown and other tests...
-		FileLocker.release(lockFile);
+		// We can acquire and release in different threads in this JVM and then acquire in another JVM...
+		Thread acquire = new Thread() {
+			public void run() {
+				try {
+					shareLocker(new FileLocker(lockFile));
+					waitForDone();
+				} catch (Exception e) {
+					stashException(e);
+				}
+			}
+		};
+		Thread release = new Thread() {
+			public void run() {
+				try {
+					FileLocker locker = waitForLocker();
+					locker.release();
+				} catch (Exception e) {
+					stashException(e);
+				}
+			}
+		};
+		acquire.start();
+		release.start();
+		release.join();
+		runProcess(lockFile, "Locked!");
+		setDone();
+		acquire.join();
+		synchronized (this) {
+			if (_exception != null) {
+				fail(_exception.getMessage());
+			}
+		}
 	}
 
 	private void runProcess(File lockFile, String expectedOutput) throws IOException, InterruptedException {
@@ -44,13 +111,14 @@ public class FileLockerTest extends FileIOTest {
 	}
 
 	public static class LockingMain {
-		public static void main(String[] args) throws IOException {
+		public static void main(String[] args) {
 			File lockFile = new File(args[0]);
-			if (FileLocker.acquire(lockFile) != null) {
+			try {
+				new FileLocker(lockFile);
 				System.out.println("Locked!");
 				// But don't release, to prove that the lock is released when the process exits.
-			} else {
-				System.out.println("Failed!");
+			} catch (IOException e) {
+				System.out.println("Failed! " + e.getMessage());
 			}
 		}
 	}

@@ -3,10 +3,7 @@ package org.prevayler.foundation;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A utility class for locking files that works for multiple threads. Naive file locking behaves unpredictably if some
@@ -16,49 +13,68 @@ import java.util.Map;
  */
 public class FileLocker {
 
-	private static Map _lockedFiles = new HashMap();
+	private File _file;
+	private RandomAccessFile _stream;
+	private FileLock _lock;
 
 	/**
 	 * Attempt to acquire an exclusive lock on the given file. The file, and any parent directories, are created if they do
 	 * not exist; but the contents of the file are not harmed if it does exist. If the program needs to actually access the
-	 * file, it must use the returned channel exclusively <b>and not close it</b> since that may release the lock. If the
-	 * program does not need to access the file, then the returned channel may simply be compared with null and discarded;
-	 * it will be closed by {@link #release(File)}.
+	 * file, it must use {@link #getStream()} exclusively <b>and not close it</b> since that may release the lock.
 	 * 
-	 * @return A channel for accessing the file if successful; or null if not successful.
-	 * @throws java.nio.channels.OverlappingFileLockException If the JVM detects that another thread already holds a lock on the file. This
-	 *                                      should never happen if this method is used exclusively for file locking.
+	 * @throws IOException If the lock cannot be acquired.
+	 * @throws java.nio.channels.OverlappingFileLockException
+	 *                     If the JVM detects that another thread already holds a lock on the file. This should never
+	 *                     happen if this method is used exclusively for file locking.
 	 */
-	public static synchronized FileChannel acquire(File file) throws IOException {
-		file = file.getCanonicalFile();
+	public FileLocker(File file) throws IOException {
+		_file = file.getCanonicalFile();
 
-		if (_lockedFiles.containsKey(file)) {
-			return null;
+		// Test-and-set JVM-global property; setProperty is atomic.
+		if ("locked".equals(System.setProperty(propertyName(), "locked"))) {
+			throw new IOException("Already locked internally");
 		}
 
-		file.getParentFile().mkdirs();
-		file.createNewFile();
+		_file.getParentFile().mkdirs();
+		_file.createNewFile();
 
-		RandomAccessFile stream = new RandomAccessFile(file, "rw");
-		FileLock lock = stream.getChannel().tryLock();
+		_stream = new RandomAccessFile(_file, "rw");
 
-		if (lock == null) {
-			stream.close();
-			return null;
+		try {
+			_lock = _stream.getChannel().tryLock();
+		} catch (IOException e) {
+			_stream.close();
+			throw e;
 		}
 
-		_lockedFiles.put(file, lock);
-		return stream.getChannel();
+		if (_lock == null) {
+			_stream.close();
+			System.setProperty(propertyName(), "");
+			throw new IOException("Already locked externally");
+		}
+	}
+
+	private String propertyName() throws IOException {
+		return FileLocker.class.getName() + "-" + _file.getCanonicalPath();
 	}
 
 	/**
-	 * Release a file lock and close the associated channel. May be called only once after a successful call to {@link
-	 * #acquire(File)} on the same file.
+	 * Release the file lock and close the associated stream.
 	 */
-	public static synchronized void release(File file) throws IOException {
-		FileLock lock = (FileLock) _lockedFiles.remove(file.getCanonicalFile());
-		lock.release();
-		lock.channel().close();
+	public void release() throws IOException {
+		try {
+			try {
+				_lock.release();
+			} finally {
+				_stream.close();
+			}
+		} finally {
+			System.setProperty(propertyName(), "");
+		}
+	}
+
+	public RandomAccessFile getStream() {
+		return _stream;
 	}
 
 }
