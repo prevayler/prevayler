@@ -4,14 +4,14 @@
 
 package org.prevayler.implementation;
 
+import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.framework.Test;
-import org.prevayler.implementation.snapshot.GenericSnapshotManagerTest;
 import org.prevayler.foundation.ChunkingTest;
 import org.prevayler.foundation.DurableOutputStreamTest;
 import org.prevayler.foundation.FileLockerTest;
 import org.prevayler.foundation.gzip.MultiMemberGZIPTest;
+import org.prevayler.implementation.snapshot.GenericSnapshotManagerTest;
 
 public class Suite extends TestCase {
 	public static Test suite() {
@@ -33,6 +33,8 @@ public class Suite extends TestCase {
 		suite.addTestSuite(SnapshotSerializerTest.class);
 		suite.addTestSuite(MultiMemberGZIPTest.class);
 		suite.addTestSuite(FileLockerTest.class);
+		suite.addTestSuite(ConfusedFoodTasterTest.class);
+		suite.addTestSuite(ConfusedFoodTasterStressTest.class);
 		return suite;
 	}
 }

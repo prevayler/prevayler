@@ -1,104 +1,146 @@
-//Prevayler(TM) - The Free-Software Prevalence Layer.
-//Copyright (C) 2001-2003 Klaus Wuestefeld
-//This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
 package org.prevayler.implementation;
 
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.Transaction;
+import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.FileIOTest;
+import org.prevayler.foundation.serialization.Serializer;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.io.Serializable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 
 public class ConfusedFoodTasterTest extends FileIOTest {
 
-	private static final int NUMBER_OF_THREADS = 100;
-	private static final int TRANSACTIONS_PER_THREAD = 100;
-	private static final int WHEN_TO_START_THROWING = 150;
+	private static String _executions;
+
+	private static synchronized void clearExecutions() {
+		_executions = "";
+	}
+
+	private static synchronized void addExecution(String message) {
+		_executions = _executions + message + "\n";
+		ConfusedFoodTasterTest.class.notifyAll();
+	}
+
+	private static synchronized boolean didExecute(String message) {
+		return _executions.indexOf(message) != -1;
+	}
+
+	private static synchronized void waitFor(String message) {
+		while (!didExecute(message)) {
+			Cool.wait(ConfusedFoodTasterTest.class);
+		}
+	}
 
 	private Prevayler _prevayler;
-	private transient boolean _failed;
 
-	public void testFoodTasting() throws Exception {
-		if (true) return; // Disabled until it's fixed; comment out this line to run the test.
-		
-		_prevayler = PrevaylerFactory.createPrevayler(new CountingSystem(), _testDirectory);
+	public void testConfusion() throws IOException, ClassNotFoundException, InterruptedException {
+		PrevaylerFactory factory = new PrevaylerFactory();
+		factory.configurePrevalentSystem("ignored");
+		factory.configurePrevalenceDirectory(_testDirectory);
+		factory.configureJournalSerializer("MyJournal", new ConfusingSerializer());
 
-		_failed = false;
+		_prevayler = factory.create();
 
-		Thread[] threads = new Thread[NUMBER_OF_THREADS];
-		for (int i = 0; i < NUMBER_OF_THREADS; i++) {
-			threads[i] = new CountThread();
-		}
+		clearExecutions();
 
-		for (int i = 0; i < NUMBER_OF_THREADS; i++) {
-			threads[i].start();
-		}
-
-		for (int i = 0; i < NUMBER_OF_THREADS; i++) {
-			threads[i].join();
-		}
-
-		_prevayler.close();
-
-		assertFalse(_failed);
-	}
-
-	public class CountThread extends Thread {
-		public void run() {
-			for (int i = 0; !_failed && i < TRANSACTIONS_PER_THREAD; i++) {
-				try {
-					_prevayler.execute(new CountTransaction());
-				} catch (CountException exception) {
-					String stackTrace = stackTrace(exception);
-					if (stackTrace.indexOf("org.prevayler.implementation.PrevaylerImpl$1.receive(") != -1) {
-						// Should not have gotten to the king!
-						_failed = true;
-						return;
-					} else if (stackTrace.indexOf("org.prevayler.implementation.publishing.censorship.StrictTransactionCensor.approve(") != -1) {
-						// Still in the food taster; okay.
-						continue;
-					} else {
-						// Something unexpected.
-						_failed = true;
-						exception.printStackTrace();
-						return;
-					}
-				} catch (RuntimeException exception) {
-					// Something unexpected.
-					_failed = true;
-					exception.printStackTrace();
-					return;
-				}
+		new Thread() {
+			public void run() {
+				_prevayler.execute(new FirstTransaction());
 			}
+		}.start();
+
+		waitFor("first was tasted");
+
+		try {
+			_prevayler.execute(new SecondTransaction());
+			fail();
+		} catch (RuntimeException e) {
+			assertEquals("I taste bad!", e.getMessage());
 		}
 
-		private String stackTrace(CountException exception) {
-			ByteArrayOutputStream stream = new ByteArrayOutputStream();
-			exception.printStackTrace(new PrintStream(stream));
-			return stream.toString();
-		}
+		new Thread() {
+			public void run() {
+				_prevayler.execute(new ThirdTransaction());
+			}
+		}.start();
+
+		Thread.sleep(1000);
+
+		assertFalse(didExecute("third was tasted"));
+
+		addExecution("go ahead with first");
+
+		waitFor("first was kinged");
+		waitFor("third was kinged");
 	}
 
-	public static class CountingSystem implements Serializable {
-		int counter = 0;
+	protected void tearDown() throws Exception {
+		if (_prevayler != null) _prevayler.close();
 	}
 
-	public static class CountTransaction implements Transaction {
+	private static class FirstTransaction implements Transaction {
+
 		public void executeOn(Object prevalentSystem, Date executionTime) {
-			CountingSystem countingSystem = (CountingSystem) prevalentSystem;
-			if (countingSystem.counter == WHEN_TO_START_THROWING) {
-				throw new CountException();
+			if (didExecute("first was tasted")) {
+				addExecution("first was kinged");
+			} else {
+				addExecution("first was tasted");
 			}
-			countingSystem.counter++;
 		}
+
 	}
 
-	public static class CountException extends RuntimeException {
+	private static class SecondTransaction implements Transaction {
+
+		public void executeOn(Object prevalentSystem, Date executionTime) {
+			throw new RuntimeException("I taste bad!");
+		}
+
+	}
+
+	private static class ThirdTransaction implements Transaction {
+
+		public void executeOn(Object prevalentSystem, Date executionTime) {
+			if (didExecute("third was tasted")) {
+				addExecution("third was kinged");
+			} else {
+				addExecution("third was tasted");
+			}
+		}
+
+	}
+
+	private static class ConfusingSerializer implements Serializer {
+
+		public void writeObject(OutputStream stream, Object object) throws IOException {
+			if (object instanceof FirstTransaction) {
+				if (didExecute("first was tasted")) {
+					// Hang during journal serialization so that this transaction doesn't yet make it to the king.
+					waitFor("go ahead with first");
+				}
+				stream.write((byte) 1);
+			} else if (object instanceof SecondTransaction) {
+				stream.write((byte) 2);
+			} else if (object instanceof ThirdTransaction) {
+				stream.write((byte) 3);
+			} else {
+				throw new RuntimeException("unknown: " + object.getClass());
+			}
+		}
+
+		public Object readObject(InputStream stream) throws IOException, ClassNotFoundException {
+			switch (stream.read()) {
+				case 1: return new FirstTransaction();
+				case 2: return new SecondTransaction();
+				case 3: return new ThirdTransaction();
+				default: throw new RuntimeException("unknown");
+			}
+		}
+
 	}
 
 }
