@@ -8,6 +8,8 @@ package org.prevayler.foundation.network;
 
 import java.io.IOException;
 
+import org.prevayler.foundation.Cool;
+
 
 public class NetworkClientObjectReceiverImpl implements ObjectReceiver {
 
@@ -36,18 +38,13 @@ public class NetworkClientObjectReceiverImpl implements ObjectReceiver {
         startReading();
         
     }
-    /**
-     * Create a reader thread
-     *
-     */
+
     private void startReading()  {
-        Thread reader = new Thread() {
+        Cool.startDaemon(new Runnable() {
             public void run() {
                 while (true) receiveFromNetwork();
             }
-        };
-        reader.setDaemon(true);
-        reader.start();
+        });
     }
     
     /**

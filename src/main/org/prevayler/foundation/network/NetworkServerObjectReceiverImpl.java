@@ -9,6 +9,8 @@ package org.prevayler.foundation.network;
 import java.io.IOException;
 import java.net.SocketException;
 
+import org.prevayler.foundation.Cool;
+
 /**
  * Provides a server connection service.
  * 
@@ -17,7 +19,7 @@ import java.net.SocketException;
  */
 
 
-public class NetworkServerObjectReceiverImpl extends Thread  {
+public class NetworkServerObjectReceiverImpl implements Runnable  {
 
 
     private Service _service;
@@ -30,8 +32,7 @@ public class NetworkServerObjectReceiverImpl extends Thread  {
     public NetworkServerObjectReceiverImpl(Service service, ObjectServerSocket server) {
         this._service = service;
         this._provider = server;
-        setDaemon(true);
-        start();
+        Cool.startDaemon(this);
     }
     
     public void run () {
