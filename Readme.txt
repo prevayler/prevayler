@@ -41,9 +41,11 @@ More Learning Resources
 ===========================
 1) Documentation included in this distribution. See docs directory.
 
-2) Source Code - Prevayler's implementation (org.prevayler.implementation) has less than 300 Java statements.
+2) The SocketServer example in the contrib directory
 
-3) http://www.prevayler.org - Access to all other Prevayler resources: wiki site, mailing lists, etc.
+3) Source Code - Prevayler's implementation (org.prevayler.implementation) has less than 300 Java statements.
+
+4) http://www.prevayler.org - Access to all other Prevayler resources: wiki site, mailing lists, etc.
 
 
 Contact Information

@@ -14,9 +14,11 @@ and fast, yet full-featured, including:
   invocations.
 - Providing transparant exception handling, propogation,
   and (optionally) logging.
-- Implementing an Observer framework so that clients can be
-  notified when "interesting" changes occur in the server-side
-  business objects.
+- Implementing a client-server Observer framework so that 
+  clients can be notified when "interesting" changes occur 
+  in the server-side business objects.  This last feature 
+  goes way beyond the features of most relational 
+  databases.
 
 
 Organization of Distribution Subdirectories
