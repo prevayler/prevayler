@@ -3,11 +3,11 @@ package org.prevayler.foundation.serialization;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.StreamException;
 
-import java.io.Writer;
-import java.io.OutputStream;
 import java.io.BufferedWriter;
-import java.io.OutputStreamWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 public class XStreamSerializer implements Serializer {
 
@@ -22,6 +22,7 @@ public class XStreamSerializer implements Serializer {
 	public void writeObject(Object object) throws IOException {
 		try {
 			_xstream.toXML(object, _writer);
+			_writer.write(XStreamDeserializer.BOUNDARY);
 		} catch (StreamException se) {
 			throw new IOException("Unable to serialize with XStream: " + se.getMessage());
 		}
