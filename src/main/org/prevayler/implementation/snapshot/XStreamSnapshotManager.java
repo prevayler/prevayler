@@ -25,19 +25,25 @@ import com.thoughtworks.xstream.io.StreamException;
  */
 public class XStreamSnapshotManager extends AbstractSnapshotManager {
 
+    private XStream _xstream;
+    
 	public XStreamSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
 		super(newPrevalentSystem, snapshotDirectoryName);
+		_xstream = new XStream();
 	}
 
+	public XStreamSnapshotManager(XStream xstream, Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
+		super(newPrevalentSystem, snapshotDirectoryName);
+		_xstream = xstream;
+	}
 
     /**
 	 * @see org.prevayler.implementation.snapshot.SnapshotManager#writeSnapshot(Object, OutputStream)
 	 */
 	public void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
-		XStream xstream = new XStream();
         Writer writer = new BufferedWriter(new OutputStreamWriter(out));
 		try {
-			xstream.toXML(prevalentSystem, writer);
+			_xstream.toXML(prevalentSystem, writer);
 		} catch (StreamException se) {
 			throw new IOException("Unable to serialize with XStream: " + se.getMessage());
 		} finally {
@@ -50,10 +56,9 @@ public class XStreamSnapshotManager extends AbstractSnapshotManager {
 	 * @see org.prevayler.implementation.snapshot.SnapshotManager#readSnapshot(InputStream)
 	 */
 	public Object readSnapshot(InputStream in) throws IOException {
-		XStream xstream = new XStream();
         Reader reader = new BufferedReader(new InputStreamReader(in));
 		try {
-			return xstream.fromXML(reader);
+			return _xstream.fromXML(reader);
 		} catch (StreamException se) {
 			throw new IOException("Unable to deserialize with XStream: " + se.getMessage());
 		} finally {
