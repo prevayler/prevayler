@@ -164,6 +164,7 @@
 
     <target name="javadoc" depends="compile.core"
             description="Create Javadoc API documentation" >
+        <delete dir="${docdir}/api" />
         <mkdir dir="${docdir}/api" />
         <!-- beginners -->
         <antcall target="-javadoc.sub">
