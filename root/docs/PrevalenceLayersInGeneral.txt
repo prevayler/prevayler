@@ -1,0 +1,26 @@
+================================
+Prevalence Layers in General
+================================
+
+Features
+============
+These are the features provided by a Prevalence Layer.
+ - Transparent Persistence - business objects, Plain Old Java Objects
+ - ACID Transactions
+  - Atomicity
+  - Consistency - Transaction Filtering
+  - Isolation
+  - Durability - Persistence
+ - Transparent Replication. Enables Fault-Tolerance and Load-Balancing.
+
+
+Performance Scalability
+===========================
+ - Query Performance Scalability - Object Prevalence Layers will allow simple object queries to run 3 to 4 orders of magnitude faster than using a database through JDBC. Complex queries will run even faster.
+ - Transaction Performance Scalability - Transaction processing is in the same order 
+
+
+Architecture
+================
+How it works. The logging. The snapshots. Replication. Enables Fault-Tolerance and Load-Balancing.
+
