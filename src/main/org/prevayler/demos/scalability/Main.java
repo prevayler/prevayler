@@ -115,12 +115,17 @@ public class Main {
 			"#\n" +
 			"# Running the tests with one hundred thousand objects\n" +
 			"# (default option) requires approx. 128MB free RAM.\n" +
-			"# The VM must be started with a sufficient maximum heap" +
+			"# The VM must be started with a sufficient maximum heap\n" +
 			"# size or you will get an OutOfMemoryError.\n" +
+			"#\n" +
 			"# Example for Linux and Windows:  java -Xmx128000000 ...\n" +
 			"#\n" +
+			"# (This can be set with the scalability.jvmarg property\n" +
+			"# in build.properties; see sample.build.properties for\n" +
+			"# examples.)\n" +
+			"#\n" +
 			"# Running the tests with one million objects requires\n" +
-			"# approx. 940MB free RAM." +
+			"# approx. 940MB free RAM.\n" +
 			"# Running the tests with ten million objects requires\n" +
 			"# approx. 9.4GB free RAM and a 64bit VM.\n" +
 			"#\n" +
