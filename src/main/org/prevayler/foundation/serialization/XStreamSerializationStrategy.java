@@ -25,22 +25,19 @@ import com.thoughtworks.xstream.XStream;
  */
 public class XStreamSerializationStrategy extends AbstractSerializationStrategy {
 
-	private XStream _xstream;
-
-	public XStreamSerializationStrategy() {
-		this(new XStream());
-	}
-
-	public XStreamSerializationStrategy(XStream xstream) {
-		_xstream = xstream;
-	}
-
 	public Serializer createSerializer(OutputStream stream) throws IOException {
-		return new XStreamSerializer(_xstream, stream);
+		return new XStreamSerializer(createXStream(), stream);
 	}
 
 	public Deserializer createDeserializer(InputStream stream) throws IOException {
-		return new XStreamDeserializer(_xstream, stream);
+		return new XStreamDeserializer(createXStream(), stream);
+	}
+
+	/**
+	 * Create a new instance for each stream, since XStream objects are not threadsafe.
+	 */
+	protected XStream createXStream() {
+		return new XStream();
 	}
 
 }

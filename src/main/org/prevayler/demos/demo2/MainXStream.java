@@ -17,12 +17,15 @@ public class MainXStream {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalenceDirectory("demo2XStream");
 		
-		XStream xstream = new XStream();
-		xstream.alias("bank", Bank.class);
-		xstream.alias("account", Account.class);
-		xstream.alias("accountEntry", AccountEntry.class);
-		
-		factory.configureSnapshotSerializationStrategy(new XStreamSerializationStrategy(xstream));
+		factory.configureSnapshotSerializationStrategy(new XStreamSerializationStrategy() {
+			protected XStream createXStream() {
+				XStream xstream = new XStream();
+				xstream.alias("bank", Bank.class);
+				xstream.alias("account", Account.class);
+				xstream.alias("accountEntry", AccountEntry.class);
+				return xstream;
+			}
+		});
 		factory.configurePrevalentSystem(new Bank());
 		Prevayler prevayler = factory.create();
 
