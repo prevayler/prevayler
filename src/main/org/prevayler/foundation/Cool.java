@@ -8,8 +8,7 @@ public class Cool {
 		try {
 			object.wait();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Unexpected InterruptedException.");
+			unexpected(e);
 		}
 	}
 
@@ -17,9 +16,12 @@ public class Cool {
 		try {
 			Thread.sleep(milliseconds);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Unexpected InterruptedException.");
+			unexpected(e);
 		}
 	}
+
+    public static void unexpected(Exception e) {
+        throw new RuntimeException("Unexpected Exception was thrown.", e);
+    }
 
 }

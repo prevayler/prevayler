@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.prevayler.foundation.Cool;
+import org.prevayler.foundation.DeepCopier;
 
 
 public class ObjectSocketMock implements ObjectSocket {
@@ -33,7 +34,7 @@ public class ObjectSocketMock implements ObjectSocket {
 
 	public void writeObject(Object object) throws IOException {
 		_permit.check();
-		_counterpart.receive(object);
+		_counterpart.receive(DeepCopier.deepCopy(object));
 	}
 
 	private synchronized void receive(Object object) {

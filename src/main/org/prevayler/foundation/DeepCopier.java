@@ -18,19 +18,24 @@ public class DeepCopier {
 	 * @throws IOException
 	 * 
 	 */
-	public static Object deepCopy(Object original) throws IOException, ClassNotFoundException {
-		return deepCopy(original, new JavaSerializer());
+	public static Object deepCopy(Object original) {
+	    return deepCopy(original, new JavaSerializer());
 	}
 
 	/**
 	 * Produce a deep copy of the given object. Serializes the entire object to a byte array in memory. Recommended for
 	 * relatively small objects, such as individual transactions.
 	 */
-	public static Object deepCopy(Object original, Serializer serializer) throws IOException, ClassNotFoundException {
-		ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-		serializer.writeObject(byteOut, original);
-		ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
-		return serializer.readObject(byteIn);
+	public static Object deepCopy(Object original, Serializer serializer) {
+		try {
+		    ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+            serializer.writeObject(byteOut, original);
+            ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+            return serializer.readObject(byteIn);
+        } catch (Exception e) {
+            Cool.unexpected(e);
+            return null;
+        }
 	}
 
 	/**
