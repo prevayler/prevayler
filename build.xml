@@ -31,7 +31,7 @@
 
     <property name="log4j.system.variable.dynamic.name" value="$${${app.name}.log.home}" />
     <property name="log4j.system.variable.name" value="${app.name}.log.home" />
-    <property name="log4j.log.path" location="${build.home}/logs" />
+    <property name="log4j.log.path" location="${basedir}/logs" />
 
     <fileset dir="${src.test.home}" id="unit.test.files"
              includes="${unit.test.includes}"
@@ -77,6 +77,7 @@
         <delete dir="${lib.home}" />
         <delete dir="${doc.home}/api" />
         <delete dir="${unit.test.home}" />
+        <delete dir="${log4j.log.path}" />
 
     </target>
 
