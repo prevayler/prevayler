@@ -5,11 +5,11 @@
 
 package org.prevayler.implementation.publishing;
 
-import java.util.Date;
-import java.util.LinkedList;
-
 import org.prevayler.Transaction;
 import org.prevayler.implementation.TransactionTimestamp;
+
+import java.util.Date;
+import java.util.LinkedList;
 
 
 /** An assyncronous buffer for transaction subscribers. 
@@ -27,8 +27,8 @@ public class POBox extends Thread implements TransactionSubscriber {
 	}
 
 
-	public synchronized void receive(Transaction transaction, Date timestamp) {
-		_queue.add(new TransactionTimestamp(transaction, timestamp));
+	public synchronized void receive(Transaction transaction, long systemVersion, Date executionTime) {
+		_queue.add(new TransactionTimestamp(transaction, systemVersion, executionTime));
 		notify();
 	}
 
@@ -36,14 +36,14 @@ public class POBox extends Thread implements TransactionSubscriber {
 	public void run() {
 		while (true) {
 			TransactionTimestamp notification = waitForNotification();
-			_delegate.receive(notification.transaction(), notification.timestamp());
+			_delegate.receive(notification.transaction(), notification.systemVersion(), notification.timestamp());
 		}
 	}
 
 
 	private synchronized TransactionTimestamp waitForNotification() {
-			while (_queue.size() == 0) waitWithoutInterruptions();
-			return (TransactionTimestamp)_queue.removeFirst();
+		while (_queue.size() == 0) waitWithoutInterruptions();
+		return (TransactionTimestamp)_queue.removeFirst();
 	}
 
 

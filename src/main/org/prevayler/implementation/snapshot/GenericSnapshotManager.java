@@ -2,6 +2,7 @@ package org.prevayler.implementation.snapshot;
 
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.implementation.PrevalentSystemGuard;
 import org.prevayler.implementation.PrevaylerDirectory;
 
 import java.io.File;
@@ -18,8 +19,7 @@ public class GenericSnapshotManager {
 	private Map _strategies;
 	private String _primarySuffix;
 	private PrevaylerDirectory _directory;
-	private long _recoveredVersion;
-	private Object _recoveredPrevalentSystem;
+	private PrevalentSystemGuard _recoveredPrevalentSystem;
 
 	public GenericSnapshotManager(Serializer serializer, Object newPrevalentSystem, PrevaylerDirectory directory)
 			throws IOException, ClassNotFoundException {
@@ -49,18 +49,18 @@ public class GenericSnapshotManager {
 		_directory.produceDirectory();
 
 		File latestSnapshot = _directory.latestSnapshot();
-		_recoveredVersion = latestSnapshot == null ? 0 : PrevaylerDirectory.snapshotVersion(latestSnapshot);
-		_recoveredPrevalentSystem = latestSnapshot == null
+		long recoveredVersion = latestSnapshot == null ? 0 : PrevaylerDirectory.snapshotVersion(latestSnapshot);
+		Object recoveredPrevalentSystem = latestSnapshot == null
 				? newPrevalentSystem
 				: readSnapshot(latestSnapshot);
+		_recoveredPrevalentSystem = new PrevalentSystemGuard(recoveredPrevalentSystem, recoveredVersion);
 	}
 
 	GenericSnapshotManager(Object newPrevalentSystem) {
 		_strategies = Collections.singletonMap("snapshot", new JavaSerializer());
 		_primarySuffix = "snapshot";
 		_directory = null;
-		_recoveredVersion = 0;
-		_recoveredPrevalentSystem = newPrevalentSystem;
+		_recoveredPrevalentSystem = new PrevalentSystemGuard(newPrevalentSystem, 0);
 	}
 
 
@@ -68,12 +68,8 @@ public class GenericSnapshotManager {
 		return (Serializer) _strategies.get(_primarySuffix);
 	}
 
-	public Object recoveredPrevalentSystem() {
+	public PrevalentSystemGuard recoveredPrevalentSystem() {
 		return _recoveredPrevalentSystem;
-	}
-
-	public long recoveredVersion() {
-		return _recoveredVersion;
 	}
 
 	public void writeSnapshot(Object prevalentSystem, long version) throws IOException {

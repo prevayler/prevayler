@@ -5,13 +5,13 @@
 
 package org.prevayler.implementation.publishing;
 
+import org.prevayler.Clock;
+import org.prevayler.Transaction;
+
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.prevayler.Clock;
-import org.prevayler.Transaction;
 
 
 /** This class provides basic subscriber addition and notification.
@@ -38,9 +38,9 @@ public abstract class AbstractPublisher implements TransactionPublisher {
 		_subscribers.remove(subscriber);
 	}
 
-    protected synchronized void notifySubscribers(Transaction transaction, Date timestamp) {
+    protected synchronized void notifySubscribers(Transaction transaction, long systemVersion, Date executionTime) {
 		Iterator i = _subscribers.iterator();
-        while (i.hasNext()) ((TransactionSubscriber) i.next()).receive(transaction, timestamp);
+        while (i.hasNext()) ((TransactionSubscriber) i.next()).receive(transaction, systemVersion, executionTime);
     }
 
 }

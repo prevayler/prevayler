@@ -5,20 +5,20 @@
 
 package org.prevayler.foundation;
 
+import org.prevayler.Transaction;
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.TransactionTimestamp;
-import org.prevayler.Transaction;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectStreamException;
 import java.io.UTFDataFormatException;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.util.Date;
 
 
@@ -46,7 +46,9 @@ public class DurableInputStream {
 	public TransactionTimestamp read() throws IOException, ClassNotFoundException {
 		Chunk chunk = readChunk();
 		Transaction transaction = (Transaction)_serializer.readObject(new ByteArrayInputStream(chunk.getBytes()));
-		return new TransactionTimestamp(transaction, new Date(Long.parseLong(chunk.getParameter("timestamp"))));
+		long systemVersion = Long.parseLong(chunk.getParameter("systemVersion"));
+		long executionTime = Long.parseLong(chunk.getParameter("executionTime"));
+		return new TransactionTimestamp(transaction, systemVersion, new Date(executionTime));
 	}
 
 	private Chunk readChunk() throws IOException {

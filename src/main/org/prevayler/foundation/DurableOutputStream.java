@@ -90,7 +90,8 @@ public class DurableOutputStream {
 				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 				_serializer.writeObject(bytes, timestamp.transaction());
 				Chunk chunk = new Chunk(bytes.toByteArray());
-				chunk.setParameter("timestamp", String.valueOf(timestamp.timestamp().getTime()));
+				chunk.setParameter("systemVersion", String.valueOf(timestamp.systemVersion()));
+				chunk.setParameter("executionTime", String.valueOf(timestamp.timestamp().getTime()));
 				Chunking.writeChunk(_active, chunk);
 			} catch (IOException exception) {
 				internalClose();

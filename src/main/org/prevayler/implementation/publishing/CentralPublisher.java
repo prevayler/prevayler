@@ -20,17 +20,13 @@ public class CentralPublisher extends AbstractPublisher {
 	private final PausableClock _pausableClock;
 	private final TransactionCensor _censor;
 	private final Journal _journal;
+	private long _nextTransaction;
 
-	private final Object _pendingSubscriptionMonitor = new Object();
 	private volatile int _pendingPublications = 0;
 	private final Object _pendingPublicationsMonitor = new Object();
 
 	private Turn _nextTurn = Turn.first();
 	private final Object _nextTurnMonitor = new Object();
-
-	private boolean _foodTasterIsDead = false;
-	private int _pipelinedTransactions = 0;
-	private final Object _pipelinedTransactionsMonitor = new Object();
 
 
 	public CentralPublisher(Clock clock, TransactionCensor censor, Journal journal) {
@@ -43,11 +39,9 @@ public class CentralPublisher extends AbstractPublisher {
 
 
 	public void publish(Transaction transaction) {
-		synchronized (_pendingSubscriptionMonitor) {  //Blocks all new publications until the subscription is over.
-			synchronized (_pendingPublicationsMonitor) {
-				if (_pendingPublications == 0) _pausableClock.pause();
-				_pendingPublications++;
-			}
+		synchronized (_pendingPublicationsMonitor) {  //Blocks all new subscriptions until the publication is over.
+			if (_pendingPublications == 0) _pausableClock.pause();
+			_pendingPublications++;
 		}
 
 		try {
@@ -55,7 +49,10 @@ public class CentralPublisher extends AbstractPublisher {
 		} finally {
 			synchronized (_pendingPublicationsMonitor) {
 				_pendingPublications--;
-				if (_pendingPublications == 0) _pausableClock.resume();
+				if (_pendingPublications == 0) {
+					_pausableClock.resume();
+					_pendingPublicationsMonitor.notifyAll();
+				}
 			}
 		}
 	}
@@ -65,9 +62,9 @@ public class CentralPublisher extends AbstractPublisher {
 		Turn myTurn = nextTurn();
 
 		Date executionTime = realTime(myTurn);  //TODO realTime() and approve in the same turn.
-		approve(transaction, executionTime, myTurn);
+		long systemVersion = approve(transaction, executionTime, myTurn);
 		_journal.append(transaction, executionTime, myTurn);
-		notifySubscribers(transaction, executionTime, myTurn);
+		notifySubscribers(transaction, systemVersion, executionTime, myTurn);
 	}
 
 
@@ -88,59 +85,38 @@ public class CentralPublisher extends AbstractPublisher {
 	}
 
 
-	private void approve(Transaction transaction, Date executionTime, Turn myTurn) throws RuntimeException, Error {
+	private long approve(Transaction transaction, Date executionTime, Turn myTurn) throws RuntimeException, Error {
 		try {
 			myTurn.start();
 
-			if (_foodTasterIsDead) {
-				synchronized (_pipelinedTransactionsMonitor) {
-					while (_pipelinedTransactions > 0) {
-						Cool.wait(_pipelinedTransactionsMonitor);
-					}
-				}
-			}
+			_censor.approve(transaction, _nextTransaction, executionTime);
 
-			_censor.approve(transaction, executionTime);
-
-			_foodTasterIsDead = false;
-
-			synchronized (_pipelinedTransactionsMonitor) {
-				_pipelinedTransactions++;
-			}
+			long systemVersion = _nextTransaction++;
 
 			myTurn.end();
-		} catch (RuntimeException r) { dealWithError(myTurn); throw r;
-		} catch (Error e) {	dealWithError(myTurn); throw e; }
-	}
 
-	
-	private void dealWithError(Turn myTurn) {
-		_foodTasterIsDead = true;
-		myTurn.alwaysSkip();
+			return systemVersion;
+		} catch (RuntimeException r) { myTurn.alwaysSkip(); throw r;
+		} catch (Error e) { myTurn.alwaysSkip(); throw e; }
 	}
 
 
-	private void notifySubscribers(Transaction transaction, Date executionTime, Turn myTurn) {
+	private void notifySubscribers(Transaction transaction, long systemVersion, Date executionTime, Turn myTurn) {
 		try {
 			myTurn.start();
 			_pausableClock.advanceTo(executionTime);
-			notifySubscribers(transaction, executionTime);
-
-			synchronized (_pipelinedTransactionsMonitor) {
-				_pipelinedTransactions--;
-				if (_pipelinedTransactions == 0) {
-					_pipelinedTransactionsMonitor.notifyAll();
-				}
-			}
+			notifySubscribers(transaction, systemVersion, executionTime);
 		} finally {	myTurn.end(); }
 	}
 
 
 	public void addSubscriber(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
-		synchronized (_pendingSubscriptionMonitor) {
-			while (_pendingPublications != 0) Thread.yield();
+		synchronized (_pendingPublicationsMonitor) {
+			while (_pendingPublications != 0) Cool.wait(_pendingPublicationsMonitor);
 			
 			_journal.update(subscriber, initialTransaction);
+			_nextTransaction = _journal.nextTransaction();
+
 			super.addSubscriber(subscriber);
 		}
 	}

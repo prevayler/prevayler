@@ -4,17 +4,17 @@
 
 package org.prevayler.implementation.replication;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.util.Date;
-
 import org.prevayler.Clock;
 import org.prevayler.Transaction;
 import org.prevayler.implementation.clock.BrokenClock;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.util.Date;
 
 
 /** Reserved for future implementation.
@@ -127,13 +127,15 @@ public class ClientPublisher implements TransactionPublisher {
 
 		if (transactionCandidate.equals(ServerConnection.CLOCK_TICK)) return;
 
+		long systemVersion = _fromServer.readLong();
+
 		if (transactionCandidate.equals(ServerConnection.REMOTE_TRANSACTION)) {
-			_subscriber.receive(_myTransaction, timestamp);
+			_subscriber.receive(_myTransaction, systemVersion, timestamp);
 			notifyMyTransactionMonitor();
 			return;
 		}
 
-		_subscriber.receive((Transaction)transactionCandidate, timestamp);
+		_subscriber.receive((Transaction)transactionCandidate, systemVersion, timestamp);
 	}
 
 

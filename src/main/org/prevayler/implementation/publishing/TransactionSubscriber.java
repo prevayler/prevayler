@@ -4,13 +4,13 @@
 
 package org.prevayler.implementation.publishing;
 
-import java.util.Date;
-
 import org.prevayler.Transaction;
+
+import java.util.Date;
 
 
 public interface TransactionSubscriber {
 
-	public void receive(Transaction transaction, Date timestamp);
+	public void receive(Transaction transaction, long systemVersion, Date executionTime);
 
 }

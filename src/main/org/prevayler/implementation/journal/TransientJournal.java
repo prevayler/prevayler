@@ -4,15 +4,15 @@
 
 package org.prevayler.implementation.journal;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.prevayler.Transaction;
 import org.prevayler.foundation.Turn;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 public class TransientJournal implements Journal {
@@ -27,7 +27,7 @@ public class TransientJournal implements Journal {
 
 		try {
 			myTurn.start();
-			journal.add(new TransactionTimestamp(transaction, executionTime));
+			journal.add(new TransactionTimestamp(transaction, _initialTransaction + journal.size(), executionTime));
 		} finally {
 			myTurn.end();
 		}
@@ -46,11 +46,16 @@ public class TransientJournal implements Journal {
 
 		while (i != journal.size()) {
 			TransactionTimestamp entry = (TransactionTimestamp)journal.get(i);
-			subscriber.receive(entry.transaction(), entry.timestamp());
+			subscriber.receive(entry.transaction(), _initialTransaction + i, entry.timestamp());
 			i++;
 		}
 	}
 
 	public void close() {}
+
+	public synchronized long nextTransaction() {
+		if (!_initialTransactionInitialized) throw new IllegalStateException("update() must be called at least once");
+		return _initialTransaction + journal.size();
+	}
 
 }

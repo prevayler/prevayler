@@ -2,8 +2,8 @@ package org.prevayler.foundation;
 
 import org.prevayler.foundation.monitor.NullMonitor;
 import org.prevayler.foundation.serialization.JavaSerializer;
-import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.AppendTransaction;
+import org.prevayler.implementation.TransactionTimestamp;
 
 import java.io.EOFException;
 import java.io.File;
@@ -43,8 +43,10 @@ public class DurableOutputStreamTest extends FileIOTest {
 		}
 	}
 
+	private long _systemVersion = 42;
+
 	private TransactionTimestamp timestamp(String value) {
-		return new TransactionTimestamp(new AppendTransaction(value), new Date());
+		return new TransactionTimestamp(new AppendTransaction(value), _systemVersion++, new Date());
 	}
 
 	private String value(TransactionTimestamp timestamp) {

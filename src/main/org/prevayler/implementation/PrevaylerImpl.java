@@ -43,7 +43,7 @@ public class PrevaylerImpl implements Prevayler {
 	    _monitor = prevaylerMonitor;
 		_snapshotManager = snapshotManager;
 
-		_guard = new PrevalentSystemGuard(_snapshotManager.recoveredPrevalentSystem(), _snapshotManager.recoveredVersion());
+		_guard = _snapshotManager.recoveredPrevalentSystem();
 
 		_publisher = transactionPublisher;
 		_clock = _publisher.clock();
@@ -70,7 +70,7 @@ public class PrevaylerImpl implements Prevayler {
 
 
 	public Object execute(Query sensitiveQuery) throws Exception {
-		return _guard.executeQuery(sensitiveQuery, clock().time());
+		return _guard.executeQuery(sensitiveQuery, clock());
 	}
 
 

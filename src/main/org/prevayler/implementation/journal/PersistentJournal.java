@@ -66,7 +66,8 @@ public class PersistentJournal implements Journal {
 
 		DurableOutputStream myOutputJournal;
 		DurableOutputStream outputJournalToClose = null;
-		
+
+		long systemVersion;
 		try {
 			myTurn.start();
 			if (!isOutputJournalStillValid()) {
@@ -74,14 +75,14 @@ public class PersistentJournal implements Journal {
 				_outputJournal = createOutputJournal(_nextTransaction);
 				_journalAgeTimer = StopWatch.start();
 			}
-			_nextTransaction++;
+			systemVersion = _nextTransaction++;
 			myOutputJournal = _outputJournal;
 		} finally {
 			myTurn.end();
 		}
 
 		try {
-			myOutputJournal.sync(new TransactionTimestamp(transaction, executionTime), myTurn);
+			myOutputJournal.sync(new TransactionTimestamp(transaction, systemVersion, executionTime), myTurn);
 		} catch (IOException iox) {
 			handle(iox, _outputJournal.file(), "writing to");
 		}
@@ -177,7 +178,7 @@ public class PersistentJournal implements Journal {
 					}
 
 					TransactionTimestamp entry = input.read();
-					subscriber.receive(entry.transaction(), entry.timestamp());
+					subscriber.receive(entry.transaction(), recoveringTransaction, entry.timestamp());
 				} else {
 					input.skip();
 				}
@@ -213,6 +214,11 @@ public class PersistentJournal implements Journal {
 
 	public void close() throws IOException {
 		if (_outputJournal != null) _outputJournal.close();
+	}
+
+	public long nextTransaction() {
+		if (!_nextTransactionInitialized) throw new IllegalStateException("update() must be called at least once");
+		return _nextTransaction;
 	}
 
 }

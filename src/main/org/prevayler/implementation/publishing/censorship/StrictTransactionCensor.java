@@ -1,37 +1,37 @@
 //Prevayler(TM) - The Free-Software Prevalence Layer.
 //Copyright (C) 2001-2003 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-//Contributions: Jon Tirsèn.
+//Contributions: Jon Tirsï¿½n.
 
 package org.prevayler.implementation.publishing.censorship;
 
 import org.prevayler.Transaction;
 import org.prevayler.foundation.DeepCopier;
 import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.implementation.PrevalentSystemGuard;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
 import java.util.Date;
 
 public class StrictTransactionCensor implements TransactionCensor {
 
-	private final Object _king;
-	private Object _royalFoodTaster;
-	private final GenericSnapshotManager _snapshotManager;
-
+	private final PrevalentSystemGuard _king;
+	private PrevalentSystemGuard _royalFoodTaster;
 	private final Serializer _journalSerializer;
-
+	private final Serializer _snapshotSerializer;
 
 	public StrictTransactionCensor(GenericSnapshotManager snapshotManager, Serializer journalSerializer) {
-		_snapshotManager = snapshotManager;
+		_king = snapshotManager.recoveredPrevalentSystem();
+		// The _royalFoodTaster cannot be initialized here, or else the pending transactions will not be applied to it.
 		_journalSerializer = journalSerializer;
-		_king = _snapshotManager.recoveredPrevalentSystem();
-		//The _royalFoodTaster cannot be initialized here, or else the pending transactions will not be applied to it.
+		_snapshotSerializer = snapshotManager.primarySerializer();
 	}
 
-	public void approve(Transaction transaction, Date executionTime) throws RuntimeException, Error {
+	public void approve(Transaction transaction, long systemVersion, Date executionTime) throws RuntimeException, Error {
 		try {
 			Transaction transactionCopy = deepCopy(transaction);
-			transactionCopy.executeOn(royalFoodTaster(), executionTime);
+			PrevalentSystemGuard royalFoodTaster = royalFoodTaster(systemVersion - 1);
+			royalFoodTaster.receive(transactionCopy, systemVersion, executionTime);
 		} catch (RuntimeException rx) {
 			letTheFoodTasterDie();
 			throw rx;
@@ -54,16 +54,14 @@ public class StrictTransactionCensor implements TransactionCensor {
 		_royalFoodTaster = null;  // At this moment there might be transactions that have already been approved by this censor but have not yet been applied to the _king. It is a requirement, therefore, that the _royalFoodTaster must not be initialized now, but only when the next transaction arrives to be approved.
 	}
 
-	private Object royalFoodTaster() {
-		if (_royalFoodTaster == null) produceNewFoodTaster();
+	private PrevalentSystemGuard royalFoodTaster(long systemVersion) {
+		if (_royalFoodTaster == null) produceNewFoodTaster(systemVersion);
 		return _royalFoodTaster;
 	}
 
-	private void produceNewFoodTaster() {
+	private void produceNewFoodTaster(long systemVersion) {
 		try {
-			synchronized (_king) {
-				_royalFoodTaster = DeepCopier.deepCopy(_king, _snapshotManager.primarySerializer());
-			}
+			_royalFoodTaster = _king.deepCopy(systemVersion, _snapshotSerializer);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new RuntimeException("Unable to produce a copy of the prevalent system for trying out transactions before applying them to the real system.");

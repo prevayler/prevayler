@@ -4,12 +4,12 @@
 
 package org.prevayler.implementation.journal;
 
-import java.io.IOException;
-import java.util.Date;
-
 import org.prevayler.Transaction;
 import org.prevayler.foundation.Turn;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
+
+import java.io.IOException;
+import java.util.Date;
 
 // START SNIPPET: journal
  
@@ -20,6 +20,8 @@ public interface Journal {
 	public void update(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException;
 
 	public void close() throws IOException;
+
+	public long nextTransaction();
 
 }
 // END SNIPPET: journal
