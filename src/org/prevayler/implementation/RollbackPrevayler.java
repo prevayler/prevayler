@@ -8,8 +8,8 @@ import java.io.IOException;
 
 public class RollbackPrevayler implements Prevayler {
 
-    private Object master;
-    private Object slave;
+    private Object foodTaster;
+    private Object king;
 
     private SnapshotManager snapshotManager;
     private TransactionPublisher transactionPublisher;
@@ -17,96 +17,82 @@ public class RollbackPrevayler implements Prevayler {
     private long lastSnapshot;
     private TransactionSubscriber subscriber;
 
-    public RollbackPrevayler(Object prevalentSystem, String prevaylerBase)
-            throws ClassNotFoundException, IOException
-    {
+
+    public RollbackPrevayler(Object prevalentSystem, String prevaylerBase) throws ClassNotFoundException, IOException {
         this(prevalentSystem, new SnapshotManager(prevaylerBase), new TransactionLogger(prevaylerBase));
     }
 
-    public RollbackPrevayler(Object initialSystem, SnapshotManager snapshotManager, TransactionPublisher transactionPublisher)
-            throws ClassNotFoundException, IOException
-    {
+
+    public RollbackPrevayler(Object initialSystem, SnapshotManager snapshotManager, TransactionPublisher transactionPublisher) throws ClassNotFoundException, IOException {
         this.snapshotManager = snapshotManager;
         this.transactionPublisher = transactionPublisher;
 
         systemVersion = snapshotManager.latestVersion();
-
-        // restore a slave
-        subscriber = subscriber();
-        slave = snapshotManager.readSnapshot(initialSystem, systemVersion);
-
+        king = snapshotManager.readSnapshot(initialSystem, systemVersion);
         if (systemVersion == 0) systemVersion = 1;
 
+        // restore a king
+        subscriber = subscriber();
         transactionPublisher.addSubscriber(subscriber, systemVersion);
 
-        // use this slave as the master
-        master = slave;
+        // use this king as the foodTaster
+        foodTaster = king;
 
-        // restore a new slave as a snapshot of the master (ie use snapshot as a replacement to clone())
+        // restore a new king as a snapshot of the foodTaster (ie use snapshot as a replacement to clone())
         takeSnapshot();
-        slave = snapshotManager.readSnapshot(null, lastSnapshot);
+        king = snapshotManager.readSnapshot(null, lastSnapshot);
     }
+
 
     public void takeSnapshot() throws IOException {
         synchronized (subscriber) {
             lastSnapshot = systemVersion;
-            snapshotManager.writeSnapshot(master, lastSnapshot);
+            snapshotManager.writeSnapshot(foodTaster, lastSnapshot);
         }
     }
+
 
     private TransactionSubscriber subscriber() {
         return new TransactionSubscriber() {
             public synchronized void receive(Transaction transaction) {
                 systemVersion++;
 
-                transaction.executeOn(slave);
+                transaction.executeOn(king);
             }
         };
     }
 
+
     /** Any incomplete transactions will not be visible in the system returned from this method.
      */
     public Object prevalentSystem() {
-        return slave;
+        return king;
     }
 
-    public void execute(Transaction transaction) throws IOException {
-        Exception error = null;
-        boolean doCommit;
+
+    public void execute(Transaction transaction) {
 
         try {
-            transaction.executeOn(master);
-            doCommit = true;
-        } catch (Exception e) {
-            doCommit = false;
-            error = e;
-        }
-
-        if (transaction instanceof RollbackTransaction) {
-            RollbackTransaction rollbackTransaction = (RollbackTransaction) transaction;
-            if (rollbackTransaction.isRollbackOnly()) {
-                doCommit = false;
-            }
-        }
-
-        if (doCommit) {
+            transaction.executeOn(foodTaster);
             transactionPublisher.publish(transaction);
-        } else {
+        } catch (RuntimeException rx) {
             doRollback();
-            throw new TransactionRolledbackException(error);
+            throw rx;
         }
     }
+
 
     private void doRollback() {
-        master = slave;
+        foodTaster = king;
         try {
-            slave = snapshotManager.readSnapshot(slave, lastSnapshot);
+            king = snapshotManager.readSnapshot(king, lastSnapshot);
             if (systemVersion != lastSnapshot) {
                 systemVersion = lastSnapshot;
                 transactionPublisher.addSubscriber(subscriber, lastSnapshot);
             }
         } catch (Exception e) {
-             throw new RuntimeException("Could not rollback.", e);
+             throw new RuntimeException("Could not rollback.");
         }
     }
+
 }

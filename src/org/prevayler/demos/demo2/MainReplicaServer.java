@@ -9,6 +9,7 @@ import org.prevayler.demos.demo2.gui.BankFrame;
 import org.prevayler.implementation.*;
 import org.prevayler.implementation.log.TransactionLogger;
 import org.prevayler.implementation.replica.PublishingServer;
+import org.prevayler.util.clock.ClockActor;
 
 
 public class MainReplicaServer {
@@ -27,6 +28,7 @@ public class MainReplicaServer {
 		TransactionPublisher publisher = new TransactionLogger("demo2Acid");
 		SnapshotPrevayler prevayler = new SnapshotPrevayler(new Bank(), new SnapshotManager("demo2Acid"), publisher);
 		new PublishingServer(publisher);
+		new ClockActor(prevayler);
 
 		new BankFrame(prevayler);
 	}

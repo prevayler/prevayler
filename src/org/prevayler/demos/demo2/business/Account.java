@@ -1,6 +1,6 @@
 package org.prevayler.demos.demo2.business;
 
-import org.prevayler.util.Clock;
+import org.prevayler.util.clock.Clock;
 import java.util.*;
 
 public class Account implements java.io.Serializable {

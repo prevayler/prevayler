@@ -6,8 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.prevayler.util.ClockedSystem;
+import org.prevayler.util.clock.ClockedSystem;
 
 public class Bank extends ClockedSystem {
 

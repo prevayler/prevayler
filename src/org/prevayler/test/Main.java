@@ -10,11 +10,6 @@ public class Main {
 
 	static public void main(String[] args) throws Exception {
 
-
-//		new org.prevayler.implementation.replica.PublishingServer(new org.prevayler.implementation.log.TransactionLogger("test"));
-//		new org.prevayler.implementation.replica.RemotePublisher();
-
-
 		header("RollbackTest...");
 		RollbackTest.run();
 

@@ -5,19 +5,14 @@
 package org.prevayler.test;
 
 import org.prevayler.Transaction;
-import org.prevayler.implementation.RollbackTransaction;
 
 
 /** The Addition transaction for the AddingSystem.
 */
-class RollbackAddition implements RollbackTransaction {
+class RollbackAddition implements Transaction {
 
 	private final long _value;
-    private boolean rollbackOnly = false;
 
-    public boolean isRollbackOnly() {
-        return rollbackOnly;
-    }
 
 	RollbackAddition(long value) {
 		_value = value;
@@ -26,11 +21,7 @@ class RollbackAddition implements RollbackTransaction {
 
 	public void executeOn(Object prevalentSystem) {
 		((AddingSystem)prevalentSystem).add(_value);
-        setRollbackOnly();
+        throw new RuntimeException("Testing Rollback");
 	}
-
-    private void setRollbackOnly() {
-        rollbackOnly = true;
-    }
 
 }

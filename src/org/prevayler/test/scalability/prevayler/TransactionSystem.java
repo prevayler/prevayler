@@ -15,14 +15,16 @@ class TransactionSystem implements ScalabilitySystem {
 	private final Map recordsById = new HashMap();
 
 	public void performTransaction(Record recordToInsert, Record recordToUpdate, long idToDelete) {
-		put(recordToInsert);
-		put(recordToUpdate);
-		recordsById.remove(new Long(idToDelete));
+		synchronized (recordsById) {
+			put(recordToInsert);
+			put(recordToUpdate);
+			recordsById.remove(new Long(idToDelete));
+		}
 	}
 
-	private void put(Record newRecord) {
+	private Object put(Record newRecord) {
 		Object key = new Long(newRecord.getId());
-		recordsById.put(key, newRecord);
+		return recordsById.put(key, newRecord);
 	}
 
 	public void replaceAllRecords(RecordIterator newRecords) {
@@ -31,5 +33,9 @@ class TransactionSystem implements ScalabilitySystem {
 		while (newRecords.hasNext()) {
 			put(newRecords.next());
 		}
+	}
+
+	private void verify(boolean condition) {
+		if (!condition) System.out.println("Assertion failed.");
 	}
 }

@@ -7,6 +7,7 @@ package org.prevayler.demos.demo2;
 import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.demos.demo2.gui.BankFrame;
 import org.prevayler.implementation.*;
+import org.prevayler.util.clock.ClockActor;
 
 
 public class MainTransient {
@@ -15,13 +16,14 @@ public class MainTransient {
 		out(    "This demo shows how persistence can be turned off"
 			+ "\nwithout changing ONE SINGLE LINE OF CODE from the"
 			+ "\nbusiness classes or GUI. This is useful for"
-			+ "\nrunning automated tests scripts orders of magnitude"
+			+ "\nrunning automated test scripts orders of magnitude"
 			+ "\nfaster than with persistence turned on."
 			+ "\n(Pay no attention to the 'Robustness Reminder' this time ;)"
 		);
 
-		//Below is the single line that was changed from Main.java (before calling the application code) to disable persistence. Notice the use of the TransientPublisher:
+		//Below is the single line that was changed from Main.java to disable transaction logging. Notice the use of the TransientPublisher:
 		SnapshotPrevayler prevayler = new SnapshotPrevayler(new Bank(), new SnapshotManager("demo2Transient"), new TransientPublisher());
+		new ClockActor(prevayler);
 
 		new BankFrame(prevayler);
 	}

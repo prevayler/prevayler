@@ -48,7 +48,7 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 	}
 
 
-	/** If there are no log files in the directory (when a snapshot is taken and all log files are manually deleted, for example), the initialTransaction parameter in the first call to this method, will define what the next transaction number will be. We have to find clearer/simpler semantics.
+	/** If there are no log files in the directory (when a snapshot is taken and all log files are manually deleted, for example), the initialTransaction parameter in the first call to this method will define what the next transaction number will be. We have to find clearer/simpler semantics.
 	 */
 	public synchronized void addSubscriber(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
 		if (!_nextTransactionKnown) {
@@ -75,7 +75,7 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 	}
 
 
-	/** Implementing FileFilter.
+	/** Implementing FileFilter. 0000000000000000000.transactionLog is the format of the transaction log filename. The long number (19 digits) is the number of the next transaction to be written at the moment the file is created. All transactions written to a file, therefore, have a sequence number greater or equal to the number in its filename.
 	 */
 	public boolean accept(File file) {
 		String name = file.getName();
@@ -86,8 +86,6 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 	}
 
 
-	/** 0000000000000000000.transactionLog is the format of the transaction log filename. The long number (19 digits) is the number of the next transaction to be written at the moment the file is created. All transactions written to a file, therefore, have a sequence number greater or equal to the number in its filename.
-	 */
 	static private long number(File file) {
 		return Long.parseLong(file.getName().substring(0, 19));
 	}
@@ -133,12 +131,12 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 
 
 	protected void handleExceptionWhileWriting(IOException iox, File logFile, Transaction transaction, long transactionNumber) {
-		hang(iox, "\nThe exception above was thrown while trying to write transaction " + transactionNumber + " to file " + logFile + " . Prevayler's default behavior is to display this message and stop all transaction logging. You can change this behavior by extending the TransactionLogger class and overriding the method called: handleExceptionWhileWriting(IOException iox, File logFile, Transaction transaction, long transactionNumber).");
+		hang(iox, "\nThe exception above was thrown while trying to write transaction " + transactionNumber + " to file " + logFile + " . Prevayler's default behavior is to display this message and block all transactions. You can change this behavior by extending the TransactionLogger class and overriding the method called: handleExceptionWhileWriting(IOException iox, File logFile, Transaction transaction, long transactionNumber).");
 	}
 
 
 	protected void handleExceptionWhileCreating(IOException iox, File logFile) {
-		hang(iox, "\nThe exception above was thrown while trying to create file " + logFile + " . Prevayler's default behavior is to display this message and stop all transaction logging. You can change this behavior by extending the TransactionLogger class and overriding the method called: handleExceptionWhileCreating(IOException iox, File logFile).");
+		hang(iox, "\nThe exception above was thrown while trying to create file " + logFile + " . Prevayler's default behavior is to display this message and block all transactions. You can change this behavior by extending the TransactionLogger class and overriding the method called: handleExceptionWhileCreating(IOException iox, File logFile).");
 	}
 
 

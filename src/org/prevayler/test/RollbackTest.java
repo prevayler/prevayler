@@ -1,7 +1,6 @@
 package org.prevayler.test;
 
 import org.prevayler.implementation.RollbackPrevayler;
-import org.prevayler.implementation.TransactionRolledbackException;
 
 public class RollbackTest {
     static private RollbackPrevayler prevayler;
@@ -13,25 +12,23 @@ public class RollbackTest {
         prevayler = new RollbackPrevayler(new AddingSystem(), prevaylerBase);
         add(10, 10);
         add(20, 30);
-        try {
-            addRollback(30, 30);
-            throw new RuntimeException("Exception expected");
-        } catch (TransactionRolledbackException e) {
-        }
+        addRollback(30, 30);
         add(30, 60);
 
         prevayler = new RollbackPrevayler(new AddingSystem(), prevaylerBase);
         verify(60);
-        try {
-            addRollback(30, 50);
-            throw new RuntimeException("Exception expected");
-        } catch (TransactionRolledbackException e) {
-        }
+        addRollback(30, 60);
         add(10, 70);
     }
 
     private static void addRollback(int value, int expectedTotal) throws Exception {
-        prevayler.execute(new RollbackAddition(value));
+    	boolean isThrown = false;
+		try {
+	        prevayler.execute(new RollbackAddition(value));
+		} catch (RuntimeException e) {
+			isThrown = true;
+		}
+		if (!isThrown) throw new RuntimeException("RuntimeException expected and not thrown.");
         verify(expectedTotal);
     }
 

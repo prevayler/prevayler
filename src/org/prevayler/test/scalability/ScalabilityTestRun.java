@@ -23,6 +23,7 @@ abstract class ScalabilityTestRun {
 	private final List connectionCache = new LinkedList();
 
 	private long operationCount = 0;
+	private long lastOperation = 0;
 	private boolean isRoundFinished;
 	private int activeRoundThreads = 0;
 
@@ -87,7 +88,7 @@ abstract class ScalabilityTestRun {
 		long initialOperationCount = operationCount;
 		StopWatch stopWatch = StopWatch.start();
 
-		startThreads(threads, initialOperationCount);
+		startThreads(threads);
 		sleep();
 		stopThreads();
 
@@ -102,12 +103,12 @@ abstract class ScalabilityTestRun {
 	}
 
 
-	private void startThreads(int threads, long initialOperationCount) {
+	private void startThreads(int threads) {
 		isRoundFinished = false;
 
 		int i = 1;
 		while(i <= threads) {
-			startThread(initialOperationCount + i, threads);
+			startThread(lastOperation + i, threads);
 			i++;
 		}
 	}
@@ -127,7 +128,8 @@ abstract class ScalabilityTestRun {
 
 					synchronized (connectionCache) {
 						connectionCache.add(connection);
-						operationCount += (operation -startingOperation) / operationIncrement;
+						operationCount += (operation - startingOperation) / operationIncrement;
+						if (lastOperation < operation) lastOperation = operation;
 						activeRoundThreads--;
 					}
 

@@ -7,12 +7,14 @@ package org.prevayler.demos.demo2;
 import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.demos.demo2.gui.BankFrame;
 import org.prevayler.implementation.SnapshotPrevayler;
+import org.prevayler.util.clock.ClockActor;
 
 
 public class Main {
 	
 	public static void main(String[] ignored) throws Exception {
 		SnapshotPrevayler prevayler = new SnapshotPrevayler(new Bank(), "demo2Acid");
+		new ClockActor(prevayler);
 
 		new BankFrame(prevayler);
 
