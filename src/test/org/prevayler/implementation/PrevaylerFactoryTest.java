@@ -1,11 +1,11 @@
-package org.prevayler.util;
+package org.prevayler.implementation;
 
 import java.io.IOException;
 
 import junit.framework.TestCase;
 
 import org.prevayler.Prevayler;
-import org.prevayler.implementation.SnapshotPrevayler;
+import org.prevayler.implementation.PrevaylerFactory;
 
 
 public class PrevaylerFactoryTest extends TestCase {
@@ -18,10 +18,10 @@ public class PrevaylerFactoryTest extends TestCase {
 	}
 
 	public void testSnapshotPrevaylerCreation() throws IOException, ClassNotFoundException {
-		SnapshotPrevayler prevayler = PrevaylerFactory.createSnapshotPrevayler(POJO);
+		Prevayler prevayler = PrevaylerFactory.createPrevayler(POJO);
 		assertEquals(POJO, prevayler.prevalentSystem());
 
-		prevayler = PrevaylerFactory.createSnapshotPrevayler(POJO, "anything");
+		prevayler = PrevaylerFactory.createPrevayler(POJO, "anything");
 		assertEquals(POJO, prevayler.prevalentSystem());
 	}
 

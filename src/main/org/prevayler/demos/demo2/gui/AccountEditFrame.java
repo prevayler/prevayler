@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import org.prevayler.util.QueryExecuter;
+import org.prevayler.Prevayler;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.AccountListener;
 import org.prevayler.demos.demo2.business.transactions.Deposit;
@@ -25,7 +25,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
 	private JTextField balanceField;
 	private JList historyList;
 	
-	AccountEditFrame(Account account, QueryExecuter prevayler, Container container) {
+	AccountEditFrame(Account account, Prevayler prevayler, Container container) {
 		super("Account " + account.numberString(), prevayler, container);
 
 		this.account = account;

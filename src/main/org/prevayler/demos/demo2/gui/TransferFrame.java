@@ -7,7 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.prevayler.util.QueryExecuter;
+import org.prevayler.Prevayler;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.transactions.Transfer;
 
@@ -18,7 +18,7 @@ class TransferFrame extends AccountFrame {
     private JTextField destinationField;
     private JTextField amountField;
 	
-    TransferFrame(Account account, QueryExecuter prevayler, Container container) {
+    TransferFrame(Account account, Prevayler prevayler, Container container) {
         super("Transfer", prevayler, container);
 
 		this.account = account;

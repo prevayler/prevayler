@@ -4,8 +4,10 @@ import junit.framework.TestCase;
 
 import java.io.File;
 
+import org.prevayler.Prevayler;
+
 public class RollbackTest extends TestCase {
-    static private SnapshotPrevayler prevayler;
+    static private Prevayler prevayler;
     private static String prevalenceBase;
 
     protected void setUp() throws Exception {
@@ -23,7 +25,7 @@ public class RollbackTest extends TestCase {
     }
 
     public void testRollback() throws Exception {
-        prevayler = new RollbackPrevayler(new AddingSystem(), prevalenceBase);
+        prevayler = PrevaylerFactory.createPrevayler(new AddingSystem(), prevalenceBase);
 		add(10, 10);
         addRollback(1, 10);
 		add(1, 11);
@@ -32,6 +34,7 @@ public class RollbackTest extends TestCase {
     private void addRollback(int value, int expectedTotal) throws Exception {
     	boolean isThrown = false;
 		try {
+			// TODO Simplify: Eliminate RollbackAddition and make it a special case of addition like the demo.
 	        prevayler.execute(new RollbackAddition(value));
 		} catch (RuntimeException e) {
 			isThrown = true;

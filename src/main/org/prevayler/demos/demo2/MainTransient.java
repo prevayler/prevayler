@@ -6,7 +6,7 @@ package org.prevayler.demos.demo2;
 
 import org.prevayler.Prevayler;
 import org.prevayler.demos.demo2.business.Bank;
-import org.prevayler.util.PrevaylerFactory;
+import org.prevayler.implementation.PrevaylerFactory;
 
 
 

@@ -7,6 +7,7 @@ package org.prevayler.implementation;
 import java.io.IOException;
 import java.util.*;
 
+import org.prevayler.Clock;
 import org.prevayler.Transaction;
 
 
@@ -14,8 +15,12 @@ import org.prevayler.Transaction;
  */
 public abstract class TransientPublisher implements TransactionPublisher {
 
+	protected final Clock _clock;
 	private final Set _subscribers = new HashSet();
 
+	public TransientPublisher(Clock clock) {
+		_clock = clock;
+	}
 
 	public void addSubscriber(TransactionSubscriber subscriber, long initialTransactionIgnored) throws IOException, ClassNotFoundException {
 		synchronized (_subscribers) { _subscribers.add(subscriber);	}
@@ -26,6 +31,10 @@ public abstract class TransientPublisher implements TransactionPublisher {
 			Iterator i = _subscribers.iterator();
 			while (i.hasNext()) ((TransactionSubscriber)i.next()).receive(transaction, timestamp);
 		}
+	}
+
+	public Clock clock() {
+		return _clock;
 	}
 
 }

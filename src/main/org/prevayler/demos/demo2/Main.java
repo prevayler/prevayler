@@ -7,9 +7,8 @@ package org.prevayler.demos.demo2;
 import org.prevayler.Prevayler;
 import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.demos.demo2.gui.BankFrame;
-import org.prevayler.implementation.SnapshotPrevayler;
-import org.prevayler.util.PrevaylerFactory;
-import org.prevayler.util.QueryExecuter;
+import org.prevayler.implementation.PrevaylerFactory;
+
 
 public class Main {
 	
@@ -19,11 +18,11 @@ public class Main {
 			+ "\n  6000 transactions per second. For demoing purposes, though, a"
 			+ "\n  snapshot will be taken every 20 seconds...");
 
-		SnapshotPrevayler prevayler = PrevaylerFactory.createSnapshotPrevayler(new Bank(), "demo2Acid");
+		Prevayler prevayler = PrevaylerFactory.createPrevayler(new Bank(), "demo2Acid");
 		startSnapshots(prevayler);
 	}
 
-	static void startSnapshots(SnapshotPrevayler prevayler)	throws Exception {
+	static void startSnapshots(Prevayler prevayler)	throws Exception {
 		startGui(prevayler);
 
 		while (true) {
@@ -34,7 +33,7 @@ public class Main {
 	}
 
 	static void startGui(Prevayler prevayler) {
-		new BankFrame(new QueryExecuter(prevayler));
+		new BankFrame(prevayler);
 	}
 	
 	private static void out(String message) {

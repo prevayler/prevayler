@@ -24,7 +24,7 @@ public class MainReplicaServer {
 		);
 
 		TransactionPublisher publisher = new TransactionLogger("demo2Acid", new MachineClock());
-		SnapshotPrevayler prevayler = new SnapshotPrevayler(new Bank(), new SnapshotManager("demo2Acid"), publisher);
+		PrevaylerImpl prevayler = new PrevaylerImpl(new Bank(), new SnapshotManager("demo2Acid"), publisher);
 		new PublishingServer(publisher);
 
 		Main.startGui(prevayler);

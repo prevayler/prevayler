@@ -6,13 +6,13 @@ import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 
-import org.prevayler.util.QueryExecuter;
+import org.prevayler.Prevayler;
 
 public class BankFrame extends JFrame {
 
-	private final QueryExecuter _prevayler;
+	private final Prevayler _prevayler;
 
-	public BankFrame(QueryExecuter prevayler) {
+	public BankFrame(Prevayler prevayler) {
     		super("Bank");
     		_prevayler = prevayler;
     		

@@ -4,6 +4,9 @@
 
 package org.prevayler;
 
+import java.io.IOException;
+
+
 /**
  * Implementations of this interface can provide transparent persistence and replication to all business objects in a prevalent system. All transactions to the system must be represented as Transaction objects and must be executed using Prevayler.execute(Transaction).
  * See the demo applications in org.prevayler.demos for examples.
@@ -16,7 +19,7 @@ public interface Prevayler {
 	public Object prevalentSystem();
 
 	/**
-	 * Returns the Clock used to set the Transaction execution times.
+	 * Returns the Clock used to set the Transaction and Query execution times.
 	 */
 	public Clock clock();
 
@@ -25,5 +28,11 @@ public interface Prevayler {
 	 * Implementations of this interface can log the given transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the underlying prevalent system.
 	 */
 	public void execute(Transaction transaction);
+
+	public Object execute(Query query) throws Exception;
+
+	public Object execute(TransactionWithQuery transactionWithQuery) throws Exception;
+
+	public void takeSnapshot() throws IOException;
 
 }

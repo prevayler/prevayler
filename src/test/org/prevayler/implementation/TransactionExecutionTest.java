@@ -7,7 +7,6 @@ import junit.framework.TestCase;
 
 import org.prevayler.Prevayler;
 import org.prevayler.Transaction;
-import org.prevayler.util.PrevaylerFactory;
 
 
 public class TransactionExecutionTest extends TestCase {

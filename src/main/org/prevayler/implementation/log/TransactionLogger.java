@@ -26,16 +26,14 @@ import org.prevayler.implementation.TransientPublisher;
 public class TransactionLogger extends TransientPublisher implements FileFilter {
 
 	private final File _directory;
-	private final Clock _clock;
-
 	private boolean _nextTransactionKnown = false;
 	private long _nextTransaction;
 	private SimpleOutputStream _outputLog;
 
 
 	public TransactionLogger(String directory, Clock clock) throws IOException, ClassNotFoundException {
+		super(clock);
 		_directory = FileManager.produceDirectory(directory);
-		_clock = clock;
 		File lastFile = lastTransactionFile();
 		if (lastFile != null) {
 			_nextTransaction = number(lastFile) + transactionCount(lastFile);
@@ -85,11 +83,6 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 	}
 
 
-	public Clock clock() {
-		return _clock;
-	}
-
-	
 	public void close() throws IOException {
 		_outputLog.close();
 	}

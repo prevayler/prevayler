@@ -4,8 +4,8 @@
 
 package org.prevayler.demos.demo1;
 
-import org.prevayler.implementation.SnapshotPrevayler;
-import org.prevayler.util.PrevaylerFactory;
+import org.prevayler.Prevayler;
+import org.prevayler.implementation.PrevaylerFactory;
 
 import java.io.*;
 
@@ -14,7 +14,7 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		printMessage();
-		SnapshotPrevayler prevayler = PrevaylerFactory.createSnapshotPrevayler(new NumberKeeper(), "PrevalenceBase" + File.separator + "demo1");
+		Prevayler prevayler = PrevaylerFactory.createPrevayler(new NumberKeeper(), "PrevalenceBase" + File.separator + "demo1");
 		new PrimeCalculator(prevayler).start();
 	}
 

@@ -8,15 +8,14 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
+import org.prevayler.Prevayler;
 import org.prevayler.foundation.FileManager;
-import org.prevayler.implementation.SnapshotPrevayler;
-import org.prevayler.util.PrevaylerFactory;
 
 import junit.framework.TestCase;
 
 public class PersistenceTest extends TestCase {
 
-	private SnapshotPrevayler prevayler;
+	private Prevayler prevayler;
 	private String prevalenceBase;
 
 	public void testPersistence() throws Exception {
@@ -75,7 +74,7 @@ public class PersistenceTest extends TestCase {
 
 	private void crashRecover() throws Exception {
 		out("CrashRecovery.");
-		prevayler = PrevaylerFactory.createSnapshotPrevayler(new AddingSystem(), prevalenceBase());
+		prevayler = PrevaylerFactory.createPrevayler(new AddingSystem(), prevalenceBase());
 	}
 
 	private void snapshot() throws IOException {

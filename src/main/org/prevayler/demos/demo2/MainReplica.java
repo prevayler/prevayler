@@ -31,7 +31,7 @@ public class MainReplica {
 
 		//Below are the two lines that were changed from Main.java (before calling the application code) to enable replication.
 		TransactionPublisher publisher = new RemotePublisher(args[0]);
-		SnapshotPrevayler prevayler = new SnapshotPrevayler(new Bank(), new SnapshotManager("demo2AcidReplica"), publisher);
+		PrevaylerImpl prevayler = new PrevaylerImpl(new Bank(), new SnapshotManager("demo2AcidReplica"), publisher);
 	
 		Main.startGui(prevayler);
 	}

@@ -30,6 +30,7 @@ public class RemotePublisher extends Thread implements TransactionPublisher {
 
 
 	public RemotePublisher(String serverIpAddress, int serverPort) throws IOException, ClassNotFoundException {
+		System.out.println("The replication logic is not yet ready to be used.");
 		Socket socket = new Socket(serverIpAddress, serverPort);
 		_toServer = new ObjectOutputStream(socket.getOutputStream());   // Get the OUTPUT stream first. JDK 1.3.1_01 for Windows will lock up if you get the INPUT stream first.
 		_fromServer = new ObjectInputStream(socket.getInputStream());
@@ -42,6 +43,7 @@ public class RemotePublisher extends Thread implements TransactionPublisher {
 		if (_subscriber != null) throw new UnsupportedOperationException("The current implementation of RemoteTransactionPublisher can only support one subscriber. Future implementations will support more.");
 		_subscriber = subscriber;
 		_toServer.writeObject(new Long(initialTransaction));
+		// TODO Reimplement the logic of waiting until subscriber is up-to-date before returning.
 	}
 
 

@@ -1,4 +1,4 @@
-package org.prevayler.util;
+package org.prevayler.implementation;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -7,17 +7,16 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.prevayler.Prevayler;
-import org.prevayler.implementation.TransientPrevayler;
-import org.prevayler.implementation.clock.BrokenClock;
+import org.prevayler.Query;
+import org.prevayler.TransactionWithQuery;
 
 
-public class QueryPrevaylerTest extends TestCase {
+public class QueryExecutionTest extends TestCase {
 
 	public void testQuery() throws Exception {
 		List prevalentSystem = new LinkedList();
-		Prevayler prevayler = new TransientPrevayler(prevalentSystem, new BrokenClock());
-		QueryExecuter queryPrevayler = new QueryExecuter(prevayler);
-		Object result = queryPrevayler.executeAlone(query());
+		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem);
+		Object result = prevayler.execute(query());
 		assertEquals(0, ((Integer)result).intValue());
 	}
 
@@ -31,9 +30,8 @@ public class QueryPrevaylerTest extends TestCase {
 
 	public void testTransactionWithQuery() throws Exception {
 		List prevalentSystem = new LinkedList();
-		Prevayler prevayler = new TransientPrevayler(prevalentSystem, new BrokenClock());
-		QueryExecuter queryPrevayler = new QueryExecuter(prevayler);
-		Object result = queryPrevayler.execute(transactionWithQuery());
+		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem);
+		Object result = prevayler.execute(transactionWithQuery());
 		assertEquals("abc", result);
 		assertEquals("added element", prevalentSystem.get(0));
 	}

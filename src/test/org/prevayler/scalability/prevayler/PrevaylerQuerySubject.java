@@ -5,7 +5,7 @@
 package org.prevayler.scalability.prevayler;
 
 import org.prevayler.implementation.PersistenceTest;
-import org.prevayler.util.PrevaylerFactory;
+import org.prevayler.implementation.PrevaylerFactory;
 
 public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject {
 
@@ -15,7 +15,7 @@ public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject {
 	public PrevaylerQuerySubject() throws java.io.IOException, ClassNotFoundException {
 		PersistenceTest.deletePrevalenceFiles(LOG_DIRECTORY);
 
-		prevayler = PrevaylerFactory.createSnapshotPrevayler(new QuerySystem(), LOG_DIRECTORY);
+		prevayler = PrevaylerFactory.createPrevayler(new QuerySystem(), LOG_DIRECTORY);
 	}
 
 
