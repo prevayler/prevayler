@@ -27,7 +27,7 @@ public class PrevaylerImpl implements Prevayler {
 	private boolean _ignoreRuntimeExceptions;
 
 
-	/** @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
+	/** Creates a new Prevayler
 	 * @param snapshotManager The SnapshotManager that will be used for reading and writing snapshot files.
 	 * @param transactionPublisher The TransactionPublisher that will be used for publishing transactions executed with this PrevaylerImpl.
 	 */

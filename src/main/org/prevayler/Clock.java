@@ -5,7 +5,7 @@
 package org.prevayler;
 
 /** Tells the time.
- * @see Prevayler.
+ * @see Prevayler
  */
 public interface Clock {
 

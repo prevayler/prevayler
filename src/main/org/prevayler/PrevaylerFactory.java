@@ -51,9 +51,9 @@ public class PrevaylerFactory {
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 * @param prevalenceBase The directory where the .snapshot files and .transactionLog files will be read and written.
 	 */
-	public static Prevayler createPrevayler(Object prevalentSystem, String prevalenceBase) throws IOException, ClassNotFoundException {
+	public static Prevayler createPrevayler(Object newPrevalentSystem, String prevalenceBase) throws IOException, ClassNotFoundException {
 		PrevaylerFactory factory = new PrevaylerFactory();
-		factory.configurePrevalentSystem(prevalentSystem);
+		factory.configurePrevalentSystem(newPrevalentSystem);
 		factory.configurePrevalenceBase(prevalenceBase);
 		return factory.create();
 	}
@@ -71,10 +71,10 @@ public class PrevaylerFactory {
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 * @param prevalenceBase The directory where the .snapshot files will be read and written.
 	 */
-	public static Prevayler createTransientPrevayler(Object prevalentSystem, String snapshotDirectory) {
+	public static Prevayler createTransientPrevayler(Object newPrevalentSystem, String prevalenceBase) {
 		PrevaylerFactory factory = new PrevaylerFactory();
-		factory.configurePrevalentSystem(prevalentSystem);
-		factory.configurePrevalenceBase(snapshotDirectory);
+		factory.configurePrevalentSystem(newPrevalentSystem);
+		factory.configurePrevalenceBase(prevalenceBase);
 		factory.configureTransientMode(true);
 		try {
 			return factory.create();
@@ -113,7 +113,7 @@ public class PrevaylerFactory {
 
 	/** Configures the prevalent system that will be used by the Prevayler created by this factory.
 	 * @param prevalentSystem Will be ignored if a SnapshotManager is configured too. A SnapshotManager already has a prevalent system.
-	 * @see configureSnapshotManager()
+	 * @see #configureSnapshotManager(SnapshotManager)
 	 */
 	public void configurePrevalentSystem(Object prevalentSystem) {
 		_prevalentSystem = prevalentSystem;
