@@ -2,7 +2,7 @@
 // Copyright (C) 2001 Klaus Wuestefeld.
 // This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License version 2.1 as published by the Free Software Foundation. This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 
-package org.prevayler.implementation;
+package org.prevayler.implementation.snapshot;
 
 import java.io.*;
 
@@ -17,22 +17,25 @@ public class SnapshotManager {
 	private final Object _recoveredPrevalentSystem;
 	private final long _recoveredVersion;
 
+
 	/** @param snapshotDirectoryName The path of the directory where the last snapshot file will be read and where the new snapshot files will be created.
 	*/
-	public SnapshotManager(Object originalPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
+	public SnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
 		_directory = FileManager.produceDirectory(snapshotDirectoryName);
 		_recoveredVersion = latestVersion();
 		_recoveredPrevalentSystem = _recoveredVersion == 0
-			? originalPrevalentSystem
+			? newPrevalentSystem
 			: readSnapshot(_recoveredVersion);
 	}
 
-	Object recoveredPrevalentSystem() { return _recoveredPrevalentSystem; }
 
-	long recoveredVersion() { return _recoveredVersion; }
+	public Object recoveredPrevalentSystem() { return _recoveredPrevalentSystem; }
 
 
-	void writeSnapshot(Object prevalentSystem, long version) throws IOException {
+	public long recoveredVersion() { return _recoveredVersion; }
+
+
+	public void writeSnapshot(Object prevalentSystem, long version) throws IOException {
 		File tempFile = File.createTempFile("snapshot" + version + "temp", "generatingSnapshot", _directory);
 
 		writeSnapshot(prevalentSystem, tempFile);
@@ -52,9 +55,10 @@ public class SnapshotManager {
         }
 	}
 
+
 	/** Serializes prevalentSystem and writes it to snapshotFile. You can overload this method to use a serialization mechanism other than Java's. E.g: XML.
 	*/
-    protected void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
+    public void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
         ObjectOutputStream stream = new ObjectOutputStream(out);
         stream.writeObject(prevalentSystem);
     }
@@ -65,6 +69,7 @@ public class SnapshotManager {
 	protected String suffix() {
 		return "snapshot";
 	}
+
 
 	/** Returns zero if no snapshot file was found.
 	*/
@@ -80,6 +85,7 @@ public class SnapshotManager {
 		return result;
 	}
 
+
 	private Object readSnapshot(long version) throws ClassNotFoundException, IOException {
 		File snapshotFile = snapshotFile(version);
 		return readSnapshot(snapshotFile);
@@ -93,9 +99,10 @@ public class SnapshotManager {
         } finally { in.close(); }
 	}
 
+
 	/** Deserializes and returns the object contained in snapshotFile. You can overload this method to use a deserialization mechanism other than Java's. E.g: XML.
 	*/
-    protected Object readSnapshot(InputStream in) throws IOException, ClassNotFoundException {
+    public Object readSnapshot(InputStream in) throws IOException, ClassNotFoundException {
         ObjectInputStream ois = new ObjectInputStream(in);
         return ois.readObject();
     }

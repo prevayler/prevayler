@@ -2,7 +2,7 @@
 //Copyright (C) 2001-2003 Klaus Wuestefeld.
 //This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License version 2.1 as published by the Free Software Foundation. This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 
-package org.prevayler.implementation;
+package org.prevayler.implementation.publishing;
 
 import java.io.IOException;
 import java.util.Date;
@@ -10,7 +10,8 @@ import java.util.Date;
 import org.prevayler.Clock;
 import org.prevayler.Transaction;
 import org.prevayler.implementation.clock.PausableClock;
-import org.prevayler.implementation.log.TransactionLogger;
+import org.prevayler.implementation.logging.TransactionLogger;
+import org.prevayler.implementation.publishing.censorship.*;
 
 public class CentralPublisher extends AbstractPublisher {
 
@@ -30,7 +31,7 @@ public class CentralPublisher extends AbstractPublisher {
 		_pausableClock.pause();
 		try {
 			Date executionTime = _pausableClock.time();
-			_censor.approve(transaction, executionTime);
+			_censor.approve(transaction, executionTime);  //Throws RuntimeException or Error if the transaction is bad.
 			_logger.log(transaction, executionTime);
 			notifySubscribers(transaction, executionTime);
 		} finally {

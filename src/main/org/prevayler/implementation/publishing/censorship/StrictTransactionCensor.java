@@ -1,6 +1,7 @@
-package org.prevayler.implementation;
+package org.prevayler.implementation.publishing.censorship;
 
 import org.prevayler.Transaction;
+import org.prevayler.implementation.snapshot.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -47,7 +48,8 @@ public class StrictTransactionCensor implements TransactionCensor {
 			synchronized (_king) { _snapshotManager.writeSnapshot(_king, out); }
 			_royalFoodTaster = _snapshotManager.readSnapshot(new ByteArrayInputStream(out.toByteArray()));
 		} catch (Exception ex) {
-			throw new RuntimeException("Unable to produce a copy of the prevalent system for trying out transactions before applying them to the real system.", ex);
+			ex.printStackTrace();
+			throw new RuntimeException("Unable to produce a copy of the prevalent system for trying out transactions before applying them to the real system.");
 		}
 	}
 

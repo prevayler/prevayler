@@ -9,7 +9,7 @@ import org.prevayler.PrevaylerFactory;
 
 public class PrevaylerFactoryTest extends PrevalenceTest {
 
-	private static final Object POJO = new Serializable() {}; 
+	private static final Serializable POJO = new Serializable() {}; 
 
 	public void testTransientPrevaylerCreation() {
 		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler(POJO,_testDirectory);

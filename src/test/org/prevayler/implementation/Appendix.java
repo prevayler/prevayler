@@ -9,7 +9,7 @@ class Appendix implements Transaction {
 	
 	private final String appendix;
 	
-	public void executeOn(Object prevalentSystem, Date ignoredToo) {
+	public void executeOn(Object prevalentSystem, Date ignored) {
 		((AppendingSystem)prevalentSystem).append(appendix);
 	}
 

@@ -12,6 +12,9 @@ import org.prevayler.Prevayler;
 import org.prevayler.Query;
 import org.prevayler.Transaction;
 import org.prevayler.TransactionWithQuery;
+import org.prevayler.implementation.publishing.TransactionPublisher;
+import org.prevayler.implementation.publishing.TransactionSubscriber;
+import org.prevayler.implementation.snapshot.SnapshotManager;
 
 
 public class PrevaylerImpl implements Prevayler {

@@ -1,5 +1,8 @@
 package org.prevayler.demos.demo2.gui;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import javax.swing.Box;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -25,9 +28,27 @@ public class BankFrame extends JFrame {
 		
 		setBounds(40,40,550,420);
 		setVisible(true);
+
+		refreshClock();
 	}
+
+
+	private void refreshClock() {
+		Thread clockRefresher = new Thread() {
+			public void run() {
+				while (true) {
+					DateFormat format = new SimpleDateFormat("hh:mm:ss");
+					setTitle("Bank - " + format.format(_prevayler.clock().time()));
+					try { Thread.sleep(500); } catch (InterruptedException e) {}
+				}
+			}
+		};
+		clockRefresher.setDaemon(true);
+		clockRefresher.start();
+	}
+
 	
-	private class RobustnessFrame extends JInternalFrame {
+	private static class RobustnessFrame extends JInternalFrame {
 		RobustnessFrame() {
 			super("Robustness Reminder", false, false, false, true);
 			setContentPane(Box.createVerticalBox());
@@ -47,4 +68,5 @@ public class BankFrame extends JFrame {
 			getContentPane().add(label);
 		}
 	}
+
 }

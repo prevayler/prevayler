@@ -1,2 +1,9 @@
-PrevalenceBase* prevayler.i* *.log target bin dependencies build.properties log4j.xml
+PrevalenceBase*
+prevayler.i*
+*.log
+target
+bin
+dependencies
+build.properties
+log4j.xml
 maven.log

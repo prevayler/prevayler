@@ -86,7 +86,7 @@ public class PersistenceTest extends PrevalenceTest {
 
 	private void verify(String expectedResult) {
 		out("Expecting result: " + expectedResult);
-		compare(system().value(), expectedResult, "Result");
+		assertEquals(expectedResult, system().value());
 	}
 
 
@@ -104,15 +104,6 @@ public class PersistenceTest extends PrevalenceTest {
 		_prevalenceBase = _testDirectory + "\\" + System.currentTimeMillis();
 	}
 
-	private void compare(String observed, String expected, String measurement) {
-		verify(observed.equals(expected), measurement + ": " + observed + "   Expected: " + expected);
-	}
-
-	private static void verify(boolean condition, String message) {
-		if (!condition) {
-			throw new RuntimeException(message);
-		}
-	}
 
 	private static void out(Object obj) {
 		if (false) System.out.println(obj);   //Change this line to see what the test is doing.

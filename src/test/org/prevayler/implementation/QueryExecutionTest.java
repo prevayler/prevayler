@@ -1,5 +1,6 @@
 package org.prevayler.implementation;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,7 +15,7 @@ public class QueryExecutionTest extends PrevalenceTest {
 
 	public void testQuery() throws Exception {
 		List prevalentSystem = new LinkedList();
-		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem,_testDirectory);
+		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler((Serializable)prevalentSystem,_testDirectory);
 		Object result = prevayler.execute(query());
 		assertEquals(0, ((Integer)result).intValue());
 	}
@@ -29,7 +30,7 @@ public class QueryExecutionTest extends PrevalenceTest {
 
 	public void testTransactionWithQuery() throws Exception {
 		List prevalentSystem = new LinkedList();
-		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem, _testDirectory);
+		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler((Serializable)prevalentSystem, _testDirectory);
 		Object result = prevayler.execute(transactionWithQuery());
 		assertEquals("abc", result);
 		assertEquals("added element", prevalentSystem.get(0));
