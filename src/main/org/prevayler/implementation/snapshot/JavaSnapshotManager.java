@@ -19,7 +19,7 @@ public class JavaSnapshotManager extends AbstractSnapshotManager {
     }
 
 	/**
-     * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager#AbstractBaseSnapshotManager(Object, String)
+     * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager#AbstractSnapshotManager(Object, String)
 	 */
 	public JavaSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
 		super(newPrevalentSystem, snapshotDirectoryName);
