@@ -28,7 +28,7 @@ public class JavaSnapshotManagerTest extends FileIOTest {
 			fail();
 		} catch (IOException e) {
 			// This is good because if we only looked for .snapshot files we could silently ignore an existing snapshot.
-			assertTrue(e.getMessage().endsWith("/0000000000000000123.xstreamsnapshot cannot be read by org.prevayler.implementation.snapshot.JavaSnapshotManager"));
+			assertTrue(e.getMessage(), e.getMessage().endsWith("0000000000000000123.xstreamsnapshot cannot be read by org.prevayler.implementation.snapshot.JavaSnapshotManager"));
 		}
 	}
 }
