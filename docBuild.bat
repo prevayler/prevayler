@@ -9,6 +9,6 @@ md .\target\docs\api\org\prevayler
 copy .\root\*.* .\target
 copy .\root\docs\*.* .\target\docs
 
-C:\j2sdk1.4.0_01\bin\javadoc -version -windowtitle "Prevayler(TM) v%version% API Documentation" -header "<b>Prevayler<sup><font size=-2>TM</font></sup><br>The Free Software<br>Prevalence Layer</b>" -footer "</EM><a href=http://www.prevayler.org><font color="#BB0033"><b>Prevayler Online</b></font></a><EM>" -bottom "<font size=-1>'Prevayler' is a trademark of Klaus Wuestefeld.<br>Copyleft 2001-2003 Klaus Wuestefeld.</font>" -d .\target\docs\api -sourcepath .\src\main org.prevayler 
+C:\j2sdk1.4.1_01\bin\javadoc -version -windowtitle "Prevayler(TM) v%version% API Documentation" -header "<b>Prevayler<sup><font size=-2>TM</font></sup><br>The Free Software<br>Prevalence Layer</b>" -footer "</EM><a href=http://www.prevayler.org><font color="#BB0033"><b>Prevayler Online</b></font></a><EM>" -bottom "<font size=-1>'Prevayler' is a trademark of Klaus Wuestefeld.<br>Copyleft 2001-2003 Klaus Wuestefeld.</font>" -d .\target\docs\api -sourcepath .\src\main org.prevayler 
 
 start .\target\docs\api\index.html
