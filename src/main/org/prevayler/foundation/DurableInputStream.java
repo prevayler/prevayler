@@ -19,7 +19,7 @@ import java.io.ObjectStreamException;
 import java.io.UTFDataFormatException;
 
 
-public class SimpleInputStream {
+public class DurableInputStream {
 
 	private final File _file;
 	private final Serializer _serializer;
@@ -28,7 +28,7 @@ public class SimpleInputStream {
 	private FileInputStream _fileStream;
 
 
-	public SimpleInputStream(File file, Serializer serializer, Monitor monitor) throws IOException {
+	public DurableInputStream(File file, Serializer serializer, Monitor monitor) throws IOException {
 		_monitor = monitor;
 		_file = file;
 		_fileStream = new FileInputStream(file);
