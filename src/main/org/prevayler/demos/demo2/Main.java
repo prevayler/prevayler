@@ -4,28 +4,37 @@
 
 package org.prevayler.demos.demo2;
 
+import org.prevayler.Prevayler;
 import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.demos.demo2.gui.BankFrame;
 import org.prevayler.implementation.SnapshotPrevayler;
 import org.prevayler.util.PrevaylerFactory;
+import org.prevayler.util.QueryPrevayler;
 
 public class Main {
 	
 	public static void main(String[] ignored) throws Exception {
-		SnapshotPrevayler prevayler = PrevaylerFactory.createSnapshotPrevayler(new Bank(), "demo2Acid");
-
-		new BankFrame(prevayler);
-
 		out("\nOne snapshot per day is more than enough for most applications"
 			+ "\n  because the transactionLog recovery rate is in the order of"
 			+ "\n  6000 transactions per second. For demoing purposes, though, a"
 			+ "\n  snapshot will be taken every 20 seconds...");
+
+		SnapshotPrevayler prevayler = PrevaylerFactory.createSnapshotPrevayler(new Bank(), "demo2Acid");
+		startSnapshots(prevayler);
+	}
+
+	static void startSnapshots(SnapshotPrevayler prevayler)	throws Exception {
+		startGui(prevayler);
 
 		while (true) {
 			Thread.sleep(1000 * 20);
 			prevayler.takeSnapshot();
 			out("Snapshot taken at " + new java.util.Date() + "...");
 		}
+	}
+
+	static void startGui(Prevayler prevayler) {
+		new BankFrame(new QueryPrevayler(prevayler));
 	}
 	
 	private static void out(String message) {

@@ -5,7 +5,6 @@
 package org.prevayler.demos.demo2;
 
 import org.prevayler.demos.demo2.business.Bank;
-import org.prevayler.demos.demo2.gui.BankFrame;
 import org.prevayler.implementation.SnapshotPrevayler;
 import org.prevayler.implementation.XmlSnapshotManager;
 import org.prevayler.implementation.clock.MachineClock;
@@ -14,20 +13,12 @@ import org.prevayler.implementation.log.TransactionLogger;
 public class MainXml {
 
 	public static void main(String[] args) throws Exception {
+		out("A snapshot using Skaringa's XML serialization will be taken every 20 seconds...");
+
 		SnapshotPrevayler prevayler = new SnapshotPrevayler(new Bank(), new XmlSnapshotManager("demo2Xml"), new TransactionLogger("demo2Xml", new MachineClock()));
 
-		new BankFrame(prevayler);
+		Main.startSnapshots(prevayler);
 
-		out("\nOne snapshot per day is more than enough for most applications"
-			+ "\n  because the transactionLog recovery rate is in the order of"
-			+ "\n  6000 transactions per second. For demoing purposes, though, a"
-			+ "\n  snapshot will be taken every 20 seconds...");
-
-		while (true) {
-			Thread.sleep(1000 * 20);
-			prevayler.takeSnapshot();
-			out("Snapshot taken at " + new java.util.Date() + "...");
-		}
 	}
 
 	private static void out(String message) {

@@ -31,7 +31,9 @@ public class TransientPrevayler implements Prevayler {
 	}
 
 	public void execute(Transaction transaction) {
-		Transaction copy = serializeInMemory(transaction);
+//		Transaction copy = serializeInMemory(transaction);  //This makes the baptism problem fail-fast. The baptism problem is trying to use direct references to business objects instead of searching for them given the prevalentSystem. The direct references become mere copies once the transaction is deserialized from the log file.
+		Transaction copy = transaction;
+		
 		synchronized (_prevalentSystem) {
 			copy.executeOn(_prevalentSystem, _clock.time());
 		}
@@ -44,9 +46,8 @@ public class TransientPrevayler implements Prevayler {
 			new ObjectOutputStream(buffer).writeObject(transaction);
 			ByteArrayInputStream input = new ByteArrayInputStream(buffer.toByteArray()); 
 			return (Transaction)(new ObjectInputStream(input).readObject());
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Unexpected Exception. Serialization in memory should not fail.");
+		} catch (Exception unexpected) {
+			throw new RuntimeException("Unexpected Exception. Serialization in memory should not fail.", unexpected);
 		}
 	}
 

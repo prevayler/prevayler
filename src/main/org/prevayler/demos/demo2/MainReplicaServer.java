@@ -5,7 +5,6 @@
 package org.prevayler.demos.demo2;
 
 import org.prevayler.demos.demo2.business.Bank;
-import org.prevayler.demos.demo2.gui.BankFrame;
 import org.prevayler.implementation.*;
 import org.prevayler.implementation.clock.MachineClock;
 import org.prevayler.implementation.log.TransactionLogger;
@@ -24,12 +23,11 @@ public class MainReplicaServer {
 			+ "\n  java org.prevayler.demos.demo2.MainReplica <This machine's IP Address>\n\n"
 		);
 
-		//Below are the three lines that were changed from Main.java (before calling the application code) to enable replication.
 		TransactionPublisher publisher = new TransactionLogger("demo2Acid", new MachineClock());
 		SnapshotPrevayler prevayler = new SnapshotPrevayler(new Bank(), new SnapshotManager("demo2Acid"), publisher);
 		new PublishingServer(publisher);
 
-		new BankFrame(prevayler);
+		Main.startGui(prevayler);
 	}
 
 

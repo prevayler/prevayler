@@ -6,7 +6,6 @@ package org.prevayler.demos.demo2;
 
 import org.prevayler.Prevayler;
 import org.prevayler.demos.demo2.business.Bank;
-import org.prevayler.demos.demo2.gui.BankFrame;
 import org.prevayler.util.PrevaylerFactory;
 
 
@@ -25,7 +24,7 @@ public class MainTransient {
 		//Below is the single line that was changed from Main.java to disable transaction logging. Notice the use of the TransientPublisher:
 		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler(new Bank());
 
-		new BankFrame(prevayler);
+		Main.startGui(prevayler);
 	}
 
 
