@@ -29,6 +29,7 @@ public class Suite extends TestCase {
 		suite.addTestSuite(JavaSnapshotManagerTest.class);
 		suite.addTestSuite(SkaringaSnapshotManagerTest.class);
 		suite.addTestSuite(JournalSerializationStrategyTest.class);
+		suite.addTestSuite(SnapshotSerializationStrategyTest.class);
 		suite.addTestSuite(XStreamSerializationTest.class);
 		return suite;
 	}
