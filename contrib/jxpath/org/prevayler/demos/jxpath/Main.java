@@ -16,7 +16,7 @@ import org.prevayler.demos.jxpath.commands.AddTask;
 import org.prevayler.demos.jxpath.model.Project;
 import org.prevayler.demos.jxpath.model.Task;
 import org.prevayler.Prevayler;
-import org.prevayler.implementation.PrevaylerFactory;
+import org.prevayler.PrevaylerFactory;
 
 
 /**

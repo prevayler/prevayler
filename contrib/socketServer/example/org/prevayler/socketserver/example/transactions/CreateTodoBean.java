@@ -43,9 +43,9 @@ public class CreateTodoBean extends RemoteTransaction {
     }
 
 	/**
-     * @see org.prevayler.util.TransactionWithQuery#executeOn(Object, Date)
+     * @see org.prevayler.util.TransactionWithQuery#executeAndQuery(Object, Date)
 	 */
-	public Object executeOn(Object prevalentSystem, Date timestamp) throws Exception {
+	public Object executeAndQuery(Object prevalentSystem, Date timestamp) throws Exception {
         TodoList todoList = (TodoList) prevalentSystem;
         Todo todo = todoList.newTodo();
         todo.setDesc(desc);

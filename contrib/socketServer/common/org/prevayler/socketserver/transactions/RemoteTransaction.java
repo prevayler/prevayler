@@ -36,7 +36,7 @@ import org.prevayler.TransactionWithQuery;
  * 
  * @author DaveO
  */
-public abstract class RemoteTransaction implements TransactionWithQuery, IRemoteTransaction {
+public abstract class RemoteTransaction implements Transaction, TransactionWithQuery, IRemoteTransaction {
 
     protected Long senderID;
     
@@ -48,6 +48,12 @@ public abstract class RemoteTransaction implements TransactionWithQuery, IRemote
 		this.senderID = connectionID;
 	}
 
-    public abstract Object executeOn(Object prevalentSystem, Date timestamp) throws Exception;
+    public abstract Object executeAndQuery(Object prevalentSystem, Date timestamp) throws Exception;
+    
+    public void executeOn(Object prevalentSystem, Date timestamp) {
+        try {
+            executeAndQuery(prevalentSystem, timestamp);
+        } catch (Exception e) {}
+    }
 }
 

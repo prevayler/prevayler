@@ -34,9 +34,9 @@ import org.prevayler.socketserver.transactions.RemoteTransaction;
 public class ListTodos extends RemoteTransaction {
 
 	/**
-	 * @see org.prevayler.util.TransactionWithQuery#executeOn(Object, Date)
+	 * @see org.prevayler.util.TransactionWithQuery#executeAndQuery(Object, Date)
 	 */
-	public Object executeOn(Object prevalentSystem, Date timestamp) throws Exception {
+	public Object executeAndQuery(Object prevalentSystem, Date timestamp) throws Exception {
 		return prevalentSystem;
 	}
 

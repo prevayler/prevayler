@@ -8,7 +8,7 @@ import org.prevayler.demos.memento.commands.AccountDeletion;
 import org.prevayler.demos.memento.commands.Deposit;
 import org.prevayler.demos.memento.commands.Transfer;
 import org.prevayler.Prevayler;
-import org.prevayler.implementation.PrevaylerFactory;
+import org.prevayler.PrevaylerFactory;
 
 /**
  * A simple test of the error recovery using mementos.
@@ -75,7 +75,7 @@ public class TestErrorRecoveryWithMementos {
   
   private static Object execute(MementoTransaction command) {
     try {
-      return new MementoManagerCommand(command).executeOn(prevayler.prevalentSystem(), prevayler.clock().time());
+      return new MementoManagerCommand(command).executeAndQuery(prevayler.prevalentSystem(), prevayler.clock().time());
     } catch (Exception exception) {
       System.out.println("FAILURE!");
       exception.printStackTrace(System.out);

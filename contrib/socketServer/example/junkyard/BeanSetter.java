@@ -80,9 +80,9 @@ public abstract class BeanSetter extends RemoteTransaction {
     protected abstract Object lookup(Object prevalentSystem) throws Exception;
     
     /**
-	 * @see org.prevayler.util.TransactionWithQuery#executeOn(Object, Date)
+	 * @see org.prevayler.util.TransactionWithQuery#executeAndQuery(Object, Date)
 	 */
-	public Object executeOn(Object prevalentSystem, Date timestamp) throws Exception {
+	public Object executeAndQuery(Object prevalentSystem, Date timestamp) throws Exception {
         Object subject = lookup(prevalentSystem);
         callSetter(subject);
 		return null;

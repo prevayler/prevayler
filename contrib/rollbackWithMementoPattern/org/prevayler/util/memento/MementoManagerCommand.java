@@ -38,7 +38,7 @@ public class MementoManagerCommand implements TransactionWithQuery, MementoColle
 	 * @param system The prevalent system on which to execute the transaction.
 	 * @return The object returned by the execution of this transaction. Most commands simply return null.
 	 */
-	public Object executeOn(Object prevalentSystem, Date timestamp) throws Exception {
+	public Object executeAndQuery(Object prevalentSystem, Date timestamp) throws Exception {
 		mementos = new HashMap();
 		try {
 			return transaction.execute(this, prevalentSystem);

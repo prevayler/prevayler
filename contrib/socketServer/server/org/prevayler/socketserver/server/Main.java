@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 import org.prevayler.Prevayler;
-import org.prevayler.implementation.PrevaylerFactory;
+import org.prevayler.PrevaylerFactory;
 import org.prevayler.socketserver.util.Log;
 
 /**
