@@ -1,7 +1,7 @@
 package org.prevayler.socketserver.example.client;
 
 /**
- * A simple Prevayler socket server implementation
+ * A simple Prevayler socket client implementation
  * @author djo
  */
 public class Main {
