@@ -1,6 +1,7 @@
 //Prevayler(TM) - The Free-Software Prevalence Layer.
-//Copyright (C) 2001-2003 Klaus Wuestefeld
+//Copyright (C) 2001-2004 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//Contributions: Carlos Villela.
 
 package org.prevayler.implementation.journal;
 
@@ -13,10 +14,10 @@ import java.util.Date;
 import org.prevayler.Transaction;
 import org.prevayler.foundation.DurableOutputStream;
 import org.prevayler.foundation.FileManager;
-import org.prevayler.foundation.Monitor;
 import org.prevayler.foundation.SimpleInputStream;
 import org.prevayler.foundation.StopWatch;
 import org.prevayler.foundation.Turn;
+import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
@@ -50,7 +51,6 @@ public class PersistentJournal implements FileFilter, Journal {
 		_directory = FileManager.produceDirectory(directory);
 		_journalSizeThresholdInBytes = journalSizeThresholdInBytes;
 		_journalAgeThresholdInMillis = journalAgeThresholdInMillis;
-		_monitor.journalInitialized(_directory, _loader, _journalSizeThresholdInBytes, _journalAgeThresholdInMillis);
 	}
 
 
@@ -61,7 +61,7 @@ public class PersistentJournal implements FileFilter, Journal {
 		try {
 			_outputJournal.sync(new TransactionTimestamp(transaction, executionTime), myTurn);
 		} catch (IOException iox) {
-			handleExceptionWhileWriting(iox, _outputJournal.file());
+			handle(iox, _outputJournal.file(), "writing to");
 		}
 	}
 
@@ -69,7 +69,7 @@ public class PersistentJournal implements FileFilter, Journal {
 	private void prepareOutputJournal() {
 		synchronized (_nextTransactionMonitor) {
 			if (!isOutputJournalValid()) createNewOutputJournal(_nextTransaction);   //TODO Create new output log when size threshold surpassed or age expires.
-			_nextTransaction++;  //The transaction count is increased but, because of thread concurrency, it is not guaranteed that this transaction is the _nextTransaction'th transaction, so don't trust that. It is myTurn that will guarantee execution in the correct order.
+			_nextTransaction++;  //The transaction count is increased but, because of thread concurrency, it is not guaranteed that this thread will journal the _nextTransaction'th transaction, so don't trust that. It is myTurn that will guarantee execution in the correct order.
 		}
 	}
 
@@ -94,14 +94,19 @@ public class PersistentJournal implements FileFilter, Journal {
 
 
 	private void createNewOutputJournal(long transactionNumber) {
-		File file = transactionJournalFile(transactionNumber);
+		File file = journalFile(transactionNumber);
 		try {
-			if (_outputJournal != null) _outputJournal.close();
+			closeOutputJournal();
 			_outputJournal = new DurableOutputStream(file);
 			_journalAgeTimer = StopWatch.start();
 		} catch (IOException iox) {
-			handleExceptionWhileCreating(iox, file);
+			handle(iox, file, "creating");
 		}
+	}
+
+
+	private void closeOutputJournal() throws IOException {
+		if (_outputJournal != null) _outputJournal.close();
 	}
 
 
@@ -125,7 +130,7 @@ public class PersistentJournal implements FileFilter, Journal {
 	private long findInitialJournalFile(long initialTransactionWanted) {
 		long initialFileCandidate = initialTransactionWanted;
 		while (initialFileCandidate != 0) {   //TODO Optimize.
-			if (transactionJournalFile(initialFileCandidate).exists()) break;
+			if (journalFile(initialFileCandidate).exists()) break;
 			initialFileCandidate--;
 		}
 		return initialFileCandidate;
@@ -148,7 +153,7 @@ public class PersistentJournal implements FileFilter, Journal {
 
 	private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, long initialLogFile)	throws IOException, ClassNotFoundException {
 		long recoveringTransaction = initialLogFile;
-		File logFile = transactionJournalFile(recoveringTransaction);
+		File logFile = journalFile(recoveringTransaction);
 		SimpleInputStream inputLog = new SimpleInputStream(logFile, _loader, _monitor);
 
 		while(true) {
@@ -161,7 +166,7 @@ public class PersistentJournal implements FileFilter, Journal {
 				recoveringTransaction++;
 		
 			} catch (EOFException eof) {
-				File nextFile = transactionJournalFile(recoveringTransaction);
+				File nextFile = journalFile(recoveringTransaction);
 				if (logFile.equals(nextFile)) renameUnusedFile(logFile);  //The first transaction in this log file is incomplete. We need to reuse this file name.
 				logFile = nextFile;
 				if (!logFile.exists()) break;
@@ -187,7 +192,7 @@ public class PersistentJournal implements FileFilter, Journal {
 		return true;
 	}
 
-	private File transactionJournalFile(long transaction) {
+	private File journalFile(long transaction) {
 		String fileName = "0000000000000000000" + transaction;
 		fileName = fileName.substring(fileName.length() - 19) + ".journal";
 		return new File(_directory, fileName);
@@ -198,17 +203,11 @@ public class PersistentJournal implements FileFilter, Journal {
 	}
 
 
-	protected void handleExceptionWhileCreating(IOException iox, File journal) {
-	    _monitor.handleExceptionWhileCreatingLogFile(iox, journal);
+	protected void handle(IOException iox, File journal, String action) {
+		String message = "All transaction processing is now blocked. A problem was found while " + action + " a .journal file.";
+	    _monitor.notify(message, journal, iox);
 		hang();
 	}
-
-
-	protected void handleExceptionWhileWriting(IOException iox, File journal) {
-	    _monitor.handleExceptionWhileWritingLogFile(iox, journal);
-	    hang();
-	}
-
 
 	static private void hang() {
 		while (true) Thread.yield();
@@ -216,7 +215,7 @@ public class PersistentJournal implements FileFilter, Journal {
 
 
 	public void close() throws IOException {
-		if (_outputJournal != null) _outputJournal.close();
+		closeOutputJournal();
 	}
 
 }

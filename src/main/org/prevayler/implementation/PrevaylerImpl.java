@@ -14,6 +14,7 @@ import org.prevayler.SureTransactionWithQuery;
 import org.prevayler.Transaction;
 import org.prevayler.TransactionWithQuery;
 import org.prevayler.foundation.*;
+import org.prevayler.foundation.monitor.*;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 import org.prevayler.implementation.snapshot.SnapshotManager;
@@ -46,7 +47,6 @@ public class PrevaylerImpl implements Prevayler {
 		_prevalentSystem = _snapshotManager.recoveredPrevalentSystem();
 		
 		_systemVersion = _snapshotManager.recoveredVersion();
-		_monitor.lastSnapshotRecovered(_systemVersion);
 
 		_publisher = transactionPublisher;
 		_clock = _publisher.clock();
@@ -99,12 +99,8 @@ public class PrevaylerImpl implements Prevayler {
 
 
 	public void takeSnapshot() throws IOException {
-	    try {
-		    synchronized (_prevalentSystem) {
-		        _snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
-		    }
-	    } finally {
-		    _monitor.snapshotTaken(_systemVersion);	        
+	    synchronized (_prevalentSystem) {
+	        _snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
 	    }
 	}
 

@@ -1,20 +1,19 @@
 //Prevayler(TM) - The Free-Software Prevalence Layer.
-//Copyright (C) 2001-2003 Klaus Wuestefeld
+//Copyright (C) 2001-2004 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-//Contributions: Aleksey Aristov.
+//Contributions: Aleksey Aristov, Carlos Villela.
 
 package org.prevayler;
 
 import java.io.IOException;
 import java.io.Serializable;
 
-import org.prevayler.foundation.*;
+import org.prevayler.foundation.monitor.*;
 import org.prevayler.implementation.PrevaylerImpl;
 import org.prevayler.implementation.clock.MachineClock;
 import org.prevayler.implementation.journal.PersistentJournal;
 import org.prevayler.implementation.journal.Journal;
 import org.prevayler.implementation.journal.TransientJournal;
-import org.prevayler.implementation.monitor.SimpleMonitor;
 import org.prevayler.implementation.publishing.CentralPublisher;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.censorship.LiberalTransactionCensor;
@@ -124,15 +123,16 @@ public class PrevaylerFactory {
 	}
 
 	/**
-	 * Assigns a monitor object to receive events from Prevayler.
+	 * Assigns a monitor object to receive notifications from Prevayler. This is useful for logging or sending eMails to system administrators, for example. If this method is not called or if null is passed as a parameter, a SimpleMonitor will be used to log notification on System.err.
 	 * 
 	 * @param monitor the Monitor implementation to use.
+	 * @see org.prevayler.foundation.monitor.SimpleMonitor
 	 */
 	public void configureMonitor(Monitor monitor) {
 	    _monitor = monitor;
 	}
 
-	/** Determines whether the Prevayler created by this factory should be transient (transientMode = true) or persistent (transientMode = false). A transient Prevayler will execute its Transactions WITHOUT writing them to disk. This is useful for stand-alone applications which have a "Save" button, for example, or for running automated tests MUCH faster than with a persistent Prevayler.
+	/** Determines whether the Prevayler created by this factory should be transient (transientMode = true) or persistent (transientMode = false). Default is persistent. A transient Prevayler will execute its Transactions WITHOUT writing them to disk. This is useful for stand-alone applications which have a "Save" button, for example, or for running automated tests MUCH faster than with a persistent Prevayler.
 	 */
 	public void configureTransientMode(boolean transientMode) {
 		_transientMode = transientMode;		
@@ -226,10 +226,6 @@ public class PrevaylerFactory {
 		return new PrevaylerImpl(snapshotManager, publisher, monitor());
 	}
 
-    private Monitor monitor() {
-		return _monitor != null ? _monitor : new SimpleMonitor();
-    }
-
 
     private String prevalenceBase() {
 		return _prevalenceBase != null ? _prevalenceBase : "PrevalenceBase";
@@ -267,4 +263,9 @@ public class PrevaylerFactory {
 			? _snapshotManager
 			: new JavaSnapshotManager(prevalentSystem(), prevalenceBase(), classLoader());
 	}
+
+	
+	private Monitor monitor() {
+		return _monitor != null ? _monitor : new SimpleMonitor(System.err);
+    }
 }

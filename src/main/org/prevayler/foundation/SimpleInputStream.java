@@ -1,6 +1,7 @@
 //Prevayler(TM) - The Free-Software Prevalence Layer.
-//Copyright (C) 2001-2003 Klaus Wuestefeld
+//Copyright (C) 2001-2004 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//Contributions: Carlos Villela.
 
 package org.prevayler.foundation;
 
@@ -11,6 +12,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamException;
 import java.io.UTFDataFormatException;
+
+import org.prevayler.foundation.monitor.*;
 
 
 public class SimpleInputStream {
@@ -23,7 +26,6 @@ public class SimpleInputStream {
 
 	public SimpleInputStream(File file, ClassLoader loader, Monitor monitor) throws IOException {
 	    _monitor = monitor;
-		_monitor.readingTransactionLogFile(file, loader);
 		_file = file;
 		_delegate = new ObjectInputStreamWithClassLoader(new FileInputStream(file), loader);
 	}
@@ -37,16 +39,22 @@ public class SimpleInputStream {
 		} catch (EOFException eofx) {
 			// Do nothing.
 		} catch (ObjectStreamException scx) {
-			_monitor.ignoringStreamCorruption(scx, _file);
+			ignoreStreamCorruption(scx);
 		} catch (UTFDataFormatException utfx) {
-		    _monitor.ignoringStreamCorruption(utfx, _file);
+			ignoreStreamCorruption(utfx);
 		} catch (RuntimeException rx) {   //Some stream corruptions cause runtime exceptions in JDK1.3.1!
-		    _monitor.ignoringStreamCorruption(rx, _file);
+			ignoreStreamCorruption(rx);
 		}
 
 		_delegate.close();
 		_EOF = true;
 		throw new EOFException();
+	}
+
+
+	private void ignoreStreamCorruption(Exception ex) {
+		String message = "Stream corruption found while reading a transaction from the journal. If this is a transaction that was being written when a system crash occurred, there is no problem because it was never executed on the Prevalent System. Before executing each transaction, Prevayler writes it to the journal and calls the java.io.FileDescritor.sync() method to instruct the Java API to physically sync all operating system RAM buffers to disk.";
+		_monitor.notify(message, _file, ex);
 	}
 
 
