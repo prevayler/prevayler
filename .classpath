@@ -6,6 +6,6 @@
 	<classpathentry kind="lib" path="root/lib/skaringa-r2p6.jar"/>
 	<classpathentry kind="lib" path="root/lib/commons-logging-1.0.3.jar"/>
 	<classpathentry kind="lib" path="root/lib/junit-3.8.1.jar"/>
-	<classpathentry kind="lib" path="root/lib/xstream-0.6-rc1.jar"/>
+	<classpathentry kind="lib" path="C:/critico/klaus/prevayler/repository/prevayler-HEAD/prevayler/root/lib/xstream-0.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
