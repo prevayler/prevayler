@@ -27,7 +27,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import org.prevayler.Transaction;
-import org.prevayler.util.TransactionWithQuery;
+import org.prevayler.TransactionWithQuery;
 
 /**
  * A default implementation of IRemoteTransaction.  Instead of implementing the interface

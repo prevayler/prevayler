@@ -32,8 +32,8 @@ import org.prevayler.socketserver.transactions.*;
 import org.prevayler.socketserver.transactions.IRemoteTransaction;
 import org.prevayler.socketserver.transactions.ThrownException;
 
-import org.prevayler.implementation.SnapshotPrevayler;
-import org.prevayler.util.TransactionWithQuery;
+import org.prevayler.Prevayler;
+import org.prevayler.TransactionWithQuery;
 
 /**
  * Forwards commands to Prevayler from a single client for its entire session.
@@ -43,14 +43,14 @@ import org.prevayler.util.TransactionWithQuery;
 public class CommandThread extends Thread {
     private static long id=0;
 
-    private SnapshotPrevayler prevayler;
+    private Prevayler prevayler;
     private Socket socket;
     private long myId;
 
     /**
      * Server socket thread constructor
      */    
-    public CommandThread(SnapshotPrevayler p, Socket s) {
+    public CommandThread(Prevayler p, Socket s) {
         prevayler = p;
         socket = s;
         myId = Reaper.registerCommandThread();
@@ -85,7 +85,7 @@ public class CommandThread extends Thread {
                 Serializable result;
                 TransactionWithQuery transaction = (TransactionWithQuery) t;
                 try {
-                    result = (Serializable) transaction.executeOn(prevayler.prevalentSystem(), prevayler.clock().time());
+                    result = (Serializable) prevayler.execute(transaction);
                 } catch (Exception e) {
                     result = new ThrownException(e);
                 }

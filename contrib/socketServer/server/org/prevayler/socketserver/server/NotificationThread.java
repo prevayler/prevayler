@@ -30,7 +30,7 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
-import org.prevayler.implementation.SnapshotPrevayler;
+import org.prevayler.Prevayler;
 
 /**
  * Forwards commands to Prevayler from a single client for its entire session.
@@ -38,7 +38,7 @@ import org.prevayler.implementation.SnapshotPrevayler;
  * @author DaveO
  */
 public class NotificationThread extends Thread {
-    private SnapshotPrevayler prevayler;
+    private Prevayler prevayler;
     private Socket socket;
 
     /**

@@ -28,7 +28,6 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.TreeMap;
 
-import org.prevayler.implementation.SnapshotPrevayler;
 import org.prevayler.socketserver.server.Notification;
 
 /**

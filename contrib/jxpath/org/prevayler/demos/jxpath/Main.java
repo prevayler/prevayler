@@ -13,10 +13,11 @@ import java.util.Iterator;
 import org.apache.commons.jxpath.JXPathContext;
 import org.prevayler.demos.jxpath.commands.AddProject;
 import org.prevayler.demos.jxpath.commands.AddTask;
-import org.prevayler.implementation.SnapshotPrevayler;
-import org.prevayler.util.PrevaylerFactory;
 import org.prevayler.demos.jxpath.model.Project;
 import org.prevayler.demos.jxpath.model.Task;
+import org.prevayler.Prevayler;
+import org.prevayler.implementation.PrevaylerFactory;
+
 
 /**
  * Main class for the JXPath+Prevayler demo.
@@ -53,8 +54,8 @@ public class Main {
 
 		try {
 
-			SnapshotPrevayler prevayler =
-				PrevaylerFactory.createSnapshotPrevayler(new ProjectManagementSystem());
+			Prevayler prevayler =
+				PrevaylerFactory.createPrevayler(new ProjectManagementSystem());
 
 			if (args.length < 1) {
 				usage();
@@ -80,7 +81,7 @@ public class Main {
 	 * @param prevayler PrevalentSystem to query
 	 * @param xpathExp XPath expression to use
 	 */
-	private static void list(SnapshotPrevayler prevayler, String xpathExp) {
+	private static void list(Prevayler prevayler, String xpathExp) {
 		System.out.println("Executing XPath expression...");
 
 		ProjectManagementSystem pms =
@@ -103,7 +104,7 @@ public class Main {
 	 * @param name name of the project
 	 */
 	private static void addProject(
-		SnapshotPrevayler prevayler,
+		Prevayler prevayler,
 		String id,
 		String name)
 		throws Exception {
@@ -130,7 +131,7 @@ public class Main {
 	 * @param projectId project id to add this task to
 	 */
 	private static void addTask(
-		SnapshotPrevayler prevayler,
+		Prevayler prevayler,
 		String id,
 		String name,
 		String start,

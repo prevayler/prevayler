@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.prevayler.util.TransactionWithQuery;
+import org.prevayler.TransactionWithQuery;
 
 /**
  * This transaction manages the mementos and restores them in case of a failure.

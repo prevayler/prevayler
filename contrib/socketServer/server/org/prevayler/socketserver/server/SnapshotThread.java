@@ -25,7 +25,7 @@ package org.prevayler.socketserver.server;
 
 import java.io.IOException;
 
-import org.prevayler.implementation.SnapshotPrevayler;
+import org.prevayler.Prevayler;
 import org.prevayler.socketserver.util.Log;
 
 /**
@@ -37,9 +37,9 @@ import org.prevayler.socketserver.util.Log;
  * Window>Preferences>Java>Code Generation.
  */
 public class SnapshotThread extends Thread {
-    private SnapshotPrevayler prevayler;
+    private Prevayler prevayler;
     
-    public SnapshotThread(SnapshotPrevayler persistenceEngine) {
+    public SnapshotThread(Prevayler persistenceEngine) {
         prevayler = persistenceEngine;
     }
     
