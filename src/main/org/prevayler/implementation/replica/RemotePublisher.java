@@ -13,7 +13,6 @@ import org.prevayler.implementation.*;
 public class RemotePublisher extends Thread implements TransactionPublisher {
 
 	private TransactionSubscriber _subscriber;
-	private final Object _subscriberUpToDateMonitor = new Object();
 
 	private Transaction _myTransaction;
 	private final Object _myTransactionMonitor = new Object();
@@ -23,13 +22,13 @@ public class RemotePublisher extends Thread implements TransactionPublisher {
 
 
 	public RemotePublisher(String serverIpAddress) throws IOException, ClassNotFoundException {
-		this(serverIpAddress, Protocol.DEFAULT_PORT);
+		this(serverIpAddress, PublishingServer.DEFAULT_PORT);
 	}
 
 
 	public RemotePublisher(String serverIpAddress, int serverPort) throws IOException, ClassNotFoundException {
 		Socket socket = new Socket(serverIpAddress, serverPort);
-		_toServer = new ObjectOutputStream(socket.getOutputStream());   // Get the OUTPUT stream first. JDK 1.3.1_01 will lock up if you get the INPUT stream first.
+		_toServer = new ObjectOutputStream(socket.getOutputStream());   // Get the OUTPUT stream first. JDK 1.3.1_01 for Windows will lock up if you get the INPUT stream first.
 		_fromServer = new ObjectInputStream(socket.getInputStream());
 		setDaemon(true);
 		start();
@@ -39,10 +38,7 @@ public class RemotePublisher extends Thread implements TransactionPublisher {
 	public synchronized void addSubscriber(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
 		if (_subscriber != null) throw new UnsupportedOperationException("The current implementation of RemoteTransactionPublisher can only support one subscriber. Future implementations will support more.");
 		_subscriber = subscriber;
-		synchronized (_subscriberUpToDateMonitor) {
-			_toServer.writeObject(new Long(initialTransaction));
-			wait(_subscriberUpToDateMonitor);
-		}
+		_toServer.writeObject(new Long(initialTransaction));
 	}
 
 
@@ -73,15 +69,10 @@ public class RemotePublisher extends Thread implements TransactionPublisher {
 	private void receiveTransactionFromServer() throws IOException, ClassNotFoundException {
 		Object transactionCandidate = _fromServer.readObject();
 
-		if (transactionCandidate.equals(Protocol.TRANSACTIONS_UP_TO_DATE)) {
-			notify(_subscriberUpToDateMonitor);
-			return;
-		}
-
-		if (transactionCandidate.equals(Protocol.REMOTE_TRANSACTION)) {
+		if (transactionCandidate.equals(RemoteConnection.REMOTE_TRANSACTION)) {
 			synchronized (_myTransactionMonitor) {
 				_subscriber.receive(_myTransaction);
-				notify(_myTransactionMonitor);
+				_myTransactionMonitor.notify();
 			}
 			return;
 		}
@@ -96,11 +87,6 @@ public class RemotePublisher extends Thread implements TransactionPublisher {
 		} catch (InterruptedException ix) {
 			throw new RuntimeException("Unexpected InterruptedException.");
 		}
-	}
-
-
-	private static void notify(Object monitor) {
-		synchronized (monitor) { monitor.notify(); }
 	}
 
 }

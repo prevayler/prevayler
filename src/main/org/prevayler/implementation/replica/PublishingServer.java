@@ -11,12 +11,14 @@ import org.prevayler.implementation.TransactionPublisher;
 
 public class PublishingServer extends Thread {
 
+	static final int DEFAULT_PORT = 8756;
+
 	private final TransactionPublisher _publisher;
 	private final ServerSocket _serverSocket;
 
 
 	public PublishingServer(TransactionPublisher publisher) throws IOException {
-		_serverSocket = new ServerSocket(Protocol.DEFAULT_PORT);
+		_serverSocket = new ServerSocket(DEFAULT_PORT);
 		_publisher = publisher;
 		setDaemon(true);
 		start();

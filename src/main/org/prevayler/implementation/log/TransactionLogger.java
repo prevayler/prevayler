@@ -82,7 +82,7 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 			_nextTransaction = initialTransaction;
 			_nextTransactionKnown = true;
 		} else {
-System.out.println("TODO"); //We must find a way to uncomment this next line so that Prevayler can detect missing transactions. Probably we'll have to make the SnapshotPrevayler not count ClockTick or not count the redundant ones.
+System.out.println("TODO"); //We must find a way to uncomment this next line so that Prevayler can detect missing transactions. Probably we'll have to make the SnapshotPrevayler not count ClockTicks or not count the redundant ones.
 //			if (initialTransaction > _nextTransaction) throw new IOException("Unable to find transactions from " + _nextTransaction + " to " + (initialTransaction - 1) + "."); 
 			long initialFileCandidate = initialTransaction;
 			while (!transactionLogFile(initialFileCandidate).exists()) {
@@ -166,7 +166,9 @@ System.out.println("TODO"); //We must find a way to uncomment this next line so 
 									
 			} catch (EOFException eof) {
 				File logFile = transactionLogFile(recoveringTransaction);
-				if (!logFile.exists()) throwNotFound(recoveringTransaction);
+System.out.println("TODO"); //We must find a way to uncomment this next line. Since the ClockTick log optimization, it causes trouble when called by the replication logic for example.
+//				if (!logFile.exists()) throwNotFound(recoveringTransaction);
+				if (!logFile.exists()) return;
 				inputLog = new SimpleInputStream(logFile);
 			}
 		}
