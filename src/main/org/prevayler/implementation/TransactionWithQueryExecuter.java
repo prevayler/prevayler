@@ -11,7 +11,7 @@ import org.prevayler.*;
 
 class TransactionWithQueryExecuter implements Transaction {
 
-    static final long serialVersionUID = 0L;
+    static final long serialVersionUID = 6893409834631939953L;
 
 	TransactionWithQuery _delegate;
 
