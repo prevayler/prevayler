@@ -13,4 +13,12 @@ public class Daemon extends Thread {
 		start();
 	}
 
+	/**
+	 * Be very careful when using this constructor (instance must be completely initialized because the Deamon start() method is called here). 
+	 */
+	public Daemon() {
+		setDaemon(true);
+		start();
+	}
+
 }

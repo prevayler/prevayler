@@ -4,13 +4,9 @@
 
 package org.prevayler.foundation.network;
 
-import java.io.IOException;
-
 
 public interface Service {
 	
 	ObjectReceiver serverFor(ObjectReceiver client);
-	
-	public void close() throws IOException;
 	
 }
