@@ -52,9 +52,9 @@ public class PrevaylerFactory {
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 * @param prevalenceBase The directory where the .snapshot files and .transactionLog files will be read and written.
 	 */
-	public static Prevayler createPrevayler(Serializable prevalentSystem, String prevalenceBase) throws IOException, ClassNotFoundException {
+	public static Prevayler createPrevayler(Serializable newPrevalentSystem, String prevalenceBase) throws IOException, ClassNotFoundException {
 		PrevaylerFactory factory = new PrevaylerFactory();
-		factory.configurePrevalentSystem(prevalentSystem);
+		factory.configurePrevalentSystem(newPrevalentSystem);
 		factory.configurePrevalenceBase(prevalenceBase);
 		return factory.create();
 	}
@@ -115,7 +115,7 @@ public class PrevaylerFactory {
 
 	/** Configures the prevalent system that will be used by the Prevayler created by this factory.
 	 * @param newPrevalentSystem Will be ignored if a SnapshotManager is configured too because a SnapshotManager already has a prevalent system. If the default SnapshotManager is used, this prevalentSystem must be Serializable. If another SnapshotManager is used, this prevalentSystem must be compatible with it. 
-	 * @see configureSnapshotManager()
+	 * @see #configureSnapshotManager(SnapshotManager)
 	 */
 	public void configurePrevalentSystem(Object newPrevalentSystem) {
 		_prevalentSystem = newPrevalentSystem;
