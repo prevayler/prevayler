@@ -8,6 +8,8 @@
 
 package org.prevayler.demos.jxpath.commands;
 
+import java.util.Date;
+
 import org.prevayler.Transaction;
 import org.prevayler.demos.jxpath.ProjectManagementSystem;
 import org.prevayler.demos.jxpath.model.Project;
@@ -21,7 +23,7 @@ public class AddProject implements Transaction {
 
 	private Project project;
 
-	public void executeOn(Object system) {
+	public void executeOn(Object system, Date ignored) {
 		if(project != null) {
 			ProjectManagementSystem pms = (ProjectManagementSystem) system;	
 			pms.getProjects().add(project);

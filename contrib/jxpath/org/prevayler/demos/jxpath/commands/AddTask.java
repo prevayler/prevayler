@@ -8,6 +8,7 @@
 package org.prevayler.demos.jxpath.commands;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class AddTask implements Transaction {
 	private Task task;
 	private int projectId = Integer.MIN_VALUE;
 
-	public void executeOn(Object system) {
+	public void executeOn(Object system, Date ignored) {
 		if(task != null && projectId != Integer.MIN_VALUE) {
 			ProjectManagementSystem pms = (ProjectManagementSystem) system;	
 

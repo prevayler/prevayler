@@ -14,6 +14,7 @@ import org.apache.commons.jxpath.JXPathContext;
 import org.prevayler.demos.jxpath.commands.AddProject;
 import org.prevayler.demos.jxpath.commands.AddTask;
 import org.prevayler.implementation.SnapshotPrevayler;
+import org.prevayler.util.PrevaylerFactory;
 import org.prevayler.demos.jxpath.model.Project;
 import org.prevayler.demos.jxpath.model.Task;
 
@@ -53,7 +54,7 @@ public class Main {
 		try {
 
 			SnapshotPrevayler prevayler =
-				new SnapshotPrevayler(new ProjectManagementSystem());
+				PrevaylerFactory.createSnapshotPrevayler(new ProjectManagementSystem());
 
 			if (args.length < 1) {
 				usage();
