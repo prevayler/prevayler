@@ -1,0 +1,113 @@
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+  "http://www.w3.org/TR/html401/strict.dtd">
+<html lang="en-US">
+<head>
+    <title>Prevayler Transactions Facade</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+</head>
+<body>
+
+<h1>Prevayler Transactions Facade</h1>
+<p>In the systems I design and develop, I prefer to hide the messier
+details of persistence behind one or more interfaces -- the
+"home", "persister" or "repository" interfaces. For persistence in
+a RDBMS, an implementation would include the JDBC calls to support
+the persistence operations; in a Prevayler implementation, the
+implementation would hide the details of creating and using
+Transactions. Such a facade can also facilitate unit testing, by
+providing a simple in-memory implementation.  Especially while
+prototyping, I'd prefer to not think at all about how the various
+entites are persisted in a system.</p>
+
+<p>Prevayler provides the ideal raw material for avoiding such
+effort. In such a situtation, especially as the interface is
+likely to evolve rapidly, I'd prefer not to have to maintain the
+various Transactions that comprise the persistence
+implementation. I've found that it is very straightforward to use
+dynamic proxies to handle the Transaction construction
+implicitly. I have written a simple implementation of
+a <code>PrevaylerTransactionsFacade</code> which accomplishes
+this.</p>
+
+<h3>Criticism</h3>
+<p>The major weakness I see with the automatic
+generation of the transactions is that the proper kind of
+transaction may not be created. For instance,
+a <code>TransactionWithQuery</code> may be used instead of the
+lighter-weight <code>Query</code>. More seriously,
+a <code>Query</code> may be used instead of a
+<code>TransactionWithQuery</code>. The
+<code>PrevaylerTransactionsFacade</code> is parameterized by a
+strategy object -- a <code>TransactionType.Determiner</code>,
+which given a <code>Method</code>, determines which transaction
+to create. I believe that within any project, given consistent
+method naming conventions, it should be possible to produce a
+fully correct <code>TransactionType.Determiner</code>.  See the
+Javadoc for the (enhanced in 0.2) MethodNameTransactionTypeDeterminer
+which makes a valiant attempt at covering most cases and allows some
+flexibility if the documented naming convention is followed.</p>
+
+<h2>Sample usage</h2>
+<div>
+Given the interface...
+
+<pre>interface WikiPageRepository {
+  WikiPage fetchPage(String path);
+  void savePage(WikiPage page);
+  void deletePage(String path);
+}</pre>
+
+and a simple in-memory implementation...
+
+<pre>class MemoryWikiPageRepository
+  implements WikiPageRepository, Serializable {
+
+  private final Map pages = new HashMap();
+
+  public WikiPage retrievePage(String path) {
+    return (WikiPage) pages.get(path);
+  }
+
+  public void savePage(WikiPage page) {
+    pages.put(page);
+  }
+
+  public void deletePage(String path) {
+    pages.remove(path);
+  }
+}</pre>
+
+one (as usual) creates the <code>Prevayler</code> via something like...
+
+<pre>Prevayler prevayler =
+  PrevaylerFactory.createPrevayler(new MemoryWikiPageRepository(), "data");
+</pre>
+
+At this point it is simple to create a prevalent implementation of
+the <code>WikiPageRepository</code> using...
+
+<pre>WikiPageRepository pageRepo = (WikiPageRepository)
+  PrevaylerTransactionsFacade.create(WikiPageRepository.class, prevayler);
+</pre>
+</div>
+
+<h2>Download</h2>
+<p>0.1 is the original version (Written entirely by Jay Sachs). 
+<a href="http://www.contravariant.org/~jay/prevayler/prevaylertf-0_1.tgz">Download prevaylertf-0_1.tgz</a>.</p>
+
+<p>0.2 is is the current version (additions and cleanup by Jacob Kjome) and exists in Prevayler's contrib sources under the "transactionsFacade" directory</p>
+
+<h3>License</h3>
+<p>Open source licensed under a BSD-style license.</p>
+
+<hr>
+<p>
+    <a href="mailto:jay@contravariant.org">Jay Sachs</a> |
+    <a href="mailto:hoju@visi.com">Jacob Kjome</a>
+</p>
+
+</body>
+</html>
