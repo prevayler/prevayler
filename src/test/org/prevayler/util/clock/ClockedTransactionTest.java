@@ -9,7 +9,11 @@ import org.prevayler.util.clock.ClockedTransaction;
 import org.prevayler.implementation.TransientPrevayler;
 
 public class ClockedTransactionTest extends TestCase {
-    private Date executedTime;
+    /**
+     * Sorry, it had to be static... Couldn't help it, tried my best. If you can make it non-static, please do so.
+     */
+    private static Date executedTime;
+
     private ClockedSystem prevalentSystem;
     private TransientPrevayler prevayler;
 
@@ -26,12 +30,7 @@ public class ClockedTransactionTest extends TestCase {
 
     public void testExecute() throws Exception {
 
-        ClockedTransaction clockedTransaction = new ClockedTransaction() {
-            public Object executeClocked(ClockedSystem clockedSystem) {
-                executedTime = clockedSystem.clock().time();
-                return null;
-            }
-        };
+        ClockedTransaction clockedTransaction = new MyClockedTransaction();
         assertNull(clockedTransaction.timeOfExecution);
 
         clockedTransaction.executeUsing(prevayler);
@@ -44,5 +43,12 @@ public class ClockedTransactionTest extends TestCase {
         Date previousExecutedTime = executedTime;
         clockedTransaction.executeOn(prevalentSystem);
         assertEquals(previousExecutedTime, executedTime);
+    }
+
+    public static class MyClockedTransaction extends ClockedTransaction {
+        public Object executeClocked(ClockedSystem clockedSystem) {
+            executedTime = clockedSystem.clock().time();
+            return null;
+        }
     }
 }
