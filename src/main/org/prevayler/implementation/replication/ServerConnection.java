@@ -25,7 +25,7 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 	private Capsule _remoteCapsule;
 
 	private final ObjectSocket _remote;
-	private Thread _clockTickSender = createClockTickSender();
+	private final Thread _clockTickSender = createClockTickSender();
 	private boolean _isClosing = false;
 
 
@@ -48,7 +48,7 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 			
 			send(SUBSCRIBER_UP_TO_DATE);
 			
-			sendClockTicks();
+			startSendingClockTicks();
 			while (true) publishRemoteTransaction();
 		} catch (IOException ex) {
 			close();
@@ -58,14 +58,14 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 	}
 
 
-	private void sendClockTicks() {
+	private void startSendingClockTicks() {
 		_clockTickSender.setDaemon(true);
 		_clockTickSender.start();
 	}
 
 
 	private Thread createClockTickSender() {
-		return new Thread() { //TODO Create foundation.Daemon.
+		return new Thread() { //TODO Consider using TimerTask.
 					public void run() {
 						try {
 							while (true) {

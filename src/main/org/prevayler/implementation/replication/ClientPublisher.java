@@ -81,7 +81,7 @@ public class ClientPublisher implements TransactionPublisher {
 				_server.writeObject(capsule);
 			} catch (IOException iox) {
 				iox.printStackTrace();
-				while (true) Thread.yield(); // TODO Reconnect to the server.
+				while (true) Thread.yield();  //Remove all exceptions when using StubbornNetwork.
 			}
 			wait(_myCapsuleMonitor);
 			
