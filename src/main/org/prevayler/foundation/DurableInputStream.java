@@ -7,8 +7,6 @@ package org.prevayler.foundation;
 
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.implementation.journal.Chunk;
-import org.prevayler.implementation.journal.Chunking;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.Transaction;
 

@@ -1,4 +1,4 @@
-package org.prevayler.implementation.journal;
+package org.prevayler.foundation;
 
 import junit.framework.TestCase;
 
@@ -6,6 +6,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.EOFException;
+
+import org.prevayler.foundation.Chunking;
+import org.prevayler.foundation.Chunk;
 
 public class ChunkingTest extends TestCase {
 

@@ -1,4 +1,4 @@
-package org.prevayler.implementation.journal;
+package org.prevayler.foundation;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

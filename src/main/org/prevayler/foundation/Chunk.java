@@ -1,4 +1,4 @@
-package org.prevayler.implementation.journal;
+package org.prevayler.foundation;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

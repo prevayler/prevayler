@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 import org.prevayler.implementation.snapshot.GenericSnapshotManagerTest;
-import org.prevayler.implementation.journal.ChunkingTest;
+import org.prevayler.foundation.ChunkingTest;
 import org.prevayler.foundation.DurableOutputStreamTest;
 import org.prevayler.foundation.gzip.MultiMemberGZIPTest;
 
