@@ -1,7 +1,7 @@
-package org.prevayler.demo.commands;
+package org.prevayler.demos.demo2.commands;
 
 import org.prevayler.*;
-import org.prevayler.demo.Bank;
+import org.prevayler.demos.demo2.Bank;
 import java.io.Serializable;
 
 public abstract class BankCommand implements Command {

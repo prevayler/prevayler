@@ -1,11 +1,10 @@
-package org.prevayler.demo;
+package org.prevayler.demos.demo2;
 
-import org.prevayler.*;
 import org.prevayler.implementation.*;
-import org.prevayler.demo.gui.BankFrame;
+import org.prevayler.demos.demo2.gui.BankFrame;
 import java.io.*;
 
-public class PrevaylerDemo {
+public class Main {
 	
 	public static void main(String[] args) {
 		try{
@@ -18,7 +17,7 @@ public class PrevaylerDemo {
 	}
 	
 	public static void run() throws IOException, ClassNotFoundException, InterruptedException {
-		SnapshotPrevayler prevayler = new SnapshotPrevayler(new Bank());
+		SnapshotPrevayler prevayler = new SnapshotPrevayler(new Bank(),"demo2");
 		new BankFrame(prevayler);
 		
 		out("A system snapshot will be taken every 24h...");

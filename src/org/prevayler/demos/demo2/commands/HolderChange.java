@@ -1,6 +1,6 @@
-package org.prevayler.demo.commands;
+package org.prevayler.demos.demo2.commands;
 
-import org.prevayler.demo.Account;
+import org.prevayler.demos.demo2.Account;
 
 public class HolderChange extends AccountCommand {
 

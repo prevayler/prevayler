@@ -1,7 +1,7 @@
-package org.prevayler.demo.gui;
+package org.prevayler.demos.demo2.gui;
 
-import org.prevayler.demo.*;
-import org.prevayler.demo.commands.*;
+import org.prevayler.demos.demo2.*;
+import org.prevayler.demos.demo2.commands.*;
 import org.prevayler.Prevayler;
 import javax.swing.*;
 import java.awt.*;

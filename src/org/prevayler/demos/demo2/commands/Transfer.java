@@ -1,6 +1,6 @@
-package org.prevayler.demo.commands;
+package org.prevayler.demos.demo2.commands;
 
-import org.prevayler.demo.Bank;
+import org.prevayler.demos.demo2.Bank;
 
 public class Transfer extends BankCommand {
 

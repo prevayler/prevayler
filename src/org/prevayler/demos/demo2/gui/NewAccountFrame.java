@@ -1,7 +1,7 @@
-package org.prevayler.demo.gui;
+package org.prevayler.demos.demo2.gui;
 
 import org.prevayler.*;
-import org.prevayler.demo.commands.AccountCreation;
+import org.prevayler.demos.demo2.commands.AccountCreation;
 import javax.swing.*;
 import java.awt.Container;
 

@@ -1,3 +1,10 @@
+Prevayler 1.03
+==================
+Prevayler is the free-software prevalence layer for Java. It is ridiculously simple (therefore robust) and provides transparent persistence for native Java objects. Allows object queries to run 3 to 4 orders of magnitude faster than using a database through JDBC.
+
+This release (1.03) increases transaction processing scalability by serializing multiple concurrent Commands in parallel, in different commandLog files. See Javadoc.
+
+
 Requirements
 ================
 Prevayler requires Java 1.2 or greater.
@@ -17,7 +24,7 @@ The following classes have the main() method and can be run directly. They are s
 
 1) org.prevayler.demos.demo1.Main - A tiny application that calculates prime numbers and stores them using Prevayler.
 
-2) org.prevayler.demo.PrevaylerDemo - A bank application using Prevayler. Requires Java 1.3 or greater because of the GUI classes used.
+2) org.prevayler.demos.demo2.Main - A bank application using Prevayler. Requires Java 1.3 or greater because of the GUI classes used.
 
 3) org.prevayler.test.scalability.ScalabilityTest - Runs manipulation and query scalability tests against Prevayler and any JDBC database. Just follow the instructions.
 

@@ -1,4 +1,4 @@
-package org.prevayler.demo;
+package org.prevayler.demos.demo2;
 	
 public interface BankListener {
 		

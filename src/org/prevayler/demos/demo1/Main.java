@@ -12,7 +12,7 @@ public class Main {
   public static void main(String[] args) throws Exception {
     System.out.println("\nRobustness Reminder: You can kill this process at any time. When you restart the system, you will see that nothing was lost.\n");
 
-    SnapshotPrevayler prevayler = new SnapshotPrevayler(new NumberKeeper(), "PrevalenceBase" + File.separator + "demo1");
+    SnapshotPrevayler prevayler = new SnapshotPrevayler(new NumberKeeper(), "demo1");
 
     new PrimeFrame(prevayler);
   }

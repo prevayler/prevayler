@@ -1,4 +1,4 @@
-package org.prevayler.demo.gui;
+package org.prevayler.demos.demo2.gui;
 
 import org.prevayler.Prevayler;
 import javax.swing.*;

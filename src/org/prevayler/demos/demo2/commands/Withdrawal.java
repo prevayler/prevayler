@@ -1,6 +1,6 @@
-package org.prevayler.demo.commands;
+package org.prevayler.demos.demo2.commands;
 
-import org.prevayler.demo.*;
+import org.prevayler.demos.demo2.*;
 
 public class Withdrawal extends AccountCommand {
 
