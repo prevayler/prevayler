@@ -11,14 +11,14 @@ import org.prevayler.Clock;
 import org.prevayler.Transaction;
 import org.prevayler.foundation.Turn;
 import org.prevayler.implementation.clock.PausableClock;
-import org.prevayler.implementation.logging.TransactionLogger;
+import org.prevayler.implementation.journal.Journal;
 import org.prevayler.implementation.publishing.censorship.*;
 
 public class CentralPublisher extends AbstractPublisher {
 
 	private final PausableClock _pausableClock;
 	private final TransactionCensor _censor;
-	private final TransactionLogger _logger;
+	private final Journal _journal;
 
 	private final Object _pendingSubscriptionMonitor = new Object();
 	private volatile int _pendingPublications = 0;
@@ -28,12 +28,12 @@ public class CentralPublisher extends AbstractPublisher {
 	private final Object _nextTurnMonitor = new Object();
 
 
-	public CentralPublisher(Clock clock, TransactionCensor censor, TransactionLogger logger) {
+	public CentralPublisher(Clock clock, TransactionCensor censor, Journal journal) {
 		super(new PausableClock(clock));
 		_pausableClock = (PausableClock)_clock; //This is just to avoid casting the inherited _clock every time.
 
 		_censor = censor;
-		_logger = logger;
+		_journal = journal;
 	}
 
 
@@ -61,7 +61,7 @@ public class CentralPublisher extends AbstractPublisher {
 
 		Date executionTime = realTime(myTurn);  //TODO realTime() and approve in the same turn.
 		approve(transaction, executionTime, myTurn);
-		_logger.log(transaction, executionTime, myTurn);
+		_journal.append(transaction, executionTime, myTurn);
 		notifySubscribers(transaction, executionTime, myTurn);
 	}
 
@@ -106,12 +106,12 @@ public class CentralPublisher extends AbstractPublisher {
 		synchronized (_pendingSubscriptionMonitor) {
 			while (_pendingPublications != 0) Thread.yield();
 			
-			_logger.update(subscriber, initialTransaction);
+			_journal.update(subscriber, initialTransaction);
 			super.addSubscriber(subscriber);
 		}
 	}
 
 
-	public void close() throws IOException { _logger.close(); }
+	public void close() throws IOException { _journal.close(); }
 
 }

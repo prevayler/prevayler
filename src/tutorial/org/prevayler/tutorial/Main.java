@@ -21,7 +21,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         // START SNIPPET: creating
-        // Create a new prevayler. /tasklist-base is the tx-log directory.
+        // Create a new prevayler. /tasklist-base is the tx-journal directory.
         Prevayler prevayler = PrevaylerFactory.createPrevayler(new TaskList(), "/tasklist-base");
         TaskList list = (TaskList) prevayler.prevalentSystem();
         // END SNIPPET: creating

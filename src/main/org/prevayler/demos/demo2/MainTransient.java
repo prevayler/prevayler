@@ -17,7 +17,7 @@ public class MainTransient {
 			+ "\n(Pay no attention to the 'Robustness Reminder' this time ;)"
 		);
 
-		//Below is the single line that was changed from Main.java to disable transaction logging. Notice the use of the AbstractPublisher:
+		//Below is the single line that was changed from Main.java to disable transaction journalling. Notice the use of the AbstractPublisher:
 		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler(new Bank());
 
 		Main.startGui(prevayler);

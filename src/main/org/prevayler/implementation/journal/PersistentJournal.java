@@ -2,7 +2,7 @@
 //Copyright (C) 2001-2003 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-package org.prevayler.implementation.logging;
+package org.prevayler.implementation.journal;
 
 import java.io.EOFException;
 import java.io.File;
@@ -21,83 +21,84 @@ import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 
-/** A TransactionLogger that will write all transactions to .transactionLog files.
+/** A Journal that will write all transactions to .transactionLog files.
  */
-public class PersistentLogger implements FileFilter, TransactionLogger {
+public class PersistentJournal implements FileFilter, Journal {
 
 	private final File _directory;
-	private DurableOutputStream _outputLog;
+	private DurableOutputStream _outputJournal;
 
-	private final long _logSizeThresholdInBytes;
-	private final long _logAgeThresholdInMillis;
-	private StopWatch _logAgeTimer;
+	private final long _journalSizeThresholdInBytes;
+	private final long _journalAgeThresholdInMillis;
+	private StopWatch _journalAgeTimer;
 	
 	private long _nextTransaction;
 	private final Object _nextTransactionMonitor = new Object();
 	private boolean _nextTransactionInitialized = false;
-	private ClassLoader _loader;    private Monitor _monitor;
+	private ClassLoader _loader;
+	private Monitor _monitor;
 
 
 	/**
-	 * @param directory Where transactionLog files will be read and written.
-	 * @param logSizeThresholdInBytes Size of the current transactionLog file beyond which it is closed and a new one started. Zero indicates no size threshold. This is useful transactionLog backup purposes.
-	 * @param logAgeThresholdInMillis Age of the current transactionLog file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful transactionLog backup purposes.
+	 * @param directory Where transaction journal files will be read and written.
+	 * @param journalSizeThresholdInBytes Size of the current transactionLog file beyond which it is closed and a new one started. Zero indicates no size threshold. This is useful transactionLog backup purposes.
+	 * @param journalAgeThresholdInMillis Age of the current transactionLog file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful transactionLog backup purposes.
 	 */
-	public PersistentLogger(String directory, long logSizeThresholdInBytes, long logAgeThresholdInMillis, ClassLoader loader, Monitor monitor) throws IOException {
+	public PersistentJournal(String directory, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis, ClassLoader loader, Monitor monitor) throws IOException {
 	    _monitor = monitor;
 		_loader = loader;
 		_directory = FileManager.produceDirectory(directory);
-		_logSizeThresholdInBytes = logSizeThresholdInBytes;
-		_logAgeThresholdInMillis = logAgeThresholdInMillis;
-		_monitor.loggerInitialized(_directory, _loader, _logSizeThresholdInBytes, _logAgeThresholdInMillis);
+		_journalSizeThresholdInBytes = journalSizeThresholdInBytes;
+		_journalAgeThresholdInMillis = journalAgeThresholdInMillis;
+		_monitor.journalInitialized(_directory, _loader, _journalSizeThresholdInBytes, _journalAgeThresholdInMillis);
 	}
 
 
-	public void log(Transaction transaction, Date executionTime, Turn myTurn) {
-		if (!_nextTransactionInitialized) throw new IllegalStateException("TransactionLogger.update() has to be called at least once before TransactionLogger.log().");
+	public void append(Transaction transaction, Date executionTime, Turn myTurn) {
+		if (!_nextTransactionInitialized) throw new IllegalStateException("Journal.update() has to be called at least once before Journal.append().");
 
-		prepareOutputLog();
+		prepareOutputJournal();
 		try {
-			_outputLog.sync(new TransactionTimestamp(transaction, executionTime), myTurn);
+			_outputJournal.sync(new TransactionTimestamp(transaction, executionTime), myTurn);
 		} catch (IOException iox) {
-			handleExceptionWhileWriting(iox, _outputLog.file());
+			handleExceptionWhileWriting(iox, _outputJournal.file());
 		}
 	}
 
 
-	private void prepareOutputLog() {
+	private void prepareOutputJournal() {
 		synchronized (_nextTransactionMonitor) {
-			if (!isOutputLogValid()) createNewOutputLog(_nextTransaction);   //TODO Create new output log when size threshold surpassed or age expires.
+			if (!isOutputJournalValid()) createNewOutputJournal(_nextTransaction);   //TODO Create new output log when size threshold surpassed or age expires.
 			_nextTransaction++;  //The transaction count is increased but, because of thread concurrency, it is not guaranteed that this transaction is the _nextTransaction'th transaction, so don't trust that. It is myTurn that will guarantee execution in the correct order.
 		}
 	}
 
 
-	private boolean isOutputLogValid() {
-		return _outputLog != null
-			&& !isOutputLogTooBig() 
-			&& !isOutputLogTooOld();
+	private boolean isOutputJournalValid() {
+		return _outputJournal != null
+			&& !isOutputJournalTooBig() 
+			&& !isOutputJournalTooOld();
 	}
 
 
-	private boolean isOutputLogTooOld() {
-		return _logAgeThresholdInMillis != 0
-			&& _logAgeTimer.millisEllapsed() >= _logAgeThresholdInMillis;
+	private boolean isOutputJournalTooOld() {
+		return _journalAgeThresholdInMillis != 0
+			&& _journalAgeTimer.millisEllapsed() >= _journalAgeThresholdInMillis;
 	}
 
 
-	private boolean isOutputLogTooBig() {
-		return _logSizeThresholdInBytes != 0
-			&& _outputLog.file().length() >= _logSizeThresholdInBytes;
+	private boolean isOutputJournalTooBig() {
+		return _journalSizeThresholdInBytes != 0
+			&& _outputJournal.file().length() >= _journalSizeThresholdInBytes;
 	}
 
 
-	private void createNewOutputLog(long transactionNumber) {
-		File file = transactionLogFile(transactionNumber);
+	private void createNewOutputJournal(long transactionNumber) {
+		File file = transactionJournalFile(transactionNumber);
 		try {
-			if (_outputLog != null) _outputLog.close();
-			_outputLog = new DurableOutputStream(file);
-			_logAgeTimer = StopWatch.start();
+			if (_outputJournal != null) _outputJournal.close();
+			_outputJournal = new DurableOutputStream(file);
+			_journalAgeTimer = StopWatch.start();
 		} catch (IOException iox) {
 			handleExceptionWhileCreating(iox, file);
 		}
@@ -105,10 +106,10 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 
 
 	/** IMPORTANT: This method cannot be called while the log() method is being called in another thread.
-	 * If there are no log files in the directory (when a snapshot is taken and all log files are manually deleted, for example), the initialTransaction parameter in the first call to this method will define what the next transaction number will be. We have to find clearer/simpler semantics.
+	 * If there are no journal files in the directory (when a snapshot is taken and all journal files are manually deleted, for example), the initialTransaction parameter in the first call to this method will define what the next transaction number will be. We have to find clearer/simpler semantics.
 	 */
 	public void update(TransactionSubscriber subscriber, long initialTransactionWanted) throws IOException, ClassNotFoundException {
-		long initialLogFile = findInitialLogFile(initialTransactionWanted);
+		long initialLogFile = findInitialJournalFile(initialTransactionWanted);
 		
 		if (initialLogFile == 0) {
 			initializeNextTransaction(initialTransactionWanted, 1);
@@ -121,10 +122,10 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	}
 
 
-	private long findInitialLogFile(long initialTransactionWanted) {
+	private long findInitialJournalFile(long initialTransactionWanted) {
 		long initialFileCandidate = initialTransactionWanted;
 		while (initialFileCandidate != 0) {   //TODO Optimize.
-			if (transactionLogFile(initialFileCandidate).exists()) break;
+			if (transactionJournalFile(initialFileCandidate).exists()) break;
 			initialFileCandidate--;
 		}
 		return initialFileCandidate;
@@ -147,7 +148,7 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 
 	private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, long initialLogFile)	throws IOException, ClassNotFoundException {
 		long recoveringTransaction = initialLogFile;
-		File logFile = transactionLogFile(recoveringTransaction);
+		File logFile = transactionJournalFile(recoveringTransaction);
 		SimpleInputStream inputLog = new SimpleInputStream(logFile, _loader, _monitor);
 
 		while(true) {
@@ -160,7 +161,7 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 				recoveringTransaction++;
 		
 			} catch (EOFException eof) {
-				File nextFile = transactionLogFile(recoveringTransaction);
+				File nextFile = transactionJournalFile(recoveringTransaction);
 				if (logFile.equals(nextFile)) renameUnusedFile(logFile);  //The first transaction in this log file is incomplete. We need to reuse this file name.
 				logFile = nextFile;
 				if (!logFile.exists()) break;
@@ -171,24 +172,24 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	}
 
 
-	private void renameUnusedFile(File logFile) {
-		logFile.renameTo(new File(logFile.getAbsolutePath() + ".unusedFile" + System.currentTimeMillis()));
+	private void renameUnusedFile(File journalFile) {
+		journalFile.renameTo(new File(journalFile.getAbsolutePath() + ".unusedFile" + System.currentTimeMillis()));
 	}
 
 
-	/** Implementing FileFilter. 0000000000000000000.transactionLog is the format of the transaction log filename. The long number (19 digits) is the number of the next transaction to be written at the moment the file is created. All transactions written to a file, therefore, have a sequence number greater or equal to the number in its filename.
+	/** Implementing FileFilter. 0000000000000000000.transactionJournal is the format of the transaction journal filename. The long number (19 digits) is the number of the next transaction to be written at the moment the file is created. All transactions written to a file, therefore, have a sequence number greater or equal to the number in its filename.
 	 */
 	public boolean accept(File file) {
 		String name = file.getName();
-		if (!name.endsWith(".transactionLog")) return false;
+		if (!name.endsWith(".journal")) return false;
 		if (name.length() != 34) return false;
 		try { number(file); } catch (RuntimeException r) { return false; }
 		return true;
 	}
 
-	private File transactionLogFile(long transaction) {
+	private File transactionJournalFile(long transaction) {
 		String fileName = "0000000000000000000" + transaction;
-		fileName = fileName.substring(fileName.length() - 19) + ".transactionLog";
+		fileName = fileName.substring(fileName.length() - 19) + ".journal";
 		return new File(_directory, fileName);
 	}
 
@@ -197,14 +198,14 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	}
 
 
-	protected void handleExceptionWhileCreating(IOException iox, File logFile) {
-	    _monitor.handleExceptionWhileCreatingLogFile(iox, logFile);
+	protected void handleExceptionWhileCreating(IOException iox, File journal) {
+	    _monitor.handleExceptionWhileCreatingLogFile(iox, journal);
 		hang();
 	}
 
 
-	protected void handleExceptionWhileWriting(IOException iox, File logFile) {
-	    _monitor.handleExceptionWhileWritingLogFile(iox, logFile);
+	protected void handleExceptionWhileWriting(IOException iox, File journal) {
+	    _monitor.handleExceptionWhileWritingLogFile(iox, journal);
 	    hang();
 	}
 
@@ -215,7 +216,7 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 
 
 	public void close() throws IOException {
-		if (_outputLog != null) _outputLog.close();
+		if (_outputJournal != null) _outputJournal.close();
 	}
 
 }

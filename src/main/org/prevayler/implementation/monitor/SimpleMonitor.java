@@ -36,7 +36,7 @@ public class SimpleMonitor implements Monitor {
         System.out
                 .println("\nThe exception above was thrown while trying to create file "
                         + logFile
-                        + " . Prevayler's default behavior is to display this message and block all transactions. You can change this behavior by extending the PersistentLogger class and overriding the method called: handleExceptionWhileCreating(IOException iox, File logFile).");
+                        + " . Prevayler's default behavior is to display this message and block all transactions. You can change this behavior by extending the PersistentJournal class and overriding the method called: handleExceptionWhileCreating(IOException iox, File logFile).");
     }
 
     /**
@@ -48,7 +48,7 @@ public class SimpleMonitor implements Monitor {
         System.out
                 .println("\nThe exception above was thrown while trying to write to file "
                         + logFile
-                        + " . Prevayler's default behavior is to display this message and block all transactions. You can change this behavior by extending the PersistentLogger class and overriding the method called: handleExceptionWhileWriting(IOException iox, File logFile).");
+                        + " . Prevayler's default behavior is to display this message and block all transactions. You can change this behavior by extending the PersistentJournal class and overriding the method called: handleExceptionWhileWriting(IOException iox, File logFile).");
     }
 
     /**
@@ -65,10 +65,10 @@ public class SimpleMonitor implements Monitor {
     }
 
     /**
-     * @see org.prevayler.Monitor#loggerInitialized(java.io.File,
+     * @see org.prevayler.Monitor#journalInitialized(java.io.File,
      *      java.lang.ClassLoader, long, long)
      */
-    public void loggerInitialized(File directory, ClassLoader loader, long sizeThresholdInBytes, long ageThresholdInMillis) {
+    public void journalInitialized(File directory, ClassLoader loader, long sizeThresholdInBytes, long ageThresholdInMillis) {
         System.out.println("Logger initialized on " + directory.getName() + ", with thresholds of " + sizeThresholdInBytes
                 + " bytes, and " + ageThresholdInMillis + " milliseconds.");
         System.out.println("Using classloader: " + loader);

@@ -44,9 +44,9 @@ public class NullMonitor implements Monitor {
     }
 
     /**
-     * @see org.prevayler.Monitor#loggerInitialized(java.io.File, java.lang.ClassLoader, long, long)
+     * @see org.prevayler.Monitor#journalInitialized(java.io.File, java.lang.ClassLoader, long, long)
      */
-    public void loggerInitialized(File directory, ClassLoader loader, long sizeThresholdInBytes, long ageThresholdInMillis) {
+    public void journalInitialized(File directory, ClassLoader loader, long sizeThresholdInBytes, long ageThresholdInMillis) {
     }
 
     /**

@@ -47,13 +47,13 @@ public interface Monitor {
     void ignoringStreamCorruption(Exception exception, File file);
 
     /**
-     * The TransactionLogger was initialized successfully.
+     * The Journal was initialized successfully.
      * 
      * @param directory
      * @param sizeThresholdInBytes
      * @param ageThresholdInMillis
      */
-    void loggerInitialized(File directory, ClassLoader loader, long sizeThresholdInBytes, long ageThresholdInMillis);
+    void journalInitialized(File directory, ClassLoader loader, long sizeThresholdInBytes, long ageThresholdInMillis);
 
     /**
      * Prevayler is reading a transaction log file.

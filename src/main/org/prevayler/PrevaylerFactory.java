@@ -10,9 +10,9 @@ import java.io.Serializable;
 
 import org.prevayler.implementation.PrevaylerImpl;
 import org.prevayler.implementation.clock.MachineClock;
-import org.prevayler.implementation.logging.PersistentLogger;
-import org.prevayler.implementation.logging.TransactionLogger;
-import org.prevayler.implementation.logging.TransientLogger;
+import org.prevayler.implementation.journal.PersistentJournal;
+import org.prevayler.implementation.journal.Journal;
+import org.prevayler.implementation.journal.TransientJournal;
 import org.prevayler.implementation.monitor.SimpleMonitor;
 import org.prevayler.implementation.publishing.CentralPublisher;
 import org.prevayler.implementation.publishing.TransactionPublisher;
@@ -122,6 +122,11 @@ public class PrevaylerFactory {
 		return _clock != null ? _clock : new MachineClock();
 	}
 
+	/**
+	 * Assigns a monitor object to receive events from Prevayler.
+	 * 
+	 * @param monitor the Monitor implementation to use.
+	 */
 	public void configureMonitor(Monitor monitor) {
 	    _monitor = monitor;
 	}
@@ -186,6 +191,29 @@ public class PrevaylerFactory {
 	}
 
 
+	/**
+	 * Configures the size (in bytes) of the journal file.
+	 */
+	public void configureJournalFileSizeThreshold(long sizeInBytes) {
+		_transactionLogSizeThreshold = sizeInBytes;
+	}
+
+
+	/**
+	 * Sets the age (in milliseconds) of the journal file.
+	 */
+	public void configureJournalFileAgeThreshold(long ageInMilliseconds) {
+		_transactionLogAgeThreshold = ageInMilliseconds;
+	}
+
+	private ClassLoader classLoader() {
+	 	return(_classLoader != null ? _classLoader : getClass().getClassLoader());
+	}
+	
+	public void configureClassLoader(ClassLoader classLoader) {
+		_classLoader = classLoader;
+	}
+
 	/** Returns a Prevayler created according to what was defined by calls to the configuration methods above.
 	 * @throws IOException If there is trouble creating the Prevalence Base directory or reading a .transactionLog or .snapshot file.
 	 * @throws ClassNotFoundException If a class of a serialized Object is not found when reading a .transactionLog or .snapshot file.
@@ -215,7 +243,7 @@ public class PrevaylerFactory {
 
 	private TransactionPublisher publisher(SnapshotManager snapshotManager) throws IOException, ClassNotFoundException {
 		if (_remoteServerIpAddress != null) return new ClientPublisher(_remoteServerIpAddress, _remoteServerPort);
-		return new CentralPublisher(clock(), censor(snapshotManager), logger()); 
+		return new CentralPublisher(clock(), censor(snapshotManager), journal()); 
 	}
 
 
@@ -226,10 +254,10 @@ public class PrevaylerFactory {
 	}
 
 
-	private TransactionLogger logger() throws IOException {
+	private Journal journal() throws IOException {
 		return _transientMode
-			? (TransactionLogger)new TransientLogger()
-			: new PersistentLogger(prevalenceBase(), _transactionLogSizeThreshold, _transactionLogAgeThreshold, classLoader(), monitor());		
+			? (Journal)new TransientJournal()
+			: new PersistentJournal(prevalenceBase(), _transactionLogSizeThreshold, _transactionLogAgeThreshold, classLoader(), monitor());		
 	}
 
 
@@ -238,19 +266,4 @@ public class PrevaylerFactory {
 			? _snapshotManager
 			: new JavaSnapshotManager(prevalentSystem(), prevalenceBase(), classLoader());
 	}
-
-
-	public void configureTransactionLogFileSizeThreshold(long sizeInBytes) {
-		_transactionLogSizeThreshold = sizeInBytes;
-	}
-
-	
-	public void configureTransactionLogFileAgeThreshold(long ageInMilliseconds) {
-		_transactionLogAgeThreshold = ageInMilliseconds;
-	}
-
-	private ClassLoader classLoader() {
-	 	return(_classLoader != null ? _classLoader : getClass().getClassLoader());
-	}	public void configureClassLoader(ClassLoader classLoader) {
-		_classLoader = classLoader;
-	}}
+}
