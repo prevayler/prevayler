@@ -5,7 +5,7 @@
 
 package org.prevayler;
 
-import org.prevayler.foundation.FileManager;
+import org.prevayler.implementation.PrevaylerDirectory;
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.monitor.SimpleMonitor;
 import org.prevayler.foundation.serialization.JavaSerializer;
@@ -242,7 +242,7 @@ public class PrevaylerFactory {
 	 * Configures the transaction journal Serializer to be used by the Prevayler created by this factory. Only one Serializer is supported at a time. If you want to change the Serializer of a system in production, you will have to take a snapshot first because the journal files written by the previous Serializer will not be read. 
 	 */
 	public void configureJournalSerializer(String suffix, Serializer serializer) {
-		FileManager.checkValidJournalSuffix(suffix);
+		PrevaylerDirectory.checkValidJournalSuffix(suffix);
 
 		if (_journalSerializer != null) {
 			throw new IllegalStateException("Read the javadoc to this method.");
@@ -272,7 +272,7 @@ public class PrevaylerFactory {
 	 * snapshots as well as for deep-copying the prevalent system whenever necessary.
 	 */
 	public void configureSnapshotSerializer(String suffix, Serializer serializer) {
-		FileManager.checkValidSnapshotSuffix(suffix);
+		PrevaylerDirectory.checkValidSnapshotSuffix(suffix);
 		_snapshotSerializers.put(suffix, serializer);
 		if (_primarySnapshotSuffix == null) {
 			_primarySnapshotSuffix = suffix;
@@ -320,8 +320,8 @@ public class PrevaylerFactory {
 		if (_transientMode) {
 			return (Journal) new TransientJournal();
 		} else {
-			FileManager fileManager = new FileManager(prevalenceDirectory());
-			return new PersistentJournal(fileManager, _journalSizeThreshold, _journalAgeThreshold,
+			PrevaylerDirectory directory = new PrevaylerDirectory(prevalenceDirectory());
+			return new PersistentJournal(directory, _journalSizeThreshold, _journalAgeThreshold,
 					journalSuffix(), journalSerializer(), monitor());
 		}
 	}
@@ -342,11 +342,11 @@ public class PrevaylerFactory {
 		if (_nullSnapshotManager != null) {
 			return _nullSnapshotManager;
 		} else {
-			FileManager fileManager = new FileManager(prevalenceDirectory());
+			PrevaylerDirectory directory = new PrevaylerDirectory(prevalenceDirectory());
 			if (!_snapshotSerializers.isEmpty()) {
-				return new GenericSnapshotManager(_snapshotSerializers, _primarySnapshotSuffix, prevalentSystem(), fileManager);
+				return new GenericSnapshotManager(_snapshotSerializers, _primarySnapshotSuffix, prevalentSystem(), directory);
 			} else {
-				return new GenericSnapshotManager(new JavaSerializer(_classLoader), prevalentSystem(), fileManager);
+				return new GenericSnapshotManager(new JavaSerializer(_classLoader), prevalentSystem(), directory);
 			}
 		}
 	}

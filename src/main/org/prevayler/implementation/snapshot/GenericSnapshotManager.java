@@ -1,8 +1,8 @@
 package org.prevayler.implementation.snapshot;
 
-import org.prevayler.foundation.FileManager;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.implementation.PrevaylerDirectory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,25 +17,25 @@ public class GenericSnapshotManager {
 
 	private Map _strategies;
 	private String _primarySuffix;
-	private FileManager _fileManager;
+	private PrevaylerDirectory _directory;
 	private long _recoveredVersion;
 	private Object _recoveredPrevalentSystem;
 
-	public GenericSnapshotManager(Serializer serializer, Object newPrevalentSystem, FileManager fileManager)
+	public GenericSnapshotManager(Serializer serializer, Object newPrevalentSystem, PrevaylerDirectory directory)
 			throws IOException, ClassNotFoundException {
-		this(serializer, "snapshot", newPrevalentSystem, fileManager);
+		this(serializer, "snapshot", newPrevalentSystem, directory);
 	}
 
-	public GenericSnapshotManager(Serializer serializer, String suffix, Object newPrevalentSystem, FileManager fileManager)
+	public GenericSnapshotManager(Serializer serializer, String suffix, Object newPrevalentSystem, PrevaylerDirectory directory)
 			throws IOException, ClassNotFoundException {
-		this(Collections.singletonMap(suffix, serializer), suffix, newPrevalentSystem, fileManager);
+		this(Collections.singletonMap(suffix, serializer), suffix, newPrevalentSystem, directory);
 	}
 
-	public GenericSnapshotManager(Map strategies, String primarySuffix, Object newPrevalentSystem, FileManager fileManager)
+	public GenericSnapshotManager(Map strategies, String primarySuffix, Object newPrevalentSystem, PrevaylerDirectory directory)
 			throws IOException, ClassNotFoundException {
 		for (Iterator iterator = strategies.keySet().iterator(); iterator.hasNext();) {
 			String suffix = (String) iterator.next();
-			FileManager.checkValidSnapshotSuffix(suffix);
+			PrevaylerDirectory.checkValidSnapshotSuffix(suffix);
 		}
 
 		if (!strategies.containsKey(primarySuffix)) {
@@ -45,11 +45,11 @@ public class GenericSnapshotManager {
 		_strategies = strategies;
 		_primarySuffix = primarySuffix;
 
-		_fileManager = fileManager;
-		_fileManager.produceDirectory();
+		_directory = directory;
+		_directory.produceDirectory();
 
-		File latestSnapshot = _fileManager.latestSnapshot();
-		_recoveredVersion = latestSnapshot == null ? 0 : FileManager.snapshotVersion(latestSnapshot);
+		File latestSnapshot = _directory.latestSnapshot();
+		_recoveredVersion = latestSnapshot == null ? 0 : PrevaylerDirectory.snapshotVersion(latestSnapshot);
 		_recoveredPrevalentSystem = latestSnapshot == null
 				? newPrevalentSystem
 				: readSnapshot(latestSnapshot);
@@ -58,7 +58,7 @@ public class GenericSnapshotManager {
 	GenericSnapshotManager(Object newPrevalentSystem) {
 		_strategies = Collections.singletonMap("snapshot", new JavaSerializer());
 		_primarySuffix = "snapshot";
-		_fileManager = null;
+		_directory = null;
 		_recoveredVersion = 0;
 		_recoveredPrevalentSystem = newPrevalentSystem;
 	}
@@ -77,7 +77,7 @@ public class GenericSnapshotManager {
 	}
 
 	public void writeSnapshot(Object prevalentSystem, long version) throws IOException {
-		File tempFile = _fileManager.createTempFile("snapshot" + version + "temp", "generatingSnapshot");
+		File tempFile = _directory.createTempFile("snapshot" + version + "temp", "generatingSnapshot");
 
 		writeSnapshot(prevalentSystem, tempFile);
 
@@ -98,7 +98,7 @@ public class GenericSnapshotManager {
 
 
 	private File snapshotFile(long version) {
-		return _fileManager.snapshotFile(version, _primarySuffix);
+		return _directory.snapshotFile(version, _primarySuffix);
 	}
 
 	private Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {

@@ -8,12 +8,12 @@ package org.prevayler.implementation.journal;
 import org.prevayler.Transaction;
 import org.prevayler.foundation.DurableInputStream;
 import org.prevayler.foundation.DurableOutputStream;
-import org.prevayler.foundation.FileManager;
 import org.prevayler.foundation.StopWatch;
 import org.prevayler.foundation.Turn;
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.TransactionTimestamp;
+import org.prevayler.implementation.PrevaylerDirectory;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 import java.io.EOFException;
@@ -26,7 +26,7 @@ import java.util.Date;
  */
 public class PersistentJournal implements Journal {
 
-	private final FileManager _fileManager;
+	private final PrevaylerDirectory _directory;
 	private DurableOutputStream _outputJournal;
 
 	private final long _journalSizeThresholdInBytes;
@@ -42,18 +42,18 @@ public class PersistentJournal implements Journal {
 
 
 	/**
-	 * @param fileManager
+	 * @param directory
 	 * @param journalSizeThresholdInBytes Size of the current journal file beyond which it is closed and a new one started. Zero indicates no size threshold. This is useful journal backup purposes.
 	 * @param journalAgeThresholdInMillis Age of the current journal file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful journal backup purposes.
 
 	 */
-	public PersistentJournal(FileManager fileManager, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis,
+	public PersistentJournal(PrevaylerDirectory directory, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis,
 							 String journalSuffix, Serializer journalSerializer, Monitor monitor) throws IOException {
-		FileManager.checkValidJournalSuffix(journalSuffix);
+		PrevaylerDirectory.checkValidJournalSuffix(journalSuffix);
 
 	    _monitor = monitor;
-		_fileManager = fileManager;
-		_fileManager.produceDirectory();
+		_directory = directory;
+		_directory.produceDirectory();
 		_journalSizeThresholdInBytes = journalSizeThresholdInBytes;
 		_journalAgeThresholdInMillis = journalAgeThresholdInMillis;
 		_journalSuffix = journalSuffix;
@@ -120,7 +120,7 @@ public class PersistentJournal implements Journal {
 
 
 	private DurableOutputStream createOutputJournal(long transactionNumber) {
-		File file = _fileManager.journalFile(transactionNumber, _journalSuffix);
+		File file = _directory.journalFile(transactionNumber, _journalSuffix);
 		try {
 			return new DurableOutputStream(file, _journalSerializer);
 		} catch (IOException iox) {
@@ -134,7 +134,7 @@ public class PersistentJournal implements Journal {
 	 * If there are no journal files in the directory (when a snapshot is taken and all journal files are manually deleted, for example), the initialTransaction parameter in the first call to this method will define what the next transaction number will be. We have to find clearer/simpler semantics.
 	 */
 	public void update(TransactionSubscriber subscriber, long initialTransactionWanted) throws IOException, ClassNotFoundException {
-		File initialJournal = _fileManager.findInitialJournalFile(initialTransactionWanted);
+		File initialJournal = _directory.findInitialJournalFile(initialTransactionWanted);
 
 		if (initialJournal == null) {
 			initializeNextTransaction(initialTransactionWanted, 1);
@@ -163,7 +163,7 @@ public class PersistentJournal implements Journal {
 
 	private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, File initialJournal)
 			throws IOException, ClassNotFoundException {
-		long recoveringTransaction = FileManager.journalVersion(initialJournal);
+		long recoveringTransaction = PrevaylerDirectory.journalVersion(initialJournal);
 		File journal = initialJournal;
 		DurableInputStream input = new DurableInputStream(journal, _journalSerializer, _monitor);
 
@@ -184,8 +184,8 @@ public class PersistentJournal implements Journal {
 				recoveringTransaction++;
 		
 			} catch (EOFException eof) {
-				File nextFile = _fileManager.journalFile(recoveringTransaction, _journalSuffix);
-				if (journal.equals(nextFile)) FileManager.renameUnusedFile(journal);  //The first transaction in this log file is incomplete. We need to reuse this file name.
+				File nextFile = _directory.journalFile(recoveringTransaction, _journalSuffix);
+				if (journal.equals(nextFile)) PrevaylerDirectory.renameUnusedFile(journal);  //The first transaction in this log file is incomplete. We need to reuse this file name.
 				journal = nextFile;
 				if (!journal.exists()) break;
 				input = new DurableInputStream(journal, _journalSerializer, _monitor);

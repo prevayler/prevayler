@@ -4,7 +4,6 @@ import org.prevayler.Clock;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
-import org.prevayler.foundation.FileManager;
 import org.prevayler.foundation.serialization.Serializer;
 
 import java.io.BufferedReader;
@@ -65,7 +64,7 @@ public class SkipOldTransactionsTest extends FileIOTest {
 			createPrevayler("NewJournal", new MySerializer(true));
 			fail();
 		} catch (IOException exception) {
-			File journal = new FileManager(_testDirectory).journalFile(1, "OldJournal");
+			File journal = new PrevaylerDirectory(_testDirectory).journalFile(1, "OldJournal");
 			assertEquals("There are transactions needing to be recovered from " + journal +
 					", but only NewJournal files are supported", exception.getMessage());
 		}
