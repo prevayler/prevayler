@@ -37,7 +37,7 @@ public class XmlSnapshotManager extends SnapshotManager {
 
 
 	/**
-	 * @see org.prevayler.implementation.SnapshotManager#readSnapshot(File)
+	 * @see org.prevayler.implementation.SnapshotManager#readSnapshot(InputStream)
 	 */
 	protected Object readSnapshot(InputStream in) throws IOException {
 		Object system = null;
@@ -62,7 +62,7 @@ public class XmlSnapshotManager extends SnapshotManager {
 	}
 
 	/**
-	 * @see org.prevayler.implementation.SnapshotManager#writeSnapshot(Object, File)
+	 * @see org.prevayler.implementation.SnapshotManager#writeSnapshot(Object, OutputStream)
 	 */
 	protected void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
 		StreamResult result = new StreamResult(out);
