@@ -33,7 +33,4 @@ public interface SnapshotManager {
 	 */
     public Object readSnapshot(InputStream in) throws IOException, ClassNotFoundException;
 
-
-//	public Object deepCopy(Object original, String errorMessage);
-
 }
