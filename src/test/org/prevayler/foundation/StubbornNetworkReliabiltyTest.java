@@ -59,10 +59,10 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
         serverService.commenceService(serverNetwork, serverPort);
         client1Receiver.commenceReceiving(clientNetwork1, proxyPort, testSequence.length());
         client2Receiver.commenceReceiving(clientNetwork2, proxyPort, testSequence.length());
-        while ((client1Receiver.getState() != Thread.State.TERMINATED) ||
-              (client2Receiver.getState() != Thread.State.TERMINATED)) {
+        //while ((client1Receiver.getState() != Thread.State.TERMINATED) ||
+        //      (client2Receiver.getState() != Thread.State.TERMINATED)) {
             Thread.sleep(1000);
-        }
+        //}
         client1Receiver.checkReceived(testSequence);
         client2Receiver.checkReceived(testSequence);
         serverService.closeDown();
