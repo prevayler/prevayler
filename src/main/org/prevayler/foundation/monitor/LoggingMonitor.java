@@ -21,11 +21,11 @@ public abstract class LoggingMonitor implements Monitor {
 	}
 
 	public void notify(Class clazz, String message, File file) {
-		if (isInfoEnabled(clazz)) info(clazz, message + "/nFile: " + file);
+		if (isInfoEnabled(clazz)) info(clazz, message + "\nFile: " + file);
 	}
 
 	public void notify(Class clazz, String message, File file, Exception ex) {
-		error(clazz, message + "/nFile: " + file, ex);
+		error(clazz, message + "\nFile: " + file, ex);
     }
 
     protected abstract void info(Class clazz, String Message);
