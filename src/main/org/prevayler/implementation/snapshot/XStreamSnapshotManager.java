@@ -1,7 +1,7 @@
 //Prevayler(TM) - The Free-Software Prevalence Layer.
-//Copyright (C) 2001-2003 Klaus Wuestefeld
+//Copyright (C) 2001-2004 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-//Contributions: Alexandre Nodari
+//Contributions: Jacob Kjome.
 
 package org.prevayler.implementation.snapshot;
 
@@ -21,9 +21,9 @@ import com.thoughtworks.xstream.io.StreamException;
  * (xml-apis.jar from the <a href="http://xml.apache.org/xerces2-j/">Apache Xerces-j</a> project or j2sdk1.4.x).</p>
  *
  * @see org.prevayler.implementation.snapshot.SnapshotManager
- * @see org.prevayler.implementation.snapshot.AbstractBaseSnapshotManager
+ * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager
  */
-public class XStreamSnapshotManager extends AbstractBaseSnapshotManager {
+public class XStreamSnapshotManager extends AbstractSnapshotManager {
 
 	public XStreamSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
 		super(newPrevalentSystem, snapshotDirectoryName);
@@ -63,7 +63,7 @@ public class XStreamSnapshotManager extends AbstractBaseSnapshotManager {
 
 
 	/**
-	 * @see org.prevayler.implementation.snapshot.AbstractBaseSnapshotManager#suffix()
+	 * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager#suffix()
 	 */
 	protected String suffix() {
 		return "xstreamsnapshot";

@@ -1,6 +1,7 @@
 //Prevayler(TM) - The Free-Software Prevalence Layer.
-//Copyright (C) 2001-2003 Klaus Wuestefeld
+//Copyright (C) 2001-2004 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//Contributions: Jacob Kjome.
 
 package org.prevayler.implementation.snapshot;
 
@@ -8,7 +9,7 @@ import java.io.*;
 
 
 /**
- * Interface to implement when Writing/Reading snapshots to/from files in Prevayler
+ * Interface to implement when Writing/Reading snapshots to/from files.
  */
 public interface SnapshotManager {
 
@@ -33,6 +34,6 @@ public interface SnapshotManager {
     public Object readSnapshot(InputStream in) throws IOException, ClassNotFoundException;
 
 
-	public Object deepCopy(Object original, String errorMessage);
+//	public Object deepCopy(Object original, String errorMessage);
 
 }

@@ -1,6 +1,7 @@
 //Prevayler(TM) - The Free-Software Prevalence Layer.
-//Copyright (C) 2001-2003 Klaus Wuestefeld
+//Copyright (C) 2001-2004 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//Contributions: Jacob Kjome.
 
 package org.prevayler.implementation.snapshot;
 
@@ -12,14 +13,14 @@ import org.prevayler.foundation.*;
 /**
  * Abstract base class providing 99% of the functionality to implement a SnapshotManager.  Simply extend this class and implement the abstract writeSnapshot()/readSnapshot() methods.  Make sure to call super(Object, String).
  */
-public abstract class AbstractBaseSnapshotManager implements SnapshotManager {
+public abstract class AbstractSnapshotManager implements SnapshotManager {
 
     private final File _directory;
 	private final Object _recoveredPrevalentSystem;
 	private final long _recoveredVersion;
 
     //this is only here for NullSnapshotManager support
-	AbstractBaseSnapshotManager(Object newPrevalentSystem) {
+	AbstractSnapshotManager(Object newPrevalentSystem) {
 		_directory = null;
         _recoveredVersion = 0;
         _recoveredPrevalentSystem = newPrevalentSystem;
@@ -30,7 +31,7 @@ public abstract class AbstractBaseSnapshotManager implements SnapshotManager {
      * @param newPrevalentSystem The prevalentSystem to serialize/deserialize
      * @param snapshotDirectoryName The path of the directory where the last snapshot file will be read and where the new snapshot files will be created.
 	 */
-	public AbstractBaseSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
+	public AbstractSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
 		_directory = FileManager.produceDirectory(snapshotDirectoryName);
 		_recoveredVersion = latestVersion();
 		_recoveredPrevalentSystem = _recoveredVersion == 0
@@ -128,18 +129,6 @@ public abstract class AbstractBaseSnapshotManager implements SnapshotManager {
 	private long version(String fileName) {
 		if (!fileName.endsWith("." + suffix())) return -1;
 		return Long.parseLong(fileName.substring(0, fileName.indexOf("." + suffix())));    // "00000.snapshot" becomes "00000".
-	}
-
-
-	public Object deepCopy(Object original, String errorMessage) {
-		try {
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			writeSnapshot(original, out);
-			return readSnapshot(new ByteArrayInputStream(out.toByteArray()));
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException(errorMessage);
-		}
 	}
 
 }

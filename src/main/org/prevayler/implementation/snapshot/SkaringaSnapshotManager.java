@@ -1,7 +1,7 @@
 //Prevayler(TM) - The Free-Software Prevalence Layer.
-//Copyright (C) 2001-2003 Klaus Wuestefeld
+//Copyright (C) 2001-2004 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-//Contributions: Alexandre Nodari
+//Contributions: Alexandre Nodari, Jacob Kjome.
 
 package org.prevayler.implementation.snapshot;
 
@@ -31,9 +31,9 @@ import com.skaringa.javaxml.*;
  * everything mentioned above on the classpath.</p>
  *
  * @see org.prevayler.implementation.snapshot.SnapshotManager
- * @see org.prevayler.implementation.snapshot.AbstractBaseSnapshotManager
+ * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager
  */
-public class SkaringaSnapshotManager extends AbstractBaseSnapshotManager {
+public class SkaringaSnapshotManager extends AbstractSnapshotManager {
 
 	public SkaringaSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
 		super(newPrevalentSystem, snapshotDirectoryName);
@@ -73,7 +73,7 @@ public class SkaringaSnapshotManager extends AbstractBaseSnapshotManager {
 
 
 	/**
-	 * @see org.prevayler.implementation.snapshot.AbstractBaseSnapshotManager#suffix()
+	 * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager#suffix()
 	 */
 	protected String suffix() {
 		return "skaringasnapshot";

@@ -1,6 +1,7 @@
 //Prevayler(TM) - The Free-Software Prevalence Layer.
-//Copyright (C) 2001-2003 Klaus Wuestefeld
+//Copyright (C) 2001-2004 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//Contributions: Jacob Kjome.
 
 package org.prevayler.implementation.snapshot;
 
@@ -10,7 +11,7 @@ import java.io.*;
 /**
  * Writes and reads snapshots to/from files using standard Java serialization.
  */
-public class JavaSnapshotManager extends AbstractBaseSnapshotManager {
+public class JavaSnapshotManager extends AbstractSnapshotManager {
 
     //this is only here for NullSnapshotManager support
     JavaSnapshotManager(Object newPrevalentSystem) {
@@ -18,7 +19,7 @@ public class JavaSnapshotManager extends AbstractBaseSnapshotManager {
     }
 
 	/**
-     * @see org.prevayler.implementation.snapshot.AbstractBaseSnapshotManager#AbstractBaseSnapshotManager(Object, String)
+     * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager#AbstractBaseSnapshotManager(Object, String)
 	 */
 	public JavaSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
 		super(newPrevalentSystem, snapshotDirectoryName);
