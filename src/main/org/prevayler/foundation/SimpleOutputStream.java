@@ -12,7 +12,7 @@ import java.io.IOException;
 public class SimpleOutputStream extends DurableOutputStream {
 
 	public SimpleOutputStream(File file) throws IOException {
-		super(file, new JavaSerializationStrategy());
+		super(file, new JavaSerializationStrategy(null));
 	}
 
 }

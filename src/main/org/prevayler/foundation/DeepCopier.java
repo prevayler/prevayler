@@ -9,7 +9,7 @@ public class DeepCopier {
 
 	public static Object deepCopy(Object original, String errorMessage) {
 		try {
-			return new JavaSerializationStrategy().deepCopy(original);
+			return new JavaSerializationStrategy(null).deepCopy(original);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new RuntimeException(errorMessage);

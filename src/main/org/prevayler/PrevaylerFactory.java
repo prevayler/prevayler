@@ -1,7 +1,7 @@
 //Prevayler(TM) - The Free-Software Prevalence Layer.
 //Copyright (C) 2001-2004 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-//Contributions: Aleksey Aristov, Carlos Villela.
+//Contributions: Aleksey Aristov, Carlos Villela, Justin Sampson.
 
 package org.prevayler;
 
@@ -219,16 +219,6 @@ public class PrevaylerFactory {
 	}
 
 
-	private SerializationStrategy journalSerializationStrategy() {
-		if (_journalSerializationStrategy != null) {
-			return _journalSerializationStrategy;
-		} else if (_classLoader != null) {
-			return new JavaSerializationStrategy(_classLoader);
-		} else {
-			return new JavaSerializationStrategy();
-		}
-	}
-	
 	public void configureJournalSerializationStrategy(SerializationStrategy strategy) {
 		_journalSerializationStrategy = strategy;
 	}
@@ -251,8 +241,8 @@ public class PrevaylerFactory {
 	}
 
 
-    private String prevalenceBase() {
-		return _prevalenceDirectory != null ? _prevalenceDirectory : "PrevalenceBase";
+    private String prevalenceDirectory() {
+		return _prevalenceDirectory != null ? _prevalenceDirectory : "Prevalence";
 	}
 
 
@@ -278,20 +268,20 @@ public class PrevaylerFactory {
 	private Journal journal() throws IOException {
 		return _transientMode
 			? (Journal)new TransientJournal()
-			: new PersistentJournal(prevalenceBase(), _journalSizeThreshold, _journalAgeThreshold, journalSerializationStrategy(), monitor());
+			: new PersistentJournal(prevalenceDirectory(), _journalSizeThreshold, _journalAgeThreshold, journalSerializationStrategy(), monitor());
+	}
+
+	
+	private SerializationStrategy journalSerializationStrategy() {
+		if (_journalSerializationStrategy != null) return _journalSerializationStrategy;
+		return new JavaSerializationStrategy(_classLoader);
 	}
 
 
 	private SnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
-		if (_snapshotManager != null) {
-			return _snapshotManager;
-		} else if (_snapshotSerializationStrategy != null) {
-			return new GenericSnapshotManager(_snapshotSerializationStrategy, prevalentSystem(), prevalenceBase());
-		} else if (_classLoader != null) {
-			return new GenericSnapshotManager(new JavaSerializationStrategy(_classLoader), prevalentSystem(), prevalenceBase());
-		} else {
-			return new GenericSnapshotManager(new JavaSerializationStrategy(), prevalentSystem(), prevalenceBase());
-		}
+		if (_snapshotManager != null) return _snapshotManager;
+		if (_snapshotSerializationStrategy != null) return new GenericSnapshotManager(_snapshotSerializationStrategy, prevalentSystem(), prevalenceDirectory());
+		return new GenericSnapshotManager(new JavaSerializationStrategy(_classLoader), prevalentSystem(), prevalenceDirectory());
 	}
 
 	

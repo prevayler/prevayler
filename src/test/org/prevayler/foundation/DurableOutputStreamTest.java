@@ -19,7 +19,7 @@ public class DurableOutputStreamTest extends FileIOTest {
 
 			File file = new File(_testDirectory, "stream" + i + ".bin");
 
-			DurableOutputStream out = new DurableOutputStream(file, new JavaSerializationStrategy());
+			DurableOutputStream out = new DurableOutputStream(file, new JavaSerializationStrategy(null));
 
 			Turn myTurn = Turn.first();
 			out.sync("first", myTurn);
@@ -48,7 +48,7 @@ public class DurableOutputStreamTest extends FileIOTest {
 		for (int i = 0; i < 10 /*5000*/; i++) {
 //            System.out.println("i=" + i);
 			File file = new File(_testDirectory, "stream" + i + ".bin");
-			DurableOutputStream out = new DurableOutputStream(file, new JavaSerializationStrategy());
+			DurableOutputStream out = new DurableOutputStream(file, new JavaSerializationStrategy(null));
 
 			Turn one = Turn.first();
 			Turn two = one.next();
