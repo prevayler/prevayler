@@ -5,6 +5,7 @@
 package org.prevayler.implementation;
 
 import java.io.IOException;
+import java.io.File;
 
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
@@ -77,7 +78,7 @@ public class ReplicationTest extends PrevalenceTest {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configureReplicationClient("localhost", PrevaylerFactory.DEFAULT_REPLICATION_PORT + portOffset);
 		factory.configurePrevalentSystem(new AppendingSystem());
-		factory.configurePrevalenceBase(_testDirectory + "\\client");
+		factory.configurePrevalenceBase(_testDirectory + File.separator + "client");
 		_client = factory.create();
 	}
 
@@ -86,7 +87,7 @@ public class ReplicationTest extends PrevalenceTest {
 		factory.configureReplicationClient("localhost", PrevaylerFactory.DEFAULT_REPLICATION_PORT + remoteServerPortOffset);
 		factory.configureReplicationServer(PrevaylerFactory.DEFAULT_REPLICATION_PORT + serverPortOffset);
 		factory.configurePrevalentSystem(new AppendingSystem());
-		factory.configurePrevalenceBase(_testDirectory + "\\clientWithServer");
+		factory.configurePrevalenceBase(_testDirectory + File.separator + "clientWithServer");
 		_clientWithServer = factory.create();
 	}
 
