@@ -11,7 +11,7 @@ import org.prevayler.Prevayler;
 public abstract class ClockedTransaction extends TransactionWithQuery {
     static final long serialVersionUID = -7058059425197071976L;
 
-    private Date timeOfExecution;
+    Date timeOfExecution;
 
     protected final Object executeAndQuery(Object prevalentSystem) throws Exception {
         ClockedSystem clockedSystem = (ClockedSystem) prevalentSystem;
