@@ -21,7 +21,7 @@ public class BankFrame extends JFrame {
 		setContentPane(desktop);
 		new AllAccountsFrame(prevayler, desktop);
 		desktop.add(new RobustnessFrame());
-		
+		desktop.add(new MatchFrame(prevayler));
 		setBounds(40,40,550,420);
 		setVisible(true);
 
@@ -29,21 +29,23 @@ public class BankFrame extends JFrame {
 	}
 
 
-	private void refreshClock() {
-		Thread clockRefresher = new Thread() {
-			public void run() {
-				while (true) {
-					DateFormat format = new SimpleDateFormat("hh:mm:ss");
-					setTitle("Bank - " + format.format(_prevayler.clock().time()));
-					Cool.sleep(500);
-				}
-			}
-		};
-		clockRefresher.setDaemon(true);
-		clockRefresher.start();
-	}
+    private void refreshClock() {
+        Thread clockRefresher = new Thread() {
+            public void run() {
+                DateFormat format = DateFormat.getTimeInstance();
+                while (true) {
+                    StringBuffer sb = new StringBuffer(18);
+                    sb.append("Bank - ");
+                    setTitle(format.format(_prevayler.clock().time(), sb, new java.text.FieldPosition(DateFormat.SECOND_FIELD)).toString());
+                    Cool.sleep(1000);
+                }
+            }
+        };
+        clockRefresher.setDaemon(true);
+        clockRefresher.start();
+    }
 
-	
+
 	private static class RobustnessFrame extends JInternalFrame {
 		RobustnessFrame() {
 			super("Robustness Reminder", false, false, false, true);
