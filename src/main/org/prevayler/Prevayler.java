@@ -5,7 +5,7 @@
 package org.prevayler;
 
 /**
- * Provides transparent persistence for all business objects in a prevalent system. All transactions to the system must be represented as Transaction objects and must be executed using Prevayler.execute(Transaction).
+ * Implementations of this interface can provide transparent persistence and replication to all business objects in a prevalent system. All transactions to the system must be represented as Transaction objects and must be executed using Prevayler.execute(Transaction).
  * See the demo applications in org.prevayler.demos for examples.
  */
 public interface Prevayler {
@@ -16,7 +16,8 @@ public interface Prevayler {
 	public Object prevalentSystem();
 
 	/**
-	 * Logs the given transaction for crash or shutdown recovery and executes it on the underlying prevalent system.
+	 * Executes the given transaction on the underlying prevalentSystem(). All implementations of this interface must synchronize on the prevalentSystem() to execute the transaction. It is therefore guaranteed that only one transaction is executed at a time. This means the prevalentSystem() does not have to worry about concurrency issues among transactions.
+	 * Implementations of this interface can log the given transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the underlying prevalent system.
 	 */
 	public void execute(Transaction transaction);
 

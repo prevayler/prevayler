@@ -11,12 +11,10 @@ import org.prevayler.implementation.log.TransactionLogger;
 
 
 /**
- * Provides transparent persistence and replication for native Java business objects.
+ * Provides transparent persistence for native Java business objects in a prevalent system.
  * Provides Atomicity, Isolation and Durability for Consistent Transactions executed via the execute(Transaction) method.
  * Enables regular Java object queries to run 3 to 4 orders of magnitude faster than using a database via JDBC.
- * Take a look at the demo applications included with the Prevayler distribution for examples.<br>
- * <br>
- * A SnapshotPrevayler can also be configured for running demos or automated business test scripts only in RAM, orders of magnitude faster than with persistence turned on. See the constructors.
+ * Take a look at the demo applications included with the Prevayler distribution for examples.
  */
 public class SnapshotPrevayler implements Prevayler {
 
@@ -27,7 +25,7 @@ public class SnapshotPrevayler implements Prevayler {
 
     protected final TransactionPublisher _publisher;
     private final TransactionSubscriber _subscriber = subscriber();
-    private boolean _ignoreExceptions;
+	private boolean _ignoreRuntimeExceptions;
 
 
     /** Creates a SnapshotPrevayler that will use the current directory to read and write its snapshot files.
@@ -56,10 +54,9 @@ public class SnapshotPrevayler implements Prevayler {
 
         _publisher = transactionPublisher;
         
-        // ignore exceptions during startup 
-        _ignoreExceptions = true;
+        _ignoreRuntimeExceptions = true;     //During old transaction recovery (rolling forward), RuntimeExceptions are ignored because they were already thrown and handled during the first transaction execution.
         _publisher.addSubscriber(_subscriber, _systemVersion + 1);
-        _ignoreExceptions = false;
+        _ignoreRuntimeExceptions = false;
     }
 
 
@@ -72,11 +69,11 @@ public class SnapshotPrevayler implements Prevayler {
 
     /** Produces a complete serialized image of the underlying PrevalentSystem.
      * This will accelerate future system startups. Taking a snapshot once a day is enough for most applications.
-     * Subsequent calls to execute(Transaction) will be Publisherd until the snapshot is taken.
+     * SnapshotPrevayler synchronizes on prevalentSystem() in order to take the snapshot. This means that transaction execution will be blocked while the snapshot is taken.
      * @throws IOException if there is trouble writing to the snapshot file.
      */
     public void takeSnapshot() throws IOException {
-        synchronized (_subscriber) {
+        synchronized (_prevalentSystem) {
             _snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
         }
     }
@@ -91,18 +88,19 @@ public class SnapshotPrevayler implements Prevayler {
 
     private TransactionSubscriber subscriber() {
         return new TransactionSubscriber() {
-            public synchronized void receive(Transaction transaction) {
-                _systemVersion++;
-                if (_ignoreExceptions) {
+
+            public void receive(Transaction transaction) {
+            	synchronized (_prevalentSystem) {
+	                _systemVersion++;
                     try {
                         transaction.executeOn(_prevalentSystem);
-                    } catch (Throwable e) {
-                        e.printStackTrace();
+                    } catch (RuntimeException rx) {
+                    	if (!_ignoreRuntimeExceptions) throw rx;
+                        rx.printStackTrace();
                     }
-                } else {
-                    transaction.executeOn(_prevalentSystem);
-                }
+	            }
             }
+
         };
     }
 
