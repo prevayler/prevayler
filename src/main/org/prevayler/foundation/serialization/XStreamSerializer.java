@@ -22,7 +22,9 @@ import java.io.OutputStreamWriter;
  * to the classpath. XStream has the concept of a
  * <a href="http://xstream.codehaus.org/javadoc/com/thoughtworks/xstream/io/HierarchicalStreamDriver.html">HierarchicalStreamDriver</a>
  * and the default implementation for XStream is the highly performant XppDriver.  However, XStream will fall back to the DomDriver if XPP3 is
- * not found in the classpath making the XPP3 library entirely optional.</p>
+ * not found in the classpath making the XPP3 library entirely optional... well, not quite.  See <a href="http://jira.codehaus.org/browse/XSTR-71">XSTR-71</a>.
+ * The current decision in that issue forces XPP3 to be a required runtime dependency when using XStream unless one specifically configures another driver, such as
+ * the DomDriver.</p>
  */
 public class XStreamSerializer implements Serializer {
 
