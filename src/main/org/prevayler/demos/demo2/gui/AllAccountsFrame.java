@@ -1,6 +1,6 @@
 package org.prevayler.demos.demo2.gui;
 
-import org.prevayler.Prevayler;
+import org.prevayler.util.QueryPrevayler;
 import org.prevayler.demos.demo2.business.*;
 import org.prevayler.demos.demo2.business.transactions.*;
 import javax.swing.*;
@@ -10,12 +10,12 @@ import java.awt.event.*;
 
 class AllAccountsFrame extends JInternalFrame implements BankListener, AccountListener {
 
-	private final Prevayler prevayler;
+	private final QueryPrevayler _prevayler;
 	private final JList accountList;
 
-	AllAccountsFrame(Prevayler prevayler, Container container) {
-    		super("All Accounts", true);  //true means resizable.
-		this.prevayler = prevayler;
+	AllAccountsFrame(QueryPrevayler prevayler, Container container) {
+    	super("All Accounts", true);  //true means resizable.
+		_prevayler = prevayler;
 		
 		accountList = new JList();
 		accountList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -47,7 +47,7 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
 	}
 	
 	private Bank bank() {
-		return (Bank)prevayler.prevalentSystem();
+		return (Bank)_prevayler.prevalentSystem();
 	}
 	
 	public void accountCreated(Account a) { //Implements BankListener.
@@ -81,7 +81,7 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			new NewAccountFrame(prevayler, getDesktopPane());
+			new NewAccountFrame(_prevayler, getDesktopPane());
 		}
 		
 	}
@@ -116,7 +116,7 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
 		}
 		
 		void action(Account account) {
-			new AccountEditFrame(account, prevayler, getDesktopPane());
+			new AccountEditFrame(account, _prevayler, getDesktopPane());
 		}
 	}
 
@@ -130,7 +130,7 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
 			int option = JOptionPane.showConfirmDialog(null, "Delete selected account?", "Account Deletion", JOptionPane.YES_NO_OPTION);
 			if (option != JOptionPane.YES_OPTION) return;
 			
-			(new AccountDeletion(account)).executeUsing(prevayler);
+			_prevayler.execute(new AccountDeletion(account));
 		}
 		  	
 	}

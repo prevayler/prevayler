@@ -1,13 +1,13 @@
 package org.prevayler.demos.demo2.gui;
 
-import org.prevayler.*;
+import org.prevayler.util.QueryPrevayler;
 import org.prevayler.demos.demo2.business.transactions.AccountCreation;
 import javax.swing.*;
 import java.awt.Container;
 
 class NewAccountFrame extends AccountFrame {
 	
-	NewAccountFrame(Prevayler prevayler, Container container) {
+	NewAccountFrame(QueryPrevayler prevayler, Container container) {
 		super("New Account", prevayler, container);
 
 		setBounds(50,50,240,114);
@@ -24,7 +24,7 @@ class NewAccountFrame extends AccountFrame {
 		}
 
 		protected void action() throws Exception {
-			(new AccountCreation(holderText())).executeUsing(prevayler);
+			_prevayler.execute(new AccountCreation(holderText()));
 			dispose();
 		}
 	}

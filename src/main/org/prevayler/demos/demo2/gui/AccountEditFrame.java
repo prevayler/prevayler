@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import org.prevayler.Prevayler;
+import org.prevayler.util.QueryPrevayler;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.AccountListener;
 import org.prevayler.demos.demo2.business.transactions.Deposit;
@@ -25,7 +25,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
 	private JTextField balanceField;
 	private JList historyList;
 	
-	AccountEditFrame(Account account, Prevayler prevayler, Container container) {
+	AccountEditFrame(Account account, QueryPrevayler prevayler, Container container) {
 		super("Account " + account.numberString(), prevayler, container);
 
 		this.account = account;
@@ -68,7 +68,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
 		public void action() throws Exception {
             Number amount = enterAmount("Deposit");
             if (amount == null) return;
-            (new Deposit(account, amount.longValue())).executeUsing(prevayler);
+			_prevayler.execute(new Deposit(account, amount.longValue()));
 		}
 	}
 
@@ -81,7 +81,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
         public void action() throws Exception {
             Number amount = enterAmount("Withdrawal");
             if (amount == null) return;
-            (new Withdrawal(account, amount.longValue())).executeUsing(prevayler);
+			_prevayler.execute(new Withdrawal(account, amount.longValue()));
 		}
 	}
 
@@ -98,7 +98,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
 		}
 
 		public void action() {
-            new TransferFrame(account, prevayler, getDesktopPane());
+            new TransferFrame(account, _prevayler, getDesktopPane());
 		}
 	}
 
@@ -112,7 +112,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
 		public void focusLost(FocusEvent e) {
 			if (holderText().equals(account.holder())) return;
 			try {
-				(new HolderChange(account, holderText())).executeUsing(prevayler);
+				_prevayler.execute(new HolderChange(account, holderText()));
 			} catch (Exception exception) {
 				RobustAction.display(exception);
 			}

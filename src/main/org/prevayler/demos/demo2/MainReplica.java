@@ -5,7 +5,6 @@
 package org.prevayler.demos.demo2;
 
 import org.prevayler.demos.demo2.business.Bank;
-import org.prevayler.demos.demo2.gui.BankFrame;
 import org.prevayler.implementation.*;
 import org.prevayler.implementation.replica.RemotePublisher;
 
@@ -34,7 +33,7 @@ public class MainReplica {
 		TransactionPublisher publisher = new RemotePublisher(args[0]);
 		SnapshotPrevayler prevayler = new SnapshotPrevayler(new Bank(), new SnapshotManager("demo2AcidReplica"), publisher);
 	
-		new BankFrame(prevayler);
+		Main.startGui(prevayler);
 	}
 
 

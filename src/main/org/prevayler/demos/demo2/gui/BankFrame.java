@@ -6,15 +6,15 @@ import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 
-import org.prevayler.Prevayler;
+import org.prevayler.util.QueryPrevayler;
 
 public class BankFrame extends JFrame {
 
-	private final Prevayler prevayler;
+	private final QueryPrevayler _prevayler;
 
-	public BankFrame(Prevayler prevayler) {
+	public BankFrame(QueryPrevayler prevayler) {
     		super("Bank");
-    		this.prevayler = prevayler;
+    		_prevayler = prevayler;
     		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
