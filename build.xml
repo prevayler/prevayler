@@ -200,7 +200,16 @@
 
 <!-- ==================== Dist Target ===================================== -->
 
-    <target name="dist" depends="jar,javadoc"
+    <target name="-distvalidcheck" depends="test" unless="skip.distvalidcheck" >
+        <!-- Add any failure checks which should abort the build if true here.
+             Don't forget to add a depends target here and generate a failure
+             property to test for in any added <fail> task.  To skip failure
+             checks, supply skip.distvalidcheck=true in build.properties -->
+        <fail if="junit.tests.failed">
+        Distribution creation aborted because the JUnit tests failed.
+        </fail>
+    </target>
+    <target name="dist" depends="-distvalidcheck, jar, javadoc"
             description="Create binary distribution" >
         <!-- Generate ZIP distribution -->
         <zip destfile="${targetdir}/${dist.name}.zip">
@@ -225,7 +234,7 @@
         <mkdir dir="${cachedir.test}" />
         <delete dir="${testreportdir}" />
         <mkdir dir="${testreportdir}" />
-        <junit dir="${cachedir.test}" printsummary="yes" haltonfailure="no" fork="yes" >
+        <junit dir="${cachedir.test}" printsummary="yes" haltonfailure="no" failureproperty="junit.tests.failed" fork="yes" >
             <classpath refid="build.run.classpath" />
             <sysproperty
                 key="${log4j.system.variable.name}"
