@@ -68,7 +68,7 @@ public class PersistentJournal implements FileFilter, Journal {
 
 	private void prepareOutputJournal() {
 		synchronized (_nextTransactionMonitor) {
-			if (!isOutputJournalValid()) createNewOutputJournal(_nextTransaction);   //TODO Create new output log when size threshold surpassed or age expires.
+			if (!isOutputJournalValid()) createNewOutputJournal(_nextTransaction);
 			_nextTransaction++;  //The transaction count is increased but, because of thread concurrency, it is not guaranteed that this thread will journal the _nextTransaction'th transaction, so don't trust that. It is myTurn that will guarantee execution in the correct order.
 		}
 	}
