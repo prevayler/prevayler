@@ -9,25 +9,33 @@ import java.util.Date;
 
 import org.prevayler.Clock;
 import org.prevayler.Transaction;
+import org.prevayler.implementation.clock.PausableClock;
 import org.prevayler.implementation.log.TransactionLogger;
 
 public class CentralPublisher extends AbstractPublisher {
 
 	private final TransactionCensor _censor;
 	private final TransactionLogger _logger;
+	private final PausableClock _pausableClock;
 
 	public CentralPublisher(Clock clock, TransactionCensor censor, TransactionLogger logger) {
-		super(clock);
+		super(new PausableClock(clock));
+		_pausableClock = (PausableClock)_clock; //This is just to avoid casting the inherited _clock every time.
+		
 		_censor = censor;
 		_logger = logger;
 	}
 
 	public synchronized void publish(Transaction transaction) {
-		Date executionTime = _clock.time();
-		_censor.approve(transaction, executionTime);
-		_logger.log(transaction, executionTime);
-		//TODO Advance the public clock according to executionTime.
-		notifySubscribers(transaction, executionTime);
+		_pausableClock.pause();
+		try {
+			Date executionTime = _pausableClock.time();
+			_censor.approve(transaction, executionTime);
+			_logger.log(transaction, executionTime);
+			notifySubscribers(transaction, executionTime);
+		} finally {
+			_pausableClock.resume();
+		}
 	}
 
 	public synchronized void addSubscriber(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
