@@ -4,6 +4,16 @@
     <name>Prevayler</name>
     <id>prevayler</id>
     <currentVersion>2.00.000dev2</currentVersion>
+    <package>org.prevayler</package>
+    <logo>http://prevayler.org/imagens/logoprevayler.gif</logo>
+    <organization>
+        <name>Klaus Wuestefeld</name>
+    </organization>
+    <inceptionYear>2002</inceptionYear>
+
+    <siteAddress>codehaus.org</siteAddress>
+    <siteDirectory>/www/codehaus.org/prevayler</siteDirectory>
+    <distributionDirectory>/www/dist.codehaus.org/prevayler/distributions</distributionDirectory>
 
     <dependencies>
         <dependency>
