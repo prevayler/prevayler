@@ -69,7 +69,7 @@ public class ReplicationTest extends PrevalenceTest {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configureReplicationServer(PrevaylerFactory.DEFAULT_REPLICATION_PORT + portOffset);
 		factory.configurePrevalentSystem(new AppendingSystem());
-		factory.configurePrevalenceBase(_testDirectory + "\\server");
+		factory.configurePrevalenceBase(_testDirectory + File.separator + "server");
 		factory.configureTransientMode(true);
 		_server = factory.create();
 	}
