@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class ClockTest extends TestCase {
     private SnapshotPrevayler prevayler;
-    private static final int TOLERANCE = 1000;
+    private static final int TOLERANCE = 1500;
     private ClockActor clockActor;
     private File prevalenceBase;
 

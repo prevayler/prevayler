@@ -41,21 +41,6 @@ public class SimpleInputStream {
 	}
 
 
-	/** Returns the number of objects left in the stream and closes it.
-	 */
-	public long objectCount() throws IOException, ClassNotFoundException {
-		long result = 0;
-		while (true) {
-			try {
-				readObject();
-				result++;
-			} catch (EOFException eof) {
-				return result;
-			}
-		}
-	}
-
-
 	public void close() throws IOException {
 		_delegate.close();
 		_EOF = true;

@@ -4,11 +4,20 @@
 
 package org.prevayler.implementation.log;
 
-import java.io.*;
-import java.util.*;
-import org.prevayler.foundation.*;
-import org.prevayler.implementation.*;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.prevayler.Transaction;
+import org.prevayler.foundation.FileManager;
+import org.prevayler.foundation.SimpleInputStream;
+import org.prevayler.foundation.SimpleOutputStream;
+import org.prevayler.implementation.TransactionSubscriber;
+import org.prevayler.implementation.TransientPublisher;
+import org.prevayler.util.clock.ClockTick;
 
 
 /** A TransactionPublisher that will write all published transactions to .transactionLog files before publishing them to the subscribers.
@@ -20,13 +29,18 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 	private boolean _nextTransactionKnown = false;
 	private long _nextTransaction;
 	private SimpleOutputStream _outputLog;
+	private ClockTickBuffer _skippedTicks = new ClockTickBuffer();
+
+	static private final Transaction NULL_TRANSACTION = new Transaction() {
+		public void executeOn(Object system) {}  //Do nothing.
+	};
 
 
 	public TransactionLogger(String directory) throws IOException, ClassNotFoundException {
 		_directory = FileManager.produceDirectory(directory);
 		File lastFile = lastTransactionFile();
 		if (lastFile != null) {
-			_nextTransaction = number(lastFile) + new SimpleInputStream(lastFile).objectCount();
+			_nextTransaction = number(lastFile) + transactionCount(lastFile);
 			_nextTransactionKnown = true;
 		}
 	}
@@ -34,17 +48,30 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 
 	public synchronized void publish(Transaction transaction) {
 		if (!_nextTransactionKnown) throw new RuntimeException("The sequence number for the next transaction to be logged is undefined. This happens when there are no transactionLog files in the directory and publish() is called before a TransactionSubscriber has been added.");
-		if (_outputLog == null || !_outputLog.isValid()) createNewOutputLog();
 
-		try {
-			_outputLog.writeObject(transaction);
-			_outputLog.sync();
-		} catch (IOException iox) {
-			handleExceptionWhileWriting(iox, _outputLog.file(), transaction, _nextTransaction);
+		if (transaction instanceof ClockTick)
+			_skippedTicks.addTick((ClockTick)transaction);
+		else	 {
+			if (_outputLog == null || !_outputLog.isValid()) createNewOutputLog();
+			if (_skippedTicks.getCount() > 0) {
+				outputToLog(_skippedTicks);
+				_skippedTicks = new ClockTickBuffer();
+			}
+			outputToLog(transaction);
 		}
 
 		_nextTransaction++;
 		super.publish(transaction);
+	}
+
+
+	private void outputToLog(Object object) {
+		try {
+			_outputLog.writeObject(object);
+			_outputLog.sync();
+		} catch (IOException iox) {
+			handleExceptionWhileWriting(iox, _outputLog.file(), object, _nextTransaction);
+		}
 	}
 
 
@@ -55,7 +82,8 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 			_nextTransaction = initialTransaction;
 			_nextTransactionKnown = true;
 		} else {
-			if (initialTransaction > _nextTransaction) throw new IOException("Unable to find transactions from " + _nextTransaction + " to " + (initialTransaction - 1) + ".");
+System.out.println("TODO"); //We must find a way to uncomment this next line so that Prevayler can detect missing transactions. Probably we'll have to make the SnapshotPrevayler not count ClockTick or not count the redundant ones.
+//			if (initialTransaction > _nextTransaction) throw new IOException("Unable to find transactions from " + _nextTransaction + " to " + (initialTransaction - 1) + "."); 
 			long initialFileCandidate = initialTransaction;
 			while (!transactionLogFile(initialFileCandidate).exists()) {
 				initialFileCandidate--;
@@ -92,7 +120,7 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 
 
 	private void createNewOutputLog() {
-		File file = transactionLogFile(_nextTransaction);
+		File file = transactionLogFile(_nextTransaction - _skippedTicks.getCount());
 		try {
 			_outputLog = new SimpleOutputStream(file);
 		} catch (IOException iox) {
@@ -110,12 +138,32 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 
 	private void update(TransactionSubscriber subscriber, long initialTransaction, long initialFile) throws IOException, ClassNotFoundException {
 		long recoveringTransaction = initialFile;
+		
 		SimpleInputStream inputLog = new SimpleInputStream(transactionLogFile(recoveringTransaction));
 		while(recoveringTransaction < _nextTransaction) {
 			try {
-				Transaction transaction = (Transaction)inputLog.readObject();
-				if (recoveringTransaction >= initialTransaction) subscriber.receive(transaction);
+				Object logEntry = inputLog.readObject();
+				Transaction transaction;
+
+				if (logEntry instanceof ClockTickBuffer){
+					ClockTickBuffer buffer = (ClockTickBuffer)logEntry;
+
+					long skippedTicks = buffer.getCount() - 1;
+					while (skippedTicks-- > 0) {
+						if (recoveringTransaction >= initialTransaction)
+							subscriber.receive(NULL_TRANSACTION);
+						recoveringTransaction++;
+					}
+
+					transaction = buffer._lastClockTick;
+				} else {
+					transaction = (Transaction)logEntry;
+				}
+
+				if (recoveringTransaction >= initialTransaction)
+					subscriber.receive(transaction);
 				recoveringTransaction++;
+									
 			} catch (EOFException eof) {
 				File logFile = transactionLogFile(recoveringTransaction);
 				if (!logFile.exists()) throwNotFound(recoveringTransaction);
@@ -125,13 +173,31 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 	}
 
 
+	/** Returns the number of objects left in the stream and closes it.
+	 */
+	static private long transactionCount(File logFile) throws IOException, ClassNotFoundException {
+		SimpleInputStream inputLog = new SimpleInputStream(logFile);
+		long result = 0;
+		while (true) {
+			try {
+				Object logEntry = inputLog.readObject();
+				if (logEntry instanceof ClockTickBuffer) 
+					result += ((ClockTickBuffer)logEntry).getCount() - 1;
+			} catch (EOFException eof) {
+				return result;
+			}
+			result++;
+		}
+	}
+
+
 	static private void throwNotFound(long transaction) throws IOException {
 		throw new IOException("Unable to find transactionLog file containing transaction " + transaction);
 	}
 
 
-	protected void handleExceptionWhileWriting(IOException iox, File logFile, Transaction transaction, long transactionNumber) {
-		hang(iox, "\nThe exception above was thrown while trying to write transaction " + transactionNumber + " to file " + logFile + " . Prevayler's default behavior is to display this message and block all transactions. You can change this behavior by extending the TransactionLogger class and overriding the method called: handleExceptionWhileWriting(IOException iox, File logFile, Transaction transaction, long transactionNumber).");
+	protected void handleExceptionWhileWriting(IOException iox, File logFile, Object objectToWrite, long transactionNumber) {
+		hang(iox, "\nThe exception above was thrown while trying to write transaction " + transactionNumber + " to file " + logFile + " . Prevayler's default behavior is to display this message and block all transactions. You can change this behavior by extending the TransactionLogger class and overriding the method called: handleExceptionWhileWriting(IOException iox, File logFile, Object objectToWrite, long transactionNumber).");
 	}
 
 

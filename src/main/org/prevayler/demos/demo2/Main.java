@@ -18,7 +18,11 @@ public class Main {
 
 		new BankFrame(prevayler);
 
-		out("One snapshot per day is more than enough for most applications because the transactionLog recovery rate is in the order of 6000 transactions per second. For demoing purposes, though, a snapshot will be taken every 20 seconds...");
+		out("\nOne snapshot per day is more than enough for most applications"
+			+ "\n  because the transactionLog recovery rate is in the order of"
+			+ "\n  6000 transactions per second. For demoing purposes, though, a"
+			+ "\n  snapshot will be taken every 20 seconds...");
+
 		while (true) {
 			Thread.sleep(1000 * 20);
 			prevayler.takeSnapshot();

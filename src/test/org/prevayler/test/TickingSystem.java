@@ -4,15 +4,21 @@
 
 package org.prevayler.test;
 
-import junit.textui.TestRunner;
+import java.util.Date;
 
+import org.prevayler.util.clock.ClockedSystem;
 
-/** The main class for testing Prevayler.
+/** A simple system that only keeps track of the time.
 */
-public class Main {
+class TickingSystem extends ClockedSystem implements java.io.Serializable {
 
-	static public void main(String[] args) throws Exception {
-		TestRunner.run(AllTestSuite.suite()); 
+	private Date _time = new Date(0L);
+
+	public void setTime(long newTime) {
+		_time = new Date(newTime);
 	}
 
+	public Date time() {
+		return _time;
+	}
 }
