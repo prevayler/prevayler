@@ -3,33 +3,52 @@ package org.prevayler.implementation.journal;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-public class ChunkedInputStream {
+public class Chunking {
 
 	private static final String ASCII = "US-ASCII";
+	private static final byte[] CRLF = new byte[] {'\r', '\n'};
 	private static final String SIZE = "0|[1-9A-F][0-9A-F]{0,6}|[1-7][0-9A-F]{7}";
 	private static final String TOKEN = "[^\u0000-\u0020()<>@,;:\\\\\"/\\[\\]?={}\u007F-\uFFFF]+";
 	private static final String HEADER = "(" + SIZE + ")(;" + TOKEN + "=" + TOKEN + ")*\r\n";
 	private static final Pattern TOKEN_PATTERN = Pattern.compile(TOKEN);
 	private static final Pattern HEADER_PATTERN = Pattern.compile(HEADER);
 
-	static boolean validToken(String token) {
+	private static boolean validToken(String token) {
 		return TOKEN_PATTERN.matcher(token).matches();
 	}
 
-	private InputStream stream;
-	private Map parameters;
-
-	public ChunkedInputStream(InputStream stream) {
-		this.stream = stream;
+	public static void writeChunk(OutputStream stream, Chunk chunk) throws IOException {
+		stream.write(Integer.toHexString(chunk.getBytes().length).toUpperCase().getBytes(ASCII));
+		Iterator iterator = chunk.getParameters().entrySet().iterator();
+		while (iterator.hasNext()) {
+			Map.Entry entry = (Map.Entry) iterator.next();
+			String name = (String) entry.getKey();
+			String value = (String) entry.getValue();
+			if (!validToken(name)) {
+				throw new IOException("Invalid parameter name '" + name + "'");
+			}
+			if (!validToken(value)) {
+				throw new IOException("Invalid parameter value '" + value + "'");
+			}
+			stream.write(';');
+			stream.write(name.getBytes(ASCII));
+			stream.write('=');
+			stream.write(value.getBytes(ASCII));
+		}
+		stream.write(CRLF);
+		stream.write(chunk.getBytes());
+		stream.write(CRLF);
 	}
 
-	public byte[] readChunk() throws IOException {
-		String header = readLine();
+	public static Chunk readChunk(InputStream stream) throws IOException {
+		String header = readLine(stream);
 
 		if (header == null) {
 			return null;
@@ -43,17 +62,17 @@ public class ChunkedInputStream {
 
 		int size = Integer.parseInt(tokenizer.nextToken(), 16);
 
-		parameters = new LinkedHashMap();
+		Map parameters = new LinkedHashMap();
 		while (tokenizer.hasMoreTokens()) {
 			String name = tokenizer.nextToken();
 			String value = tokenizer.nextToken();
 			parameters.put(name, value);
 		}
 
-		byte[] chunk = new byte[size];
+		byte[] bytes = new byte[size];
 		int total = 0;
 		while (total < size) {
-			int read = stream.read(chunk, total, size - total);
+			int read = stream.read(bytes, total, size - total);
 			if (read == -1) {
 				throw new IOException("Unexpected end of stream in chunk data");
 			}
@@ -64,10 +83,10 @@ public class ChunkedInputStream {
 			throw new IOException("Chunk trailer corrupted");
 		}
 
-		return chunk;
+		return new Chunk(bytes, parameters);
 	}
 
-	private String readLine() throws IOException {
+	private static String readLine(InputStream stream) throws IOException {
 		ByteArrayOutputStream header = new ByteArrayOutputStream();
 		while (true) {
 			int b = stream.read();
@@ -83,10 +102,6 @@ public class ChunkedInputStream {
 				return header.toString(ASCII);
 			}
 		}
-	}
-
-	public Map getParameters() {
-		return parameters;
 	}
 
 }

@@ -5,40 +5,35 @@ import junit.framework.TestCase;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class ChunkingTest extends TestCase {
 
 	public void testChunkedOutput() throws IOException {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		ChunkedOutputStream chunked = new ChunkedOutputStream(bytes);
-		chunked.writeChunk("abcdefghijklmno".getBytes("US-ASCII"));
+		Chunking.writeChunk(bytes, new Chunk("abcdefghijklmno".getBytes("US-ASCII")));
 		assertEquals("F\r\nabcdefghijklmno\r\n", bytes.toString("US-ASCII"));
 	}
 
 	public void testChunkedInput() throws IOException {
 		ByteArrayInputStream bytes = new ByteArrayInputStream("F\r\nabcdefghijklmno\r\n".getBytes());
-		ChunkedInputStream chunked = new ChunkedInputStream(bytes);
-		assertEquals("abcdefghijklmno", new String(chunked.readChunk(), "US-ASCII"));
+		assertEquals("abcdefghijklmno", new String(Chunking.readChunk(bytes).getBytes(), "US-ASCII"));
 	}
 
 	public void testMultipleChunks() throws IOException {
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		ChunkedOutputStream output = new ChunkedOutputStream(bytes);
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
 
-		output.writeChunk("foo".getBytes("US-ASCII"));
-		output.writeChunk("bar".getBytes("US-ASCII"));
-		output.writeChunk("".getBytes("US-ASCII"));
-		output.writeChunk("zot".getBytes("US-ASCII"));
+		Chunking.writeChunk(output, new Chunk("foo".getBytes("US-ASCII")));
+		Chunking.writeChunk(output, new Chunk("bar".getBytes("US-ASCII")));
+		Chunking.writeChunk(output, new Chunk("".getBytes("US-ASCII")));
+		Chunking.writeChunk(output, new Chunk("zot".getBytes("US-ASCII")));
 
-		ChunkedInputStream input = new ChunkedInputStream(new ByteArrayInputStream(bytes.toByteArray()));
+		ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
 
-		assertEquals("foo", new String(input.readChunk(), "US-ASCII"));
-		assertEquals("bar", new String(input.readChunk(), "US-ASCII"));
-		assertEquals("", new String(input.readChunk(), "US-ASCII"));
-		assertEquals("zot", new String(input.readChunk(), "US-ASCII"));
-		assertNull(input.readChunk());
+		assertEquals("foo", new String(Chunking.readChunk(input).getBytes(), "US-ASCII"));
+		assertEquals("bar", new String(Chunking.readChunk(input).getBytes(), "US-ASCII"));
+		assertEquals("", new String(Chunking.readChunk(input).getBytes(), "US-ASCII"));
+		assertEquals("zot", new String(Chunking.readChunk(input).getBytes(), "US-ASCII"));
+		assertNull(Chunking.readChunk(input));
 	}
 
 	public void testMalformed() throws IOException {
@@ -55,9 +50,8 @@ public class ChunkingTest extends TestCase {
 
 	private void checkMalformed(String input, String message) throws IOException {
 		ByteArrayInputStream bytes = new ByteArrayInputStream(input.getBytes("US-ASCII"));
-		ChunkedInputStream chunked = new ChunkedInputStream(bytes);
 		try {
-			chunked.readChunk();
+			Chunking.readChunk(bytes);
 			fail("Should have thrown IOException");
 		} catch (IOException exception) {
 			assertEquals(message, exception.getMessage());
@@ -65,20 +59,22 @@ public class ChunkingTest extends TestCase {
 	}
 
 	public void testParameters() throws IOException {
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		ChunkedOutputStream output = new ChunkedOutputStream(bytes);
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
 
-		Map parameters = new LinkedHashMap();
-		parameters.put("one", "uno");
-		parameters.put("two", "dos");
-		output.writeChunk("foo".getBytes("US-ASCII"), parameters);
+		Chunk chunkOut = new Chunk("foo".getBytes("US-ASCII"));
+		chunkOut.setParameter("one", "uno");
+		chunkOut.setParameter("two", "dos");
+		Chunking.writeChunk(output, chunkOut);
 
-		assertEquals("3;one=uno;two=dos\r\nfoo\r\n", bytes.toString("US-ASCII"));
+		assertEquals("3;one=uno;two=dos\r\nfoo\r\n", output.toString("US-ASCII"));
 
-		ChunkedInputStream input = new ChunkedInputStream(new ByteArrayInputStream(bytes.toByteArray()));
+		ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
 
-		assertEquals("foo", new String(input.readChunk(), "US-ASCII"));
-		assertEquals(parameters, input.getParameters());
+		Chunk chunkIn = Chunking.readChunk(input);
+
+		assertEquals("foo", new String(chunkIn.getBytes(), "US-ASCII"));
+		assertEquals("uno", chunkIn.getParameter("one"));
+		assertEquals("dos", chunkIn.getParameter("two"));
 	}
 
 }
