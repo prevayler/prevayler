@@ -131,7 +131,7 @@
             <equals arg1="${ant.java.version}" arg2="1.3" />
         </condition>
         <condition property="javadoc.jdk.href" value="http://java.sun.com/j2se/1.4/docs/api/">
-            <equals arg1="${ant.zojava.version}" arg2="1.4" />
+            <equals arg1="${ant.java.version}" arg2="1.4" />
         </condition>
         <condition property="javadoc.jdk.href" value="http://java.sun.com/j2se/1.5/docs/api/">
             <equals arg1="${ant.java.version}" arg2="1.5" />
