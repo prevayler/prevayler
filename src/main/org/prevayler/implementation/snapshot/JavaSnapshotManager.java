@@ -7,12 +7,16 @@ package org.prevayler.implementation.snapshot;
 
 import java.io.*;
 
+import org.prevayler.foundation.ObjectInputStreamWithClassLoader;
+
 
 /**
  * Writes and reads snapshots to/from files using standard Java serialization.
  */
 public class JavaSnapshotManager extends AbstractSnapshotManager {
 
+	private ClassLoader _loader;
+	
     //this is only here for NullSnapshotManager support
     JavaSnapshotManager(Object newPrevalentSystem) {
         nullInit(newPrevalentSystem);
@@ -22,7 +26,8 @@ public class JavaSnapshotManager extends AbstractSnapshotManager {
      * @param newPrevalentSystem The prevalentSystem to serialize/deserialize
      * @param snapshotDirectoryName The path of the directory where the last snapshot file will be read and where the new snapshot files will be created.
 	 */
-	public JavaSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
+	public JavaSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName, ClassLoader loader) throws ClassNotFoundException, IOException {
+		_loader = loader;
 		init(newPrevalentSystem, snapshotDirectoryName);
 	}
 
@@ -44,7 +49,7 @@ public class JavaSnapshotManager extends AbstractSnapshotManager {
 	 * @see org.prevayler.implementation.snapshot.SnapshotManager#readSnapshot(InputStream)
 	 */
     public Object readSnapshot(InputStream in) throws IOException, ClassNotFoundException {
-        ObjectInputStream ois = new ObjectInputStream(in);
+        ObjectInputStream ois = new ObjectInputStreamWithClassLoader(in, _loader);
         try {
             return ois.readObject();
         } finally {

@@ -12,11 +12,10 @@ public class SimpleInputStream {
 	private final ObjectInputStream _delegate;
 	private boolean _EOF = false;
 
-
-	public SimpleInputStream(File file) throws IOException {
-		System.out.println("Reading " + file + "...");
+	public SimpleInputStream(File file, ClassLoader loader) throws IOException {
+		System.out.println("Reading " + file + " using ClassLoader " + loader.toString() + " ...");
 		_file = file;
-		_delegate = new ObjectInputStream(new FileInputStream(file));
+		_delegate = new ObjectInputStreamWithClassLoader(new FileInputStream(file), loader);
 	}
 
 

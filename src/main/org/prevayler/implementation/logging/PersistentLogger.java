@@ -34,17 +34,20 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	private long _nextTransaction;
 	private final Object _nextTransactionMonitor = new Object();
 	private boolean _nextTransactionInitialized = false;
-
+	private ClassLoader _loader;
+	
 
 	/**
 	 * @param directory Where transactionLog files will be read and written.
 	 * @param logSizeThresholdInBytes Size of the current transactionLog file beyond which it is closed and a new one started. Zero indicates no size threshold. This is useful transactionLog backup purposes.
 	 * @param logAgeThresholdInMillis Age of the current transactionLog file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful transactionLog backup purposes.
+	 * @param loader Class loader to be used while deserializing transaction log
 	 */
-	public PersistentLogger(String directory, long logSizeThresholdInBytes, long logAgeThresholdInMillis) throws IOException {
+	public PersistentLogger(String directory, long logSizeThresholdInBytes, long logAgeThresholdInMillis, ClassLoader loader) throws IOException {
 		_directory = FileManager.produceDirectory(directory);
 		_logSizeThresholdInBytes = logSizeThresholdInBytes;
 		_logAgeThresholdInMillis = logAgeThresholdInMillis;
+		_loader = loader;
 	}
 
 
@@ -143,7 +146,7 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, long initialLogFile)	throws IOException, ClassNotFoundException {
 		long recoveringTransaction = initialLogFile;
 		File logFile = transactionLogFile(recoveringTransaction);
-		SimpleInputStream inputLog = new SimpleInputStream(logFile);
+		SimpleInputStream inputLog = new SimpleInputStream(logFile, _loader);
 
 		while(true) {
 			try {
@@ -159,7 +162,7 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 				if (logFile.equals(nextFile)) renameUnusedFile(logFile);  //The first transaction in this log file is incomplete. We need to reuse this file name.
 				logFile = nextFile;
 				if (!logFile.exists()) break;
-				inputLog = new SimpleInputStream(logFile);
+				inputLog = new SimpleInputStream(logFile, _loader);
 			}
 		}
 		return recoveringTransaction;

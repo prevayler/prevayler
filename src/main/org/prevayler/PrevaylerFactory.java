@@ -48,6 +48,8 @@ public class PrevaylerFactory {
 	private int _remoteServerPort;
 	public static final int DEFAULT_REPLICATION_PORT = 8756;
 
+	private ClassLoader _classLoader;
+	
 
 	/** Creates a Prevayler that will use a directory called "PrevalenceBase" under the current directory to read and write its .snapshot and .transactionLog files.
  	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
@@ -217,14 +219,14 @@ public class PrevaylerFactory {
 	private TransactionLogger logger() throws IOException {
 		return _transientMode
 			? (TransactionLogger)new TransientLogger()
-			: new PersistentLogger(prevalenceBase(), _transactionLogSizeThreshold, _transactionLogAgeThreshold);		
+			: new PersistentLogger(prevalenceBase(), _transactionLogSizeThreshold, _transactionLogAgeThreshold, classLoader());		
 	}
 
 
 	private SnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
 		return _snapshotManager != null
 			? _snapshotManager
-			: new JavaSnapshotManager(prevalentSystem(), prevalenceBase());
+			: new JavaSnapshotManager(prevalentSystem(), prevalenceBase(), classLoader());
 	}
 
 
@@ -237,4 +239,11 @@ public class PrevaylerFactory {
 		_transactionLogAgeThreshold = ageInMilliseconds;
 	}
 
+	public void configureClassLoader(ClassLoader classLoader) {
+		_classLoader = classLoader;
+	}
+	
+	private ClassLoader classLoader() {
+	 	return(_classLoader != null ? _classLoader : getClass().getClassLoader());
+	}
 }
