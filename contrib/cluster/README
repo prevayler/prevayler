@@ -1,0 +1,28 @@
+EXPERIMENTAL CODE! Spike for implementing a clustered homogenous (i.e. without a master) Prevayler using JavaGroups
+For example, the clock is *not* properly synchronized across the cluster
+This code will be thrown away when the real implementation is created
+
+Hi y'all,
+
+We (me and the guys at Lecando) have spiked a clustered Prevayler implementation using JavaGroups. It's quite ugly
+and doesn't work very well, but it illustrates one way of doing it. It's a homogenous cluster, i.e. there is no master.
+
+The strategy is:
+ - When a transaction is executed a distributed lock is acquired, the transaction is then multicasted/broadcasted to
+ the entire cluster.
+ - Each node logs it's transactions to disk individually.
+ - When a new node joins a cluster the lock is once again acquired and the entire system is sent to the new node from
+ one of the other nodes. The old transaction logs of that system is moved aside and a snapshot is take of the system.
+ - If there are no existing nodes the system is restarted from the transaction logs on disk.
+ - All communication is using IP multicast so the network usage could, in theory, be optimal and could scale to any
+ number of cluster nodes.
+ - Transaction execution time *is* sent as part of the transaction, but it is not currently used.
+ - It's implemented as a decorator to an existing Prevayler, a design that seemed to be working at first, but when
+ doing it for real it should probably be implemented as a TransactionPublisher.
+
+It's in contrib/cluster.
+
+Have a look, be inspired, but *don't* use it for real! You've been warned... :-)
+
+Cheers,
+Jon
