@@ -10,31 +10,15 @@ import java.util.Date;
 
 import org.prevayler.TransactionWithQuery;
 
-/**
- * Adds a task to the system.
- * 
- * @author Carlos Villela
- * @since Mar 7, 2004
- */
+// START SNIPPET: addtask
 public class AddTask implements TransactionWithQuery {
 
     private final Task task;
 
-    /**
-     * Creates a new AddTask Transaction.
-     * 
-     * @param task
-     *            the task to add
-     */
     public AddTask(String description, int priority) {
         this.task = new Task(description, priority);
     }
 
-    /**
-     * @see org.prevayler.TransactionWithQuery#executeAndQuery(java.lang.Object,
-     *      java.util.Date)
-     */
-    // START SNIPPET: execute
     public Object executeAndQuery(Object prevalentSystem, Date executionTime) throws Exception {
 
         TaskList system = (TaskList) prevalentSystem;
@@ -42,6 +26,5 @@ public class AddTask implements TransactionWithQuery {
 
         return task;
     }
-    // END SNIPPET: execute
-
 }
+// END SNIPPET: addtask
