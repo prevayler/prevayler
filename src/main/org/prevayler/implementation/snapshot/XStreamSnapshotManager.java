@@ -6,15 +6,10 @@
 package org.prevayler.implementation.snapshot;
 
 import com.thoughtworks.xstream.XStream;
-import org.prevayler.foundation.serialization.Deserializer;
-import org.prevayler.foundation.serialization.SerializationStrategy;
-import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.serialization.XStreamSerializationStrategy;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 
 /**
@@ -36,12 +31,10 @@ import java.io.OutputStream;
  * @see org.prevayler.implementation.snapshot.SnapshotManager
  * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager
  */
-public class XStreamSnapshotManager extends AbstractSnapshotManager {
+public class XStreamSnapshotManager extends GenericSnapshotManager {
 
     public static final String SUFFIX = "xstreamsnapshot";
 
-    private SerializationStrategy _strategy;
-    
     /**
      * Creates a new XStreamSnapshotManager using a default XStream instance.
      * 
@@ -70,29 +63,7 @@ public class XStreamSnapshotManager extends AbstractSnapshotManager {
      * @throws IOException if there's a problem reading the latest snapshot.
 	 */
 	public XStreamSnapshotManager(XStream xstream, Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
-		_strategy = new XStreamSerializationStrategy(xstream);
-		init(newPrevalentSystem, snapshotDirectoryName);
-	}
-
-    /**
-	 * @see org.prevayler.implementation.snapshot.SnapshotManager#writeSnapshot(Object, OutputStream)
-	 */
-	public void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
-		Serializer serializer = _strategy.createSerializer(out);
-		try {
-			serializer.writeObject(prevalentSystem);
-		} finally {
-			serializer.flush();
-		}
-	}
-
-
-	/**
-	 * @see org.prevayler.implementation.snapshot.SnapshotManager#readSnapshot(InputStream)
-	 */
-	public Object readSnapshot(InputStream in) throws IOException, ClassNotFoundException {
-		Deserializer deserializer = _strategy.createDeserializer(in);
-		return deserializer.readObject();
+		super(new XStreamSerializationStrategy(xstream), newPrevalentSystem, snapshotDirectoryName);
 	}
 
 

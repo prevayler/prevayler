@@ -26,6 +26,7 @@ import org.prevayler.implementation.replication.ServerListener;
 import org.prevayler.implementation.snapshot.JavaSnapshotManager;
 import org.prevayler.implementation.snapshot.NullSnapshotManager;
 import org.prevayler.implementation.snapshot.SnapshotManager;
+import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
 /** Provides easy access to all Prevayler configurations and implementations available in this distribution.
  * Static methods are also provided as short-cuts for the most common configurations. 
@@ -54,6 +55,7 @@ public class PrevaylerFactory {
 	private ClassLoader _classLoader;
 
 	private SerializationStrategy _journalSerializationStrategy;
+	private SerializationStrategy _snapshotSerializationStrategy;
 
 	public static final int DEFAULT_REPLICATION_PORT = 8756;
 
@@ -217,18 +219,26 @@ public class PrevaylerFactory {
 
 	public void configureClassLoader(ClassLoader classLoader) {
 		_classLoader = classLoader;
-		if (_journalSerializationStrategy == null) {
-			_journalSerializationStrategy = new JavaSerializationStrategy(_classLoader);
-		}
 	}
 
 
 	private SerializationStrategy journalSerializationStrategy() {
-		return _journalSerializationStrategy != null ? _journalSerializationStrategy : new JavaSerializationStrategy();
+		if (_journalSerializationStrategy != null) {
+			return _journalSerializationStrategy;
+		} else if (_classLoader != null) {
+			return new JavaSerializationStrategy(_classLoader);
+		} else {
+			return new JavaSerializationStrategy();
+		}
 	}
 	
 	public void configureJournalSerializationStrategy(SerializationStrategy strategy) {
 		_journalSerializationStrategy = strategy;
+	}
+	
+	
+	public void configureSnapshotSerializationStrategy(SerializationStrategy strategy) {
+		_snapshotSerializationStrategy = strategy;
 	}
 
 
@@ -276,9 +286,15 @@ public class PrevaylerFactory {
 
 
 	private SnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
-		return _snapshotManager != null
-			? _snapshotManager
-			: new JavaSnapshotManager(prevalentSystem(), prevalenceBase(), classLoader());
+		if (_snapshotManager != null) {
+			return _snapshotManager;
+		} else if (_snapshotSerializationStrategy != null) {
+			return new GenericSnapshotManager(_snapshotSerializationStrategy, prevalentSystem(), prevalenceBase());
+		} else if (_classLoader != null) {
+			return new GenericSnapshotManager(new JavaSerializationStrategy(_classLoader), prevalentSystem(), prevalenceBase());
+		} else {
+			return new GenericSnapshotManager(new JavaSerializationStrategy(), prevalentSystem(), prevalenceBase());
+		}
 	}
 
 	
