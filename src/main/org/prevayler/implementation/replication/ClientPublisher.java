@@ -4,17 +4,19 @@
 
 package org.prevayler.implementation.replication;
 
+import org.prevayler.Clock;
+import org.prevayler.implementation.Capsule;
+import org.prevayler.implementation.TransactionCapsule;
+import org.prevayler.implementation.TransactionTimestamp;
+import org.prevayler.implementation.clock.BrokenClock;
+import org.prevayler.implementation.publishing.TransactionPublisher;
+import org.prevayler.implementation.publishing.TransactionSubscriber;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Date;
-
-import org.prevayler.Clock;
-import org.prevayler.Transaction;
-import org.prevayler.implementation.clock.BrokenClock;
-import org.prevayler.implementation.publishing.TransactionPublisher;
-import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 
 /** Reserved for future implementation.
@@ -26,8 +28,8 @@ public class ClientPublisher implements TransactionPublisher {
 	private TransactionSubscriber _subscriber;
 	private final Object _upToDateMonitor = new Object();
 
-	private Transaction _myTransaction;
-	private final Object _myTransactionMonitor = new Object();
+	private Capsule _myCapsule;
+	private final Object _myCapsuleMonitor = new Object();
 	private RuntimeException _myTransactionRuntimeException;
 	private Error _myTransactionError;
 
@@ -77,16 +79,16 @@ public class ClientPublisher implements TransactionPublisher {
 	//TODO Remove synchronized allowing multiple transactions to be sent at a time.
 	public synchronized void publish(Capsule capsule) {  
 		if (_subscriber == null) throw new IllegalStateException("To publish a transaction, this ClientPublisher needs a registered subscriber.");
-		synchronized (_myTransactionMonitor) {
-			_myTransaction = transaction;
+		synchronized (_myCapsuleMonitor) {
+			_myCapsule = capsule;
 			
 			try {
-				_toServer.writeObject(transaction);
+				_toServer.writeObject(capsule);
 			} catch (IOException iox) {
 				iox.printStackTrace();
 				while (true) Thread.yield(); // TODO Reconnect to the server.
 			}
-			wait(_myTransactionMonitor);
+			wait(_myCapsuleMonitor);
 			
 			throwEventualErrors();
 		}
@@ -128,13 +130,16 @@ public class ClientPublisher implements TransactionPublisher {
 
 		if (transactionCandidate.equals(ServerConnection.CLOCK_TICK)) return;
 
+		long systemVersion = _fromServer.readLong();
+
 		if (transactionCandidate.equals(ServerConnection.REMOTE_TRANSACTION)) {
-			_subscriber.receive(_myTransaction, timestamp);
+			_subscriber.receive(new TransactionTimestamp(_myCapsule, systemVersion, timestamp));
 			notifyMyTransactionMonitor();
 			return;
 		}
 
-		_subscriber.receive((Transaction)transactionCandidate, timestamp);
+		TransactionCapsule capsule = (TransactionCapsule) transactionCandidate;
+		_subscriber.receive(new TransactionTimestamp(capsule, systemVersion, timestamp));
 	}
 
 
@@ -148,8 +153,8 @@ public class ClientPublisher implements TransactionPublisher {
 
 
 	private void notifyMyTransactionMonitor() {
-		synchronized (_myTransactionMonitor) {
-			_myTransactionMonitor.notify();
+		synchronized (_myCapsuleMonitor) {
+			_myCapsuleMonitor.notify();
 		}
 	}
 
