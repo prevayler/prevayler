@@ -36,7 +36,7 @@ public class POBox extends Thread implements TransactionSubscriber {
 	public void run() {
 		while (true) {
 			TransactionTimestamp notification = waitForNotification();
-			_delegate.receive(notification.transaction, notification.timestamp);
+			_delegate.receive(notification.transaction(), notification.timestamp());
 		}
 	}
 

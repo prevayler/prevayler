@@ -13,7 +13,7 @@ class TransactionWithQueryExecuter implements Transaction {
 
     static final long serialVersionUID = 0L;
 
-	TransactionWithQuery _delegate;
+	private TransactionWithQuery _delegate;
 
 	private transient Object _result;
 	private transient Exception _exception;

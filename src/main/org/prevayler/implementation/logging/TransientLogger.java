@@ -46,7 +46,7 @@ public class TransientLogger implements TransactionLogger {
 
 		while (i != log.size()) {
 			TransactionTimestamp entry = (TransactionTimestamp)log.get(i);
-			subscriber.receive(entry.transaction, entry.timestamp);
+			subscriber.receive(entry.transaction(), entry.timestamp());
 			i++;
 		}
 	}

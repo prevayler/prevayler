@@ -111,7 +111,7 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 				TransactionTimestamp entry = (TransactionTimestamp)inputLog.readObject();
 		
 				if (recoveringTransaction >= initialTransaction)
-					subscriber.receive(entry.transaction, entry.timestamp);
+					subscriber.receive(entry.transaction(), entry.timestamp());
 		
 				recoveringTransaction++;
 		
