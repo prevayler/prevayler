@@ -1,16 +1,18 @@
-
-(under construction  :)
-
-
 ==================
 PREVAYLER (TM)
 ==================
 The Free Software Prevalence Layer for Java.
 
 
-Documentation Index
+Prevalence is the simplest, fastest and most transparent architecture for business object persistence, load-balancing and fault-tolerance.
 
- - Prevalence Layers in General
+Prevayler is the original free software Prevalence layer implementation for Java.
+
+
+Documentation Index
+=======================
+
+ - Prevalence in General
     - Features
     ...
 
@@ -21,15 +23,14 @@ Documentation Index
 
 Contact Information
 =======================
-If you have any trouble or doubt [running Prevayler (...link)], please join our mailing lists:
-(...link)
+All Prevayler resources are available from www.prevayler.org.
 
+If you have any trouble or doubt running Prevayler, please join our DiscussionLists.
 
-Ideas, contributions and suggestions on how to simplify the project are welcome too.
+Ideas, contributions and suggestions are welcome too.
 
 Thanks,
-The Prevayler Team.
-http://www.prevayler.org
+The PrevaylerTeam.
 
 
 ------------------
