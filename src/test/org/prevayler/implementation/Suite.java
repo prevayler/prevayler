@@ -13,6 +13,7 @@ import org.prevayler.implementation.snapshot.SkaringaSnapshotManagerTest;
 import org.prevayler.implementation.snapshot.GenericSnapshotManagerTest;
 import org.prevayler.foundation.DurableOutputStreamTest;
 import org.prevayler.foundation.serialization.XStreamSerializationTest;
+import org.prevayler.foundation.serialization.GZIPSerializationTest;
 
 public class Suite extends TestCase {
 	public static Test suite() {
@@ -33,6 +34,7 @@ public class Suite extends TestCase {
 		suite.addTestSuite(JournalSerializationStrategyTest.class);
 		suite.addTestSuite(SnapshotSerializationStrategyTest.class);
 		suite.addTestSuite(XStreamSerializationTest.class);
+		suite.addTestSuite(GZIPSerializationTest.class);
 		return suite;
 	}
 }
