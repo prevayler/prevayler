@@ -4,15 +4,14 @@
 
 package org.prevayler.implementation.replication;
 
+import java.io.IOException;
+
 import org.prevayler.foundation.network.ObjectSocket;
 import org.prevayler.implementation.Capsule;
-import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.POBox;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
-
-import java.io.IOException;
 
 
 /** Reserved for future implementation.
@@ -51,7 +50,9 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 			
 			sendClockTicks();
 			while (true) publishRemoteTransaction();
-		} catch (Exception ex) {
+		} catch (IOException ex) {
+			close();
+		} catch (ClassNotFoundException ex) {
 			close();
 		}
 	}
@@ -84,7 +85,7 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 
 
 	void publishRemoteTransaction() throws IOException, ClassNotFoundException {
-		_remoteCapsule = (TransactionCapsule)_remote.readObject();
+		_remoteCapsule = (Capsule)_remote.readObject();
 		try {
 			_publisher.publish(_remoteCapsule);
 		} catch (RuntimeException rx) {

@@ -6,6 +6,7 @@
 package org.prevayler.implementation.publishing;
 
 import org.prevayler.foundation.Cool;
+import org.prevayler.foundation.Daemon;
 import org.prevayler.implementation.TransactionTimestamp;
 
 import java.util.LinkedList;
@@ -13,8 +14,8 @@ import java.util.LinkedList;
 
 /** An assyncronous buffer for transaction subscribers. 
  */
-public class POBox extends Thread implements TransactionSubscriber {
-	
+public class POBox implements TransactionSubscriber, Runnable {
+
 	private final LinkedList _queue = new LinkedList();
 	private final TransactionSubscriber _delegate;
 	
@@ -23,8 +24,7 @@ public class POBox extends Thread implements TransactionSubscriber {
 
 	public POBox(TransactionSubscriber delegate) {
 		_delegate = delegate;
-		setDaemon(true);
-		start();
+		new Daemon(this);
 	}
 
 

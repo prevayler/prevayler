@@ -5,9 +5,12 @@
 package org.prevayler.foundation;
 
 
-public abstract class Daemon extends Thread {
-	{
+public class Daemon extends Thread {
+
+	public Daemon(Runnable runnable) {
+		super(runnable);
 		setDaemon(true);
 		start();
 	}
+
 }
