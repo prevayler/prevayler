@@ -16,7 +16,6 @@ import org.prevayler.foundation.network.NetworkImpl;
 import org.prevayler.foundation.network.NewNetworkMock;
 import org.prevayler.foundation.network.ObjectReceiver;
 import org.prevayler.foundation.network.ObjectReceiverMock;
-import org.prevayler.foundation.network.Service;
 import org.prevayler.foundation.network.ServiceMock;
 
 

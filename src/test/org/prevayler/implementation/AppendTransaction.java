@@ -17,8 +17,7 @@ public class AppendTransaction implements Transaction {
 	}
 
 	public void executeOn(Object prevalentSystem, Date executionTime) {
-		StringBuffer system = (StringBuffer) prevalentSystem;
-		system.append(toAdd);
+		((StringBuffer)prevalentSystem).append(toAdd);
 	}
 
 }

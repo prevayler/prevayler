@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.prevayler.foundation.Cool;
-
 
 public class BaseNetworkMock {
     protected final Map _serverSocketByPort = new HashMap();
