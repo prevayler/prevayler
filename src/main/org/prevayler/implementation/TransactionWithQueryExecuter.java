@@ -9,17 +9,9 @@ import java.util.Date;
 import org.prevayler.*;
 
 
-public class TransactionWithQueryExecuter implements Transaction {
+class TransactionWithQueryExecuter implements Transaction {
 
-	public static Object strip(Transaction possiblyWithQueryExecuter) {
-		if (possiblyWithQueryExecuter instanceof TransactionWithQueryExecuter) {
-			return ((TransactionWithQueryExecuter) possiblyWithQueryExecuter)._delegate;
-		} else {
-			return possiblyWithQueryExecuter;
-		}
-	}
-
-    static final long serialVersionUID = 0L;
+	static final long serialVersionUID = 0L;
 
 	private TransactionWithQuery _delegate;
 
