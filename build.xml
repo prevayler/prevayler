@@ -165,19 +165,20 @@
     <target name="javadoc" depends="compile.core"
             description="Create Javadoc API documentation" >
         <delete dir="${docdir}/api" />
-        <mkdir dir="${docdir}/api" />
+        <mkdir dir="${docdir}/api/beginners" />
+        <mkdir dir="${docdir}/api/advanced" />
         <!-- beginners -->
         <antcall target="-javadoc.sub">
             <param name="jdocincludes"   value="org/prevayler" />
             <param name="jdocsourcepath" value="${srcdir.main}" />
-            <param name="jdocdestdir"    value="${docdir}/api" />
+            <param name="jdocdestdir"    value="${docdir}/api/beginners" />
         </antcall>
         <!-- advanced -->
-        <!--<antcall target="-javadoc.sub">
+        <antcall target="-javadoc.sub">
             <param name="jdocincludes"   value="org/prevayler, org/prevayler/implementation/**" />
             <param name="jdocsourcepath" value="${srcdir.main}" />
             <param name="jdocdestdir"    value="${docdir}/api/advanced" />
-        </antcall>-->
+        </antcall>
     </target>
 
 <!-- ==================== Jar Targets ================================== -->
@@ -214,10 +215,10 @@
     <target name="dist" depends="-distvalidcheck, jar, javadoc, -download.dist"
             description="Create binary distribution" >
         <copy todir="${libdir}" file="${skaringa.jar}"/>
-        <copy todir="${libdir}" file="${log4j.jar}"/>
+        <!--<copy todir="${libdir}" file="${log4j.jar}"/>
         <copy todir="${libdir}" file="${commons-logging.jar}"/>
         <copy todir="${libdir}" file="${xml-apis.jar}"/>
-        <copy todir="${libdir}" file="${xalan.jar}"/>
+        <copy todir="${libdir}" file="${xalan.jar}"/>-->
         <!-- Generate ZIP distribution -->
         <zip destfile="${targetdir}/${dist.name}.zip">
             <zipfileset dir="${rootdir}"     prefix="${app.name}${app.version}"/>
