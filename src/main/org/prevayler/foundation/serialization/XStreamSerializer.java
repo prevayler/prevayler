@@ -26,14 +26,24 @@ import java.io.OutputStreamWriter;
  */
 public class XStreamSerializer implements Serializer {
 
+	private ThreadLocal _xstreams = new ThreadLocal() {
+		protected Object initialValue() {
+			return createXStream();
+		}
+	};
+
+	private XStream getXStream() {
+		return (XStream) _xstreams.get();
+	}
+
 	public void writeObject(OutputStream stream, Object object) throws IOException {
 		OutputStreamWriter writer = new OutputStreamWriter(stream);
-		createXStream().toXML(object, writer);
+		getXStream().toXML(object, writer);
 		writer.flush();
 	}
 
 	public Object readObject(InputStream stream) throws IOException, ClassNotFoundException {
-		return createXStream().fromXML(new InputStreamReader(stream));
+		return getXStream().fromXML(new InputStreamReader(stream));
 	}
 
 	/**
