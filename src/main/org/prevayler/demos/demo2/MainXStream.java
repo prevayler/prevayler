@@ -20,7 +20,7 @@ public class MainXStream {
 		factory.configureSnapshotSerializationStrategy(new XStreamSerializationStrategy() {
 			protected XStream createXStream() {
 				XStream xstream = new XStream();
-				xstream.alias("bank", Bank.class);
+				xstream.alias("bank", Bank.class);  //This mapping is optional. It just makes the XML in the snapshot file look prettier.
 				xstream.alias("account", Account.class);
 				xstream.alias("accountEntry", AccountEntry.class);
 				return xstream;
