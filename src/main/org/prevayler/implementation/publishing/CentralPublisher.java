@@ -91,7 +91,7 @@ public class CentralPublisher extends AbstractPublisher {
 	}
 
 
-	public void addSubscriber(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
+	public void subscribe(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
 		synchronized (_pendingPublicationsMonitor) {
 			while (_pendingPublications != 0) Cool.wait(_pendingPublicationsMonitor);
 

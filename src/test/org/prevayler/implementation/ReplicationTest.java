@@ -40,7 +40,7 @@ public class ReplicationTest extends FileIOTest {
 		serverAppend("c", "abc");
 	}
 
-/* TODO Test replication chaining.
+/* //TODO Test replication chaining.
 	public void testChaining() throws Exception {
 		serverCrashRecover(2);
 		clientWithServerCrashRecover(2, 3);

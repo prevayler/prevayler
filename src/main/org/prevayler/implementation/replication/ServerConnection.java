@@ -45,7 +45,7 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 	public void run() {
 		try {		
 			long initialTransaction = ((Long)_fromRemote.readObject()).longValue();
-			_publisher.addSubscriber(new POBox(this), initialTransaction);
+			_publisher.subscribe(new POBox(this), initialTransaction);
 			send(SUBSCRIBER_UP_TO_DATE);
 			
 			sendClockTicks();

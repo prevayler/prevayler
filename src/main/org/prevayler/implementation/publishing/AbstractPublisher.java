@@ -33,7 +33,7 @@ public abstract class AbstractPublisher implements TransactionPublisher {
 		_subscribers.add(subscriber);
     }
 
-	public synchronized void removeSubscriber(TransactionSubscriber subscriber) {
+	public synchronized void cancelSubscription(TransactionSubscriber subscriber) {
 		_subscribers.remove(subscriber);
 	}
 

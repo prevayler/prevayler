@@ -45,7 +45,6 @@ public class ClientPublisher implements TransactionPublisher {
 		startListening();
 	}
 
-
 	private void startListening() {
 		Thread listener = new Thread() {
 			public void run() {
@@ -61,7 +60,7 @@ public class ClientPublisher implements TransactionPublisher {
 	}
 
 
-	public synchronized void addSubscriber(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
+	public synchronized void subscribe(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
 		if (_subscriber != null) throw new UnsupportedOperationException("The current implementation can only support one subscriber. Future implementations will support more.");
 		_subscriber = subscriber;
 		synchronized (_upToDateMonitor) {
@@ -71,7 +70,7 @@ public class ClientPublisher implements TransactionPublisher {
 	}
 
 
-	public void removeSubscriber(TransactionSubscriber subscriber) {
+	public void cancelSubscription(TransactionSubscriber subscriber) {
 		throw new UnsupportedOperationException("Removing subscribers is not yet supported by the current implementation.");
 	}
 

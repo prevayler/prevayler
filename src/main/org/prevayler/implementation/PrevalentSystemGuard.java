@@ -37,7 +37,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 			initialTransaction = _systemVersion + 1;
 		}
 
-		publisher.addSubscriber(this, initialTransaction);
+		publisher.subscribe(this, initialTransaction);
 
 		synchronized (this) {
 			_ignoreRuntimeExceptions = false;
