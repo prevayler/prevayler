@@ -13,6 +13,13 @@ import org.prevayler.foundation.*;
  */
 public class SnapshotManager {
 
+	SnapshotManager(Object newPrevalentSystem) {
+		_recoveredPrevalentSystem = newPrevalentSystem;
+		_recoveredVersion = 0;
+		_directory = null;
+	}
+
+
 	private final File _directory;
 	private final Object _recoveredPrevalentSystem;
 	private final long _recoveredVersion;

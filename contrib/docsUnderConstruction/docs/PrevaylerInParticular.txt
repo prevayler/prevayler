@@ -55,9 +55,3 @@ Tutorial
 ============
 A more elaborate Prevayler tutorial including a web interface (JSP) can be found here: ???.
 
-
-More Learning Resources
-===========================
-1) Source Code - Prevayler's implementation (org.prevayler.implementation) has less than 300 Java statements.
-
-2) http://www.prevayler.org - Access to all other Prevayler resources: wiki site, mailing lists, special CVS contribs, etc.

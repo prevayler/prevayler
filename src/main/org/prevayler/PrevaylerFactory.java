@@ -15,6 +15,7 @@ import org.prevayler.implementation.publishing.censorship.StrictTransactionCenso
 import org.prevayler.implementation.publishing.censorship.TransactionCensor;
 import org.prevayler.implementation.replication.ServerListener;
 import org.prevayler.implementation.replication.ClientPublisher;
+import org.prevayler.implementation.snapshot.NullSnapshotManager;
 import org.prevayler.implementation.snapshot.SnapshotManager;
 
 /** Provides easy access to all Prevayler configurations and implementations available in this distribution.
@@ -60,19 +61,37 @@ public class PrevaylerFactory {
 	}
 
 
-	/** Creates a Prevayler that will execute Transactions WITHOUT writing them to disk. It will use a directory called "PrevalenceBase" to read and write its .snapshot files. This is useful for running automated tests MUCH faster than with a regular Prevayler.
-	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for system startup.
+	/** Creates a Prevayler that will execute Transactions WITHOUT writing them to disk. This is useful for running automated tests or demos MUCH faster than with a regular Prevayler.
+	 * 
+	 * Attempts to take snapshots on this transient Prevayler will throw an IOException.
+	 * @param newPrevalentSystem The newly started, "empty" prevalent system.
+	 * @see createCheckpointPrevayler(Serializable newPrevalentSystem, String snapshotDirectory)
 	 */
 	public static Prevayler createTransientPrevayler(Serializable newPrevalentSystem) {
-		return createTransientPrevayler(newPrevalentSystem, "PrevalenceBase");
+		PrevaylerFactory factory = new PrevaylerFactory();
+		factory.configurePrevalentSystem(newPrevalentSystem);
+		factory.configureSnapshotManager(new NullSnapshotManager(newPrevalentSystem, "Transient Prevaylers are unable to take snapshots."));
+		factory.configureTransientMode(true);
+		try {
+			return factory.create();
+		} catch (Exception e) {
+			e.printStackTrace(); //Transient Prevayler creation should not fail.
+			return null;
+		}
 	}
 
 
-	/** Creates a Prevayler that will execute Transactions WITHOUT writing them to disk. It will use the given snapshotDirectory to read and write its .snapshot files, though. This is useful for stand-alone applications that have a "Save" button, for example.
+	/** @deprecated Use createCheckpointPrevayler() instead of this method. Deprecated since Prevayler2.00.001.
+	 */
+	public static Prevayler createTransientPrevayler(Serializable newPrevalentSystem, String snapshotDirectory) {
+		return createCheckpointPrevayler(newPrevalentSystem, snapshotDirectory);
+	}
+
+	/** Creates a Prevayler that will execute Transactions WITHOUT writing them to disk. Snapshots will work as "checkpoints" for the system, therefore. This is useful for stand-alone applications that have a "Save" button, for example.
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 * @param snapshotDirectory The directory where the .snapshot files will be read and written.
 	 */
-	public static Prevayler createTransientPrevayler(Serializable newPrevalentSystem, String snapshotDirectory) {
+	public static Prevayler createCheckpointPrevayler(Serializable newPrevalentSystem, String snapshotDirectory) {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(newPrevalentSystem);
 		factory.configurePrevalenceBase(snapshotDirectory);

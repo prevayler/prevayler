@@ -8,22 +8,27 @@ public class RollbackTest extends PrevalenceTest {
 	private Prevayler _prevayler;
 
     public void testRollback() throws Exception {
-        _prevayler = PrevaylerFactory.createPrevayler(new AppendingSystem(), _testDirectory);
+		testRollback(PrevaylerFactory.createPrevayler(new AppendingSystem(), _testDirectory));
+		testRollback(PrevaylerFactory.createTransientPrevayler(new AppendingSystem()));
+    }
+
+	private void testRollback(Prevayler prevayler) throws Exception {
+		_prevayler = prevayler;
 
 		append("a", "a");
 		
 		try {
 			append("rollback", "ignored");
-			throw new Exception("RuntimeException expected and not thrown.");
+			fail("RuntimeException expected and not thrown.");
 		} catch (RuntimeException rx) {
 		}
-		
+
 		append("b", "ab");
 
 		_prevayler = null;
-    }
+	}
 
-    private void append(String appendix, String expectedResult) throws Exception {
+	private void append(String appendix, String expectedResult) throws Exception {
         _prevayler.execute(new Appendix(appendix));
         assertEquals(expectedResult, system().value());
     }

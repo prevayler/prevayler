@@ -41,7 +41,7 @@ Only public and protected elements are generated (javadoc default).
 Parameters:
 	-windowtitle "Prevayler(TM) vX.XX.XXX API Documentation"
 	-header "<b>Prevayler<sup><font size=-2>TM</font></sup><br>The Free Software<br>Prevalence Layer</b>"
-	-footer "</EM><a href=http://www.prevayler.org><font color="#BB0033"><b>Prevayler Online</b></font></a><EM>"
+	-footer "<EM><a href=http://www.prevayler.org><font color="#BB0033"><b>Prevayler Online</b></font></a></EM>"
 	-bottom "<font size=-1>'Prevayler' is a trademark of Klaus Wuestefeld.<br>Prevayler Javadoc Copyleft 2001-2003 Klaus Wuestefeld.</font>"
 
 

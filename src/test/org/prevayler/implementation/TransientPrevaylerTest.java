@@ -1,5 +1,6 @@
 package org.prevayler.implementation;
 
+import java.io.IOException;
 import java.util.Date;
 
 import org.prevayler.Prevayler;
@@ -14,7 +15,7 @@ public class TransientPrevaylerTest extends PrevalenceTest {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		prevayler = PrevaylerFactory.createTransientPrevayler(new AppendingSystem(),_testDirectory);
+		prevayler = PrevaylerFactory.createTransientPrevayler(new AppendingSystem());
 	}
 
 
@@ -29,10 +30,19 @@ public class TransientPrevaylerTest extends PrevalenceTest {
 		assertState("abc");
 	}
 
+	public void testSnapshotAttempt() {
+		try {
+			prevayler.takeSnapshot();
+			fail("IOException expected.");
+		} catch (IOException iox) {
+			assertEquals("Transient Prevaylers are unable to take snapshots.", iox.getMessage());
+		}
+	}
+
 
 	/** The baptism problem occurs when a Transaction keeps a direct reference to a business object instead of querying for it given the Prevalent System. 
 	 */
-/** TODO	public void testFailFastBaptismProblem() {
+/* TODO public void testFailFastBaptismProblem() {
 		append("a");
 
 		AppendingSystem directReference = (AppendingSystem)prevayler.prevalentSystem();
