@@ -74,8 +74,8 @@ public class PrevaylerImpl implements Prevayler {
 
 
 	public Object execute(TransactionWithQuery transactionWithQuery) throws Exception {
-		TransactionWithQueryCapsule capsule = new TransactionWithQueryCapsule(transactionWithQuery, _journalSerializer);
-		publish(capsule);
+		TransactionWithQueryCapsule capsule = new TransactionWithQueryCapsule(transactionWithQuery);
+		execute(capsule);
 		return capsule.result();
 	}
 

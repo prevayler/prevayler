@@ -30,11 +30,11 @@ public class SkipOldTransactionsTest extends FileIOTest {
 		assertEquals("the system first second third", original.prevalentSystem().toString());
 		original.close();
 
-		assertEquals("6;withQuery=false;systemVersion=1;executionTime=1000002\r\n" +
+		assertEquals("6;systemVersion=1;executionTime=1000002\r\n" +
 				" first\r\n" +
-				"7;withQuery=false;systemVersion=2;executionTime=1000004\r\n" +
+				"7;systemVersion=2;executionTime=1000004\r\n" +
 				" second\r\n" +
-				"6;withQuery=false;systemVersion=3;executionTime=1000006\r\n" +
+				"6;systemVersion=3;executionTime=1000006\r\n" +
 				" third\r\n", journalContents("MyJournal"));
 
 		Prevayler recovered = createPrevayler("MyJournal", new MySerializer(true));
@@ -53,11 +53,11 @@ public class SkipOldTransactionsTest extends FileIOTest {
 		assertEquals("the system first second third", original.prevalentSystem().toString());
 		original.close();
 
-		assertEquals("6;withQuery=false;systemVersion=1;executionTime=1000002\r\n" +
+		assertEquals("6;systemVersion=1;executionTime=1000002\r\n" +
 				" first\r\n" +
-				"7;withQuery=false;systemVersion=2;executionTime=1000004\r\n" +
+				"7;systemVersion=2;executionTime=1000004\r\n" +
 				" second\r\n" +
-				"6;withQuery=false;systemVersion=3;executionTime=1000006\r\n" +
+				"6;systemVersion=3;executionTime=1000006\r\n" +
 				" third\r\n", journalContents("OldJournal"));
 
 		try {
@@ -81,11 +81,11 @@ public class SkipOldTransactionsTest extends FileIOTest {
 		assertEquals("the system first second third", original.prevalentSystem().toString());
 		original.close();
 
-		assertEquals("6;withQuery=false;systemVersion=1;executionTime=1000002\r\n" +
+		assertEquals("6;systemVersion=1;executionTime=1000002\r\n" +
 				" first\r\n" +
-				"7;withQuery=false;systemVersion=2;executionTime=1000004\r\n" +
+				"7;systemVersion=2;executionTime=1000004\r\n" +
 				" second\r\n" +
-				"6;withQuery=false;systemVersion=3;executionTime=1000006\r\n" +
+				"6;systemVersion=3;executionTime=1000006\r\n" +
 				" third\r\n", journalContents("OldJournal"));
 
 		Prevayler recovered = createPrevayler("NewJournal", new MySerializer(true));
