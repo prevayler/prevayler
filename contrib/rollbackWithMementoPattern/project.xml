@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project>
+    <pomVersion>3</pomVersion>
+    <name>Prevayler Rollback with Memento</name>
+    <id>prevayler-memento</id>
+    <currentVersion>2.00.000dev</currentVersion>
+    
+    <build>
+    	<sourceDirectory>.</sourceDirectory>
+    </build>
+</project>
