@@ -42,6 +42,10 @@ public class GenericSnapshotManager {
 			checkValidSuffix(suffix);
 		}
 
+		if (!strategies.containsKey(primarySuffix)) {
+			throw new IllegalArgumentException("Primary suffix '" + primarySuffix + "' does not appear in strategies map");
+		}
+
 		_strategies = strategies;
 		_primarySuffix = primarySuffix;
 
@@ -137,7 +141,7 @@ public class GenericSnapshotManager {
 
 	private static void checkValidSuffix(String suffix) {
 		if (!suffix.matches(SNAPSHOT_SUFFIX_PATTERN)) {
-			throw new IllegalStateException(
+			throw new IllegalArgumentException(
 					"Snapshot filename suffix must match /" + SNAPSHOT_SUFFIX_PATTERN + "/, but '" + suffix + "' does not");
 		}
 	}
