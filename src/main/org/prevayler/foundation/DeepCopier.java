@@ -1,5 +1,6 @@
 package org.prevayler.foundation;
 
+import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 
 import java.io.ByteArrayInputStream;
@@ -10,6 +11,16 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
 public class DeepCopier {
+	
+	/**
+	 * Same as deepCopy(original, new JavaSerializer()).
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 * 
+	 */
+	public static Object deepCopy(Object original) throws IOException, ClassNotFoundException {
+		return deepCopy(original, new JavaSerializer());
+	}
 
 	/**
 	 * Produce a deep copy of the given object. Serializes the entire object to a byte array in memory. Recommended for
