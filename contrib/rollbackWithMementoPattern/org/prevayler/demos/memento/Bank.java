@@ -10,14 +10,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.prevayler.util.clock.ClockedSystem;
+import org.prevayler.util.clock.AbstractClockedSystem;
 import org.prevayler.util.memento.Memento;
 import org.prevayler.util.memento.MementoCollector;
 
 /**
  * The Bank class without the notification to a listener and including a memento.
  */
-public class Bank extends ClockedSystem {
+public class Bank extends AbstractClockedSystem {
 
 	private long nextAccountNumber = 1;
 	private final Map accountsByNumber = new HashMap();
