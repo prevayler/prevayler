@@ -32,6 +32,7 @@ public class ClockActor extends Thread {
 	public ClockActor(Clock clock, Prevayler prevayler) {
 		_clock = clock;
 		_prevayler = prevayler;
+		tick();
 		setDaemon(true);
 		start();
 	}
