@@ -13,21 +13,19 @@ import java.io.File;
 public abstract class LoggingMonitor implements Monitor {
 
     public void notify(Class clazz, String message) {
-        if (isInfoEnabled(clazz))
-            info(clazz, message);
-    }
+        if (isInfoEnabled(clazz)) info(clazz, message);
+	}
 
-    public void notify(Class clazz, String message, Exception ex) {
-        error(clazz, message, ex);
-    }
+	public void notify(Class clazz, String message, Exception ex) {
+		error(clazz, message, ex);
+	}
 
-    public void notify(Class clazz, String message, File file) {
-        if (isInfoEnabled(clazz))
-            info(clazz, message + "\nFile: " + file);
-    }
+	public void notify(Class clazz, String message, File file) {
+		if (isInfoEnabled(clazz)) info(clazz, message + "/nFile: " + file);
+	}
 
-    public void notify(Class clazz, String message, File file, Exception ex) {
-        error(clazz, message + "\nFile: " + file, ex);
+	public void notify(Class clazz, String message, File file, Exception ex) {
+		error(clazz, message + "/nFile: " + file, ex);
     }
 
     protected abstract void info(Class clazz, String Message);
