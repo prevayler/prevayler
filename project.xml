@@ -3,7 +3,7 @@
     <pomVersion>3</pomVersion>
     <name>Prevayler</name>
     <id>prevayler</id>
-    <currentVersion>2.00.000dev</currentVersion>
+    <currentVersion>2.00.000dev2</currentVersion>
 
     <dependencies>
         <dependency>
