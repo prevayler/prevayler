@@ -24,7 +24,6 @@ public class Main {
 		while (true) {
 			Thread.sleep(1000 * 20);
 			prevayler.takeSnapshot();
-			out("Snapshot taken at " + new java.util.Date() + "...");
 		}
 	}
 

@@ -10,13 +10,14 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Date;
 
+import org.prevayler.Monitor;
 import org.prevayler.Transaction;
+import org.prevayler.foundation.DurableOutputStream;
 import org.prevayler.foundation.FileManager;
 import org.prevayler.foundation.SimpleInputStream;
-import org.prevayler.foundation.DurableOutputStream;
 import org.prevayler.foundation.StopWatch;
 import org.prevayler.foundation.Turn;
-import org.prevayler.implementation.*;
+import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 
@@ -34,20 +35,21 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	private long _nextTransaction;
 	private final Object _nextTransactionMonitor = new Object();
 	private boolean _nextTransactionInitialized = false;
-	private ClassLoader _loader;
-	
+	private ClassLoader _loader;    private Monitor _monitor;
+
 
 	/**
 	 * @param directory Where transactionLog files will be read and written.
 	 * @param logSizeThresholdInBytes Size of the current transactionLog file beyond which it is closed and a new one started. Zero indicates no size threshold. This is useful transactionLog backup purposes.
 	 * @param logAgeThresholdInMillis Age of the current transactionLog file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful transactionLog backup purposes.
-	 * @param loader Class loader to be used while deserializing transaction log
 	 */
-	public PersistentLogger(String directory, long logSizeThresholdInBytes, long logAgeThresholdInMillis, ClassLoader loader) throws IOException {
+	public PersistentLogger(String directory, long logSizeThresholdInBytes, long logAgeThresholdInMillis, ClassLoader loader, Monitor monitor) throws IOException {
+	    _monitor = monitor;
+		_loader = loader;
 		_directory = FileManager.produceDirectory(directory);
 		_logSizeThresholdInBytes = logSizeThresholdInBytes;
 		_logAgeThresholdInMillis = logAgeThresholdInMillis;
-		_loader = loader;
+		_monitor.loggerInitialized(_directory, _loader, _logSizeThresholdInBytes, _logAgeThresholdInMillis);
 	}
 
 
@@ -146,7 +148,7 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, long initialLogFile)	throws IOException, ClassNotFoundException {
 		long recoveringTransaction = initialLogFile;
 		File logFile = transactionLogFile(recoveringTransaction);
-		SimpleInputStream inputLog = new SimpleInputStream(logFile, _loader);
+		SimpleInputStream inputLog = new SimpleInputStream(logFile, _loader, _monitor);
 
 		while(true) {
 			try {
@@ -162,7 +164,7 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 				if (logFile.equals(nextFile)) renameUnusedFile(logFile);  //The first transaction in this log file is incomplete. We need to reuse this file name.
 				logFile = nextFile;
 				if (!logFile.exists()) break;
-				inputLog = new SimpleInputStream(logFile, _loader);
+				inputLog = new SimpleInputStream(logFile, _loader, _monitor);
 			}
 		}
 		return recoveringTransaction;
@@ -196,18 +198,18 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 
 
 	protected void handleExceptionWhileCreating(IOException iox, File logFile) {
-		hang(iox, "\nThe exception above was thrown while trying to create file " + logFile + " . Prevayler's default behavior is to display this message and block all transactions. You can change this behavior by extending the PersistentLogger class and overriding the method called: handleExceptionWhileCreating(IOException iox, File logFile).");
+	    _monitor.handleExceptionWhileCreatingLogFile(iox, logFile);
+		hang();
 	}
 
 
 	protected void handleExceptionWhileWriting(IOException iox, File logFile) {
-		hang(iox, "\nThe exception above was thrown while trying to write to file " + logFile + " . Prevayler's default behavior is to display this message and block all transactions. You can change this behavior by extending the PersistentLogger class and overriding the method called: handleExceptionWhileWriting(IOException iox, File logFile).");
+	    _monitor.handleExceptionWhileWritingLogFile(iox, logFile);
+	    hang();
 	}
 
 
-	static private void hang(IOException iox, String message) {
-		iox.printStackTrace();
-		System.out.println(message);
+	static private void hang() {
 		while (true) Thread.yield();
 	}
 

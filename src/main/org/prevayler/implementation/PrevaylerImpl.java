@@ -9,6 +9,7 @@ import java.util.Date;
 
 import org.prevayler.Clock;
 import org.prevayler.Prevayler;
+import org.prevayler.Monitor;
 import org.prevayler.Query;
 import org.prevayler.SureTransactionWithQuery;
 import org.prevayler.Transaction;
@@ -30,16 +31,23 @@ public class PrevaylerImpl implements Prevayler {
 
 	private final TransactionPublisher _publisher;
 	private boolean _ignoreRuntimeExceptions;
+    private Monitor _monitor;
 
 
 	/** Creates a new Prevayler
+	 * 
 	 * @param snapshotManager The SnapshotManager that will be used for reading and writing snapshot files.
 	 * @param transactionPublisher The TransactionPublisher that will be used for publishing transactions executed with this PrevaylerImpl.
+	 * @param prevaylerMonitor The Monitor that will be used to monitor interesting calls to this PrevaylerImpl.
 	 */
-	public PrevaylerImpl(SnapshotManager snapshotManager, TransactionPublisher transactionPublisher) throws IOException, ClassNotFoundException {
+	public PrevaylerImpl(SnapshotManager snapshotManager, TransactionPublisher transactionPublisher, Monitor prevaylerMonitor) throws IOException, ClassNotFoundException {
+	    _monitor = prevaylerMonitor;
 		_snapshotManager = snapshotManager;
+
 		_prevalentSystem = _snapshotManager.recoveredPrevalentSystem();
+		
 		_systemVersion = _snapshotManager.recoveredVersion();
+		_monitor.lastSnapshotRecovered(_systemVersion);
 
 		_publisher = transactionPublisher;
 		_clock = _publisher.clock();
@@ -49,7 +57,6 @@ public class PrevaylerImpl implements Prevayler {
 		_ignoreRuntimeExceptions = false;
 	}
 
-
 	public Object prevalentSystem() { return _prevalentSystem; }
 
 
@@ -57,7 +64,7 @@ public class PrevaylerImpl implements Prevayler {
 
 
 	public void execute(Transaction transaction) {
-		publish((Transaction)deepCopy(transaction));    //TODO Optimizations: 1) Publish the byte array of the serialized transaction (this will save the Censor and the Logger from having to serialize the transaction again). This is also a step towards transaction multiplexing (useful to avoid hickups due to very large transactions). The Censor can use the actual given transaction if it is Immutable instead of deserializing a new one from the byte array. 2) Make the baptism fail-fast feature optional (default is on). If it is off, the given transaction can be used instead of deserializing a new one from the byte array.
+        publish((Transaction)deepCopy(transaction));    //TODO Optimizations: 1) Publish the byte array of the serialized transaction (this will save the Censor and the Logger from having to serialize the transaction again). This is also a step towards transaction multiplexing (useful to avoid hickups due to very large transactions). The Censor can use the actual given transaction if it is Immutable instead of deserializing a new one from the byte array. 2) Make the baptism fail-fast feature optional (default is on). If it is off, the given transaction can be used instead of deserializing a new one from the byte array.
 	}
 
 
@@ -93,8 +100,12 @@ public class PrevaylerImpl implements Prevayler {
 
 
 	public void takeSnapshot() throws IOException {
-	    synchronized (_prevalentSystem) {
-	        _snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
+	    try {
+		    synchronized (_prevalentSystem) {
+		        _snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
+		    }
+	    } finally {
+		    _monitor.snapshotTaken(_systemVersion);	        
 	    }
 	}
 

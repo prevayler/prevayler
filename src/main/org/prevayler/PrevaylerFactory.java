@@ -13,16 +13,17 @@ import org.prevayler.implementation.clock.MachineClock;
 import org.prevayler.implementation.logging.PersistentLogger;
 import org.prevayler.implementation.logging.TransactionLogger;
 import org.prevayler.implementation.logging.TransientLogger;
+import org.prevayler.implementation.monitor.SimpleMonitor;
 import org.prevayler.implementation.publishing.CentralPublisher;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.censorship.LiberalTransactionCensor;
 import org.prevayler.implementation.publishing.censorship.StrictTransactionCensor;
 import org.prevayler.implementation.publishing.censorship.TransactionCensor;
-import org.prevayler.implementation.replication.ServerListener;
 import org.prevayler.implementation.replication.ClientPublisher;
+import org.prevayler.implementation.replication.ServerListener;
+import org.prevayler.implementation.snapshot.JavaSnapshotManager;
 import org.prevayler.implementation.snapshot.NullSnapshotManager;
 import org.prevayler.implementation.snapshot.SnapshotManager;
-import org.prevayler.implementation.snapshot.JavaSnapshotManager;
 
 /** Provides easy access to all Prevayler configurations and implementations available in this distribution.
  * Static methods are also provided as short-cuts for the most common configurations. 
@@ -47,10 +48,11 @@ public class PrevaylerFactory {
 	private int _serverPort = -1;
 	private String _remoteServerIpAddress;
 	private int _remoteServerPort;
-	public static final int DEFAULT_REPLICATION_PORT = 8756;
-
+    private Monitor _monitor;
 	private ClassLoader _classLoader;
 	
+	public static final int DEFAULT_REPLICATION_PORT = 8756;
+
 
 	/** Creates a Prevayler that will use a directory called "PrevalenceBase" under the current directory to read and write its .snapshot and .transactionLog files.
  	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
@@ -120,6 +122,9 @@ public class PrevaylerFactory {
 		return _clock != null ? _clock : new MachineClock();
 	}
 
+	public void configureMonitor(Monitor monitor) {
+	    _monitor = monitor;
+	}
 
 	/** Determines whether the Prevayler created by this factory should be transient (transientMode = true) or persistent (transientMode = false). A transient Prevayler will execute its Transactions WITHOUT writing them to disk. This is useful for stand-alone applications which have a "Save" button, for example, or for running automated tests MUCH faster than with a persistent Prevayler.
 	 */
@@ -189,11 +194,15 @@ public class PrevaylerFactory {
 		SnapshotManager snapshotManager = snapshotManager();
 		TransactionPublisher publisher = publisher(snapshotManager);
 		if (_serverPort != -1) new ServerListener(publisher, _serverPort);
-		return new PrevaylerImpl(snapshotManager, publisher);
+		return new PrevaylerImpl(snapshotManager, publisher, monitor());
 	}
 
+    private Monitor monitor() {
+		return _monitor != null ? _monitor : new SimpleMonitor();
+    }
 
-	private String prevalenceBase() {
+
+    private String prevalenceBase() {
 		return _prevalenceBase != null ? _prevalenceBase : "PrevalenceBase";
 	}
 
@@ -220,7 +229,7 @@ public class PrevaylerFactory {
 	private TransactionLogger logger() throws IOException {
 		return _transientMode
 			? (TransactionLogger)new TransientLogger()
-			: new PersistentLogger(prevalenceBase(), _transactionLogSizeThreshold, _transactionLogAgeThreshold, classLoader());		
+			: new PersistentLogger(prevalenceBase(), _transactionLogSizeThreshold, _transactionLogAgeThreshold, classLoader(), monitor());		
 	}
 
 
@@ -240,11 +249,8 @@ public class PrevaylerFactory {
 		_transactionLogAgeThreshold = ageInMilliseconds;
 	}
 
-	public void configureClassLoader(ClassLoader classLoader) {
-		_classLoader = classLoader;
-	}
-	
 	private ClassLoader classLoader() {
 	 	return(_classLoader != null ? _classLoader : getClass().getClassLoader());
-	}
-}
+	}	public void configureClassLoader(ClassLoader classLoader) {
+		_classLoader = classLoader;
+	}}

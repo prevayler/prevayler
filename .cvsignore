@@ -9,3 +9,6 @@ log4j.xml
 maven.log
 build.dot
 build.png
+demo1
+demo2
+demo2XStream

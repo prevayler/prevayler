@@ -4,16 +4,27 @@
 
 package org.prevayler.foundation;
 
-import java.io.*;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectStreamException;
+import java.io.UTFDataFormatException;
+
+import org.prevayler.Monitor;
 
 public class SimpleInputStream {
 
 	private final File _file;
 	private final ObjectInputStream _delegate;
 	private boolean _EOF = false;
+    private Monitor _monitor;
 
-	public SimpleInputStream(File file, ClassLoader loader) throws IOException {
-		System.out.println("Reading " + file + " using ClassLoader " + loader.toString() + " ...");
+
+	public SimpleInputStream(File file, ClassLoader loader, Monitor monitor) throws IOException {
+	    _monitor = monitor;
+		_monitor.readingTransactionLogFile(file, loader);
 		_file = file;
 		_delegate = new ObjectInputStreamWithClassLoader(new FileInputStream(file), loader);
 	}
@@ -27,11 +38,11 @@ public class SimpleInputStream {
 		} catch (EOFException eofx) {
 			// Do nothing.
 		} catch (ObjectStreamException scx) {
-			message(scx);
+			_monitor.ignoringStreamCorruption(scx, _file);
 		} catch (UTFDataFormatException utfx) {
-			message(utfx);
+		    _monitor.ignoringStreamCorruption(utfx, _file);
 		} catch (RuntimeException rx) {   //Some stream corruptions cause runtime exceptions in JDK1.3.1!
-			message(rx);
+		    _monitor.ignoringStreamCorruption(rx, _file);
 		}
 
 		_delegate.close();
@@ -43,16 +54,5 @@ public class SimpleInputStream {
 	public void close() throws IOException {
 		_delegate.close();
 		_EOF = true;
-	}
-
-	private void message(Exception exception) {
-		exception.printStackTrace();
-		System.err.println(
-			"\n   Thrown while reading file: " + _file + ")" +
-			"\n   The above is a stream corruption that can be caused by:" +
-			"\n      - A system crash while writing to the file (that is OK)." +
-			"\n      - A corruption in the file system (that is NOT OK)." +
-			"\n      - Tampering with the file (that is NOT OK)."
-		);
 	}
 }
