@@ -7,7 +7,6 @@ package org.prevayler.implementation;
 import org.prevayler.*;
 import java.io.*;
 import java.util.*;
-import java.text.*;
 
 
 /**
@@ -90,7 +89,7 @@ class SystemRecoverer {
 
 	private boolean nextLogFile() throws IOException {
 		for (int i = 0; i < commandLogDirectories.length; i++) {
-			currentLogFile = new File(commandLogDirectories[i], FileCreator.LOG_FORMAT.format(nextLogFileNumber));
+			currentLogFile = new File(commandLogDirectories[i], FileCreator.logFileName(nextLogFileNumber));
 			if (currentLogFile.exists()) {
 				nextLogFileNumber++;
 				return true;
@@ -123,7 +122,7 @@ class SystemRecoverer {
 
 	static private long number(File snapshot) throws NumberFormatException {  //NumberFomatException is a RuntimeException.
 		String name = snapshot.getName();
-		if (!name.endsWith("." + FileCreator.SNAPSHOT_SUFFIX)) throw new NumberFormatException();
+		if (!name.endsWith(FileCreator.SNAPSHOT_SUFFIX)) throw new NumberFormatException();
 		return Long.parseLong(name.substring(0,name.indexOf('.')));    // "00000.snapshot" becomes "00000". The following doesn't work (it throws ParseException (UnparseableNumber)): return (NumberFileCreator.SNAPSHOT_FORMAT.parse(snapshot.getName())).longValue();
 	}
 

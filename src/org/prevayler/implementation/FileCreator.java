@@ -5,15 +5,23 @@
 package org.prevayler.implementation;
 
 import java.io.*;
-import java.text.*;
 
 /** Creates .log and .snapshot files using a number sequence for the file name.
 */
 class FileCreator {
 
-	static final String SNAPSHOT_SUFFIX = "snapshot";
-	static final DecimalFormat SNAPSHOT_FORMAT = new DecimalFormat("000000000000000000000'.'" + SNAPSHOT_SUFFIX); //21 zeros (enough for a long number).
-	static final DecimalFormat LOG_FORMAT = new DecimalFormat("000000000000000000000'.'commandLog");  //21 zeros (enough for a long number).
+	static final String SNAPSHOT_SUFFIX = ".snapshot";
+	static final String LOG_SUFFIX = ".commandLog";
+	
+	static String snapshotFileName(long fileNumber) {
+		String fileName = "000000000000000000000" + fileNumber;
+		return fileName.substring(fileName.length() - 21) + FileCreator.SNAPSHOT_SUFFIX;
+	}
+	
+	static String logFileName(long fileNumber) {
+		String fileName = "000000000000000000000" + fileNumber;
+		return fileName.substring(fileName.length() - 21) + FileCreator.LOG_SUFFIX;
+	}
 
 	private long nextFileNumber;
 
@@ -23,7 +31,7 @@ class FileCreator {
 	}
 
 	File newLog(File directory) throws IOException {
-		File log = new File(directory, LOG_FORMAT.format(nextFileNumber));
+		File log = new File(directory, FileCreator.logFileName(nextFileNumber));
 		if(!log.createNewFile()) throw new IOException("Attempt to create command log file that already existed: " + log);;
 
 		nextFileNumber++;
@@ -31,7 +39,7 @@ class FileCreator {
 	}
 
 	File newSnapshot(File directory) throws IOException {
-		File snapshot = new File(directory, SNAPSHOT_FORMAT.format(nextFileNumber - 1));
+		File snapshot = new File(directory, FileCreator.snapshotFileName(nextFileNumber - 1));
 		snapshot.delete();   //If no commands are logged, the same snapshot file will be created over and over.
 		return snapshot;
 	}

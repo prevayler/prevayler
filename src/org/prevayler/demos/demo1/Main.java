@@ -5,16 +5,23 @@
 package org.prevayler.demos.demo1;
 
 import org.prevayler.implementation.SnapshotPrevayler;
-import java.io.File;
+import java.io.*;
 
 public class Main {
 
   public static void main(String[] args) throws Exception {
-    System.out.println("\nRobustness Reminder: You can kill this process at any time. When you restart the system, you will see that nothing was lost.\n");
+    System.out.println("\nRobustness Reminder: You can kill this process at any time.\nWhen you restart the system, you will see that nothing was lost.\nPress Enter to continue.\n");
+	BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+	try {
+		String typed = bf.readLine();
+	}
+	catch (IOException ioe) {
+		ioe.printStackTrace();
+	}
 
-    SnapshotPrevayler prevayler = new SnapshotPrevayler(new NumberKeeper(), "demo1");
+    SnapshotPrevayler prevayler = new SnapshotPrevayler(new NumberKeeper(), "PrevalenceBase" + File.separator + "demo1");
 
-    new PrimeFrame(prevayler);
+    new PrimeCalculator(prevayler).start();
   }
 
 }

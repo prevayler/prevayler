@@ -15,31 +15,29 @@ class PrimeCalculator {
   private final Prevayler prevayler;
   private final NumberKeeper numberKeeper;
 
-  private final PrimeFrame primeFrame;
-
-
-  PrimeCalculator(Prevayler prevayler, PrimeFrame primeFrame) {
+  PrimeCalculator(Prevayler prevayler) {
     this.prevayler = prevayler;
     numberKeeper = (NumberKeeper)prevayler.system();
-
-    this.primeFrame = primeFrame;
   }
 
 
   void start() throws Exception {
+  	int largestPrime = 0;
+  	int primesFound = 0;
     int primeCandidate = numberKeeper.lastNumber() == 0
       ? 2
       : numberKeeper.lastNumber() + 1;
 
     while (primeCandidate <= Integer.MAX_VALUE) {
-      primeFrame.setCandidate(primeCandidate);
       if (isPrime(primeCandidate)) {
 
         prevayler.executeCommand(new NumberStorageCommand(primeCandidate));
 
-        primeFrame.setLargestPrime(primeCandidate);
-        primeFrame.setPrimesFound(numberKeeper.numbers().size());
+        largestPrime = primeCandidate;
+        primesFound = numberKeeper.numbers().size();
       }
+      
+      System.out.println("Found: " + primesFound + ". Largest: " + largestPrime + ". Candidate: " + primeCandidate);
       primeCandidate++;
     }
   }

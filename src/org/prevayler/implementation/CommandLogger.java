@@ -35,7 +35,7 @@ class CommandLogger {
     fileOutputStream = new FileOutputStream(logFile);
     objectOutputStream = new ObjectOutputStream(fileOutputStream);
 
-    objectOutputStream.writeChar(sequenceRestarted ? 'R' : 'C');   //R - Restart. C - Continue.
+    objectOutputStream.writeObject(new Character(sequenceRestarted ? 'R' : 'C'));   //R - Restart. C - Continue.
     flushStreams(true);
   }
 
@@ -91,8 +91,10 @@ class CommandLogger {
 
 
   static private long parseSystemProperty(String propertyName) {
+  	String property = System.getProperty(propertyName);
+  	if (property == null) return 0;
     try {
-      return Long.parseLong(System.getProperty(propertyName));
+      return Long.parseLong(property);
     } catch (NumberFormatException nfx) {
       return 0;
     }

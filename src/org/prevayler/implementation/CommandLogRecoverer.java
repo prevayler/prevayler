@@ -37,8 +37,8 @@ class CommandLogRecoverer {
 
     boolean isRestarted;
     try {
-      isRestarted = (logStream.readChar() == 'R');
-    } catch (EOFException eof) {
+      isRestarted = (((Character)logStream.readObject()).charValue() == 'R');
+    } catch (Exception e) {
       isRestarted = false;
     }
     isExecutionSequenceRestarted = isRestarted;
