@@ -257,9 +257,9 @@
             <attribute name="file"/>
             <attribute name="todir"/>
             <sequential>
-                <exec dir="." executable="${scp}">
+                <exec dir="." executable="${scp}" failonerror="true">
                     <arg path="@{file}"/>
-                    <arg value="${damagecontrol.username}@hogshead.codehaus.org:/www/dist.codehaus.org/prevayler/@{todir}"/>
+                    <arg value="${damagecontrol.username}@dist.codehaus.org:/home/projects/prevayler/dist/@{todir}"/>
                 </exec>
             </sequential>
         </macrodef>
