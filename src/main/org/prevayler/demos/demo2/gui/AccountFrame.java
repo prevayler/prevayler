@@ -13,19 +13,19 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.prevayler.util.QueryPrevayler;
+import org.prevayler.util.QueryExecuter;
 
 
 abstract class AccountFrame extends JInternalFrame {
 
-	protected final QueryPrevayler _prevayler;
+	protected final QueryExecuter _prevayler;
 	protected final JTextField holderField = new JTextField();
 
 	protected String holderText() {
 		return holderField.getText();
 	}
 		
-	AccountFrame(String title, QueryPrevayler prevayler, Container container) {
+	AccountFrame(String title, QueryExecuter prevayler, Container container) {
 		super(title, false, true); //Not resizable. Closable.
 		_prevayler = prevayler;
 

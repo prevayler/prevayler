@@ -4,8 +4,10 @@
 
 package org.prevayler.util;
 
+import java.util.Date;
+
 public interface Query {
 	
-	public Object performOn(Object prevalentSystem) throws Exception;
+	public Object executeOn(Object prevalentSystem, Date executionTime) throws Exception;
 
 }

@@ -4,6 +4,7 @@
 
 package org.prevayler.implementation;
 
+import org.prevayler.Clock;
 import org.prevayler.Transaction;
 import java.io.IOException;
 
@@ -11,12 +12,15 @@ import java.io.IOException;
 public interface TransactionPublisher {
 
 	/** Updates the subscriber with all transactions published since initialTransaction, returns and continues publishing all future transactions to the subscriber.
-	*/
+	 */
 	public void addSubscriber(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException;
 
-
 	/** Publishes transaction to the subscribers synchronously. This method will only return after all subscribers have received transaction. Note that no guarantee can be made as to wether the subscribers have actually executed it.
-	*/
+	 */
 	public void publish(Transaction transaction);
+
+	/** Returns the Clock used to set the publishing time for each published Transaction.
+	 */
+	public Clock clock();
 
 }

@@ -64,7 +64,7 @@ public class Main {
 
 	static private void runPrevaylerTransaction() throws Exception {
 		new TransactionTestRun(
-			new PrevaylerTransactionSubject(prevaylerTransactionLogDirectory(), prevaylerTransactionLogs()),
+			new PrevaylerTransactionSubject(prevaylerTransactionLogDirectory()),
 			numberOfObjects(),
 			prevaylerTransactionThreadsMin(),
 			prevaylerTransactionThreadsMax()
@@ -251,11 +251,6 @@ public class Main {
 		out("\n\nPrevayler TransactionLog Directory: " + result);
 		return result;
 	}
-
-	static private int prevaylerTransactionLogs() {
-		return prevaylerTransactionThreadsMax();   // A log file for each thread.
-	}
-
 
 	static private boolean isJdbcQueryChosen() {
 		return booleanProperty("RunJdbcQueryTest");

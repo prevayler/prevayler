@@ -74,11 +74,11 @@ public class SnapshotPrevayler implements Prevayler {
     private TransactionSubscriber subscriber() {
         return new TransactionSubscriber() {
 
-            public void receive(Transaction transaction, Date timestamp) {
+            public void receive(Transaction transaction, Date executionTime) {
             	synchronized (_prevalentSystem) {
 	                _systemVersion++;
                     try {
-                        transaction.executeOn(_prevalentSystem, timestamp);
+                        transaction.executeOn(_prevalentSystem, executionTime);
                     } catch (RuntimeException rx) {
                     	if (!_ignoreRuntimeExceptions) throw rx;
                         rx.printStackTrace();
@@ -88,5 +88,9 @@ public class SnapshotPrevayler implements Prevayler {
 
         };
     }
+
+	public Clock clock() {
+		return _publisher.clock();
+	}
 
 }

@@ -16,14 +16,14 @@ public class QueryPrevaylerTest extends TestCase {
 	public void testQuery() throws Exception {
 		List prevalentSystem = new LinkedList();
 		Prevayler prevayler = new TransientPrevayler(prevalentSystem, new BrokenClock());
-		QueryPrevayler queryPrevayler = new QueryPrevayler(prevayler);
-		Object result = queryPrevayler.performAlone(query());
+		QueryExecuter queryPrevayler = new QueryExecuter(prevayler);
+		Object result = queryPrevayler.executeAlone(query());
 		assertEquals(0, ((Integer)result).intValue());
 	}
 
 	private static Query query() {
 		return new Query() {
-			public Object performOn(Object prevalentSystem) throws Exception {
+			public Object executeOn(Object prevalentSystem, Date ignored) throws Exception {
 				return new Integer(((List)prevalentSystem).size());
 			}
 		};
@@ -32,17 +32,17 @@ public class QueryPrevaylerTest extends TestCase {
 	public void testTransactionWithQuery() throws Exception {
 		List prevalentSystem = new LinkedList();
 		Prevayler prevayler = new TransientPrevayler(prevalentSystem, new BrokenClock());
-		QueryPrevayler queryPrevayler = new QueryPrevayler(prevayler);
+		QueryExecuter queryPrevayler = new QueryExecuter(prevayler);
 		Object result = queryPrevayler.execute(transactionWithQuery());
-		assertEquals("result", result);
+		assertEquals("abc", result);
 		assertEquals("added element", prevalentSystem.get(0));
 	}
 
 	private static TransactionWithQuery transactionWithQuery() {
 		return new TransactionWithQuery() {
-			public Object executeAndQuery(Object prevalentSystem, Date timestamp) {
+			public Object executeOn(Object prevalentSystem, Date timestamp) {
 				((List)prevalentSystem).add("added element");
-				return "result";
+				return "abc";
 			}
 		};
 	}

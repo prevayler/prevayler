@@ -6,6 +6,8 @@ package org.prevayler.implementation.clock;
 
 import java.util.Date;
 
+import org.prevayler.*;
+
 
 /** A deterministic Clock that always returns the same time until it is forced to advance. This class is useful as a Clock mock in order to run automated tests involving date/time related rules. A new BrokenClock's time() starts off at new Date(0);
  */

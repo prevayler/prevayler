@@ -14,10 +14,10 @@ abstract class AccountTransaction extends BankTransaction {
 		_accountNumber = account.number();
 	}
 
-	protected Object executeAndQuery(Bank bank, Date timestamp) throws Exception {
-		executeAndQuery(bank.findAccount(_accountNumber), timestamp);
+	protected Object executeOn(Bank bank, Date timestamp) throws Exception {
+		executeOn(bank.findAccount(_accountNumber), timestamp);
 		return null;
 	}
 
-	protected abstract void executeAndQuery(Account account, Date timestamp) throws Exception;
+	protected abstract void executeOn(Account account, Date timestamp) throws Exception;
 }

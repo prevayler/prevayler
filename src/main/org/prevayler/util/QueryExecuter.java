@@ -4,33 +4,28 @@
 
 package org.prevayler.util;
 
+import org.prevayler.Clock;
 import org.prevayler.Prevayler;
-import org.prevayler.Transaction;
 
-public class QueryPrevayler implements Prevayler {
 
+public class QueryExecuter {
+
+	private final Clock _clock;
 	private final Prevayler _prevayler;
 	private final Object _prevalentSystem;
 
 
-	public QueryPrevayler(Prevayler prevayler) {
+	public QueryExecuter(Prevayler prevayler) {
 		_prevayler = prevayler;
 		_prevalentSystem = prevayler.prevalentSystem();
+		_clock = prevayler.clock();
 	}
 
-	public Object prevalentSystem() {
-		return _prevalentSystem;
-	}
-
-	public void execute(Transaction transaction) {
-		_prevayler.execute(transaction);
-	}
-
-	/** Performs query making sure that no other transaction or query is being executed by this Prevayler at the same time. This is acheived by synchronizing on prevalentSystem().
+	/** Performs query making sure that no other transaction is being executed by prevayler() and no other query is being performed by this QueryExecuter at the same time. This is acheived by synchronizing on prevayler().prevalentSystem().
 	*/
-	public Object performAlone(Query query) throws Exception {
+	public Object executeAlone(Query query) throws Exception {
 		synchronized (_prevalentSystem) {
-			return query.performOn(_prevalentSystem);
+			return query.executeOn(_prevalentSystem, _clock.time());
 		}
 	}
 
@@ -38,6 +33,11 @@ public class QueryPrevayler implements Prevayler {
 		TransactionWithQueryExecuter executer = new TransactionWithQueryExecuter(transactionWithQuery);
 		_prevayler.execute(executer);
 		return executer.result();
+	}
+
+	public Prevayler prevayler() {
+		// TODO Delete this method and fix callers.
+		return _prevayler;
 	}
 
 }

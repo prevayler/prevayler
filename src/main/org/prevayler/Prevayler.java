@@ -16,6 +16,11 @@ public interface Prevayler {
 	public Object prevalentSystem();
 
 	/**
+	 * Returns the Clock used to set the Transaction execution times.
+	 */
+	public Clock clock();
+
+	/**
 	 * Executes the given transaction on the underlying prevalentSystem(). All implementations of this interface must synchronize on the prevalentSystem() to execute the transaction. It is therefore guaranteed that only one transaction is executed at a time. This means the prevalentSystem() does not have to worry about concurrency issues among transactions.
 	 * Implementations of this interface can log the given transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the underlying prevalent system.
 	 */

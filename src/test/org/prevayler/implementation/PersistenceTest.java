@@ -122,7 +122,7 @@ public class PersistenceTest extends TestCase {
 	}
 
 	private static void out(Object obj) {
-//		System.out.println(obj);   //Uncomment this line to see what the test is doing.
+		if (false) System.out.println(obj);   //Change this line to see what the test is doing.
 	}
 
 	public static void deletePrevalenceFiles(String directoryName) {

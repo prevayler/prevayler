@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Date;
 
+import org.prevayler.Clock;
 import org.prevayler.Transaction;
 import org.prevayler.implementation.*;
 
@@ -58,6 +59,10 @@ public class RemotePublisher extends Thread implements TransactionPublisher {
 		}
 	}
 
+	public Clock clock() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	public void run() {
 		try {
@@ -91,5 +96,6 @@ public class RemotePublisher extends Thread implements TransactionPublisher {
 			throw new RuntimeException("Unexpected InterruptedException.");
 		}
 	}
+
 
 }

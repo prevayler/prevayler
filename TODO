@@ -2,18 +2,11 @@ Plan items for 2.0
 
 - Finish failover support with multiple Prevaylers / multiple JVMs 
 
-- Resolve the ClockedTransaction / ClockedActor issue 
+Plan items for 3.0
 
 - Add a (possibly optional) Transaction queue in front of Prevayler that 
 lets us batch Transaction log writes along the lines of the discussion at 
 http://www.prevayler.org/wiki.jsp?topic=OvercomingTheWriteBottleneck.
-
-- Remove the TODO items listed in the TransactionLogger source code
-
-
-
-Plan items for 3.0
-
 
 Not yet defined...
 

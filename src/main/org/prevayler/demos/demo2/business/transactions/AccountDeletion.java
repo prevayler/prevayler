@@ -13,7 +13,7 @@ public class AccountDeletion extends BankTransaction {
 		_accountNumber = account.number();
 	}
 
-	protected Object executeAndQuery(Bank bank, Date ignored) throws Bank.AccountNotFound {
+	protected Object executeOn(Bank bank, Date ignored) throws Bank.AccountNotFound {
 		bank.deleteAccount(_accountNumber);
 		return null;
 	}

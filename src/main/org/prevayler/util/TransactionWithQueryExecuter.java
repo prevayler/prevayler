@@ -11,19 +11,19 @@ import org.prevayler.*;
 
 class TransactionWithQueryExecuter implements Transaction {
 
-	private final TransactionWithQuery _transactionWithQuery;
+	TransactionWithQuery _delegate;
 
 	private transient Object _result;
 	private transient Exception _exception;
 
 
 	TransactionWithQueryExecuter(TransactionWithQuery transactionWithQuery) {
-		_transactionWithQuery = transactionWithQuery;
+		_delegate = transactionWithQuery;
 	}
 
 	public final void executeOn(Object prevalentSystem, Date timestamp) {
 		try {
-			_result = _transactionWithQuery.executeAndQuery(prevalentSystem, timestamp);
+			_result = _delegate.executeOn(prevalentSystem, timestamp);
 		} catch (RuntimeException rx) {
 			throw rx;   //This is necessary because of the rollback feature.
 		} catch (Exception ex) {

@@ -9,7 +9,7 @@ import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.demos.demo2.gui.BankFrame;
 import org.prevayler.implementation.SnapshotPrevayler;
 import org.prevayler.util.PrevaylerFactory;
-import org.prevayler.util.QueryPrevayler;
+import org.prevayler.util.QueryExecuter;
 
 public class Main {
 	
@@ -34,7 +34,7 @@ public class Main {
 	}
 
 	static void startGui(Prevayler prevayler) {
-		new BankFrame(new QueryPrevayler(prevayler));
+		new BankFrame(new QueryExecuter(prevayler));
 	}
 	
 	private static void out(String message) {

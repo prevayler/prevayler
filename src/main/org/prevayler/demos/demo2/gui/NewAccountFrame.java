@@ -1,13 +1,13 @@
 package org.prevayler.demos.demo2.gui;
 
-import org.prevayler.util.QueryPrevayler;
+import org.prevayler.util.QueryExecuter;
 import org.prevayler.demos.demo2.business.transactions.AccountCreation;
 import javax.swing.*;
 import java.awt.Container;
 
 class NewAccountFrame extends AccountFrame {
 	
-	NewAccountFrame(QueryPrevayler prevayler, Container container) {
+	NewAccountFrame(QueryExecuter prevayler, Container container) {
 		super("New Account", prevayler, container);
 
 		setBounds(50,50,240,114);

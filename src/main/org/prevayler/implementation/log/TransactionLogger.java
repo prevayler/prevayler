@@ -12,13 +12,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
+import org.prevayler.Clock;
 import org.prevayler.Transaction;
 import org.prevayler.foundation.FileManager;
 import org.prevayler.foundation.SimpleInputStream;
 import org.prevayler.foundation.SimpleOutputStream;
 import org.prevayler.implementation.TransactionSubscriber;
 import org.prevayler.implementation.TransientPublisher;
-import org.prevayler.implementation.clock.Clock;
 
 
 /** A TransactionPublisher that will write all published transactions to .transactionLog files before publishing them to the subscribers.
@@ -83,7 +83,12 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 		}
 		super.addSubscriber(subscriber, -1);
 	}
-	
+
+
+	public Clock clock() {
+		return _clock;
+	}
+
 	
 	public void close() throws IOException {
 		_outputLog.close();
@@ -166,7 +171,7 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 
 
 	protected void handleExceptionWhileWriting(IOException iox, File logFile, Object objectToWrite, long transactionNumber) {
-		hang(iox, "\nThe exception above was thrown while trying to write transaction " + transactionNumber + " to file " + logFile + " . Prevayler's default behavior is to display this message and block all transactions. You can change this behavior by extending the TransactionLogger class and overriding the method called: handleExceptionWhileWriting(IOException iox, File logFile, Object objectToWrite, long transactionNumber).");
+		hang(iox, "\nThe exception above was thrown while trying to write " + objectToWrite.getClass() + " to file " + logFile + " (Transaction number " + transactionNumber + "). Prevayler's default behavior is to display this message and block all transactions. You can change this behavior by extending the TransactionLogger class and overriding the method called: handleExceptionWhileWriting(IOException iox, File logFile, Object objectToWrite, long transactionNumber).");
 	}
 
 

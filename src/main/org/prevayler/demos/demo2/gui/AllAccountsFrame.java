@@ -1,6 +1,6 @@
 package org.prevayler.demos.demo2.gui;
 
-import org.prevayler.util.QueryPrevayler;
+import org.prevayler.util.QueryExecuter;
 import org.prevayler.demos.demo2.business.*;
 import org.prevayler.demos.demo2.business.transactions.*;
 import javax.swing.*;
@@ -10,10 +10,10 @@ import java.awt.event.*;
 
 class AllAccountsFrame extends JInternalFrame implements BankListener, AccountListener {
 
-	private final QueryPrevayler _prevayler;
+	private final QueryExecuter _prevayler;
 	private final JList accountList;
 
-	AllAccountsFrame(QueryPrevayler prevayler, Container container) {
+	AllAccountsFrame(QueryExecuter prevayler, Container container) {
     	super("All Accounts", true);  //true means resizable.
 		_prevayler = prevayler;
 		
@@ -47,7 +47,8 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
 	}
 	
 	private Bank bank() {
-		return (Bank)_prevayler.prevalentSystem();
+		// TODO Change type to PrevayerFacade and call _prevayler.prevalentSystem() directly.
+		return (Bank)_prevayler.prevayler().prevalentSystem();
 	}
 	
 	public void accountCreated(Account a) { //Implements BankListener.

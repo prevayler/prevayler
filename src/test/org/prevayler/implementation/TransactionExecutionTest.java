@@ -30,15 +30,6 @@ public class TransactionExecutionTest extends TestCase {
 		assertState("abc");
 	}
 
-	/** Transactions cannot directly reference the prevalent system nor any business object because, after serialization, the transaction will have a new copy instead of a reference to the actual object. This is also known as the Prevalence baptism problem because almost all newbies come across it. The point of this test is to make sure that the transient Prevayler implementation also produces this behaviour. */
-	public void testBaptismProblem() {
-		appendWithDirectReference();
-		
-		//Must uncomment this next line:
-		//assertState("");   //The system state cannot change.
-	}
-
-
 	private void assertState(String expected) {
 		String result = ((AppendingSystem)prevayler.prevalentSystem()).value();
 		assertEquals(expected, result);
@@ -46,10 +37,6 @@ public class TransactionExecutionTest extends TestCase {
 
 	private void append(String appendix) {
 		prevayler.execute(new Appendix(appendix));
-	}
-
-	private void appendWithDirectReference() {
-		prevayler.execute(new DirectReferenceTransaction((AppendingSystem)prevayler.prevalentSystem()));
 	}
 
 }
@@ -79,18 +66,4 @@ class Appendix implements Transaction {
 	Appendix(String appendix) {
 		this.appendix = appendix;
 	}
-}
-
-class DirectReferenceTransaction implements Transaction {
-
-	private final AppendingSystem illegalDirectReference;
-
-	public void executeOn(Object ignored, Date ignoredToo) {
-		illegalDirectReference.append("anything");
-	}
-
-	public DirectReferenceTransaction(AppendingSystem illegalDirectReference) {
-		this.illegalDirectReference = illegalDirectReference;
-	}
-
 }
