@@ -11,8 +11,8 @@ import org.prevayler.Transaction;
 
 public class TransactionTimestamp implements Serializable {
 
-    static final long serialVersionUID = -6145113021313406573L;
-
+    static final long serialVersionUID = 0L;
+	
 	public final Transaction transaction;
 	public final Date timestamp;
 
