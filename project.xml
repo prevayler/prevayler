@@ -4,8 +4,22 @@
     <name>Prevayler</name>
     <id>prevayler</id>
     <currentVersion>2.00.000dev</currentVersion>
-    
+
+    <dependencies>
+        <dependency>
+            <id>junit</id>
+            <version>3.8.1</version>
+        </dependency>
+    </dependencies>
+
     <build>
-    	<sourceDirectory>src</sourceDirectory>
+    	<sourceDirectory>src/main</sourceDirectory>
+    	<unitTestSourceDirectory>src/test</unitTestSourceDirectory>
+
+        <unitTest>
+            <includes>
+                <include>**/AllTestSuite.java</include>
+            </includes>
+        </unitTest>
     </build>
 </project>
