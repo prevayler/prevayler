@@ -159,3 +159,15 @@ to use this class is provided in
 org.prevayler.socketserver.server.ServerConfig.
 
 
+What if the server crashes?
+---------------------------
+
+If the server crashes or is shut down while clients are still
+up, all subsequent calls to Remote.conn.exec() will throw
+a java.net.SocketException.  Calls to Remote.conn.execl() will
+log this exception, then return null.
+
+Client code should be prepared to deal with this eventuality
+in whatever means makes sense: shut down, wait for a specified
+amount of time then try to reconnect, etc.
+
