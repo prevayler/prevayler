@@ -44,10 +44,10 @@ public class NotificationThread extends Thread {
     private Long id;
     
     /**
-     * Returns the id.
+     * Returns the socket id.
      * @return long
      */
-    public Long getId() {
+    public Long getSocketId() {
         return id;
     }
 

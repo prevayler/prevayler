@@ -65,8 +65,8 @@ public class Notification extends Thread {
         while (i.hasNext()) {
             client = (NotificationThread)i.next();
             if (client.isAlive()) {
-                if (enabledCallbacks.containsKey(client.getId())) {
-                    HashMap callbacks = (HashMap) enabledCallbacks.get(client.getId());
+                if (enabledCallbacks.containsKey(client.getSocketId())) {
+                    HashMap callbacks = (HashMap) enabledCallbacks.get(client.getSocketId());
                     if (callbacks.containsKey(message)) {
         	            client.submit(senderID, message, obj);
                     }
@@ -76,7 +76,7 @@ public class Notification extends Thread {
                 i.remove();
 
                 // ...and remove any callbacks registered for it
-                enabledCallbacks.remove(client.getId());
+                enabledCallbacks.remove(client.getSocketId());
             }
         }
     }
