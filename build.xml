@@ -148,7 +148,7 @@
             description="Compile test case sources" >
         <antcall target="-compile.sub">
             <param name="srcdir" value="${src.test.home}" />
-            <param name="includes" value="**/test/**/*.java" />
+            <param name="includes" value="**/*.java" />
             <param name="excludes" value="**/old**/**" />
         </antcall>
     </target>
