@@ -4,18 +4,17 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
-import org.prevayler.foundation.FileIOTest;
-
 import java.io.IOException;
 import java.io.Serializable;
+
+import org.prevayler.Prevayler;
+import org.prevayler.PrevaylerFactory;
+import org.prevayler.foundation.*;
 
 
 public class PrevaylerFactoryTest extends FileIOTest {
 
-	private static final Serializable POJO = new Serializable() {
-	};
+	private static final Serializable POJO = new Serializable() {}; 
 
 	public void testTransientPrevaylerCreation() {
 		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler(POJO);
