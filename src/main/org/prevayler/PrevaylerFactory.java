@@ -322,8 +322,7 @@ public class PrevaylerFactory {
 			return (Journal) new TransientJournal();
 		} else {
 			PrevaylerDirectory directory = new PrevaylerDirectory(prevalenceDirectory());
-			return new PersistentJournal(directory, _journalSizeThreshold, _journalAgeThreshold,
-					journalSuffix(), journalSerializer(), monitor());
+			return new PersistentJournal(directory, _journalSizeThreshold, _journalAgeThreshold, journalSuffix(), monitor());
 		}
 	}
 

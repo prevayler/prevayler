@@ -3,9 +3,6 @@
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //Contributions: Justin Sampson.
 package org.prevayler.foundation;
-import org.prevayler.implementation.TransactionGuide;
-import org.prevayler.implementation.TransactionTimestamp;
-import org.prevayler.implementation.TransactionWithQueryCapsule;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -58,7 +55,7 @@ public class DurableOutputStream {
 		_fileDescriptor = _fileOutputStream.getFD();
 	}
 
-	public void sync(TransactionGuide guide) throws IOException {
+	public void sync(Guided guide) throws IOException {
 		int thisWrite;
 
 		// When a thread arrives here, all we care about at first is that it
@@ -66,7 +63,7 @@ public class DurableOutputStream {
 
 		guide.startTurn();
 		try {
-			thisWrite = writeObject(guide.timestamp());
+			thisWrite = writeObject(guide);
 		} finally {
 			guide.endTurn();
 		}
@@ -77,18 +74,14 @@ public class DurableOutputStream {
 		waitUntilSynced(thisWrite);
 	}
 
-	private int writeObject(TransactionTimestamp timestamp) throws IOException {
+	private int writeObject(Guided guide) throws IOException {
 		synchronized (_writeLock) {
 			if (_closed) {
 				throw new IOException("already closed");
 			}
 
 			try {
-				Chunk chunk = new Chunk(timestamp.capsule().serialized());
-				chunk.setParameter("withQuery", String.valueOf(timestamp.capsule() instanceof TransactionWithQueryCapsule));
-				chunk.setParameter("systemVersion", String.valueOf(timestamp.systemVersion()));
-				chunk.setParameter("executionTime", String.valueOf(timestamp.executionTime().getTime()));
-				Chunking.writeChunk(_active, chunk);
+				guide.writeTo(_active);
 			} catch (IOException exception) {
 				internalClose();
 				throw exception;

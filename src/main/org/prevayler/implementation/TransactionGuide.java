@@ -1,29 +1,25 @@
 package org.prevayler.implementation;
 
+import org.prevayler.foundation.Chunk;
+import org.prevayler.foundation.Chunking;
+import org.prevayler.foundation.Guided;
 import org.prevayler.foundation.Turn;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 
-public class TransactionGuide {
+public class TransactionGuide extends Guided {
 
 	private final TransactionTimestamp _transactionTimestamp;
-	private final Turn _pipelineTurn;
 
 	public TransactionGuide(TransactionTimestamp transactionTimestamp, Turn pipelineTurn) {
+		super(pipelineTurn);
 		_transactionTimestamp = transactionTimestamp;
-		_pipelineTurn = pipelineTurn;
 	}
 
 	public TransactionTimestamp timestamp() {
 		return _transactionTimestamp;
-	}
-
-	public void startTurn() {
-		_pipelineTurn.start();
-	}
-
-	public void endTurn() {
-		_pipelineTurn.end();
 	}
 
 	public void checkSystemVersion(long expectedSystemVersion) {
@@ -34,6 +30,14 @@ public class TransactionGuide {
 
 	public Date executionTime() {
 		return _transactionTimestamp.executionTime();
+	}
+
+	public void writeTo(OutputStream stream) throws IOException {
+		Chunk chunk = new Chunk(_transactionTimestamp.capsule().serialized());
+		chunk.setParameter("withQuery", String.valueOf(_transactionTimestamp.capsule() instanceof TransactionWithQueryCapsule));
+		chunk.setParameter("systemVersion", String.valueOf(_transactionTimestamp.systemVersion()));
+		chunk.setParameter("executionTime", String.valueOf(_transactionTimestamp.executionTime().getTime()));
+		Chunking.writeChunk(stream, chunk);
 	}
 
 }

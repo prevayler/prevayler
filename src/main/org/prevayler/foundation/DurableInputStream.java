@@ -6,7 +6,6 @@
 package org.prevayler.foundation;
 
 import org.prevayler.foundation.monitor.Monitor;
-import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.Capsule;
 import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionTimestamp;
@@ -22,21 +21,18 @@ import java.io.ObjectStreamException;
 import java.io.UTFDataFormatException;
 import java.util.Date;
 
-
 public class DurableInputStream {
 
 	private final File _file;
-	private final Serializer _serializer;
 	private boolean _EOF = false;
 	private Monitor _monitor;
 	private InputStream _fileStream;
 
 
-	public DurableInputStream(File file, Serializer serializer, Monitor monitor) throws IOException {
+	public DurableInputStream(File file, Monitor monitor) throws IOException {
 		_monitor = monitor;
 		_file = file;
 		_fileStream = new BufferedInputStream(new FileInputStream(file));
-		_serializer = serializer;
 	}
 
 

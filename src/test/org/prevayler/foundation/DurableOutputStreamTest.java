@@ -33,7 +33,7 @@ public class DurableOutputStreamTest extends FileIOTest {
 			assertTrue(out.reallyClosed());
 			assertEquals(2, out.fileSyncCount());
 
-			DurableInputStream in = new DurableInputStream(file, new JavaSerializer(), new NullMonitor());
+			DurableInputStream in = new DurableInputStream(file, new NullMonitor());
 			assertEquals("first", value(in.read()));
 			assertEquals("second", value(in.read()));
 			try {
@@ -92,7 +92,7 @@ public class DurableOutputStreamTest extends FileIOTest {
 			assertTrue(out.reallyClosed());
 			assertEquals(syncsBeforeClose, out.fileSyncCount());
 
-			DurableInputStream in = new DurableInputStream(file, new JavaSerializer(), new NullMonitor());
+			DurableInputStream in = new DurableInputStream(file, new NullMonitor());
 			assertEquals("2.first", value(in.read()));
 			assertEquals("1.first", value(in.read()));
 			assertEquals("2.second", value(in.read()));

@@ -9,7 +9,6 @@ import org.prevayler.foundation.DurableInputStream;
 import org.prevayler.foundation.DurableOutputStream;
 import org.prevayler.foundation.StopWatch;
 import org.prevayler.foundation.monitor.Monitor;
-import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.PrevaylerDirectory;
 import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
@@ -36,17 +35,15 @@ public class PersistentJournal implements Journal {
 	private Monitor _monitor;
 
 	private final String _journalSuffix;
-	private final Serializer _journalSerializer;
 
 
 	/**
 	 * @param directory
 	 * @param journalSizeThresholdInBytes Size of the current journal file beyond which it is closed and a new one started. Zero indicates no size threshold. This is useful journal backup purposes.
 	 * @param journalAgeThresholdInMillis Age of the current journal file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful journal backup purposes.
-
 	 */
 	public PersistentJournal(PrevaylerDirectory directory, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis,
-							 String journalSuffix, Serializer journalSerializer, Monitor monitor) throws IOException {
+							 String journalSuffix, Monitor monitor) throws IOException {
 		PrevaylerDirectory.checkValidJournalSuffix(journalSuffix);
 
 	    _monitor = monitor;
@@ -55,7 +52,6 @@ public class PersistentJournal implements Journal {
 		_journalSizeThresholdInBytes = journalSizeThresholdInBytes;
 		_journalAgeThresholdInMillis = journalAgeThresholdInMillis;
 		_journalSuffix = journalSuffix;
-		_journalSerializer = journalSerializer;
 	}
 
 
@@ -166,7 +162,7 @@ public class PersistentJournal implements Journal {
 			throws IOException, ClassNotFoundException {
 		long recoveringTransaction = PrevaylerDirectory.journalVersion(initialJournal);
 		File journal = initialJournal;
-		DurableInputStream input = new DurableInputStream(journal, _journalSerializer, _monitor);
+		DurableInputStream input = new DurableInputStream(journal, _monitor);
 
 		while(true) {
 			try {
@@ -195,7 +191,7 @@ public class PersistentJournal implements Journal {
 				if (journal.equals(nextFile)) PrevaylerDirectory.renameUnusedFile(journal);  //The first transaction in this log file is incomplete. We need to reuse this file name.
 				journal = nextFile;
 				if (!journal.exists()) break;
-				input = new DurableInputStream(journal, _journalSerializer, _monitor);
+				input = new DurableInputStream(journal, _monitor);
 			}
 		}
 		return recoveringTransaction;
