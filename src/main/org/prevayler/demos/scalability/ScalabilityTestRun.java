@@ -1,5 +1,6 @@
 package org.prevayler.demos.scalability;
 
+import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.StopWatch;
 
 import java.text.DecimalFormat;
@@ -178,11 +179,7 @@ abstract class ScalabilityTestRun {
 	}
 
 	static private void sleep() {
-		try {
-			Thread.sleep(ROUND_DURATION_MILLIS);
-		} catch (InterruptedException ix) {
-			throw new RuntimeException("Unexpected InterruptedException.");
-		}
+		Cool.sleep(ROUND_DURATION_MILLIS);
 	}
 
 	

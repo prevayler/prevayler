@@ -4,12 +4,13 @@
 
 package org.prevayler.implementation;
 
-import java.io.IOException;
-import java.io.File;
-
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.foundation.*;
+import org.prevayler.foundation.Cool;
+import org.prevayler.foundation.FileIOTest;
+
+import java.io.File;
+import java.io.IOException;
 
 public class ReplicationTest extends FileIOTest {
 
@@ -61,7 +62,7 @@ public class ReplicationTest extends FileIOTest {
 
 	private void append(Prevayler prevayler, String appendix, String expectedResult) {
 		prevayler.execute(new Appendix(appendix));
-		try { Thread.sleep(10);	} catch (InterruptedException ignored) { }
+		Cool.sleep(10);
 		assertEquals(expectedResult, serverValue());
 		assertEquals(expectedResult, clientValue());
 	}
@@ -104,11 +105,7 @@ public class ReplicationTest extends FileIOTest {
 	}
 
 	private String clientValue() {
-		try {
-			Thread.sleep(100);  //The client is notified assynchronously.
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		Cool.sleep(100);  //The client is notified assynchronously.
 		return ((AppendingSystem)_client.prevalentSystem()).value();
 	}
 

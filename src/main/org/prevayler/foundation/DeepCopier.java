@@ -33,7 +33,6 @@ public class DeepCopier {
 		PipedInputStream inputStream = new PipedInputStream(outputStream);
 
 		Receiver receiver = new Receiver(inputStream, serializer);
-		receiver.start();
 
 		try {
 			serializer.writeObject(outputStream, original);
@@ -41,33 +40,23 @@ public class DeepCopier {
 			outputStream.close();
 		}
 
-		try {
-			receiver.join();
-		} catch (InterruptedException e) {
-			throw new RuntimeException("Unexpected InterruptedException", e);
-		}
-
-		if (receiver._error != null) throw new RuntimeException("Error during deserialization", receiver._error);
-		if (receiver._runtimeException != null) throw receiver._runtimeException;
-		if (receiver._classNotFoundException != null) throw receiver._classNotFoundException;
-		if (receiver._ioException != null) throw receiver._ioException;
-		if (receiver._result != null) return receiver._result;
-		throw new RuntimeException("Deep copy failed in an unknown way");
+		return receiver.getResult();
 	}
 
 	private static class Receiver extends Thread {
 
 		private InputStream _inputStream;
 		private Serializer _serializer;
-		public Object _result;
-		public IOException _ioException;
-		public ClassNotFoundException _classNotFoundException;
-		public RuntimeException _runtimeException;
-		public Error _error;
+		private Object _result;
+		private IOException _ioException;
+		private ClassNotFoundException _classNotFoundException;
+		private RuntimeException _runtimeException;
+		private Error _error;
 
 		public Receiver(InputStream inputStream, Serializer serializer) {
 			_inputStream = inputStream;
 			_serializer = serializer;
+			start();
 		}
 
 		public void run() {
@@ -83,6 +72,33 @@ public class DeepCopier {
 				_error = e;
 				throw e;
 			}
+
+			try {
+				// Some serializers may write more than they actually need to deserialize the object, but if
+				// we don't read it all the PipedOutputStream will choke.
+				while (_inputStream.read() != -1) {}
+			} catch (IOException e) {
+				// The object has been successfully deserialized, so ignore problems at this point (for example,
+				// the serializer may have explicitly closed the _inputStream itself, causing this read to fail).
+			}
+		}
+
+		public Object getResult() throws ClassNotFoundException, IOException {
+			try {
+				join();
+			} catch (InterruptedException e) {
+				throw new RuntimeException("Unexpected InterruptedException", e);
+			}
+
+			// join() guarantees that all shared memory is synchronized between the two threads
+
+			if (_error != null) throw new RuntimeException("Error during deserialization", _error);
+			if (_runtimeException != null) throw _runtimeException;
+			if (_classNotFoundException != null) throw _classNotFoundException;
+			if (_ioException != null) throw _ioException;
+			if (_result == null) throw new RuntimeException("Deep copy failed in an unknown way");
+
+			return _result;
 		}
 
 	}
