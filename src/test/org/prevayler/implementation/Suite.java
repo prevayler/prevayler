@@ -19,6 +19,7 @@ public class Suite extends TestCase {
 		suite.addTestSuite(CheckpointTest.class);
 		suite.addTestSuite(RollbackTest.class);
 		suite.addTestSuite(ReplicationTest.class);
+		suite.addTestSuite(DurableOutputStreamTest.class);
 		return suite;
 	}
 }
