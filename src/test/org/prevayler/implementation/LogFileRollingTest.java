@@ -51,7 +51,7 @@ public class LogFileRollingTest extends PrevalenceTest {
 		out("CrashRecovery.");
 		if (_prevayler != null) _prevayler.close();
 		PrevaylerFactory factory = new PrevaylerFactory();
-		factory.configureTransactionLogFileSizeThreshold(225);  //Enough to hold 2 transactions.
+		factory.configureTransactionLogFileSizeThreshold(226);  //Enough to hold 2 transactions.
 		factory.configureTransactionLogFileAgeThreshold(0);  //Not being tested.
 		factory.configurePrevalenceBase(_testDirectory);
 		factory.configurePrevalentSystem(new AppendingSystem());

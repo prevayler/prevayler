@@ -65,6 +65,7 @@ public class DurableOutputStream {
 		}
 
 		_objectOutputStream.writeObject(object);
+		_objectOutputStream.reset();
 		_objectsWritten++;
 		notifyAll();
 		return _objectsWritten;
