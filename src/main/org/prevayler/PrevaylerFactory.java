@@ -200,7 +200,7 @@ public class PrevaylerFactory {
 
 
 	/**
-	 * Configures the size (in bytes) of the journal file.
+	 * Configures the size (in bytes) of the journal file. When the current journal exceeds this size, a new journal is created.
 	 */
 	public void configureJournalFileSizeThreshold(long sizeInBytes) {
 		_journalSizeThreshold = sizeInBytes;
@@ -208,7 +208,7 @@ public class PrevaylerFactory {
 
 
 	/**
-	 * Sets the age (in milliseconds) of the journal file.
+	 * Sets the age (in milliseconds) of the journal file. When the current journal expires, a new journal is created.
 	 */
 	public void configureJournalFileAgeThreshold(long ageInMilliseconds) {
 		_journalAgeThreshold = ageInMilliseconds;
