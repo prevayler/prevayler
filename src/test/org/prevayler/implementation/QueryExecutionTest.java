@@ -13,9 +13,10 @@ import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.Query;
 import org.prevayler.TransactionWithQuery;
+import org.prevayler.foundation.*;
 
 
-public class QueryExecutionTest extends PrevalenceTest {
+public class QueryExecutionTest extends FileIOTest {
 
 	public void testQuery() throws Exception {
 		List prevalentSystem = new LinkedList();

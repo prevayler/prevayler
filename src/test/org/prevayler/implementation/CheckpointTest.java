@@ -8,9 +8,10 @@ import java.io.IOException;
 
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
+import org.prevayler.foundation.*;
 
 
-public class CheckpointTest extends PrevalenceTest {
+public class CheckpointTest extends FileIOTest {
 
 	private Prevayler _prevayler;
 

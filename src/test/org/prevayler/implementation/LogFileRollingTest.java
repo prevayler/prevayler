@@ -8,8 +8,9 @@ import java.io.IOException;
 
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
+import org.prevayler.foundation.*;
 
-public class LogFileRollingTest extends PrevalenceTest {
+public class LogFileRollingTest extends FileIOTest {
 
 	private Prevayler _prevayler;
 	private String _prevalenceBase;

@@ -9,8 +9,9 @@ import java.io.File;
 
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
+import org.prevayler.foundation.*;
 
-public class ReplicationTest extends PrevalenceTest {
+public class ReplicationTest extends FileIOTest {
 
 	private Prevayler _server;
 	private Prevayler _client;

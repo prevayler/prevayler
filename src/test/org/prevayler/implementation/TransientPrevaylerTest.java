@@ -10,9 +10,10 @@ import java.util.Date;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.Transaction;
+import org.prevayler.foundation.*;
 
 
-public class TransientPrevaylerTest extends PrevalenceTest {
+public class TransientPrevaylerTest extends FileIOTest {
 
 	private Prevayler prevayler;
 

@@ -2,20 +2,20 @@
 //Copyright (C) 2001-2003 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-package org.prevayler.implementation;
+package org.prevayler.foundation;
 
 import java.io.File;
 
 import junit.framework.TestCase;
 
 
-public abstract class PrevalenceTest extends TestCase {
+public abstract class FileIOTest extends TestCase {
 
 	protected String _testDirectory;
 	static private long counter = 0;
 
 	protected void setUp() throws Exception {
-		File tempFile = new File("PrevalenceBase" + System.currentTimeMillis() + counter++);
+		File tempFile = new File("Test" + System.currentTimeMillis() + counter++);
 		assertTrue("Unable to create directory " + tempFile, tempFile.mkdirs());
 		_testDirectory = tempFile.getAbsolutePath();
 	}
