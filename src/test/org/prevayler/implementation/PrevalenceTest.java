@@ -42,17 +42,8 @@ public abstract class PrevalenceTest extends TestCase {
 	}
 
 	static private void deleteDirectoryContents(File directory) {
-		File[] files = directory.listFiles(new PrevalenceFileFilter());
+		File[] files = directory.listFiles();
 		if (files == null) return;
 	    for (int i = 0; i < files.length; i++) delete(files[i]);
 	}
-
-	static private class PrevalenceFileFilter implements FileFilter {
-		public boolean accept(File file) {
-			return file.getName().endsWith("transactionLog")
-				|| file.getName().endsWith("snapshot")
-				|| file.isDirectory();
-		}
-	}
-
 }
