@@ -238,12 +238,14 @@ public class PrevaylerFactory {
 		configureJournalSerializer("skaringajournal", serializer);
 	}
 
+	/**
+	 * Configures the transaction journal Serializer to be used by the Prevayler created by this factory. Only one Serializer is supported at a time. If you want to change the Serializer of a system in production, you will have to take a snapshot first because the journal files written by the previous Serializer will not be read. 
+	 */
 	public void configureJournalSerializer(String suffix, Serializer serializer) {
 		FileManager.checkValidJournalSuffix(suffix);
 
 		if (_journalSerializer != null) {
-			throw new IllegalStateException("Trying to read multiple journal formats and make sure behavior " +
-					"is always the same is error-prone.  Instead, take a snapshot before upgrading.");
+			throw new IllegalStateException("Read the javadoc to this method.");
 		}
 
 		_journalSerializer = serializer;
