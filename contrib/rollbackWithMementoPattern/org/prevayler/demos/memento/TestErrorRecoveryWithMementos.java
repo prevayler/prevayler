@@ -36,7 +36,7 @@ public class TestErrorRecoveryWithMementos {
   
   static {
     try {
-      prevayler = PrevaylerFactory.createPrevayler(new Bank());
+      prevayler = PrevaylerFactory.createPrevayler(new Bank(), "demoMemento");
       bank = (Bank)prevayler.prevalentSystem();
     } catch (Exception e) {
       System.out.println("FAILED TO CREATE PREVAYLER!");
