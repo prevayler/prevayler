@@ -6,8 +6,9 @@ import org.prevayler.demos.demo2.business.Account;
 
 public class Deposit extends AccountTransaction {
 
-	private final long _amount;
+	private long _amount;
 
+    private Deposit() {} //Necessary for Skaringa XML serialization
 	public Deposit(Account account, long amount) {
 		super(account);
 		_amount = amount;

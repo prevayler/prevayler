@@ -11,12 +11,15 @@ import org.prevayler.*;
 
 class TransactionWithQueryExecuter implements Transaction {
 
+    static final long serialVersionUID = 0L;
+
 	TransactionWithQuery _delegate;
 
 	private transient Object _result;
 	private transient Exception _exception;
 
 
+    private TransactionWithQueryExecuter() {} //Necessary for Skaringa XML serialization
 	TransactionWithQueryExecuter(TransactionWithQuery transactionWithQuery) {
 		_delegate = transactionWithQuery;
 	}

@@ -6,11 +6,12 @@ import org.prevayler.demos.demo2.business.Bank;
 
 public class Transfer extends BankTransaction {
 
-	private final long _originAccountNumber;
-	private final long _destinationAccountNumber;
-	private final long _amount;
+	private long _originAccountNumber;
+	private long _destinationAccountNumber;
+	private long _amount;
 
 
+    private Transfer() {} //Necessary for Skaringa XML serialization
 	public Transfer(long originAccountNumber, long destinationAccountNumber, long amount) {
 		_originAccountNumber = originAccountNumber;
 		_destinationAccountNumber = destinationAccountNumber;

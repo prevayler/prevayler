@@ -7,8 +7,9 @@ import org.prevayler.demos.demo2.business.*;
 
 public class AccountDeletion extends BankTransaction {
 
-	private final long _accountNumber;
+	private long _accountNumber;
 
+    private AccountDeletion() {} //Necessary for Skaringa XML serialization
 	public AccountDeletion(Account account) {
 		_accountNumber = account.number();
 	}

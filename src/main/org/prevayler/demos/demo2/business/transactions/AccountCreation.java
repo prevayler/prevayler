@@ -7,8 +7,9 @@ import org.prevayler.demos.demo2.business.*;
 
 public class AccountCreation extends BankTransaction {
 
-	private final String _holder;
+	private String _holder;
 
+    private AccountCreation() {} //Necessary for Skaringa XML serialization
 	public AccountCreation(String holder) {
 		_holder = holder;
 	}

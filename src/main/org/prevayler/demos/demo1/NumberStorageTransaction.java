@@ -10,9 +10,9 @@ import org.prevayler.Transaction;
  */
 class NumberStorageTransaction implements Transaction {
 
-	private final int _numberToKeep;
+	private int _numberToKeep;
 
-
+    private NumberStorageTransaction() {} //Necessary for Skaringa XML serialization
 	NumberStorageTransaction(int numberToKeep) {
 		_numberToKeep = numberToKeep;
 	}

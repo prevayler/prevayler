@@ -6,9 +6,9 @@ import org.prevayler.demos.demo2.business.Account;
 
 public class HolderChange extends AccountTransaction {
 
-	private final String _newHolder;
+	private String _newHolder;
 
-
+    private HolderChange() {} //Necessary for Skaringa XML serialization
 	public HolderChange(Account account, String newHolder) {
 		super(account);
 		_newHolder = newHolder;

@@ -125,7 +125,7 @@
             <mapper type="glob" from="sample.*" to="*" />
         </copy>
         <copy file="${basedir}/log4j.xml" todir="${classesdir.main}" />
-        <copy file="${rootdir}/docs/license.txt" tofile="${classesdir.main}/META-INF/Prevayler.license.txt" />
+        <copy file="${rootdir}/docs/license.txt" tofile="${classesdir.main}/Prevayler.license.txt" />
         <!-- Fileset for unit tests.  Default values specified in sample.build.properties.  Override in build.properties -->
         <fileset id="unit.test.files"
             dir="${srcdir.test}"
