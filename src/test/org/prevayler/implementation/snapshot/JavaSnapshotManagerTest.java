@@ -26,12 +26,9 @@ public class JavaSnapshotManagerTest extends FileIOTest {
 		try {
 			new JavaSnapshotManager("initial", _testDirectory, null);
 			fail();
-		} catch (FileNotFoundException e) {
-			// AbstractSnapshotManager recognizes the .xstreamsnapshot file as a snapshot and gets the
-			// version number from it, but then tries to open a .snapshot file with that version and doesn't
-			// find it. This is good because if we only looked for .snapshot files we could silently ignore
-			// an existing snapshot.
-			assertTrue(e.getMessage().endsWith("/0000000000000000123.snapshot (No such file or directory)"));
+		} catch (IOException e) {
+			// This is good because if we only looked for .snapshot files we could silently ignore an existing snapshot.
+			assertTrue(e.getMessage().endsWith("/0000000000000000123.xstreamsnapshot cannot be read by org.prevayler.implementation.snapshot.JavaSnapshotManager"));
 		}
 	}
 }

@@ -34,10 +34,12 @@ public abstract class AbstractSnapshotManager implements SnapshotManager {
 		checkValidSuffix(suffix());
 
 		_directory = FileManager.produceDirectory(snapshotDirectoryName);
-		_recoveredVersion = latestVersion();
-		_recoveredPrevalentSystem = _recoveredVersion == 0
+
+		File latestSnapshot = latestSnapshot(_directory);
+		_recoveredVersion = latestSnapshot == null ? 0 : version(latestSnapshot);
+		_recoveredPrevalentSystem = latestSnapshot == null
 			? newPrevalentSystem
-			: readSnapshot(_recoveredVersion);
+			: readSnapshot(latestSnapshot);
 	}
 
 	public Object recoveredPrevalentSystem() { return _recoveredPrevalentSystem; }
@@ -81,33 +83,9 @@ public abstract class AbstractSnapshotManager implements SnapshotManager {
 	}
 
 
-	/**
-     * Returns zero if no snapshot file was found.
-	 */
-	private long latestVersion() throws IOException {
-		return latestVersion(_directory);
-	}
-
-	private static long latestVersion(File directory) throws IOException {
-		String[] fileNames = directory.list();
-		if (fileNames == null) throw new IOException("Error reading file list from directory " + directory);
-
-		long result = 0;
-		for (int i = 0; i < fileNames.length; i++) {
-			long candidate = version(fileNames[i]);
-			if (candidate > result) result = candidate;
-		}
-		return result;
-	}
-
-
-	private Object readSnapshot(long version) throws ClassNotFoundException, IOException {
-		File snapshotFile = snapshotFile(version);
-		return readSnapshot(snapshotFile);
-	}
-
-
 	private Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {
+		if (!snapshotFile.getName().endsWith("." + suffix())) throw new IOException(snapshotFile.toString() + " cannot be read by " + this.getClass().getName());
+
         FileInputStream in = new FileInputStream(snapshotFile);
         try {
             return readSnapshot(in);
@@ -144,21 +122,45 @@ public abstract class AbstractSnapshotManager implements SnapshotManager {
 	/**
      * Returns -1 if fileName is not the name of a snapshot file.
 	 */
-	private static long version(String fileName) {
+	private static long version(File file) {
+		String fileName = file.getName();
 		if (!fileName.matches(SNAPSHOT_FILENAME_PATTERN)) return -1;
 		return Long.parseLong(fileName.substring(0, fileName.indexOf(".")));    // "00000.snapshot" becomes "00000".
 	}
 
+	/**
+	 * Find the latest snapshot file, regardless of the snapshot manager that created it. Returns null if no snapshot file was found.
+	 */
+	public static File latestSnapshot(File directory) throws IOException {
+		File[] files = directory.listFiles();
+		if (files == null) throw new IOException("Error reading file list from directory " + directory);
+
+		File latestSnapshot = null;
+		long latestVersion = 0;
+		for (int i = 0; i < files.length; i++) {
+			File candidateSnapshot = files[i];
+			long candidateVersion = version(candidateSnapshot);
+			if (candidateVersion > latestVersion) {
+				latestVersion = candidateVersion;
+				latestSnapshot = candidateSnapshot;
+			}
+		}
+		return latestSnapshot;
+	}
+
 
 	/**
-     * Find the latest snapshot file. Returns null if no snapshot file was found.
+     * Find the latest snapshot file. Returns null if no snapshot file was found or if the latest snapshot
+	 * does not have the given suffix.
+	 *
+	 * @deprecated Use {@link #latestSnapshot(java.io.File)} instead.
 	 */
 	public static File latestSnapshotFile(File directory, String suffix) throws IOException {
-		long version = latestVersion(directory);
-		if (version == 0) {
+		File latestSnapshot = latestSnapshot(directory);
+		if (latestSnapshot == null || !latestSnapshot.getName().endsWith("." + suffix)) {
 			return null;
 		} else {
-			return snapshotFile(version, directory, suffix);
+			return latestSnapshot;
 		}
 	}
 

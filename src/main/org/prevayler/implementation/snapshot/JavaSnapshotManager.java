@@ -36,7 +36,10 @@ public class JavaSnapshotManager extends GenericSnapshotManager {
 	}
 
 	/**
-     * Find the latest snapshot file. Returns null if no snapshot file was found.
+	 * Find the latest snapshot file. Returns null if no snapshot file was found or if the latest snapshot
+	 * does not have the suffix "snapshot".
+	 *
+	 * @deprecated Use {@link #latestSnapshot(java.io.File)} instead.
 	 */
 	public static File latestSnapshotFile(File directory) throws IOException {
 		return latestSnapshotFile(directory, SUFFIX);
