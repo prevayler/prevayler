@@ -28,8 +28,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import org.prevayler.socketserver.util.Log;
 
 /**
  * This thread receives update notifications from the remote model and propogates
@@ -142,8 +145,12 @@ public class CallbackThread extends Thread {
 	            if (e instanceof EOFException) {
 	                // Do nothing, this is normal behavior on connection close
 	            	break;
-	            } else {
-	                e.printStackTrace();
+	            } else if (e instanceof SocketException){
+                    Log.debug("Server disconnected");
+                    Log.debug(e.toString());
+                    break;
+                } else {
+                    Log.error(e, "Unexpected exception");
 	            }
 	        }
         }
