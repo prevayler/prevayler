@@ -6,12 +6,16 @@ package org.prevayler;
 
 import java.io.Serializable;
 
-/** An atomic "transaction" to be executed in a PrevalentSystem.
-*/
+
+/**
+ * An atomic transaction to be executed on a PrevalentSystem. Any operation which changes the observable state of a PrevalentSystem must be encapsulated as a Command.
+ */
 public interface Command extends Serializable {
 
-    /** Executes this command on the received PrevalentSystem. See the demo application for examples.
-    */
-    Serializable execute(PrevalentSystem system) throws Exception;
+  /**
+   * Executes this command on the received system. See org.prevayler.demos for examples. The returned object has to be Serializable in preparation for future versions of Prevayler that will provide fault-tolerance through system replicas.
+   * @return The object returned by the execution of this command. Most commands simply return null.
+   */
+  public Serializable execute(PrevalentSystem system) throws Exception;
 
 }

@@ -10,7 +10,7 @@ import java.util.*;
 
 /** Saves and recovers commands and snapshots to/from files.
 */
-public class PrevalenceBase {
+class PrevalenceBase {
 
 	private final File snapshotDirectory;
 	private final File[] commandLogDirectories;
@@ -21,13 +21,13 @@ public class PrevalenceBase {
 	private boolean loggersCreated = false;
 	private long nextCommandSequence;
 
-	public PrevalenceBase(String snapshotDirectoryName, String[] commandLogDirectoryNames) throws IOException {
+	PrevalenceBase(String snapshotDirectoryName, String[] commandLogDirectoryNames) throws IOException {
 		snapshotDirectory = findDirectory(snapshotDirectoryName);
 		commandLogDirectories = findDirectories(commandLogDirectoryNames);
 	}
 
 	
-	public PrevalentSystem recoverSystem(PrevalentSystem newSystem) throws ClassNotFoundException, IOException {
+	PrevalentSystem recoverSystem(PrevalentSystem newSystem) throws ClassNotFoundException, IOException {
 		SystemRecoverer recoverer = new SystemRecoverer(snapshotDirectory, commandLogDirectories);
 		PrevalentSystem system = recoverer.recover(newSystem);
 
@@ -37,7 +37,7 @@ public class PrevalenceBase {
 	}
 
 
-	public CommandLogger availableCommandLogger() throws IOException {
+	CommandLogger availableCommandLogger() throws IOException {
 		synchronized (availableLoggers) {
 			while (availableLoggers.isEmpty()) {
 					if (loggersCreated) {
@@ -75,12 +75,12 @@ public class PrevalenceBase {
 	}
 
 
-	public void generateCommandSequence(CommandLogger commandLogger, long executionTime) {
-		commandLogger.commandSequence(executionTime, nextCommandSequence++);
+	void generateExecutionSequence(CommandLogger commandLogger, long executionTime) {
+		commandLogger.executionSequence(executionTime, nextCommandSequence++);
 	}
 
 
-	public void flushToDisk(CommandLogger commandLogger) throws IOException {
+	void flushToDisk(CommandLogger commandLogger) throws IOException {
 		commandLogger.flushToDisk();
 		makeLoggerAvailable(commandLogger);
 	}
@@ -99,7 +99,9 @@ public class PrevalenceBase {
 	}
 
 
-	public void writeSnapshot(PrevalentSystem system) throws IOException {
+	void writeSnapshot(PrevalentSystem system) throws IOException {
+		closeLoggers();
+
 		File tempSnapshot = fileCreator.newTempSnapshot(snapshotDirectory);
 
 		ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(tempSnapshot));
@@ -108,8 +110,6 @@ public class PrevalenceBase {
 
 		File snapshot = fileCreator.newSnapshot(snapshotDirectory);
 		if (!tempSnapshot.renameTo(snapshot)) throw new IOException("Unable to rename " + tempSnapshot + " to " + snapshot);
-		
-		closeLoggers();
 	}
 
 	private void closeLoggers() throws IOException {

@@ -6,20 +6,21 @@ package org.prevayler;
 
 import java.io.Serializable;
 
+
 /**
-* A system that implements this interface can be made transparently persistent with Prevayler.
-* All implementing systems must be deterministic.
-* i.e.: Any two PrevalentSystems of the same class must produce the same results given the same commands.
-* @see org.prevayler.Prevayler
-*/
+ * A system that implements this interface can be made transparently persistent with Prevayler. All business objects in this system must be deterministic. i.e.: Any two PrevalentSystems of the same class must produce the same results given the same commands.
+ * @see org.prevayler.Prevayler
+ */
 public interface PrevalentSystem extends Serializable {
 
-	/** Sets the clock to be used by this system for ALL its date/time related functions.
-	* This method is called only once by the Prevaler during the first system initialization.
-	*/
-	void clock(AlarmClock clock);
+  /**
+   * Sets the clock to be used by this system for ALL its date/time related functions. This method is called only once by Prevayler during the first system initialization.
+   */
+  public void clock(AlarmClock clock);
 
-	/** Returns the clock used by this system for ALL its date/time related functions.
-	*/
-	AlarmClock clock();
+  /**
+   * Returns the clock used by this system for ALL its date/time related functions.
+   */
+  public AlarmClock clock();
+
 }

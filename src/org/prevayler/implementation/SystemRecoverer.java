@@ -9,8 +9,11 @@ import java.io.*;
 import java.util.*;
 import java.text.*;
 
-/** Finds the last snapshot file by number and finds all the subsequent pending command log files.
-*/
+
+/**
+ * Recovers the state of a PrevalentSystem by reading the last snapshot file, if any, reading commands from the pending commandLog files and "reexecuting" them.
+ * @see CommandLogRecoverer
+ */
 class SystemRecoverer {
 
 	private PrevalentSystem system;
@@ -56,7 +59,7 @@ class SystemRecoverer {
 
 		while (nextLogFile()) {
 			CommandLogRecoverer newLogRecoverer = new CommandLogRecoverer(currentLogFile, system);
-			if (newLogRecoverer.isCommandSequenceRestarted()) {
+			if (newLogRecoverer.isExecutionSequenceRestarted()) {
 				nextCommandNumber = 1;
 				clearLogRecoverers(logRecoverers);
 			}

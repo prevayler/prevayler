@@ -7,13 +7,15 @@ package org.prevayler;
 import java.io.Serializable;
 import java.util.Date;
 
-/** A clock used in the PrevalentSystem for ALL its date/time related functions.
-* The next version of AlarmClock will be able to wake up other objects in a similar way as javax.swing.Timer or java.util.Timer.
-*/
+
+/** The clock used by every business object in a PrevalentSystem for ALL its date/time related functions.
+ * If any business object were to access the system clock directly, with methods like new Date() and System.currentTimeMillis(), its behaviour would NOT be deterministic.
+ * A future version of AlarmClock will be able to wake up other objects in a way similar to javax.swing.Timer and java.util.Timer.
+ */
 public interface AlarmClock extends Serializable {
 
-    /** Returns the time.
-    * @return A Date greater or equal to the one returned by the last call to this method. If the time is the same as the last call, the SAME Date object will be returned and not a new, equal one.
-    */
-    Date time();
+  /** Returns the "current" time. The same value will be returned for every call, throughout the execution of a command, ensuring that each command is executed in a single moment in time. Without this, the commands could not be deterministically re-executed during crash-recovery.
+   * @return A Date greater or equal to the one returned by the last call to this method. If the time is the same as the last call, the SAME Date object is guaranteed to be returned and not a new, equal one.
+   */
+  public Date time();
 }

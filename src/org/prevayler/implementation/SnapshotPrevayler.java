@@ -8,11 +8,19 @@ import java.util.*;
 import java.io.*;
 import org.prevayler.*;
 
-/** Provides transparent persistence for business objects.
-* This applies to any deterministic system implementing the PrevalentSystem interface.
-* All commands to the system must be represented as objects implementing the Command interface and must be executed using Prevayler.executeCommand(Command).
-* Take a look at the demo application included with the Prevayler distribution for examples.
-*/
+
+/**
+ * Provides transparent persistence for business objects.
+ * This applies to any deterministic system implementing the PrevalentSystem interface.
+ * All commands to the system must be represented as objects implementing the Command interface and must be executed using Prevayler.executeCommand(Command).
+ * Take a look at the demo application included with the Prevayler distribution for examples.
+
+ * Forces a FileDescriptor.sync() to guarantee ... . This can be turned off, for improved performance, by setting the org.prevayler.SafeCommandLogs system property to "OFF".
+ * "org.prevayler.SafeCommandLogs"
+ * "org.prevayler.CommandLogsThresholdBytes"
+ * "org.prevayler.CommandLogsThresholdMinutes"
+ * @see #java.io.FileDescriptor.sync()
+ */
 public class SnapshotPrevayler implements Prevayler {
 
 	private final PrevalentSystem system;
@@ -79,7 +87,7 @@ public class SnapshotPrevayler implements Prevayler {
 	/** Produces a complete serialized image of the underlying PrevalentSystem.
 	* This will accelerate future system startups. Taking a snapshot once a day is enough for most applications.
 	* Subsequent calls to executeCommand() will be blocked until the snapshot is taken.
-	* @see system()
+	* @see #system()
 	* @throws IOException if there is trouble writing to the snapshot file.
 	*/
 	public void takeSnapshot() throws IOException {
@@ -99,7 +107,7 @@ public class SnapshotPrevayler implements Prevayler {
 
 
 	/** Logs the received command for crash or shutdown recovery and executes it on the underlying PrevalentSystem.
-	* @see system()
+	* @see #system()
 	* @return The serializable object that was returned by the execution of command.
 	* @throws IOException if there is trouble writing the command to one of the log files.
 	* @throws Exception if command.execute(PrevalentSystem) throws an exception.
@@ -129,7 +137,7 @@ public class SnapshotPrevayler implements Prevayler {
 			commandQueue.add(myPlaceHolder);
 
 			myExecutionTime = clock.currentTimeMillis();    //I don't use clock.time() because another thread might have paused the clock a long time ago.
-			prevalenceBase.generateCommandSequence(myCommandLogger, myExecutionTime);
+			prevalenceBase.generateExecutionSequence(myCommandLogger, myExecutionTime);
 		}
 
 		prevalenceBase.flushToDisk(myCommandLogger);   //Flushing to disk is done in parallel.

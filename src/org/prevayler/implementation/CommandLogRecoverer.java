@@ -7,92 +7,102 @@ package org.prevayler.implementation;
 import org.prevayler.*;
 import java.io.*;
 
+
+/**
+ * Reads commands from a commandLog file and "reexecutes" them on a PrevalentSystem. This process is controlled by each command's execution time and excution sequence number, read from the commandLog file after each command.
+ * @see CommandLogger
+ */
 class CommandLogRecoverer {
 
-	private final File logFile;
-	private final ObjectInputStream logStream;
+  private final File logFile;
+  private final ObjectInputStream logStream;
 
-	private final boolean isCommandSequenceRestarted;
+  private final boolean isExecutionSequenceRestarted;
 
-	private final PrevalentSystem system;
-	private final SystemClock clock;
-	
-	private Command pendingCommand;
-	private long pendingCommandNumber;
-	private long pendingCommandExecutionTime;
-
-
-	CommandLogRecoverer(File logFile, PrevalentSystem system) throws IOException {
-		out("Reading " + logFile + "...");
-
-		this.logFile = logFile;
-		logStream = new ObjectInputStream(new FileInputStream(logFile));
-		this.system = system;
-		this.clock = (SystemClock)system.clock();
-
-		boolean isRestarted;
-		try {
-			isRestarted = (logStream.readChar() == 'R');
-		} catch (EOFException eof) {
-			isRestarted = false;
-		}
-		isCommandSequenceRestarted = isRestarted;
-	}
+  private final PrevalentSystem system;
+  private final SystemClock clock;
+  
+  private Command pendingCommand;
+  private long executionSequence;
+  private long executionTime;
 
 
-	boolean isCommandSequenceRestarted() {
-		return isCommandSequenceRestarted;
-	}
+  CommandLogRecoverer(File logFile, PrevalentSystem system) throws IOException {
+    out("Reading " + logFile + "...");
+
+    this.logFile = logFile;
+    logStream = new ObjectInputStream(new FileInputStream(logFile));
+    this.system = system;
+    this.clock = (SystemClock)system.clock();
+
+    boolean isRestarted;
+    try {
+      isRestarted = (logStream.readChar() == 'R');
+    } catch (EOFException eof) {
+      isRestarted = false;
+    }
+    isExecutionSequenceRestarted = isRestarted;
+  }
 
 
-	boolean recover(long nextNumber) throws EOFException, IOException, ClassNotFoundException {
-		preparePendingCommand();
-		if (nextNumber != pendingCommandNumber) return false;
-
-		clock.recover(pendingCommandExecutionTime);
-		try {
-
-			pendingCommand.execute(system);
-
-		} catch (Exception e) {
-			//Don't do anything at all now, during recovery. This exception was already treated by the client when it was thrown the first time, during normal system execution.
-		}
-
-		pendingCommand = null;
-		return true;
-	}
+  boolean isExecutionSequenceRestarted() {
+    return isExecutionSequenceRestarted;
+  }
 
 
-	private void preparePendingCommand() throws EOFException, IOException, ClassNotFoundException {
-		if (pendingCommand != null) return;   //Had already been prepared.
+  boolean recover(long nextExecutionSequence) throws EOFException, IOException, ClassNotFoundException {
+    preparePendingCommand();
+    if (nextExecutionSequence != executionSequence) return false;
 
-		try {
+    clock.recover(executionTime);
+    try {
 
-			pendingCommand = (Command)logStream.readObject();
-			pendingCommandExecutionTime = logStream.readLong();
-			pendingCommandNumber = logStream.readLong();
+      pendingCommand.execute(system);
 
-		} catch (StreamCorruptedException scx) {
-			abort(scx);
-		} catch (RuntimeException rx) {    //Some stream corruptions cause runtime exceptions in JDK1.3.1!
-			abort(rx);
-		}
-	}
+    } catch (Exception e) {
+      //Don't do anything at all now, during recovery. This exception was already treated by the client when it was thrown the first time, during normal system execution.
+    }
 
-
-	private void abort(Exception exception) throws EOFException {
-		out("" + exception + " (File: " + logFile + ")");
-		out("Some commands might have been lost. Looking for the next command..." );
-		throw new EOFException();
-	}
+    pendingCommand = null;
+    return true;
+  }
 
 
-	void close() throws IOException {
-		logStream.close();
-	}
+  private void preparePendingCommand() throws EOFException, IOException, ClassNotFoundException {
+    if (pendingCommand != null) return;   //Had already been prepared.
+
+    try {
+
+      pendingCommand = (Command)logStream.readObject();
+      executionTime = logStream.readLong();
+      executionSequence = logStream.readLong();
+
+    } catch (StreamCorruptedException scx) {
+      abort(scx);
+    } catch (RuntimeException rx) {    //Some stream corruptions cause runtime exceptions in JDK1.3.1!
+      abort(rx);
+    }
+  }
 
 
-	static private void out(String message) {
-		System.out.println(message);
-	}
+  private void abort(Exception exception) throws EOFException {
+    out("\n" + exception + " (File: " + logFile + ")");
+    out("   The above is a stream corruption that can be caused by:");
+    out("      - A system crash while writing to the commandLog file (that is OK).");
+    out("      - A corruption in the file system (that is NOT OK).");
+    out("      - Tampering with the commandLog file (that is NOT OK).");
+    out("   Looking for the next command...\n" );
+
+    throw new EOFException();
+  }
+
+
+  void close() throws IOException {
+    logStream.close();
+  }
+
+
+  static private void out(String message) {
+    System.out.println(message);
+  }
 }

@@ -6,18 +6,29 @@ package org.prevayler.implementation;
 
 import org.prevayler.*;
 
-/** An implementation of the PrevalentSystem interface to be extended.
-*/
+
+/**
+ * An implementation of the PrevalentSystem interface to be extended, if convenient. It takes care of the clock methods. It is not necessary that PrevalentSystems extend this class.
+ */
 public abstract class AbstractPrevalentSystem implements PrevalentSystem {
 
-	private AlarmClock clock;
+  private AlarmClock clock;
 
-	public AlarmClock clock() {
-		return clock;
-	}
 
-	public void clock(AlarmClock clock) {
-		if (this.clock != null) throw new IllegalStateException("The clock had already been set.");
-		this.clock = clock;
-	}
+  /**
+   * See org.prevayler.PrevalentSystem.clock()
+   */
+  public AlarmClock clock() {
+    return clock;
+  }
+
+
+  /**
+   * See org.prevayler.PrevalentSystem.clock(AlarmClock)
+   */
+  public void clock(AlarmClock clock) {
+    if (this.clock != null) throw new IllegalStateException("The clock had already been set.");
+    this.clock = clock;
+  }
+
 }

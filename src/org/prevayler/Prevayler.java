@@ -6,22 +6,24 @@ package org.prevayler;
 
 import java.io.Serializable;
 
-/** Provides transparent persistence for business objects.
-* This applies to any deterministic system implementing the PrevalentSystem interface.
-* All commands to the system must be represented as objects implementing the Command interface and must be executed using Prevayler.executeCommand(Command).
-* Take a look at the demo application included with the Prevayler distribution for examples.
-*/
+
+/**
+ * Provides transparent persistence for all business objects in a PrevalentSystem. All commands to the system must be represented as objects implementing the Command interface and must be executed using Prevayler.executeCommand(Command).
+ * See the demo applications in org.prevayler.demos for examples.
+ */
 public interface Prevayler {
 
-	/** Returns the underlying PrevalentSystem.
-	*/
-	public PrevalentSystem system();
+  /**
+   * Returns the underlying PrevalentSystem.
+   */
+  public PrevalentSystem system();
 
 
-	/** Logs the received command for crash or shutdown recovery and executes it on the underlying PrevalentSystem.
-	* @return The serializable object that was returned by the execution of command.
-	* @throws IOException if there is trouble writing the command to one of the log files.
-	* @throws Exception if the execution of command throws an Exception.
-	*/
-	public Serializable executeCommand(Command command) throws Exception;
+  /**
+   * Logs the received command for crash or shutdown recovery and executes it on the underlying PrevalentSystem.
+   * @return The serializable object that was returned by the execution of command.
+   * @throws IOException if there is trouble writing the command to one of the log files.
+   * @throws Exception if the execution of command throws an Exception.
+   */
+  public Serializable executeCommand(Command command) throws Exception;
 }
