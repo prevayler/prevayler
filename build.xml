@@ -255,7 +255,9 @@
 
 <!-- ==================== Jar Targets ================================== -->
 
-    <target name="-jar.init" depends="clean, compile.core" >
+    <target name="-jar.init" depends="rebuild" >
+        <!-- we depend on "rebuild" in order to clean up any
+             cruft left over from building contrib packages -->
         <mkdir dir="${lib.home}" />
     </target>
 
