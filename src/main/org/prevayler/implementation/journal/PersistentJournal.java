@@ -34,7 +34,6 @@ public class PersistentJournal implements FileFilter, Journal {
 	private StopWatch _journalAgeTimer;
 	
 	private long _nextTransaction;
-	private final Object _nextTransactionMonitor = new Object();
 	private boolean _nextTransactionInitialized = false;
 	private ClassLoader _loader;
 	private Monitor _monitor;
@@ -57,24 +56,43 @@ public class PersistentJournal implements FileFilter, Journal {
 	public void append(Transaction transaction, Date executionTime, Turn myTurn) {
 		if (!_nextTransactionInitialized) throw new IllegalStateException("Journal.update() has to be called at least once before Journal.append().");
 
-		prepareOutputJournal();
+		DurableOutputStream myOutputJournal;
+		DurableOutputStream outputJournalToClose = null;
+		
 		try {
-			_outputJournal.sync(new TransactionTimestamp(transaction, executionTime), myTurn);
+			myTurn.start();
+			if (!isOutputJournalStillValid()) {
+				outputJournalToClose = _outputJournal;
+				_outputJournal = createOutputJournal(_nextTransaction);
+				_journalAgeTimer = StopWatch.start();
+			}
+			_nextTransaction++;
+			myOutputJournal = _outputJournal;
+		} finally {
+			myTurn.end();
+		}
+
+		try {
+			myOutputJournal.sync(new TransactionTimestamp(transaction, executionTime), myTurn);
 		} catch (IOException iox) {
 			handle(iox, _outputJournal.file(), "writing to");
 		}
-	}
 
-
-	private void prepareOutputJournal() {
-		synchronized (_nextTransactionMonitor) {
-			if (!isOutputJournalValid()) createNewOutputJournal(_nextTransaction);
-			_nextTransaction++;  //The transaction count is increased but, because of thread concurrency, it is not guaranteed that this thread will journal the _nextTransaction'th transaction, so don't trust that. It is myTurn that will guarantee execution in the correct order.
+		try {
+			myTurn.start();
+			try {
+				if (outputJournalToClose != null) outputJournalToClose.close();
+			} catch (IOException iox) {
+				handle(iox, outputJournalToClose.file(), "closing");
+			}
+		} finally {
+			myTurn.end();
 		}
+		
 	}
 
 
-	private boolean isOutputJournalValid() {
+	private boolean isOutputJournalStillValid() {
 		return _outputJournal != null
 			&& !isOutputJournalTooBig() 
 			&& !isOutputJournalTooOld();
@@ -93,20 +111,14 @@ public class PersistentJournal implements FileFilter, Journal {
 	}
 
 
-	private void createNewOutputJournal(long transactionNumber) {
+	private DurableOutputStream createOutputJournal(long transactionNumber) {
 		File file = journalFile(transactionNumber);
 		try {
-			closeOutputJournal();
-			_outputJournal = new DurableOutputStream(file);
-			_journalAgeTimer = StopWatch.start();
+			return new DurableOutputStream(file);
 		} catch (IOException iox) {
 			handle(iox, file, "creating");
+			return null;
 		}
-	}
-
-
-	private void closeOutputJournal() throws IOException {
-		if (_outputJournal != null) _outputJournal.close();
 	}
 
 
@@ -204,7 +216,7 @@ public class PersistentJournal implements FileFilter, Journal {
 
 
 	protected void handle(IOException iox, File journal, String action) {
-		String message = "All transaction processing is now blocked. A problem was found while " + action + " a .journal file.";
+		String message = "All transaction processing is now blocked. An IOException was thrown while " + action + " a .journal file.";
 	    _monitor.notify(this.getClass(), message, journal, iox);
 		hang();
 	}
@@ -215,7 +227,7 @@ public class PersistentJournal implements FileFilter, Journal {
 
 
 	public void close() throws IOException {
-		closeOutputJournal();
+		if (_outputJournal != null) _outputJournal.close();
 	}
 
 }
