@@ -5,9 +5,15 @@
 
 package org.prevayler.implementation.snapshot;
 
-import java.io.*;
+import org.prevayler.foundation.serialization.Deserializer;
+import org.prevayler.foundation.serialization.JavaSerializationStrategy;
+import org.prevayler.foundation.serialization.SerializationStrategy;
+import org.prevayler.foundation.serialization.Serializer;
 
-import org.prevayler.foundation.ObjectInputStreamWithClassLoader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 
 /**
@@ -16,10 +22,11 @@ import org.prevayler.foundation.ObjectInputStreamWithClassLoader;
 public class JavaSnapshotManager extends AbstractSnapshotManager {
 	public static final String SUFFIX = "snapshot";
 
-	private ClassLoader _loader;
-	
+	private SerializationStrategy _strategy;
+
     //this is only here for NullSnapshotManager support
     JavaSnapshotManager(Object newPrevalentSystem) {
+		_strategy = new JavaSerializationStrategy();
         nullInit(newPrevalentSystem);
     }
 
@@ -28,7 +35,7 @@ public class JavaSnapshotManager extends AbstractSnapshotManager {
      * @param snapshotDirectoryName The path of the directory where the last snapshot file will be read and where the new snapshot files will be created.
 	 */
 	public JavaSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName, ClassLoader loader) throws ClassNotFoundException, IOException {
-		_loader = loader;
+		_strategy = new JavaSerializationStrategy(loader);
 		init(newPrevalentSystem, snapshotDirectoryName);
 	}
 
@@ -37,11 +44,11 @@ public class JavaSnapshotManager extends AbstractSnapshotManager {
 	 * @see org.prevayler.implementation.snapshot.SnapshotManager#writeSnapshot(Object, OutputStream)
 	 */
     public void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
-        ObjectOutputStream oos = new ObjectOutputStream(out);
+		Serializer serializer = _strategy.createSerializer(out);
         try {
-            oos.writeObject(prevalentSystem);
+            serializer.writeObject(prevalentSystem);
         } finally {
-            if (oos != null) oos.close();
+			serializer.flush();
         }
     }
 
@@ -50,12 +57,8 @@ public class JavaSnapshotManager extends AbstractSnapshotManager {
 	 * @see org.prevayler.implementation.snapshot.SnapshotManager#readSnapshot(InputStream)
 	 */
     public Object readSnapshot(InputStream in) throws IOException, ClassNotFoundException {
-        ObjectInputStream ois = new ObjectInputStreamWithClassLoader(in, _loader);
-        try {
-            return ois.readObject();
-        } finally {
-            if (ois != null) ois.close();
-        }
+		Deserializer deserializer = _strategy.createDeserializer(in);
+        return deserializer.readObject();
     }
 
 	protected String suffix() {
