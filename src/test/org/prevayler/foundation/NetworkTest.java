@@ -8,6 +8,7 @@
 package org.prevayler.foundation;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 
 import junit.framework.TestCase;
 
@@ -29,7 +30,7 @@ public class NetworkTest extends TestCase {
 
     private Network network;
     
-    private int port = 4000;
+    private int port = 4567;
     
     private ServiceMock mockService;
     
@@ -46,6 +47,9 @@ public class NetworkTest extends TestCase {
     private String testObject2 = "test Object 2";
     
     public void setUp () {
+        if (!mockTest) {
+            port = determinePort();
+        }
         network = setNetworkToTest();
         mockService = new ServiceMock();
         client1 = new Client();
@@ -55,6 +59,19 @@ public class NetworkTest extends TestCase {
     public void tearDown () throws Exception {
         Thread.sleep(NETWORK_SOCKET_CLOSE_MSEC_DELAY);
         
+    }
+    
+    private int determinePort() {
+        int portToUse = 0;
+        try {
+            ServerSocket _serverSocket = new ServerSocket(portToUse);
+            portToUse = _serverSocket.getLocalPort();
+            System.out.println("Using port :" + portToUse);
+            _serverSocket.close();
+        } catch (IOException exception) {
+            fail("No available server port");
+        }
+        return portToUse;
     }
 
     private Network setNetworkToTest() {
