@@ -1,14 +1,10 @@
 package org.prevayler.demos.demo2.business;
 	
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.prevayler.util.clock.ClockedSystem;
+import org.prevayler.util.clock.AbstractClockedSystem;
 
-public class Bank extends ClockedSystem {
+import java.util.*;
+
+public class Bank extends AbstractClockedSystem {
 
 	private long nextAccountNumber = 1;
 	private Map accountsByNumber = new HashMap();

@@ -4,13 +4,13 @@
 
 package org.prevayler.test;
 
-import java.util.Date;
+import org.prevayler.util.clock.AbstractClockedSystem;
 
-import org.prevayler.util.clock.ClockedSystem;
+import java.util.Date;
 
 /** A simple system that only keeps track of the time.
 */
-class TickingSystem extends ClockedSystem implements java.io.Serializable {
+class TickingSystem extends AbstractClockedSystem implements java.io.Serializable {
 
 	private Date _time = new Date(0L);
 

@@ -5,8 +5,8 @@ import org.prevayler.Transaction;
 import org.prevayler.implementation.SnapshotManager;
 import org.prevayler.implementation.SnapshotPrevayler;
 import org.prevayler.implementation.log.TransactionLogger;
+import org.prevayler.util.clock.AbstractClockedSystem;
 import org.prevayler.util.clock.ClockActor;
-import org.prevayler.util.clock.ClockedSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class ClockTest extends TestCase {
     private ClockActor clockActor;
     private File prevalenceBase;
 
-    public static class ClockedTestSystem extends ClockedSystem {
+    public static class ClockedTestSystem extends AbstractClockedSystem {
         private Date date;
 
         public void date(Date date) {
