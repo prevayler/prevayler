@@ -38,19 +38,32 @@ class PrimeCalculator {
 				primesFound = _numberKeeper.numbers().size();
 				System.out.println("Primes found: " + primesFound + ". Largest: " + largestPrime);
 			}
-      
+
 			primeCandidate++;
 		}
 	}
 
 
-	private boolean isPrime(int candidate) {
-		int factor = 2;
-		while (factor < candidate) {
-			if (candidate % factor == 0) return false;
-			factor++;
-		}
-		return true;
-	}
+    private boolean isPrime(int candidate) {
+	    /*int factor = 2;
+        candidate = candidate / 2;
+        while (factor < candidate) {
+        	if (candidate % factor == 0) return false;
+        	factor++;
+        }
+        return true;*/
+	    
+	    if (candidate < 2) { return false; }
+        if (candidate == 2) { return true; }
+        if (candidate % 2 == 0) { return false; }
+
+        int factor = 3;
+        double square = Math.ceil(Math.sqrt(candidate));
+        while (factor <= square) {
+            if (candidate % factor == 0) return false;
+            factor+=2;
+        }
+        return true;
+    }
 
 }
