@@ -7,7 +7,6 @@ package org.prevayler.demos.scalability.prevayler;
 import java.io.File;
 
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.implementation.PrevalenceTest;
 
 public class PrevaylerTransactionSubject extends PrevaylerScalabilitySubject {
 

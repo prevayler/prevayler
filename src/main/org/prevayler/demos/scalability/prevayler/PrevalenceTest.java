@@ -5,20 +5,34 @@
 package org.prevayler.demos.scalability.prevayler;
 
 import java.io.File;
+import java.io.FileFilter;
 
-import org.prevayler.PrevaylerFactory;
 
-public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject {
+public class PrevalenceTest {
 
-	static final String PREVALENCE_BASE = "QueryTest";
-
-	public PrevaylerQuerySubject() throws java.io.IOException, ClassNotFoundException {
-		if (new File(PREVALENCE_BASE).exists()) PrevalenceTest.delete(PREVALENCE_BASE);
-		prevayler = PrevaylerFactory.createPrevayler(new QuerySystem(), PREVALENCE_BASE);
+	static public void delete(String dir) {
+	    delete(new File(dir));
 	}
 
-
-	public Object createTestConnection() {
-		return new PrevaylerQueryConnection((QuerySystem)prevayler.prevalentSystem());
+	static private void delete(File file) {
+	    if (file.isDirectory()) deleteDirectoryContents(file);
+		if (!file.delete()) {
+			System.gc();
+		}
 	}
+
+	static private void deleteDirectoryContents(File directory) {
+		File[] files = directory.listFiles(new PrevalenceFilter());
+		if (files == null) return;
+	    for (int i = 0; i < files.length; i++) delete(files[i]);
+	}
+
+	static private class PrevalenceFilter implements FileFilter {
+		public boolean accept(File file) {
+			return file.getName().endsWith("transactionLog")
+				|| file.getName().endsWith("snapshot")
+				|| file.isDirectory();
+		}
+	}
+
 }
