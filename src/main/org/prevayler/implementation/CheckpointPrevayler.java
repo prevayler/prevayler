@@ -73,13 +73,8 @@ public class CheckpointPrevayler implements Prevayler {
 
     public void checkpoint() {
         synchronized (subscriber) {
-            writeCheckpoint();
             publisher.startNewCheckpointFile();
         }
-    }
-
-    private void writeCheckpoint() {
-
     }
 
     private class CheckPointTransactionLogger extends TransactionLogger {
