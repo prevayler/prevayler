@@ -17,7 +17,6 @@
 
     <!-- source and other non-generated directories -->
     <property name="rootdir"            location="${basedir}/root" />
-    <property name="docdir"             location="${rootdir}/docs" />
     <property name="srcdir"             location="${basedir}/src" />
     <property name="srcdir.main"        location="${srcdir}/main" />
     <property name="srcdir.test"        location="${srcdir}/test" />
@@ -31,6 +30,7 @@
     <property name="classesdir.contrib" location="${targetdir}/contrib-classes" />
     <property name="testreportdir"      location="${targetdir}/test-reports" />
     <property name="libdir"             location="${targetdir}/lib" />
+    <property name="docdir"             location="${targetdir}/docs" />
 
     <!-- Default values specified in sample.build.properties.  Override in build.properties -->
     <property name="dependenciesdir"    location="${dependencies.path}" />
@@ -61,6 +61,9 @@
         <pathelement location="${skaringa.jar}"/>
         <pathelement location="${log4j.jar}"/>
         <pathelement location="${commons-jxpath.jar}"/>
+        <pathelement location="${commons-logging.jar}"/>
+        <pathelement location="${xml-apis.jar}"/> <!-- Not required under j2sdk1.4.x. Here to run xml demo under JDK1.3.x -->
+        <pathelement location="${xalan.jar}"/> <!-- Not required under j2sdk1.4.x. Here to run xml demo under JDK1.3.x -->
     </path>
 
     <path id="build.core.classpath" >
@@ -88,9 +91,6 @@
 
     <target name="clean"
             description="Delete old build and dist directories" >
-        <delete includeEmptyDirs="true">
-            <fileset dir="${docdir}/api" includes="**/**" excludes="**/Readme.txt" />
-        </delete>
         <delete includeEmptyDirs="true">
             <fileset dir="${targetdir}" includes="**/**" excludes="*-cache/**" />
         </delete>
@@ -137,7 +137,7 @@
 
     <target name="compile" depends="compile.core, compile.test, compile.contrib"
             description="Compile all specified sources" />
-    <target name="compile.core" depends="prepare"
+    <target name="compile.core" depends="prepare, download.dependencies.core"
             description="Compile core sources" >
         <antcall target="-compile.sub">
             <param name="compsrcdir"  value="${srcdir.main}" />
@@ -169,20 +169,21 @@
         <antcall target="-javadoc.sub">
             <param name="jdocincludes"   value="org/prevayler" />
             <param name="jdocsourcepath" value="${srcdir.main}" />
-            <param name="jdocdestdir"    value="${docdir}/api/beginners" />
+            <param name="jdocdestdir"    value="${docdir}/api" />
         </antcall>
         <!-- advanced -->
-        <antcall target="-javadoc.sub">
+        <!--<antcall target="-javadoc.sub">
             <param name="jdocincludes"   value="org/prevayler, org/prevayler/implementation/**" />
             <param name="jdocsourcepath" value="${srcdir.main}" />
             <param name="jdocdestdir"    value="${docdir}/api/advanced" />
-        </antcall>
+        </antcall>-->
     </target>
 
 <!-- ==================== Jar Targets ================================== -->
 
     <target name="jar" depends="compile.core"
             description="Creates all jars" >
+        <delete dir="${libdir}" />
         <mkdir dir="${libdir}" />
         <!--Creates a JAR containing only essential Prevayler files -->
         <antcall target="-jar.sub">
@@ -191,11 +192,11 @@
             <param name="jarexcludes" value="**/demo/**,**/demos/**,**/test/**,log4j.xml" />
         </antcall>
         <!--Creates a JAR containing all compiled files -->
-        <antcall target="-jar.sub">
+        <!--<antcall target="-jar.sub">
             <param name="jarfile"     value="${libdir}/${jar.name.all}.jar" />
             <param name="jarbasedir"  value="${classesdir.main}" />
             <param name="jarexcludes" value="log4j.xml" />
-        </antcall>
+        </antcall>-->
     </target>
 
 <!-- ==================== Dist Target ===================================== -->
@@ -209,18 +210,27 @@
         Distribution creation aborted because the JUnit tests failed.
         </fail>
     </target>
-    <target name="dist" depends="-distvalidcheck, jar, javadoc"
+    <target name="dist" depends="-distvalidcheck, jar, javadoc, -download.dist"
             description="Create binary distribution" >
+        <copy todir="${libdir}" file="${skaringa.jar}"/>
+        <copy todir="${libdir}" file="${log4j.jar}"/>
+        <copy todir="${libdir}" file="${commons-logging.jar}"/>
+        <copy todir="${libdir}" file="${xml-apis.jar}"/>
+        <copy todir="${libdir}" file="${xalan.jar}"/>
         <!-- Generate ZIP distribution -->
         <zip destfile="${targetdir}/${dist.name}.zip">
             <zipfileset dir="${rootdir}"     prefix="${app.name}${app.version}"/>
-            <zipfileset dir="${libdir}"      prefix="${app.name}${app.version}"/>
+            <zipfileset dir="${libdir}"      prefix="${app.name}${app.version}" includes="${app.name}*.jar"/>
+            <zipfileset dir="${libdir}"      prefix="${app.name}${app.version}/lib" excludes="${app.name}*.jar"/>
+            <zipfileset dir="${docdir}"      prefix="${app.name}${app.version}/docs"/>
             <zipfileset dir="${srcdir.main}" prefix="${app.name}${app.version}/src"/>
         </zip>
         <!-- Generate GZIP distribution -->
         <tar destfile="${targetdir}/${dist.name}.tar" longfile="gnu">
             <tarfileset dir="${rootdir}"     prefix="${app.name}${app.version}"/>
-            <tarfileset dir="${libdir}"      prefix="${app.name}${app.version}"/>
+            <tarfileset dir="${libdir}"      prefix="${app.name}${app.version}" includes="${app.name}*.jar"/>
+            <tarfileset dir="${libdir}"      prefix="${app.name}${app.version}/lib" excludes="${app.name}*.jar"/>
+            <tarfileset dir="${docdir}"      prefix="${app.name}${app.version}/docs"/>
             <tarfileset dir="${srcdir.main}" prefix="${app.name}${app.version}/src"/>
         </tar>
         <gzip src="${targetdir}/${dist.name}.tar" zipfile="${targetdir}/${dist.name}.tar.gz"/>
@@ -265,11 +275,16 @@
 
 <!-- ==================== Dependency Targets ================================== -->
 
-    <target name="download" depends="download.dependencies.core, download.dependencies.test, download.dependencies.contrib, download.dependencies.build, download.dependencies.vizant"
+    <target name="download" depends="-download.dist, download.dependencies.build, download.dependencies.vizant"
             description="Download all specified binary packages" />
+    <target name="-download.dist" depends="download.dependencies.core, download.dependencies.test, download.dependencies.contrib, download.dependencies.runtime" />
     <target name="download.dependencies.core"
             description="Download binary packages needed by the core packages" >
         <!-- Download any sub package or tools needed. -->
+        <antcall target="-downloadgz">
+            <param name="sourcefile" value="${skaringa.loc}"/>
+            <param name="destfile"   value="${skaringa.jar}"/>
+        </antcall>
     </target>
     <target name="download.dependencies.test"
             description="Download binary packages needed by the test packages" >
@@ -279,16 +294,28 @@
             description="Download binary packages needed by the contrib packages" >
         <!-- Download any sub package or tools needed. -->
         <antcall target="-downloadgz">
-            <param name="sourcefile" value="${skaringa.loc}"/>
-            <param name="destfile"   value="${skaringa.jar}"/>
+            <param name="sourcefile" value="${commons-jxpath.loc}"/>
+            <param name="destfile"   value="${commons-jxpath.jar}"/>
         </antcall>
+    </target>
+    <target name="download.dependencies.runtime"
+            description="Download binary packages needed only at runtime" >
+        <!-- Download any sub package or tools needed. -->
         <antcall target="-downloadgz">
             <param name="sourcefile" value="${log4j.loc}"/>
             <param name="destfile"   value="${log4j.jar}"/>
         </antcall>
         <antcall target="-downloadgz">
-            <param name="sourcefile" value="${commons-jxpath.loc}"/>
-            <param name="destfile"   value="${commons-jxpath.jar}"/>
+            <param name="sourcefile" value="${commons-logging.loc}"/>
+            <param name="destfile"   value="${commons-logging.jar}"/>
+        </antcall>
+        <antcall target="-downloadgz">
+            <param name="sourcefile" value="${xml-apis.loc}"/>
+            <param name="destfile"   value="${xml-apis.jar}"/>
+        </antcall>
+        <antcall target="-downloadgz">
+            <param name="sourcefile" value="${xalan.loc}"/>
+            <param name="destfile"   value="${xalan.jar}"/>
         </antcall>
     </target>
 
@@ -302,7 +329,7 @@
 
 <!-- ==================== Demo Targets ================================== -->
 
-    <target name="-demo.init">
+    <target name="-demo.init" depends="download.dependencies.runtime">
         <mkdir dir="${cachedir.demo}" />
     </target>
 
@@ -326,7 +353,7 @@
         </java>
     </target>
 
-    <target name="run.demo.bank.xml" depends="compile.contrib, -demo.init"
+    <target name="run.demo.bank.xml" depends="compile.core, -demo.init"
             description="Same as simple bank demo, but uses skaringa xml serialization" >
         <java dir="${cachedir.demo}" fork="true" classname="org.prevayler.demos.demo2.MainXml" >
             <classpath refid="build.run.classpath" />
