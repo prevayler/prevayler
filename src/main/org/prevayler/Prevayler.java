@@ -7,30 +7,39 @@ package org.prevayler;
 import java.io.IOException;
 
 
-/** Implementations of this interface can provide transparent persistence and replication to all business objects in a prevalent system. ALL operations that alter the observable state of the prevalent system must be implemented as Transaction objects and must be executed using Prevayler.execute(Transaction).
+/** Implementations of this interface can provide transparent persistence and replication to all Business Objects in a Prevalent System. ALL operations that alter the observable state of the Prevalent System must be implemented as Transaction or TransactionWithQuery objects and must be executed using the Prevayler.execute(...) methods.
  * See the demo applications in org.prevayler.demos for examples.
+ * @see PrevaylerFactory
  */
 public interface Prevayler {
 
-	/** Returns the Object which holds direct or indirect references to all other business objects. 
+	/** Returns the Object which holds direct or indirect references to all other Business Objects in the system. 
 	 */
 	public Object prevalentSystem();
 
-	/** Returns the Clock that tells the time as perceived by the business objects in a prevalent system.
-	 * @return A Clock that is paused during the execute(Transaction) and execute(Query) methods.
+	/** Returns the Clock used to determine the execution time of all Transaction and Queries executed using this Prevayler. This Clock is useful only to Communication Objects and must NOT be used by Transactions, Queries or Business Objects, since that would make them become non-deterministic. Instead, Transactions, Queries and Business Objects must use the executionTime parameter which is passed on their execution.
 	 */
 	public Clock clock();
 
-	/** Executes the given Transaction on the prevalentSystem(). ALL operations that alter the observable state of the prevalentSystem() must be implemented as Transaction objects and must be executed using this method. This method synchronizes on the prevalentSystem() to execute the Transaction. It is therefore guaranteed that only one Transaction is executed at a time. This means the prevalentSystem() does not have to worry about concurrency issues among Transactions.
-	 * Implementations of this interface can log the given Transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the prevalentSystem().
+	/** Executes the given Transaction on the prevalentSystem(). ALL operations that alter the observable state of the prevalentSystem() must be implemented as Transaction or TransactionWithQuery objects and must be executed using the Prevayler.execute() methods. This method synchronizes on the prevalentSystem() to execute the Transaction. It is therefore guaranteed that only one Transaction is executed at a time. This means the prevalentSystem() does not have to worry about concurrency issues among Transactions.
+	 * Implementations of this interface can log the given Transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the prevalentSystem() for fault-tolerance and load-balancing purposes. Such a "replicating" implementation is planned for Prevayler release 2.1.
+	 * @see PrevaylerFactory
 	 */
 	public void execute(Transaction transaction);
 
-	/** Executes the given sensitive Query on the prevalentSystem(). A sensitive Query is a Query that can be affected by the execution of a Transaction Synchronizes on the prevalentSystem() to execute the Query. It is therefore guaranteed that only one transaction is executed at a time. This means the prevalentSystem() does not have to worry about concurrency issues among transactions.
-	 * Implementations of this interface can log the given transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the prevalentSystem().
+	/** Executes the given sensitiveQuery on the prevalentSystem(). A sensitiveQuery is a Query that would be affected by the concurrent execution of a Transaction or other sensitiveQuery. This method synchronizes on the prevalentSystem() to execute the sensitiveQuery. It is therefore guaranteed that no other Transaction or sensitiveQuery is executed at the same time.
+	 * <br> Robust Queries (queries that do not affect other operations and that are not affected by them) can be executed directly as plain old method calls on the prevalentSystem() without the need of being implemented as Query objects. Examples of Robust Queries are queries that reead the value of a single field or historical queries such as: "What was this account's balance at mid-night?".
+	 * @return The result returned by the execution of the sensitiveQuery on the prevalentSystem().
+	 * @throws Exception The Exception thrown by the execution of the sensitiveQuery on the prevalentSystem().
 	 */
 	public Object execute(Query sensitiveQuery) throws Exception;
 
+	/** Executes the given transactionWithQuery on the prevalentSystem().
+	 * Implementations of this interface can log the given transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the prevalentSystem() for fault-tolerance and load-balancing purposes. Such a "replicating" implementation is planned for Prevayler release 2.1.
+	 * @return The result returned by the execution of the sensitiveQuery on the prevalentSystem().
+	 * @throws Exception The Exception thrown by the execution of the sensitiveQuery on the prevalentSystem().
+	 * @see PrevaylerFactory
+	 */
 	public Object execute(TransactionWithQuery transactionWithQuery) throws Exception;
 
 	/** Produces a complete serialized image of the underlying PrevalentSystem.

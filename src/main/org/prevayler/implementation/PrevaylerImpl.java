@@ -24,7 +24,6 @@ public class PrevaylerImpl implements Prevayler {
 	private final SnapshotManager _snapshotManager;
 
 	private final TransactionPublisher _publisher;
-	private final TransactionSubscriber _subscriber = subscriber();
 	private boolean _ignoreRuntimeExceptions;
 
 
@@ -41,9 +40,12 @@ public class PrevaylerImpl implements Prevayler {
 		_clock = _publisher.clock();
 
 		_ignoreRuntimeExceptions = true;     //During pending transaction recovery (rolling forward), RuntimeExceptions are ignored because they were already thrown and handled during the first transaction execution.
-		_publisher.addSubscriber(_subscriber, _systemVersion + 1);
+		_publisher.addSubscriber(subscriber(), _systemVersion + 1);
 		_ignoreRuntimeExceptions = false;
 	}
+
+
+	public Object prevalentSystem() { return _prevalentSystem; }
 
 
 	public Clock clock() { return _clock; }
@@ -53,7 +55,6 @@ public class PrevaylerImpl implements Prevayler {
 
 
 	public Object execute(Query query) throws Exception {
-		//TODO Guarantee that the clock will not advance during query execution. Logically, advancing the clock is the same as executing a "clock advance transaction". Any one who advances the clock, therefore, must synchronize on the _prevalentSystem too.
 		synchronized (_prevalentSystem) {
 			return query.query(_prevalentSystem, clock().time());
 		}
@@ -65,9 +66,6 @@ public class PrevaylerImpl implements Prevayler {
 		execute(executer);
 		return executer.result();
 	}
-
-
-	public Object prevalentSystem() { return _prevalentSystem; }
 
 
 	public void takeSnapshot() throws IOException {
