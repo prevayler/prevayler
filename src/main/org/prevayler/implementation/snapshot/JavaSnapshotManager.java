@@ -13,7 +13,7 @@ import java.io.IOException;
 
 /**
  * Writes and reads snapshots to/from files using standard Java serialization.
- * @deprecated Use org.prevayler.foundation.serialization.JavaSerializer instead.
+ * @deprecated Use {@link JavaSerializationStrategy} instead.
  */
 public class JavaSnapshotManager extends GenericSnapshotManager {
 	public static final String SUFFIX = "snapshot";

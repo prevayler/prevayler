@@ -185,6 +185,7 @@ public class PrevaylerFactory {
 
 
 	/** Configures the SnapshotManager to be used by the Prevayler created by this factory. The default is a SnapshotManager which uses plain Java serialization to create its .snapshot files.
+	 * @deprecated Use {@link #configureSnapshotSerializationStrategy(SerializationStrategy)} instead.
 	 */
 	public void configureSnapshotManager(SnapshotManager snapshotManager) {
 		_snapshotManager = snapshotManager;
@@ -214,6 +215,9 @@ public class PrevaylerFactory {
 	}
 
 
+	/**
+	 * @deprecated Use {@link #configureSnapshotSerializationStrategy(SerializationStrategy)} and {@link #configureJournalSerializationStrategy(SerializationStrategy)} instead, giving a {@link JavaSerializationStrategy} with the desired classloader.
+	 */
 	public void configureClassLoader(ClassLoader classLoader) {
 		_classLoader = classLoader;
 	}

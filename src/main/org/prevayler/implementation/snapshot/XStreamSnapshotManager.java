@@ -13,7 +13,7 @@ import java.io.IOException;
 
 
 /**
- * @deprecated Use org.prevayler.foundation.serialization.XStreamSerializer instead.
+ * @deprecated Use {@link XStreamSerializationStrategy} instead.
  */
 public class XStreamSnapshotManager extends GenericSnapshotManager {
 
