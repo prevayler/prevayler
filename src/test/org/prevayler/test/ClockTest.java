@@ -16,6 +16,7 @@ public class ClockTest extends TestCase {
     private SnapshotPrevayler prevayler;
     private static final int TOLERANCE = 1000;
     private ClockActor clockActor;
+    private File prevalenceBase;
 
     public static class ClockedTestSystem extends ClockedSystem {
         private Date date;
@@ -37,7 +38,7 @@ public class ClockTest extends TestCase {
     }
 
     protected void setUp() throws Exception {
-        File prevalenceBase = File.createTempFile("prevalence", "base");
+        prevalenceBase = File.createTempFile("prevalence", "base");
         prevalenceBase.delete();
         prevalenceBase.mkdirs();
         prevalenceBase.deleteOnExit();
@@ -50,6 +51,7 @@ public class ClockTest extends TestCase {
 
     protected void tearDown() throws Exception {
         clockActor.doStop();
+        RollbackTest.delete(prevalenceBase);
     }
 
     public void test() throws IOException, ClassNotFoundException, InterruptedException {

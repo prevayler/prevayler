@@ -67,6 +67,10 @@ public class PersistenceTest extends TestCase {
 		verify(167);
 	}
 
+    protected void tearDown() throws Exception {
+        RollbackTest.delete(prevalenceBase);
+    }
+
 	private void crashRecover() throws Exception {
 		out("CrashRecovery.");
 		prevayler = new SnapshotPrevayler(new AddingSystem(), prevalenceBase());
