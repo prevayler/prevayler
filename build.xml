@@ -17,8 +17,8 @@
 
     <property name="build.home"             location="${basedir}/build" />
     <property name="dist.home"              location="${basedir}/dist" />
-    <property name="doc.home"               location="${basedir}/docs" />
-    <property name="lib.home"               location="${basedir}/lib" />
+    <property name="doc.home"               location="${basedir}/root/docs" />
+    <property name="lib.home"               location="${basedir}/root/lib" />
     <property name="contrib.home"           location="${contrib.path}" />
     <property name="dependencies.home"      location="${dependencies.path}" />
     <property name="unit.test.home"         location="${basedir}/unit_tests" />
@@ -27,7 +27,7 @@
     <property name="src.core.home"          location="${src.home}/main" />
     <property name="src.test.home"          location="${src.home}/test" />
     <property name="src.package.path"       value="org/prevayler" />
-    <property name="src.packages"           value="org.prevayler.*" />
+    <property name="src.packages"           value="org.prevayler, org.prevayler.implementation.*" />
     <property name="src.packages.excludes"  value="org.prevayler.demos.*, org.prevayler.test.*" />
 
     <property name="log4j.system.variable.dynamic.name" value="$${${app.name}.log.home}" />
@@ -256,19 +256,17 @@
 
         <!-- Generate ZIP distribution -->
         <zip destfile="${dist.home}/${file.name.dist}.zip">
-            <zipfileset dir="${basedir}"        prefix="${app.name}" includes="*.xml, *.incl, *.properties, *.txt" excludes="log4j.xml, build.properties"/>
+            <zipfileset dir="${basedir}"        prefix="${app.name}" includes="*.xml, *.incl, *.properties, *.txt, *.sh, *.bat, .*" excludes="log4j.xml, build.properties"/>
             <zipfileset dir="${contrib.home}"   prefix="${app.name}/${contrib.path}"/>
-            <zipfileset dir="${doc.home}"       prefix="${app.name}/docs"/>
-            <zipfileset dir="${lib.home}"       prefix="${app.name}/lib"/>
+            <zipfileset dir="${doc.home}"       prefix="${app.name}/root"/>
             <zipfileset dir="${src.home}"       prefix="${app.name}/src"/>
         </zip>
 
         <!-- Generate GZIP distribution -->
         <tar destfile="${dist.home}/${file.name.dist}.tar" longfile="gnu">
-            <tarfileset dir="${basedir}"        prefix="${app.name}" includes="*.xml, *.incl, *.properties, *.txt" excludes="log4j.xml, build.properties"/>
+            <tarfileset dir="${basedir}"        prefix="${app.name}" includes="*.xml, *.incl, *.properties, *.txt, *.sh, *.bat, .*" excludes="log4j.xml, build.properties"/>
             <tarfileset dir="${contrib.home}"   prefix="${app.name}/${contrib.path}"/>
-            <tarfileset dir="${doc.home}"       prefix="${app.name}/docs"/>
-            <tarfileset dir="${lib.home}"       prefix="${app.name}/lib"/>
+            <tarfileset dir="${doc.home}"       prefix="${app.name}/root"/>
             <tarfileset dir="${src.home}"       prefix="${app.name}/src"/>
         </tar>
         <gzip src="${dist.home}/${file.name.dist}.tar" zipfile="${dist.home}/${file.name.dist}.tar.gz"/>
@@ -298,7 +296,7 @@
             <equals arg1="${ant.java.version}" arg2="1.3" />
         </condition>
         <condition property="javadoc.jdk.href" value="http://java.sun.com/j2se/1.4/docs/api/">
-            <equals arg1="${ant.java.version}" arg2="1.4" />
+            <equals arg1="${ant.zojava.version}" arg2="1.4" />
         </condition>
         <condition property="javadoc.jdk.href" value="http://java.sun.com/j2se/1.5/docs/api/">
             <equals arg1="${ant.java.version}" arg2="1.5" />
@@ -308,11 +306,38 @@
         <property name="javadoc.jdk.offline" value="false" />
         <property name="javadoc.jdk.packaglistLoc" value="" />
 
+        <!-- beginners -->
+        <javadoc
+            sourcepath="${src.core.home}"
+            packagenames="org.prevayler"
+            destdir="${doc.home}/api/beginners"
+            author="true"
+            version="true"
+            use="true"
+            additionalparam="${javadoc.breakiterator}"
+            windowtitle="${app.name}&#8482; v${app.version} API Documentation" >
+
+            <!-- <packageset...> below only works with Ant 1.5+.
+                 We can use <packageset...> and remove "packagenames", "excludepackagenames",
+                 and "sourcepath" attributes of the javadoc task -->
+            <!--<packageset dir="${src.core.home}" defaultexcludes="yes" >
+                <include name="${src.package.path}/**" />
+            </packageset>-->
+
+            <header><![CDATA[<a href="${app.url}" target="_blank">${app.name} Online</a>]]></header>
+            <doctitle><![CDATA[<h1>${app.Name}</h1>]]></doctitle>
+            <footer><![CDATA[<a href="${app.url}" target="_blank">${app.name} Online</a>]]></footer>
+            <bottom><![CDATA[<i>${app.trademark}<br>Copyright &#169; ${app.year} ${app.company} All Rights Reserved.</i>]]></bottom>
+            <link offline="${javadoc.jdk.offline}" href="${javadoc.jdk.href}" packagelistLoc="${javadoc.jdk.packagelistLoc}" />
+            <classpath refid="build.test.classpath" />
+        </javadoc>
+
+        <!-- advanced -->
         <javadoc
             sourcepath="${src.core.home}"
             packagenames="${src.packages}"
             excludepackagenames="${src.packages.excludes}"
-            destdir="${doc.home}/api"
+            destdir="${doc.home}/api/advanced"
             author="true"
             version="true"
             use="true"
@@ -371,16 +396,6 @@
     </target>
 
 <!-- ==================== Test Targets ================================== -->
-
-    <target name="run.test.scalability" depends="compile.test"
-            description="Runs manipulation and query scalability tests against Prevayler and any JDBC database" >
-
-        <java fork="true" classname="org.prevayler.scalability.Main" >
-            <classpath refid="build.test.classpath" />
-            <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
-        </java>
-
-    </target>
 
     <target name="test" depends="compile.test"
             description="Runs JUnit tests" >
@@ -494,6 +509,16 @@
                 </java>
             </sequential>
         </parallel>
+
+    </target>
+
+    <target name="run.demo.scalability" depends="compile.core"
+            description="Runs manipulation and query scalability demos against Prevayler and any JDBC database" >
+
+        <java fork="true" classname="org.prevayler.demos.scalability.Main" >
+            <classpath refid="build.test.classpath" />
+            <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
+        </java>
 
     </target>
 
