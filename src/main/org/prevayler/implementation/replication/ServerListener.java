@@ -18,7 +18,8 @@ public class ServerListener extends Thread {
 	private final TransactionPublisher _publisher;
 	private final ObjectServerSocket _serverSocket;
 
-
+	//TODO Close the socket when the publisher is closed (listen for it or have the Dashboard (new idea) close this when it closes the publisher).
+	
 	public ServerListener(TransactionPublisher publisher, Network network, int port) throws IOException {
 		_serverSocket = network.openObjectServerSocket(port);
 		_publisher = publisher;
