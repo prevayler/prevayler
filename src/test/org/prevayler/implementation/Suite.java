@@ -10,6 +10,7 @@ import junit.framework.Test;
 import org.prevayler.implementation.snapshot.GenericSnapshotManagerTest;
 import org.prevayler.foundation.ChunkingTest;
 import org.prevayler.foundation.DurableOutputStreamTest;
+import org.prevayler.foundation.FileLockerTest;
 import org.prevayler.foundation.gzip.MultiMemberGZIPTest;
 
 public class Suite extends TestCase {
@@ -31,6 +32,7 @@ public class Suite extends TestCase {
 		suite.addTestSuite(JournalSerializerTest.class);
 		suite.addTestSuite(SnapshotSerializerTest.class);
 		suite.addTestSuite(MultiMemberGZIPTest.class);
+		suite.addTestSuite(FileLockerTest.class);
 		return suite;
 	}
 }
