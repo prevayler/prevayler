@@ -8,7 +8,7 @@
         <!-- default values to use if not overridden.  "csrcdir" and "cdestdir" must be specified -->
         <property name="cincludes" value="**/*.java" />
         <property name="cexcludes" value="**/old**/**" />
-        <property name="ccprefid"  value="build.main.classpath" />
+        <property name="ccprefid"  value="build.core.classpath" />
         <echo>csrcdir  : ${csrcdir}${line.separator}cdestdir : ${cdestdir}${line.separator}cincludes: ${cincludes}${line.separator}cexcludes: ${cexcludes}${line.separator}ccprefid : ${ccprefid}</echo>
         <!-- Compile Java classes as necessary -->
         <javac
@@ -127,7 +127,7 @@
             version="true"
             use="true"
             additionalparam="${javadoc.breakiterator}"
-            windowtitle="${app.name}&#8482; v${app.version} API Documentation" >
+            windowtitle="${javadoc.windowTitle}" >
 
             <!-- <packageset...> below only works with Ant 1.5+.
                  We can use <packageset...> and remove "packagenames", "excludepackagenames",
@@ -136,12 +136,12 @@
                 <include name="${src.package.path}/**" />
             </packageset>-->
 
-            <header><![CDATA[<a href="${app.url}" target="_blank">${app.name} Online</a>]]></header>
-            <doctitle><![CDATA[<h1>${app.Name}</h1>]]></doctitle>
-            <footer><![CDATA[<a href="${app.url}" target="_blank">${app.name} Online</a>]]></footer>
-            <bottom><![CDATA[<i>${app.trademark}<br>Copyright &#169; ${app.year} ${app.company} All Rights Reserved.</i>]]></bottom>
+            <doctitle><![CDATA[${javadoc.docTitle}]]></doctitle>
+            <header><![CDATA[${javadoc.header}]]></header>
+            <footer><![CDATA[${javadoc.footer}]]></footer>
+            <bottom><![CDATA[${javadoc.bottom}]]></bottom>
             <link offline="${javadoc.jdk.offline}" href="${javadoc.jdk.href}" packagelistLoc="${javadoc.jdk.packagelistLoc}" />
-            <classpath refid="build.main.classpath" />
+            <classpath refid="build.core.classpath" />
         </javadoc>
     </target>
 

@@ -34,8 +34,8 @@
     <property name="src.packages"           value="org.prevayler, org.prevayler.implementation.*" />
     <property name="src.packages.excludes"  value="org.prevayler.demos.*, org.prevayler.test.*" />
 
-    <property name="log4j.system.variable.dynamic.name" value="$${${app.name}.log.home}" />
-    <property name="log4j.system.variable.name" value="${app.name}.log.home" />
+    <property name="log4j.system.variable.dynamic.name" value="$${${app.Name}.log.home}" />
+    <property name="log4j.system.variable.name" value="${app.Name}.log.home" />
     <property name="log4j.log.path" location="${targetdir}/logs" />
 
     <fileset dir="${srcdir.test}" id="unit.test.files"
@@ -58,7 +58,7 @@
         <pathelement location="${ant-contrib.jar}"/>
     </path>
 
-    <path id="build.main.classpath" >
+    <path id="build.core.classpath" >
         <pathelement location="${classesdir.main}" />
         <path refid="build.classpath" />
     </path>
@@ -66,7 +66,7 @@
     <path id="build.run.classpath" >
         <pathelement location="${classesdir.contrib}" />
         <pathelement location="${classesdir.test}" />
-        <path refid="build.main.classpath" />
+        <path refid="build.core.classpath" />
     </path>
 
 <!-- ==================== Rebuild Target ====================================== -->
@@ -90,7 +90,7 @@
         <delete dir="${testreportdir}" />
         <delete dir="${log4j.log.path}" />
         <delete includeEmptyDirs="true">
-            <fileset dir="${docdir}/api" includes="**/**" excludes="**/README" />
+            <fileset dir="${docdir}/api" includes="**/**" excludes="**/Readme.txt" />
         </delete>
         <delete>
             <fileset dir="${targetdir}" includes="*.*" />
@@ -120,7 +120,7 @@
         <mkdir  dir="${classesdir.contrib}" />
         <mkdir  dir="${log4j.log.path}" />
         <copy todir="${basedir}" >
-            <fileset dir="${basedir}">
+            <fileset dir="${basedir}" excludes="sample.build.properties">
                 <present present="srconly" targetdir="${basedir}">
                     <mapper type="glob" from="sample.*" to="*" />
                 </present>
@@ -174,7 +174,7 @@
         <!-- Generate GZIP distribution -->
         <tar destfile="${targetdir}/${file.name.dist}.tar" longfile="gnu">
             <tarfileset dir="${rootdir}"      prefix="${app.name}"/>
-            <tarfileset dir="${libdir}"      prefix="${app.name}/lib"/>
+            <tarfileset dir="${libdir}"       prefix="${app.name}/lib"/>
             <tarfileset dir="${srcdir.main}"  prefix="${app.name}/src"/>
         </tar>
         <gzip src="${targetdir}/${file.name.dist}.tar" zipfile="${targetdir}/${file.name.dist}.tar.gz"/>
@@ -265,15 +265,7 @@
     <target name="download.core.dependencies" depends="-proxyflags"
             description="Download binary packages needed by the core packages" >
         <mkdir dir="${dependenciesdir}" />
-        <!-- Downdown any sub package or tools needed. -->
-        <antcall target="-downloadgz">
-            <param name="sourcefile" value="${skaringa.loc}"/>
-            <param name="destfile" value="${skaringa.jar}"/>
-        </antcall>
-        <antcall target="-downloadgz">
-            <param name="sourcefile" value="${log4j.loc}"/>
-            <param name="destfile" value="${log4j.jar}"/>
-        </antcall>
+        <!-- Download any sub package or tools needed. -->
         <antcall target="-downloadgz">
             <param name="sourcefile" value="${ant-contrib.loc}"/>
             <param name="destfile" value="${ant-contrib.jar}"/>
@@ -283,7 +275,15 @@
     <target name="download.contrib.dependencies" depends="-proxyflags"
             description="Download binary packages needed by the contrib packages" >
         <mkdir dir="${dependenciesdir}" />
-        <!-- Downdown any sub package or tools needed. -->
+        <!-- Download any sub package or tools needed. -->
+        <antcall target="-downloadgz">
+            <param name="sourcefile" value="${skaringa.loc}"/>
+            <param name="destfile" value="${skaringa.jar}"/>
+        </antcall>
+        <antcall target="-downloadgz">
+            <param name="sourcefile" value="${log4j.loc}"/>
+            <param name="destfile" value="${log4j.jar}"/>
+        </antcall>
         <antcall target="-downloadgz">
             <param name="sourcefile" value="${commons-jxpath.loc}"/>
             <param name="destfile" value="${commons-jxpath.jar}"/>
@@ -316,7 +316,7 @@
         </java>
     </target>
 
-    <target name="run.demo.bank.xml" depends="compile.core, -demo.init"
+    <target name="run.demo.bank.xml" depends="compile.contrib, -demo.init"
             description="Same as simple bank demo, but uses skaringa xml serialization" >
         <java dir="${cachedir.demo}" fork="true" classname="org.prevayler.demos.demo2.MainXml" >
             <classpath refid="build.run.classpath" />
