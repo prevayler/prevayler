@@ -1,0 +1,193 @@
+<HTML>
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html">
+<TITLE>Object Prevalence</TITLE>
+</HEAD>
+
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffe7c7">
+<FONT FACE="Arial">
+
+<FONT SIZE=5>
+<U><B>OBJECT PREVALENCE SKEPTICAL FAQ
+</B></U>
+</FONT>
+<BR>
+Transparent Persistence, Fault-Tolerance and Load-Balancing for 
+Java Business Objects.<br><br><br>
+
+Orders of magnitude <b>FASTER</b> and <b>SIMPLER</b> than a traditional 
+DBMS. No pre or post-processing required, no wierd proprietary VM 
+required, no base-class inheritance or clumsy interface implementation 
+required: just <b>PLAIN JAVA CODE</b>.<br><br><br>
+
+<B><I><P>How is it possible?</P></I></B>
+<P>RAM is getting cheaper every day. Researchers are 
+announcing major breakthroughs in memory technology. Even today, 
+servers with multi-gigabyte RAM are commonplace. For many systems, it is 
+already feasible to keep all business objects in RAM.</P><BR><BR>
+
+<B><I><P>Do you mean I can simply have my objects in RAM and forget all that database hassle?</P></I></B>
+<P>That's right.</P><BR><BR>
+
+<B><I><P>Are you crazy? What if there's a system crash?</P></I></B>
+<P>To avoid losing data, every night your system server saves a 
+snapshot of all business objects to a file using plain object 
+serialization.</P><BR><BR>
+
+<B><I><P>What about the changes occurred since the last snapshot was 
+taken? Won't the system lose those in a crash?</P></I></B>
+<P>No.</P><BR><BR>
+
+<B><I><P>How come?</P></I></B>
+<P>All commands received from the system's clients are converted into serializable objects by the server. Before being applied to the business objects, each command is serialized and written to a log file. During crash recovery, first, the system retrieves its last saved state from the snapshot file. Then, it reads the commands from the log files created since the snapshot was taken. These commands are simply applied to the business objects exactly as if they had just come from the system's clients. The system is then back in the state it was just before the crash and is ready to run.</P><BR><BR>
+
+<B><I><P>Does that mean my business objects have to be deterministic?</P></I></B>
+<P>Yes. They must always produce the same state given the same commands.</P><BR><BR>
+
+<B><I><P>Doesn't the system have to stop or enter read-only mode in order to produce a consistent snapshot?</P></I></B>
+<P>No. That is a fundamental problem with transparent or orthogonal 
+persistence projects like PJama (http://www.dcs.gla.ac.uk/pjava/) but 
+it can be solved simply by having all system commands queued and routed 
+through a single place. This enables the system to have a replica of 
+the business logic on another virtual machine. All commands applied to 
+the "hot" system are also read by the replica and applied in the exact 
+same order. At backup time, the replica stops reading the commands and 
+its snapshot is safely taken. After that, the replica continues reading 
+the command queue and gets back in sync with the "hot" system.</P><BR><BR>
+
+<B><I><P>Doesn't that replica give me fault-tolerance as a bonus?</P></I></B>
+<P>Yes it does. I have 
+mentioned one but you can have several replicas. If the "hot" system 
+crashes, any other replica can be elected and take over. Of course, you 
+must be able to afford a machine for every replica you want.</P><BR><BR>
+
+<B><I><P>Does this whole scheme have a name?</P></I></B>
+<P>Yes. It is called system 
+prevalence. It encompasses transparent persistence, fault-tolerance and 
+load-balancing.</P><BR><BR>
+
+<B><I><P>If all my objects stay in RAM, will I be able to use SQL-based tools to query my objects' attributes?</P></I></B>
+<P>No. You will be able to use 
+object-based tools. The good news is you will no longer be breaking 
+your objects' encapsulation.</P><BR><BR>
+
+<B><I><P>What about transactions? Don't I need transactions?</P></I></B>
+<P>Yes, you do. The prevalent design 
+gives you all transactional properties without the need for explicit 
+transaction semantics in your code.</P><BR><BR>
+
+<B><I><P>How is that?</P></I></B>
+<P>DBMSs tend to support only 
+a few basic operations: INSERT, UPDATE and DELETE, for example. Because 
+of this limitation, you must use transaction semantics (begin - commit) 
+to delimit the operations in every business transaction for the benefit 
+of your DBMS. In the prevalent design, every transaction is represented 
+as a serializable object which is atomically written to the queue (a 
+simple log file) and processed by the system. An object, or object 
+graph, is enough to encapsulate the complexity of any business 
+transaction.</P><BR><BR>
+
+<B><I><P>What about business rules involving dates and time? Won't all those replicas get out of sync?</P></I></B>
+<P>No. If you ask the use-case 
+gurus, they will tell you: "The clock is an external actor to the 
+system.". This means that clock ticks are commands to the business 
+objects and are sequentially applied to all replicas, just like all 
+other commands.</P><BR><BR>
+
+<B><I><P>Is object prevalence faster than using a database?</P></I></B>
+<P>The objects are always in 
+RAM, already in their native form. No disk access or data marshalling 
+is required. No persistence hooks placed by preprocessors or 
+postprocessors are required in your code. No "isDirty" flag. No 
+restrictions. You can use whatever algorithms and data-structures your 
+language can support. Things don't get much faster than that.</P><BR><BR>
+
+<B><I><P>Besides being deterministic and serializable, what are the coding standards or restrictions my business classes have to obey?</P></I></B>
+<P>None whatsoever. To issue 
+commands to your business objects, though, each command must be 
+represented as a serializable object. Typically, you will have one 
+class for each use-case in your system.</P><BR><BR>
+
+<B><I><P>How scalable is object prevalence?</P></I></B>
+<P>The persistence processes 
+run completely in parallel with the business logic. While one command 
+is being processed by the system, the next one is already being written 
+to the log. Multiple log files can be used to increase throughput. The 
+periodic writing of the snapshot file by the replica does not disturb 
+the "hot" system in the slightest. Of course, tests must be carried out 
+to determine the actual scalability of any given implementation but, in 
+most cases, overall system scalability is bound by the scalability of 
+the business classes themselves.</P><BR><BR>
+
+<B><I><P>Can't I use all those replicas to speed things up?</P></I></B>
+<P>All replicas have to 
+process all commands issued to the system. There is no great 
+performance gain, therefore, in adding replicas to command-intensive 
+systems. In query-intensive systems such as most Web applications, on 
+the other hand, every new replica will boost the system because queries 
+are transparently balanced between all available replicas. To enable 
+that, though, just like your commands, each query to your business 
+logic must also be represented as a serializable object.</P><BR><BR>
+
+<B><I><P>Isn't representing every system query as a serializable object a real pain?</P></I></B>
+<P>That's only necessary if 
+you want transparent load-balancing, mind you. Besides, the queries for 
+most distributed applications arrive in a serializable form anyway. 
+Take Web applications for example: aren't HTTP request strings 
+serializable already?</P><BR><BR>
+
+<B><I><P>Does prevalence only work in Java?</P></I></B>
+<P>No. You can use any 
+language for which you are able to find or build a serialization 
+mechanism. In languages where you can directly access the system's 
+memory and if the business objects are held in a specific memory 
+segment, you can also write that segment out to the snapshot file 
+instead of using serialization.</P><BR><BR>
+
+<B><I><P>Is there a Java implementation I can use?</P></I></B>
+<P>Yes. You will find 
+Prevayler - The Open-Source Prevalence Layer, an example application 
+and more information at <A HREF="http://www.prevayler.org">www.prevayler.org</A>. It does not yet 
+implement automatic load-balancing but it does implement transparent 
+business object persistence and replication is in the oven.</P><BR><BR>
+
+<B><I><P>Is Prevayler reliable?</P></I></B>
+<P>Prevayler's robustness 
+comes from its anticlimactic simplicity. It is orders of magnitude simpler than the 
+simplest RDBMS. Although I wouldn't use Prevayler to control a nuclear 
+plant just yet, its open-source license ensures the whole of the 
+software developing community the ability to scrutinize, optimize and 
+extend Prevayler. The real questions you should bear in mind are: "How 
+robust is my Java Virtual Machine?" and "How robust is my own code?". 
+Remember: you will no longer be writing feeble client code. You will 
+now have the means to actually write server code. It is the way object 
+orientation was intended all along; but it is certainly not for 
+wimps.</P><BR><BR>
+
+<B><I><P>You said Prevayler is open-source software. Do you mean it's free?</P></I></B>
+<P>That's right. It is licensed 
+under the Lesser General Public License.</P><BR><BR>
+
+<B><I><P>Who is already using Prevayler?</P></I></B>
+<P><A HREF="http://www.prevayler.org/wiki.jsp?topic=PrevaylerPioneers">Come and see</A>. Speak your mind.</P><BR><BR>
+
+<B><I><P>But what if I'm emotionally attached to my database?</P></I></B>
+<P>For many applications, 
+prevalence is a much faster, much cheaper and much simpler way of 
+preserving your objects for future generations. Of course, there will 
+be all sorts of excuses to hang on to "ye olde database", but at least 
+now there is an option.</P><BR><BR>
+<HR>
+<B><P>ABOUT THE AUTHOR</P></B>
+<P>Klaus Wuestefeld enjoys writing good software and helping other people do the same. He has been doing so for 18 years now. He is a consultant with Objective Solutions, and can be contacted at <A HREF="mailto:klaus@objective.com.br">klaus@objective.com.br</A>.</P><BR>
+<HR>
+<FONT SIZE=1>
+The terms "ANTICLIMACTIC SIMPLICITY" and "ANTICLIMACTICALLY SIMPLE" are hereby placed in the public domain.
+"PREVAYLER" and "OPEN-SOURCE PREVALENCE LAYER" are trademarks of Klaus Wuestefeld.<BR>
+Copyright (C) 2001 Klaus Wuestefeld.<BR>
+Unmodified, verbatim copies of this text including this copyright notice can be freely made.
+</FONT>
+</FONT>
+</BODY>
+</HTML>
