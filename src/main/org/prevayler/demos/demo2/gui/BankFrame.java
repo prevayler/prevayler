@@ -5,7 +5,6 @@ import org.prevayler.foundation.Cool;
 
 import javax.swing.*;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 public class BankFrame extends JFrame {
 
