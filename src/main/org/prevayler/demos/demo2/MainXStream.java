@@ -17,12 +17,15 @@ public class MainXStream {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalenceBase("demo2XStream");
 
-		XStream xstream = new XStream();
-		xstream.alias("bank", Bank.class);
-		xstream.alias("account", Account.class);
-		xstream.alias("accountEntry", AccountEntry.class);
-
-		factory.configureSnapshotManager(new XStreamSnapshotManager(xstream, new Bank(), "demo2XStream"));
+		factory.configureSnapshotManager(new XStreamSnapshotManager(new Bank(), "demo2XStream") {
+                protected XStream createXStream() {
+                    XStream xstream = new XStream();
+                    xstream.alias("bank", Bank.class); //This mapping is optional. It just makes the XML in the snapshot file look prettier.
+                    xstream.alias("account", Account.class);
+                    xstream.alias("accountEntry", AccountEntry.class);
+                    return xstream;
+                }
+        });
 		Prevayler prevayler = factory.create();
 
 		Main.startSnapshots(prevayler);
