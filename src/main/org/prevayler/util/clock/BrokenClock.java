@@ -9,7 +9,7 @@ import java.util.Date;
 
 /** A deterministic Clock that always returns the same time until it is forced to advance. A new BrokenClock's time() starts off at new Date(Long.MIN_VALUE);
  */
-class BrokenClock implements Clock, java.io.Serializable {
+public class BrokenClock implements Clock, java.io.Serializable {
 
 	protected long _millis = Long.MIN_VALUE;
 	private Date _time = new Date(_millis);
