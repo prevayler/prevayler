@@ -7,13 +7,10 @@ package org.prevayler.foundation.network;
 import java.io.IOException;
 
 
-public class NetworkImpl implements Network {
+public interface OldNetwork {
 
-	public ObjectSocket openSocket(String serverIpAddress, int serverPort) throws IOException {
-		return new ObjectSocketImpl(serverIpAddress, serverPort);
-	}
+	ObjectSocket openSocket(String serverIpAddress, int serverPort) throws IOException;
 
-	public ObjectServerSocket openObjectServerSocket(int port) throws IOException {
-		return new ObjectServerSocketImpl(port);
-	}
+	ObjectServerSocket openObjectServerSocket(int port) throws IOException;
+	
 }

@@ -11,7 +11,7 @@ import java.util.Map;
 import org.prevayler.foundation.Cool;
 
 
-public class NetworkMock implements Network {
+public class NetworkMock implements OldNetwork {
 
 	private final Map _serverSocketByPort = new HashMap();
 	private Permit _permit = new Permit();

@@ -5,7 +5,7 @@
 package org.prevayler.implementation.replication;
 
 import org.prevayler.Clock;
-import org.prevayler.foundation.network.Network;
+import org.prevayler.foundation.network.OldNetwork;
 import org.prevayler.foundation.network.ObjectSocket;
 import org.prevayler.implementation.Capsule;
 import org.prevayler.implementation.TransactionTimestamp;
@@ -34,7 +34,7 @@ public class ClientPublisher implements TransactionPublisher {
 	private final ObjectSocket _server;
 
 
-	public ClientPublisher(Network network, String serverIpAddress, int serverPort) throws IOException {
+	public ClientPublisher(OldNetwork network, String serverIpAddress, int serverPort) throws IOException {
 		System.out.println("The replication logic is still under development.");
 		_server = network.openSocket(serverIpAddress, serverPort);
 		startListening();

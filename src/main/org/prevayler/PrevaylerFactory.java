@@ -7,8 +7,8 @@ package org.prevayler;
 
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.monitor.SimpleMonitor;
-import org.prevayler.foundation.network.Network;
-import org.prevayler.foundation.network.NetworkImpl;
+import org.prevayler.foundation.network.OldNetwork;
+import org.prevayler.foundation.network.OldNetworkImpl;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.serialization.SkaringaSerializer;
@@ -55,7 +55,7 @@ public class PrevaylerFactory {
 	private long _journalSizeThreshold;
 	private long _journalAgeThreshold;
 	
-	private Network _network;
+	private OldNetwork _network;
 	private int _serverPort = -1;
 	private String _remoteServerIpAddress;
 	private int _remoteServerPort;
@@ -258,7 +258,7 @@ public class PrevaylerFactory {
 	}
 
 
-	public void configureNetwork(Network network) {
+	public void configureNetwork(OldNetwork network) {
 		_network = network;
 	}
 
@@ -344,8 +344,8 @@ public class PrevaylerFactory {
 		return _journalSuffix != null ? _journalSuffix : "journal";
 	}
 
-	private Network network() {
-		return _network != null ? _network : new NetworkImpl();
+	private OldNetwork network() {
+		return _network != null ? _network : new OldNetworkImpl();
 	}
 
 	private GenericSnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
