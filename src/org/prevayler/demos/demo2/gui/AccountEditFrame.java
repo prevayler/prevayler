@@ -1,12 +1,23 @@
 package org.prevayler.demos.demo2.gui;
 
-import org.prevayler.demos.demo2.*;
-import org.prevayler.demos.demo2.commands.*;
+import java.awt.Container;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+
 import org.prevayler.Prevayler;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.text.DecimalFormat;
+import org.prevayler.demos.demo2.business.Account;
+import org.prevayler.demos.demo2.business.AccountListener;
+import org.prevayler.demos.demo2.business.transactions.Deposit;
+import org.prevayler.demos.demo2.business.transactions.HolderChange;
+import org.prevayler.demos.demo2.business.transactions.Withdrawal;
 
 class AccountEditFrame extends AccountFrame implements AccountListener {
 	
@@ -30,9 +41,9 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
 		super.addFields(fieldBox);
 		
 		fieldBox.add(gap());
-        fieldBox.add(labelContainer("Transaction History"));
+		fieldBox.add(labelContainer("Transaction History"));
 		historyList = new JList();
-        historyList.disable();
+		historyList.disable();
 		fieldBox.add(new JScrollPane(historyList));
 		
 		fieldBox.add(gap());
@@ -57,7 +68,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
 		public void action() throws Exception {
             Number amount = enterAmount("Deposit");
             if (amount == null) return;
-            prevayler.executeCommand(new Deposit(account, amount.longValue()));
+            (new Deposit(account, amount.longValue())).executeUsing(prevayler);
 		}
 	}
 
@@ -70,7 +81,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
         public void action() throws Exception {
             Number amount = enterAmount("Withdrawal");
             if (amount == null) return;
-            prevayler.executeCommand(new Withdrawal(account, amount.longValue()));
+            (new Withdrawal(account, amount.longValue())).executeUsing(prevayler);
 		}
 	}
 
@@ -93,7 +104,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
 
 	public void accountChanged() {  //Implements AccountListener.
 		holderField.setText(account.holder());
-        historyList.setListData(account.transactionHistory().toArray());
+		historyList.setListData(account.transactionHistory().toArray());
 		balanceField.setText(String.valueOf(account.balance()));
 	}
 	
@@ -101,7 +112,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
 		public void focusLost(FocusEvent e) {
 			if (holderText().equals(account.holder())) return;
 			try {
-				prevayler.executeCommand(new HolderChange(account, holderText()));
+				(new HolderChange(account, holderText())).executeUsing(prevayler);
 			} catch (Exception exception) {
 				RobustAction.display(exception);
 			}

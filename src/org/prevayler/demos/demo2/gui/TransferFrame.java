@@ -1,12 +1,15 @@
 package org.prevayler.demos.demo2.gui;
 
-import org.prevayler.demos.demo2.*;
-import org.prevayler.demos.demo2.commands.*;
+import java.awt.Container;
+
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import org.prevayler.Prevayler;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.text.DecimalFormat;
+import org.prevayler.demos.demo2.business.Account;
+import org.prevayler.demos.demo2.business.transactions.Transfer;
 
 class TransferFrame extends AccountFrame {
 	
@@ -54,7 +57,7 @@ class TransferFrame extends AccountFrame {
 		public void action() throws Exception {
             long destinationNumber = parse(destinationField.getText());
             long amount = parse(amountField.getText());
-            prevayler.executeCommand(new Transfer(account.number(), destinationNumber, amount));
+            (new Transfer(account.number(), destinationNumber, amount)).executeUsing(prevayler);
             dispose();
 		}
 	}

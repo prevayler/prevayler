@@ -1,8 +1,8 @@
 package org.prevayler.demos.demo2.gui;
 
 import org.prevayler.Prevayler;
-import org.prevayler.demos.demo2.*;
-import org.prevayler.demos.demo2.commands.*;
+import org.prevayler.demos.demo2.business.*;
+import org.prevayler.demos.demo2.business.transactions.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
@@ -47,7 +47,7 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
 	}
 	
 	private Bank bank() {
-		return (Bank)prevayler.system();
+		return (Bank)prevayler.prevalentSystem();
 	}
 	
 	public void accountCreated(Account a) { //Implements BankListener.
@@ -130,7 +130,7 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
 			int option = JOptionPane.showConfirmDialog(null, "Delete selected account?", "Account Deletion", JOptionPane.YES_NO_OPTION);
 			if (option != JOptionPane.YES_OPTION) return;
 			
-			prevayler.executeCommand(new AccountDeletion(account));
+			(new AccountDeletion(account)).executeUsing(prevayler);
 		}
 		  	
 	}

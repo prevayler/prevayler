@@ -4,11 +4,9 @@
 
 package org.prevayler.test;
 
-import org.prevayler.implementation.AbstractPrevalentSystem;
-
 /** A simple system that only adds up numbers.
 */
-class AddingSystem extends AbstractPrevalentSystem {
+class AddingSystem implements java.io.Serializable {
 
 	private long total = 0;
 

@@ -1,10 +1,19 @@
 package org.prevayler.demos.demo2.gui;
 
-import org.prevayler.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.text.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+
+import javax.swing.Box;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import org.prevayler.Prevayler;
 
 
 abstract class AccountFrame extends JInternalFrame {

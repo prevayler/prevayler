@@ -1,9 +1,12 @@
 package org.prevayler.demos.demo2.gui;
 
+import javax.swing.Box;
+import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+
 import org.prevayler.Prevayler;
-import javax.swing.*;
-import java.awt.event.*;
-import java.io.IOException;
 
 public class BankFrame extends JFrame {
 

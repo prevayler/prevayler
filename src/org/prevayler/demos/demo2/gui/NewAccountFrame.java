@@ -1,7 +1,7 @@
 package org.prevayler.demos.demo2.gui;
 
 import org.prevayler.*;
-import org.prevayler.demos.demo2.commands.AccountCreation;
+import org.prevayler.demos.demo2.business.transactions.AccountCreation;
 import javax.swing.*;
 import java.awt.Container;
 
@@ -24,7 +24,7 @@ class NewAccountFrame extends AccountFrame {
 		}
 
 		protected void action() throws Exception {
-			prevayler.executeCommand(new AccountCreation(holderText()));
+			(new AccountCreation(holderText())).executeUsing(prevayler);
 			dispose();
 		}
 	}

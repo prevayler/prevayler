@@ -4,11 +4,10 @@
 
 package org.prevayler.test.scalability.prevayler;
 
-import org.prevayler.*;
+import org.prevayler.Transaction;
 import org.prevayler.test.scalability.RecordIterator;
-import java.io.Serializable;
 
-class AllRecordsReplacement implements Command {
+class AllRecordsReplacement implements Transaction {
 
 	private final RecordIterator newRecords;
 
@@ -16,8 +15,7 @@ class AllRecordsReplacement implements Command {
 		this.newRecords = newRecords;
 	}
 
-	public Serializable execute(PrevalentSystem system) {
+	public void executeOn(Object system) {
 		((ScalabilitySystem)system).replaceAllRecords(newRecords);
-		return null;
 	}
 }

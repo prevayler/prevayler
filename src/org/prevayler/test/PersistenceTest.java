@@ -4,20 +4,21 @@
 
 package org.prevayler.test;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 
-import org.prevayler.*;
-import org.prevayler.implementation.*;
+import org.prevayler.foundation.FileManager;
+import org.prevayler.implementation.SnapshotPrevayler;
 
 public class PersistenceTest {
 
 	static private SnapshotPrevayler prevayler;
-	static private final Set prevaylers = new HashSet();
+	static private String prevalenceBase;
 
 	static public void run() throws Exception {
 
-		clearPrevalenceBase();
+		newPrevalenceBase();
 
 		crashRecover(); //There is nothing to recover at first. A new system will be created.
 		crashRecover();
@@ -46,20 +47,28 @@ public class PersistenceTest {
 		add(3,127);
 		verify(127);
 
-		clearPrevalenceBase();
 		snapshot();
+		File snapshot =   new File(prevalenceBase, "0000000000000000008.snapshot");
+		newPrevalenceBase();
+		FileManager.produceDirectory(prevalenceBase);
+		snapshot.renameTo(new File(prevalenceBase, "0000000000000000008.snapshot"));
 		
 		crashRecover();
 		add(10,137);
 		add(2,139);
 		crashRecover();
-		verify(139);
+		add(10,149);
+		add(3,152);
+		crashRecover();
+		add(11,163);
+		add(4,167);
+		crashRecover();
+		verify(167);
 	}
 
 	static private void crashRecover() throws Exception {
 		out("CrashRecovery.");
 		prevayler = new SnapshotPrevayler(new AddingSystem(), prevalenceBase());
-		prevaylers.add(prevayler);
 	}
 
 	static private void snapshot() throws IOException {
@@ -70,8 +79,8 @@ public class PersistenceTest {
 
 	static private void add(long value, long expectedTotal) throws Exception {
 		out("Adding " + value);
-		Long total = (Long)prevayler.executeCommand(new Addition(value));
-		compare(total.longValue(), expectedTotal, "Total");
+		prevayler.execute(new Addition(value));
+		verify(expectedTotal);
 	}
 
 
@@ -82,23 +91,17 @@ public class PersistenceTest {
 
 
 	static private AddingSystem system() {
-		return (AddingSystem)prevayler.system();
+		return (AddingSystem)prevayler.prevalentSystem();
 	}
 
 
 	static private String prevalenceBase() {
-		return "PrevalenceBase";
+		return prevalenceBase;
 	}
 
 
-	static private void clearPrevalenceBase() throws Exception{
-		Iterator it = prevaylers.iterator();
-		while (it.hasNext()) {
-			((SnapshotPrevayler)it.next()).takeSnapshot(); //Closes the open log file.
-		}
-		prevaylers.clear();
-
-		deletePrevalenceFiles(prevalenceBase());
+	static private void newPrevalenceBase() throws Exception {
+		prevalenceBase = "PrevalenceBase" + System.currentTimeMillis();
 	}
 
 	static public void deletePrevalenceFiles(String directoryName) {
@@ -131,7 +134,7 @@ public class PersistenceTest {
 
 	static private class PrevalenceFilter implements FilenameFilter {
 		public boolean accept(File directory, String filename) {
-			return filename.endsWith("commandLog")
+			return filename.endsWith("transactionLog")
 				|| filename.endsWith("snapshot");
 		}
 	}

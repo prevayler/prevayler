@@ -1,0 +1,1 @@
+Bits and pieces of code people have submitted that might eventually be used in a future version of Prevayler.

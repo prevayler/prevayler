@@ -4,9 +4,9 @@
 
 package org.prevayler.test.scalability.prevayler;
 
-import org.prevayler.test.scalability.*;
 import org.prevayler.Prevayler;
-import java.io.*;
+import org.prevayler.test.scalability.RecordIterator;
+import org.prevayler.test.scalability.ScalabilityTestSubject;
 
 abstract class PrevaylerScalabilitySubject implements ScalabilityTestSubject {
 
@@ -23,7 +23,7 @@ abstract class PrevaylerScalabilitySubject implements ScalabilityTestSubject {
 	public void replaceAllRecords(RecordIterator newRecords) {
 		try {
 
-			prevayler.executeCommand(new AllRecordsReplacement(newRecords));
+			prevayler.execute(new AllRecordsReplacement(newRecords));
 
 		} catch (Exception ex) {
 			ex.printStackTrace();

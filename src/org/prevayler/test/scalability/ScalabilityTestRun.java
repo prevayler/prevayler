@@ -6,13 +6,13 @@ package org.prevayler.test.scalability;
 
 import java.util.*;
 import java.text.DecimalFormat;
-import org.prevayler.util.*;
+import org.prevayler.foundation.*;
 
 /** Represents a single run of a scalability test. To understand the implementation of this class, you must be familiar with Prevayler's Scalability Test (run org.prevayler.test.scalability.ScalabilityTest).
 */
 abstract class ScalabilityTestRun {
 
-	static private final long ROUND_DURATION_MILLIS = 1000 * 60;
+	static private final long ROUND_DURATION_MILLIS = 1000 * 20;
 
 	private final ScalabilityTestSubject subject;
 	protected final int numberOfObjects;
@@ -23,7 +23,6 @@ abstract class ScalabilityTestRun {
 	private final List connectionCache = new LinkedList();
 
 	private long operationCount = 0;
-	private final Object roundMonitor = new Object();
 	private boolean isRoundFinished;
 	private int activeRoundThreads = 0;
 
@@ -88,7 +87,7 @@ abstract class ScalabilityTestRun {
 		long initialOperationCount = operationCount;
 		StopWatch stopWatch = StopWatch.start();
 
-		startThreads(threads);
+		startThreads(threads, initialOperationCount);
 		sleep();
 		stopThreads();
 
@@ -103,32 +102,32 @@ abstract class ScalabilityTestRun {
 	}
 
 
-	private void startThreads(int threads) {
+	private void startThreads(int threads, long initialOperationCount) {
 		isRoundFinished = false;
 
-		for(int i = 1; i <= threads; i++) {
-			startThread();
+		int i = 1;
+		while(i <= threads) {
+			startThread(initialOperationCount + i, threads);
+			i++;
 		}
 	}
 
 
-	private void startThread() {
+	private void startThread(final long startingOperation, final int operationIncrement) {
 		(new Thread() {
 			public void run() {
 				try {
 					Object connection = acquireConnection();
 
+					long operation = startingOperation;
 					while (!isRoundFinished) {
-						long operation;
-						synchronized (roundMonitor) {
-							operation = operationCount;
-							operationCount++;
-						}
 						executeOperation(connection, operation);
+						operation += operationIncrement;
 					}
 
-					synchronized (roundMonitor) {
+					synchronized (connectionCache) {
 						connectionCache.add(connection);
+						operationCount += (operation -startingOperation) / operationIncrement;
 						activeRoundThreads--;
 					}
 
@@ -146,7 +145,7 @@ abstract class ScalabilityTestRun {
 
 
 	private Object acquireConnection() {
-		synchronized (roundMonitor) {
+		synchronized (connectionCache) {
 			return connectionCache.isEmpty()
 				? subject.createTestConnection()
 				: connectionCache.remove(0);

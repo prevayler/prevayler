@@ -4,11 +4,17 @@
 
 package org.prevayler.test.scalability.prevayler;
 
-import org.prevayler.implementation.*;
-import org.prevayler.test.scalability.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-class QuerySystem extends AbstractPrevalentSystem implements ScalabilitySystem {
+import org.prevayler.test.scalability.Record;
+import org.prevayler.test.scalability.RecordIterator;
+
+class QuerySystem implements ScalabilitySystem {
 
 	private Map recordsByName = new HashMap();
 

@@ -30,9 +30,9 @@ public class ScalabilityTest {
 			properties.load(new FileInputStream(propertiesFile()));
 
 			if (isPrevaylerQueryChosen()) runPrevaylerQuery();
-			if (isPrevaylerManipulationChosen()) runPrevaylerManipulation();
+			if (isPrevaylerTransactionChosen()) runPrevaylerTransaction();
 			if (isJdbcQueryChosen()) runJdbcQuery();
-			if (isJdbcManipulationChosen()) runJdbcManipulation();
+			if (isJdbcTransactionChosen()) runJdbcTransaction();
 
 			out("\n\n\nFor better results, edit the properties file:");
 			out(propertiesFile().getAbsolutePath());
@@ -62,12 +62,12 @@ public class ScalabilityTest {
 		);
 	}
 
-	static private void runPrevaylerManipulation() throws Exception {
-		new ManipulationTestRun(
-			new PrevaylerManipulationSubject(prevaylerManipulationLogDirectories()),
+	static private void runPrevaylerTransaction() throws Exception {
+		new TransactionTestRun(
+			new PrevaylerTransactionSubject(prevaylerTransactionLogDirectory(), prevaylerTransactionLogs()),
 			numberOfObjects(),
-			prevaylerManipulationThreadsMin(),
-			prevaylerManipulationThreadsMax()
+			prevaylerTransactionThreadsMin(),
+			prevaylerTransactionThreadsMax()
 		);
 	}
 
@@ -80,12 +80,12 @@ public class ScalabilityTest {
 		);
 	}
 
-	static private void runJdbcManipulation() {
-		new ManipulationTestRun(
-			new JDBCManipulationSubject(jdbcDriverClassName(), jdbcConnectionURL(), jdbcUser(), jdbcPassword()),
+	static private void runJdbcTransaction() {
+		new TransactionTestRun(
+			new JDBCTransactionSubject(jdbcDriverClassName(), jdbcConnectionURL(), jdbcUser(), jdbcPassword()),
 			numberOfObjects(),
-			jdbcManipulationThreadsMin(),
-			jdbcManipulationThreadsMax()
+			jdbcTransactionThreadsMin(),
+			jdbcTransactionThreadsMax()
 		);
 	}
 
@@ -111,6 +111,7 @@ public class ScalabilityTest {
 			"NumberOfObjects = ONE_HUNDRED_THOUSAND\n" +
 			"# NumberOfObjects = ONE_MILLION\n" +
 			"# NumberOfObjects = TEN_MILLION\n" +
+			"# NumberOfObjects = TWENTY_MILLION\n" +
 			"#\n" +
 			"# The results are only valid if both Prevayler and the\n" +
 			"# database can run the tests without paging memory to disk.\n" +
@@ -145,32 +146,20 @@ public class ScalabilityTest {
 			"\n" +
 			"\n" +
 			"###########################################################\n" +
-			"# PREVAYLER MANIPULATION TEST\n" +
+			"# PREVAYLER TRANSACTION TEST\n" +
 			"\n" +
-			"RunPrevaylerManipulationTest = YES\n" +
-			"# RunPrevaylerManipulationTest = NO\n" +
+			"RunPrevaylerTransactionTest = YES\n" +
+			"# RunPrevaylerTransactionTest = NO\n" +
 			"\n" +
-			"PrevaylerManipulationThreadsMinimum = 1\n" +
-			"PrevaylerManipulationThreadsMaximum = 5\n" +
+			"PrevaylerTransactionThreadsMinimum = 1\n" +
+			"PrevaylerTransactionThreadsMaximum = 5\n" +
 			"# More threads can produce better results on machines with\n" +
 			"# multiple disks.\n" +
 			"\n" +
-			"CommandLogDirectory1 = ManipulationTest\n" +
-			"CommandLogDirectory2 = ManipulationTest\n" +
-			"CommandLogDirectory3 = ManipulationTest\n" +
-			"CommandLogDirectory4 = ManipulationTest\n" +
-			"CommandLogDirectory5 = ManipulationTest\n" +
-			"CommandLogDirectory6 = ManipulationTest\n" +
-			"CommandLogDirectory7 = ManipulationTest\n" +
-			"CommandLogDirectory8 = ManipulationTest\n" +
-			"CommandLogDirectory9 = ManipulationTest\n" +
-			"CommandLogDirectory10 = ManipulationTest\n" +
-			"# This default will create 10 CommandLog files in the same\n" +
-			"# directory. Using several directories on different\n" +
-			"# physical disks can produce better results.\n" +
+			"TransactionLogDirectory = TransactionTest\n" +
 			"#\n" +
-			"# Full path names can be used. Example for Windows:\n" +
-			"# CommandLogDirectory1 = c:\\\\temp\\\\ManipulationTest\n" +
+			"# The full path name can be used. Example for Windows:\n" +
+			"# TransactionLogDirectory1 = c:\\\\temp\\\\TransactionTest\n" +
 			"# The back-slash (\\) is the escape character so you must\n" +
 			"# use two back-slashes (\\\\).\n" +
 			"\n" +
@@ -187,13 +176,13 @@ public class ScalabilityTest {
 			"\n" +
 			"\n" +
 			"###########################################################\n" +
-			"# JDBC MANIPULATION TEST\n" +
+			"# JDBC TRANSACTION TEST\n" +
 			"\n" +
-			"RunJdbcManipulationTest = NO\n" +
-			"# RunJdbcManipulationTest = YES\n" +
+			"RunJdbcTransactionTest = NO\n" +
+			"# RunJdbcTransactionTest = YES\n" +
 			"\n" +
-			"JdbcManipulationThreadsMinimum = 1\n" +
-			"JdbcManipulationThreadsMaximum = 5\n" +
+			"JdbcTransactionThreadsMinimum = 1\n" +
+			"JdbcTransactionThreadsMaximum = 5\n" +
 			"# More threads can produce better results on some machines.\n" +
 			"\n" +
 			"\n" +
@@ -206,7 +195,7 @@ public class ScalabilityTest {
 			"JdbcUser =\n" +
 			"JdbcPassword =\n" +
 			"# These two tables are necessary for the JDBC tests:\n" +
-			"# QUERY_TEST and MANIPULATION_TEST.\n" +
+			"# QUERY_TEST and TRANSACTION_TEST.\n" +
 			"# Both tables have the same column structure:\n" +
 			"#    ID DECIMAL,\n" +
 			"#    NAME VARCHAR2(8),\n" +
@@ -217,7 +206,7 @@ public class ScalabilityTest {
 			"#    DATE2 DATE.\n" +
 			"\n" +
 			"# IMPORTANT: For best results, create indices on the\n" +
-			"# QUERY_TEST.NAME and MANIPULATION_TEST.ID columns.\n" +
+			"# QUERY_TEST.NAME and TRANSACTION_TEST.ID columns.\n" +
 			"# Do not create indices on any other column.\n"
 		);
 	}
@@ -228,7 +217,8 @@ public class ScalabilityTest {
 		if ("ONE_HUNDRED_THOUSAND".equals(property)) return   100000;
 		if ("ONE_MILLION"         .equals(property)) return  1000000;
 		if ("TEN_MILLION"         .equals(property)) return 10000000;
-		throw new RuntimeException("NumberOfObjects property must be equal to ONE_HUNDRED_THOUSAND, ONE_MILLION or TEN_MILLION.");
+		if ("TWENTY_MILLION"      .equals(property)) return 20000000;
+		throw new RuntimeException("NumberOfObjects property must be equal to ONE_HUNDRED_THOUSAND, ONE_MILLION, TEN_MILLION or TWENTY_MILLION.");
 	}
 
 	static private boolean isPrevaylerQueryChosen() {
@@ -244,32 +234,26 @@ public class ScalabilityTest {
 	}
 
 
-	static private boolean isPrevaylerManipulationChosen() {
-		return booleanProperty("RunPrevaylerManipulationTest");
+	static private boolean isPrevaylerTransactionChosen() {
+		return booleanProperty("RunPrevaylerTransactionTest");
 	}
 
-	static private int prevaylerManipulationThreadsMin() {
-		return intProperty("PrevaylerManipulationThreadsMinimum");
+	static private int prevaylerTransactionThreadsMin() {
+		return intProperty("PrevaylerTransactionThreadsMinimum");
 	}
 
-	static private int prevaylerManipulationThreadsMax() {
-		return intProperty("PrevaylerManipulationThreadsMaximum");
+	static private int prevaylerTransactionThreadsMax() {
+		return intProperty("PrevaylerTransactionThreadsMaximum");
 	}
 
-	static private String[] prevaylerManipulationLogDirectories() {
-		out("\n\nPrevayler CommandLog Directories:");
-		List directories = new ArrayList();
-		int i = 1;
-		while (true) {
-			String directory = properties.getProperty("CommandLogDirectory" + i);
-			if (directory == null) break;
-			out(directory);
-			directories.add(directory);
-			i++;
-		}
-		if (directories.isEmpty()) throw new RuntimeException("There must be at least one CommandLog directory to run the Prevayler Manipulation Test.");
+	static private String prevaylerTransactionLogDirectory() {
+		String result = property("TransactionLogDirectory");
+		out("\n\nPrevayler TransactionLog Directory: " + result);
+		return result;
+	}
 
-		return (String[])directories.toArray(new String[0]);
+	static private int prevaylerTransactionLogs() {
+		return prevaylerTransactionThreadsMax();   // A log file for each thread.
 	}
 
 
@@ -286,16 +270,16 @@ public class ScalabilityTest {
 	}
 
 
-	static private boolean isJdbcManipulationChosen() {
-		return booleanProperty("RunJdbcManipulationTest");
+	static private boolean isJdbcTransactionChosen() {
+		return booleanProperty("RunJdbcTransactionTest");
 	}
 
-	static private int jdbcManipulationThreadsMin() {
-		return intProperty("JdbcManipulationThreadsMinimum");
+	static private int jdbcTransactionThreadsMin() {
+		return intProperty("JdbcTransactionThreadsMinimum");
 	}
 
-	static private int jdbcManipulationThreadsMax() {
-		return intProperty("JdbcManipulationThreadsMaximum");
+	static private int jdbcTransactionThreadsMax() {
+		return intProperty("JdbcTransactionThreadsMaximum");
 	}
 
 

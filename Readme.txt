@@ -1,8 +1,8 @@
 Prevayler 1.03
 ==================
-Prevayler is the free-software prevalence layer for Java. It is ridiculously simple (therefore robust) and provides transparent persistence for native Java objects. Allows object queries to run 3 to 4 orders of magnitude faster than using a database through JDBC.
+Prevayler(TM) is the free-software prevalence layer for Java. It is ridiculously simple (therefore robust) and provides transparent persistence for native Java objects. Allows object queries to run 3 to 4 orders of magnitude faster than using a database through JDBC.
 
-This release (1.03) increases transaction processing scalability by serializing multiple concurrent Commands in parallel, in different commandLog files. See Javadoc.
+This release (1.03) increases transaction processing scalability by serializing multiple concurrent Commands in parallel, in different commandLog files.
 
 
 Requirements
@@ -33,11 +33,11 @@ The following classes have the main() method and can be run directly. They are s
 
 More Learning Resources
 ===========================
-1) Javadoc - Included in this distribution.
+1) Documentation included in this distribution. See docs directory.
 
 2) Source Code - Prevayler's implementation (org.prevayler.implementation) has less than 300 statements.
 
-3) http://www.prevayler.org - Access to all other Prevayler resources.
+3) http://www.prevayler.org - Access to all other Prevayler resources: wiki site, mailing lists, etc.
 
 
 Contact Information
