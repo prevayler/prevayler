@@ -75,6 +75,19 @@ public class FileManager {
 		return new File(_directory, fileName);
 	}
 
+	public static void renameUnusedFile(File journalFile) {
+		journalFile.renameTo(new File(journalFile.getAbsolutePath() + ".unusedFile" + System.currentTimeMillis()));
+	}
+
+	public long findInitialJournalFile(long initialTransactionWanted) {
+		long initialFileCandidate = initialTransactionWanted;
+		while (initialFileCandidate != 0) {   //TODO Optimize.
+			if (journalFile(initialFileCandidate).exists()) break;
+			initialFileCandidate--;
+		}
+		return initialFileCandidate;
+	}
+
 	public File createTempFile(String prefix, String suffix) throws IOException {
 		return File.createTempFile(prefix, suffix, _directory);
 	}

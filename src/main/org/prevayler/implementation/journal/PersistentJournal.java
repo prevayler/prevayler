@@ -5,27 +5,26 @@
 
 package org.prevayler.implementation.journal;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.Date;
-
 import org.prevayler.Transaction;
+import org.prevayler.foundation.DurableInputStream;
 import org.prevayler.foundation.DurableOutputStream;
 import org.prevayler.foundation.FileManager;
-import org.prevayler.foundation.DurableInputStream;
 import org.prevayler.foundation.StopWatch;
 import org.prevayler.foundation.Turn;
-import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.monitor.Monitor;
+import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
+
+import java.io.EOFException;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 
 
 /** A Journal that will write all transactions to .journal files.
  */
-public class PersistentJournal implements FileFilter, Journal {
+public class PersistentJournal implements Journal {
 
 	private final FileManager _fileManager;
 	private DurableOutputStream _outputJournal;
@@ -116,7 +115,7 @@ public class PersistentJournal implements FileFilter, Journal {
 
 
 	private DurableOutputStream createOutputJournal(long transactionNumber) {
-		File file = journalFile(transactionNumber);
+		File file = _fileManager.journalFile(transactionNumber);
 		try {
 			return new DurableOutputStream(file, _journalSerializer);
 		} catch (IOException iox) {
@@ -130,7 +129,7 @@ public class PersistentJournal implements FileFilter, Journal {
 	 * If there are no journal files in the directory (when a snapshot is taken and all journal files are manually deleted, for example), the initialTransaction parameter in the first call to this method will define what the next transaction number will be. We have to find clearer/simpler semantics.
 	 */
 	public void update(TransactionSubscriber subscriber, long initialTransactionWanted) throws IOException, ClassNotFoundException {
-		long initialLogFile = findInitialJournalFile(initialTransactionWanted);
+		long initialLogFile = _fileManager.findInitialJournalFile(initialTransactionWanted);
 		
 		if (initialLogFile == 0) {
 			initializeNextTransaction(initialTransactionWanted, 1);
@@ -140,16 +139,6 @@ public class PersistentJournal implements FileFilter, Journal {
 		long nextTransaction = recoverPendingTransactions(subscriber, initialTransactionWanted, initialLogFile);
 		
 		initializeNextTransaction(initialTransactionWanted, nextTransaction);
-	}
-
-
-	private long findInitialJournalFile(long initialTransactionWanted) {
-		long initialFileCandidate = initialTransactionWanted;
-		while (initialFileCandidate != 0) {   //TODO Optimize.
-			if (journalFile(initialFileCandidate).exists()) break;
-			initialFileCandidate--;
-		}
-		return initialFileCandidate;
 	}
 
 
@@ -169,7 +158,7 @@ public class PersistentJournal implements FileFilter, Journal {
 
 	private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, long initialLogFile)	throws IOException, ClassNotFoundException {
 		long recoveringTransaction = initialLogFile;
-		File logFile = journalFile(recoveringTransaction);
+		File logFile = _fileManager.journalFile(recoveringTransaction);
 		DurableInputStream inputLog = new DurableInputStream(logFile, _journalSerializer, _monitor);
 
 		while(true) {
@@ -184,8 +173,8 @@ public class PersistentJournal implements FileFilter, Journal {
 				recoveringTransaction++;
 		
 			} catch (EOFException eof) {
-				File nextFile = journalFile(recoveringTransaction);
-				if (logFile.equals(nextFile)) renameUnusedFile(logFile);  //The first transaction in this log file is incomplete. We need to reuse this file name.
+				File nextFile = _fileManager.journalFile(recoveringTransaction);
+				if (logFile.equals(nextFile)) FileManager.renameUnusedFile(logFile);  //The first transaction in this log file is incomplete. We need to reuse this file name.
 				logFile = nextFile;
 				if (!logFile.exists()) break;
 				inputLog = new DurableInputStream(logFile, _journalSerializer, _monitor);
@@ -193,31 +182,6 @@ public class PersistentJournal implements FileFilter, Journal {
 		}
 		return recoveringTransaction;
 	}
-
-
-	private void renameUnusedFile(File journalFile) {
-		journalFile.renameTo(new File(journalFile.getAbsolutePath() + ".unusedFile" + System.currentTimeMillis()));
-	}
-
-
-	/** Implementing FileFilter. 0000000000000000000.transactionJournal is the format of the transaction journal filename. The long number (19 digits) is the number of the next transaction to be written at the moment the file is created. All transactions written to a file, therefore, have a sequence number greater or equal to the number in its filename.
-	 */
-	public boolean accept(File file) {
-		String name = file.getName();
-		if (!name.endsWith(".journal")) return false;
-		if (name.length() != 34) return false;
-		try { number(file); } catch (RuntimeException r) { return false; }
-		return true;
-	}
-
-	private File journalFile(long transaction) {
-		return _fileManager.journalFile(transaction);
-	}
-
-	static private long number(File file) {
-		return Long.parseLong(file.getName().substring(0, 19));
-	}
-
 
 	protected void handle(IOException iox, File journal, String action) {
 		String message = "All transaction processing is now blocked. An IOException was thrown while " + action + " a .journal file.";
