@@ -14,13 +14,15 @@ import com.skaringa.javaxml.*;
  */
 public class XmlSnapshotManager extends SnapshotManager {
 
-	private final ObjectTransformer trans;
+	private ObjectTransformer trans;
 
 
 	public XmlSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
 		super(newPrevalentSystem, snapshotDirectoryName);
+	}
 
-		try {
+        private void setupTransformer() throws IOException {
+            	try {
 			this.trans = ObjectTransformerFactory.getInstance().getImplementation();
 //			trans.setProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
 //			trans.setProperty(javax.xml.transform.OutputKeys.ENCODING, "ISO-8859-1");
@@ -31,12 +33,12 @@ public class XmlSnapshotManager extends SnapshotManager {
 		}
 	}
 
-
 	/**
 	 * @see org.prevayler.implementation.SnapshotManager#readSnapshot(InputStream)
 	 */
 	protected Object readSnapshot(InputStream in) throws IOException {
 		StreamSource source = new StreamSource(in);
+		if (this.trans == null) setupTransformer();
 		try {
 			return this.trans.deserialize(source);
 		} catch (DeserializerException se) {
