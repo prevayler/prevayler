@@ -8,8 +8,8 @@ import org.prevayler.test.scalability.*;
 import java.sql.*;
 import java.util.*;
 
-/** @author Stefan Ortmanns, Klaus Wuestefeld.
- */
+
+// Contributions by Stefan Ortmanns.
 class JDBCQueryConnection extends JDBCScalabilityConnection implements QueryConnection {
 
 	private final PreparedStatement selectStatement;
@@ -23,7 +23,7 @@ class JDBCQueryConnection extends JDBCScalabilityConnection implements QueryConn
 
 
 	protected String table() {
-		return "PREVAYLER_MANIPULATION_TEST";
+		return "QUERY_TEST";
 	}
 
 

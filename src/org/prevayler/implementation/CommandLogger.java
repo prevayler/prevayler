@@ -108,7 +108,7 @@ class CommandLogger {
     if (!safe && lastTimeWasSafe) {
       out("\n=====================================");
       out("The org.prevayler.SafeCommandLogs system property is OFF.");
-      out("Writes to the commandLog files will be cached for greater performance. In the event of a system crash, some of the last executed commands might be lost, though.");
+      out("Writes to the commandLog files will be cached for greater performance. In the event of a system crash, some of the last executed commands might be lost.");
       out("=====================================\n");
     }
     if (safe && !lastTimeWasSafe) {

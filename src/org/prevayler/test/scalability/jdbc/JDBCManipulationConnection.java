@@ -7,8 +7,8 @@ package org.prevayler.test.scalability.jdbc;
 import org.prevayler.test.scalability.*;
 import java.sql.*;
 
-/** @author Stefan Ortmanns, Klaus Wuestefeld.
- */
+
+// Contributions by Stefan Ortmanns.
 class JDBCManipulationConnection extends JDBCScalabilityConnection implements ManipulationConnection {
 
 	private final PreparedStatement updateStatement;
@@ -24,7 +24,7 @@ class JDBCManipulationConnection extends JDBCScalabilityConnection implements Ma
 
 
 	protected String table() {
-		return "PREVAYLER_MANIPULATION_TEST";
+		return "MANIPULATION_TEST";
 	}
 
 

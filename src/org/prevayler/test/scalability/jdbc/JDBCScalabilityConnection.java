@@ -7,8 +7,8 @@ package org.prevayler.test.scalability.jdbc;
 import org.prevayler.test.scalability.*;
 import java.sql.*;
 
-/** @author Stefan Ortmanns, Klaus Wuestefeld.
- */
+
+// Contributions by Stefan Ortmanns.
 abstract class JDBCScalabilityConnection {
 
 	protected final Connection connection;

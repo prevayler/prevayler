@@ -6,32 +6,33 @@ package org.prevayler.test.scalability;
 
 import java.io.Serializable;
 
-/** Generates one million Record objects with ids from 0 to 999999.
+/** Generates Record objects with ids from 0 to numberOfRecords - 1.
 */
 public class RecordIterator implements Serializable {
 
-	private int remainingRecords = 1000000;
+	private final int numberOfRecords;
+	private int nextRecordId = 0;
 
 
-	public boolean hasNext() {
-		return remainingRecords != 0;
+	RecordIterator(int numberOfRecords) {
+		this.numberOfRecords = numberOfRecords;
 	}
 
+	public boolean hasNext() {
+		return nextRecordId < numberOfRecords;
+	}
 
 	public Record next() {
 		indicateProgress();
-
-		remainingRecords--;
-		return new Record(remainingRecords);
+		return new Record(nextRecordId++);
 	}
 
-
 	private void indicateProgress() {
-		if (remainingRecords == 1000000) {
-			out("Creating one million records...");
+		if (nextRecordId == 0) {
+			out("Creating " + numberOfRecords + " objects...");
 			return;
 		}
-		if (remainingRecords % 100000 == 0) out("" + (1000000 - remainingRecords) + "...");
+		if (nextRecordId % 100000 == 0) out("" + nextRecordId + "...");
 	}
 
 

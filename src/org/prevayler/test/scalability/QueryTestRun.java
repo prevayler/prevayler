@@ -6,8 +6,8 @@ package org.prevayler.test.scalability;
 
 public class QueryTestRun extends ScalabilityTestRun {
 
-	public QueryTestRun(ScalabilityTestSubject subject, int minThreads, int maxThreads) {
-		super(subject, minThreads, maxThreads);
+	public QueryTestRun(ScalabilityTestSubject subject, int numberOfObjects, int minThreads, int maxThreads) {
+		super(subject, numberOfObjects, minThreads, maxThreads);
 	}
 
 

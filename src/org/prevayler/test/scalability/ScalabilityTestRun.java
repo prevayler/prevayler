@@ -14,7 +14,9 @@ abstract class ScalabilityTestRun {
 
 	static private final long ROUND_DURATION_MILLIS = 1000 * 60;
 
-	private ScalabilityTestSubject subject;
+	private final ScalabilityTestSubject subject;
+	protected final int numberOfObjects;
+
 	private double bestRoundOperationsPerSecond;
 	private int bestRoundThreads;
 
@@ -38,20 +40,24 @@ abstract class ScalabilityTestRun {
 	}
 
 
-	protected ScalabilityTestRun(ScalabilityTestSubject subject, int minThreads, int maxThreads) {
+	protected ScalabilityTestRun(ScalabilityTestSubject subject, int numberOfObjects, int minThreads, int maxThreads) {
 		if (minThreads > maxThreads) throw new IllegalArgumentException("The minimum number of threads cannot be greater than the maximum number.");
 		if (minThreads < 1) throw new IllegalArgumentException("The minimum number of threads cannot be smaller than one.");
 
-		out("\nRunning " + name() + " (Subject: " + subject.name() + ").");
-
 		this.subject = subject;
-		subject.replaceAllRecords(new RecordIterator());
+		this.numberOfObjects = numberOfObjects;
 
-		System.gc();
+		out("\n\n========= Running " + name() + " (" + (maxThreads - minThreads + 1) + " rounds). Subject: " + subject.name() + "...");
+		prepare();
+
 		out("Each round will take approx. " + ROUND_DURATION_MILLIS / 1000 + " seconds to run...");
 		performTest(minThreads, maxThreads);
+		out("\n----------- BEST ROUND: " + getResult());
+	}
 
-		out("BEST ROUND: " + getResult());
+	protected void prepare() {
+		subject.replaceAllRecords(new RecordIterator(numberOfObjects));
+		System.gc();
 	}
 
 
@@ -71,9 +77,6 @@ abstract class ScalabilityTestRun {
 				bestRoundThreads = threads;
 			}
 
-			out(toResultString(operationsPerSecond, threads));
-			out("Total memory: " + Runtime.getRuntime().totalMemory());
-
 			threads++;
 		}
 	}
@@ -88,8 +91,15 @@ abstract class ScalabilityTestRun {
 		startThreads(threads);
 		sleep();
 		stopThreads();
-		
-		return (operationCount - initialOperationCount) / stopWatch.secondsEllapsed();
+
+		double secondsEllapsed = stopWatch.secondsEllapsed();
+		double operationsPerSecond = (operationCount - initialOperationCount) / secondsEllapsed;
+
+		out("\nMemory used: " + Runtime.getRuntime().totalMemory());
+		out("Seconds ellapsed: " + secondsEllapsed);
+		out("--------- Round Result: " + toResultString(operationsPerSecond, threads));
+
+		return operationsPerSecond;
 	}
 
 
@@ -105,20 +115,25 @@ abstract class ScalabilityTestRun {
 	private void startThread() {
 		(new Thread() {
 			public void run() {
-				Object connection = acquireConnection();
+				try {
+					Object connection = acquireConnection();
 
-				while (!isRoundFinished) {
-					long operation;
-					synchronized (roundMonitor) {
-						operation = operationCount;
-						operationCount++;
+					while (!isRoundFinished) {
+						long operation;
+						synchronized (roundMonitor) {
+							operation = operationCount;
+							operationCount++;
+						}
+						executeOperation(connection, operation);
 					}
-					executeOperation(connection, operation);
-				}
 
-				synchronized (roundMonitor) {
-					connectionCache.add(connection);
-					activeRoundThreads--;
+					synchronized (roundMonitor) {
+						connectionCache.add(connection);
+						activeRoundThreads--;
+					}
+
+				} catch (OutOfMemoryError err) {
+					outOfMemory();
 				}
 			}
 		}).start();
@@ -152,6 +167,15 @@ abstract class ScalabilityTestRun {
 		return "" + operations + " operations/second (" + threads + " threads)";
 	}
 
+	static void outOfMemory() {
+		System.gc();
+		out(
+			"\n\nOutOfMemoryError.\n" +
+			"===========================================================\n" +
+			"The VM must be started with a sufficient maximum heap size.\n" +
+			"Example for Linux and Windows:  java -Xmx512000000 ...\n\n"
+		);
+	}
 
 	static private void sleep() {
 		try {

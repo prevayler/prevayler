@@ -81,7 +81,7 @@ public class Record implements Serializable {
 	}
 
 	static private BigDecimal randomBigDecimal() {
-		return new BigDecimal(0.12 + random.nextInt());
+		return new BigDecimal(random.nextInt());
 	}
 
 	static private Date randomDate() {

@@ -9,7 +9,7 @@ import org.prevayler.test.PersistenceTest;
 
 public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject {
 
-	static final String LOG_DIRECTORY = "PrevalenceBase";
+	static final String LOG_DIRECTORY = "QueryTest";
 
 
 	public PrevaylerQuerySubject() throws java.io.IOException, ClassNotFoundException {
