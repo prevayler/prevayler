@@ -205,7 +205,7 @@ public class PersistentJournal implements FileFilter, Journal {
 
 	protected void handle(IOException iox, File journal, String action) {
 		String message = "All transaction processing is now blocked. A problem was found while " + action + " a .journal file.";
-	    _monitor.notify(message, journal, iox);
+	    _monitor.notify(this.getClass(), message, journal, iox);
 		hang();
 	}
 
