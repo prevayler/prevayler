@@ -4,16 +4,15 @@
 
 package org.prevayler.implementation.publishing;
 
-import java.io.IOException;
-import java.util.Date;
-
 import org.prevayler.Clock;
 import org.prevayler.Transaction;
-import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.Turn;
 import org.prevayler.implementation.clock.PausableClock;
 import org.prevayler.implementation.journal.Journal;
-import org.prevayler.implementation.publishing.censorship.*;
+import org.prevayler.implementation.publishing.censorship.TransactionCensor;
+
+import java.io.IOException;
+import java.util.Date;
 
 public class CentralPublisher extends AbstractPublisher {
 
@@ -27,9 +26,6 @@ public class CentralPublisher extends AbstractPublisher {
 
 	private Turn _nextTurn = Turn.first();
 	private final Object _nextTurnMonitor = new Object();
-
-	private int _transactionsToJournal = 0;
-	private final Object _transactionsToJournalMonitor = new Object();
 
 
 	public CentralPublisher(Clock clock, TransactionCensor censor, Journal journal) {
@@ -65,7 +61,7 @@ public class CentralPublisher extends AbstractPublisher {
 
 		Date executionTime = realTime(myTurn);  //TODO realTime() and approve in the same turn.
 		approve(transaction, executionTime, myTurn);
-		journal(transaction, myTurn, executionTime);
+		_journal.append(transaction, executionTime, myTurn);
 		notifySubscribers(transaction, executionTime, myTurn);
 	}
 
@@ -91,30 +87,12 @@ public class CentralPublisher extends AbstractPublisher {
 		try {
 			myTurn.start();
 			_censor.approve(transaction, executionTime);
-			synchronized (_transactionsToJournalMonitor) { _transactionsToJournal++; }
 			myTurn.end();
-		} catch (RuntimeException r) { dealWithError(myTurn); throw r;
-		} catch (Error e) {	dealWithError(myTurn); throw e; }
+		} catch (RuntimeException r) { myTurn.alwaysSkip(); throw r;
+		} catch (Error e) {	myTurn.alwaysSkip(); throw e; }
 	}
 
-	
-	private void dealWithError(Turn myTurn) {
-		synchronized(_transactionsToJournalMonitor) {
-			while (_transactionsToJournal != 0) Cool.wait(_transactionsToJournalMonitor);
-		}
-		myTurn.alwaysSkip();
-	}
 
-	
-	private void journal(Transaction transaction, Turn myTurn, Date executionTime) {
-		_journal.append(transaction, executionTime, myTurn);
-		synchronized (_transactionsToJournalMonitor) {
-			_transactionsToJournal--;
-			if (_transactionsToJournal == 0) _transactionsToJournalMonitor.notify(); 
-		}
-	}
-
-	
 	private void notifySubscribers(Transaction transaction, Date executionTime, Turn myTurn) {
 		try {
 			myTurn.start();
