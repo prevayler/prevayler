@@ -39,7 +39,7 @@ public class ClusteredPrevayler implements Prevayler, ClusterListener {
             factory.configurePrevalentSystem(prevalentSystem);
         }
         try {
-            factory.configurePrevalenceBase(newPrevalenceBase);
+            factory.configurePrevalenceDirectory(newPrevalenceBase);
             prevayler = factory.create();
             System.out.println("Setting new system " + prevayler.prevalentSystem());
             System.out.println("Taking snapshot");

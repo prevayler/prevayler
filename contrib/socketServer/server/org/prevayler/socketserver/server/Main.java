@@ -59,7 +59,7 @@ public class Main {
         //prevayler = PrevaylerFactory.createPrevayler(rootObjectClass.newInstance(), prevalenceBase);
         PrevaylerFactory factory = new PrevaylerFactory();
         factory.configurePrevalentSystem(rootObjectClass.newInstance());
-        factory.configurePrevalenceBase(prevalenceBase);
+        factory.configurePrevalenceDirectory(prevalenceBase);
         prevayler = factory.create();
         snapshotThread = new SnapshotThread(prevayler);
         snapshotThread.start();
