@@ -36,7 +36,6 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.kjome.prevayler.contentsystem.RandomGUID;
 
 /**
  * Class CampSite describes a camp site
