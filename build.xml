@@ -6,7 +6,6 @@
 
 <project name="Prevayler" default="compile.core" basedir=".">
 
-
     <property file="${user.home}/.${ant.project.name}-build.properties"/>
     <property file="${user.home}/.build.properties"/>
     <property environment="env"/> <!-- provides property file access to system environment variables -->
