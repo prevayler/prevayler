@@ -340,6 +340,10 @@
             description="Download binary packages needed by the core packages" >
         <!-- Download any sub package or tools needed. -->
         <antcall target="-downloadgz">
+            <param name="sourcefile" value="${log4j.loc}"/>
+            <param name="destfile"   value="${log4j.jar}"/>
+        </antcall>
+        <antcall target="-downloadgz">
             <param name="sourcefile" value="${skaringa.loc}"/>
             <param name="destfile"   value="${skaringa.jar}"/>
         </antcall>
@@ -379,10 +383,6 @@
     <target name="download.dependencies.runtime"
             description="Download binary packages needed only at runtime" >
         <!-- Download any sub package or tools needed. -->
-        <antcall target="-downloadgz">
-            <param name="sourcefile" value="${log4j.loc}"/>
-            <param name="destfile"   value="${log4j.jar}"/>
-        </antcall>
         <antcall target="-downloadgz">
             <param name="sourcefile" value="${commons-logging.loc}"/>
             <param name="destfile"   value="${commons-logging.jar}"/>
