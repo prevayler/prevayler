@@ -10,7 +10,7 @@ public class AccountCreation extends BankCommand {
     public AccountCreation(String holder) {
         this.holder = holder;
     }
-    
+
     protected Serializable execute(Bank bank) throws Account.InvalidHolder {
         return bank.createAccount(holder);
     }

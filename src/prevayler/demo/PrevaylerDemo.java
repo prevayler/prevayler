@@ -25,7 +25,7 @@ public class PrevaylerDemo {
 		
 		out("A system snapshot will be taken every 24h...");
 		while (true) {
-			Thread.sleep(1000 * 60 * 60 * 24);
+            Thread.sleep(1000 * 60 * 60 * 24);
 			prevayler.takeSnapshot();
 			out("Snapshot taken at " + new java.util.Date() + "...");
 		}

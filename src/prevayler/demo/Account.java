@@ -109,7 +109,7 @@ public class Account implements java.io.Serializable {
 		}
 	}
 
-    private class Transaction {
+    private class Transaction implements java.io.Serializable {
 
         private final long ammount;
         private final Date timestamp;
