@@ -13,7 +13,7 @@ public class RollbackTest extends PrevalenceTest {
 		append("a", "a");
 		
 		try {
-			append("rollback", "a");
+			append("rollback", "ignored");
 			throw new Exception("RuntimeException expected and not thrown.");
 		} catch (RuntimeException rx) {
 		}

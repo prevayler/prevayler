@@ -13,8 +13,8 @@ import org.prevayler.foundation.FileManager;
 
 public class PersistenceTest extends PrevalenceTest {
 
-	private Prevayler prevayler;
-	private String prevalenceBase;
+	private Prevayler _prevayler;
+	private String _prevalenceBase;
 
 	public void testPersistence() throws Exception {
 
@@ -48,10 +48,10 @@ public class PersistenceTest extends PrevalenceTest {
 		verify("abcdefgh");
 
 		snapshot();
-		File snapshot =   new File(prevalenceBase, "0000000000000000008.snapshot");
+		File snapshot =   new File(_prevalenceBase, "0000000000000000008.snapshot");
 		newPrevalenceBase();
-		FileManager.produceDirectory(prevalenceBase);
-		snapshot.renameTo(new File(prevalenceBase, "0000000000000000008.snapshot"));
+		FileManager.produceDirectory(_prevalenceBase);
+		snapshot.renameTo(new File(_prevalenceBase, "0000000000000000008.snapshot"));
 		
 		crashRecover();
 		append("i","abcdefghi");
@@ -68,18 +68,18 @@ public class PersistenceTest extends PrevalenceTest {
 
 	private void crashRecover() throws Exception {
 		out("CrashRecovery.");
-		prevayler = PrevaylerFactory.createPrevayler(new AppendingSystem(), prevalenceBase());
+		_prevayler = PrevaylerFactory.createPrevayler(new AppendingSystem(), prevalenceBase());
 	}
 
 	private void snapshot() throws IOException {
 		out("Snapshot.");
-		prevayler.takeSnapshot();
+		_prevayler.takeSnapshot();
 	}
 
 
 	private void append(String appendix, String expectedResult) throws Exception {
 		out("Appending " + appendix);
-		prevayler.execute(new Appendix(appendix));
+		_prevayler.execute(new Appendix(appendix));
 		verify(expectedResult);
 	}
 
@@ -91,17 +91,17 @@ public class PersistenceTest extends PrevalenceTest {
 
 
 	private AppendingSystem system() {
-		return (AppendingSystem)prevayler.prevalentSystem();
+		return (AppendingSystem)_prevayler.prevalentSystem();
 	}
 
 
 	private String prevalenceBase() {
-		return prevalenceBase;
+		return _prevalenceBase;
 	}
 
 
 	private void newPrevalenceBase() throws Exception {
-		prevalenceBase = _testDirectory + "\\" + System.currentTimeMillis();
+		_prevalenceBase = _testDirectory + "\\" + System.currentTimeMillis();
 	}
 
 	private void compare(String observed, String expected, String measurement) {

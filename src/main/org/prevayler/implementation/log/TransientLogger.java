@@ -13,7 +13,6 @@ import org.prevayler.Transaction;
 import org.prevayler.implementation.TransactionSubscriber;
 
 
-//TODO Write tests for TransientLogger.
 public class TransientLogger implements TransactionLogger {
 
 	private final List log = new ArrayList();

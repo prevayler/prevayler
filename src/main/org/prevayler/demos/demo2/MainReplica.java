@@ -10,7 +10,7 @@ import org.prevayler.demos.demo2.business.Bank;
 
 
 public class MainReplica {
-
+// TODO Fix exception that is thrown when replicating with no transactionLog created. 
 	public static void main(String[] args) throws Exception {
 		out(    "This demo shows how your application can be replicated"
 			+ "\nwithout changing ONE SINGLE LINE OF CODE in the"
@@ -31,11 +31,11 @@ public class MainReplica {
 
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new Bank());
-		factory.configurePrevalenceBase("demo2AcidReplica");
-		factory.configureReplicationClient(args[0]);
+		factory.configurePrevalenceBase("demo2Replica");
+		factory.configureReplicationClient(args[0], PrevaylerFactory.DEFAULT_REPLICATION_PORT);
 		Prevayler prevayler = factory.create();
 
-		Main.startGui(prevayler);
+		Main.startSnapshots(prevayler);
 	}
 
 

@@ -12,6 +12,7 @@ public class Suite extends TestCase {
 		suite.addTestSuite(QueryExecutionTest.class);
 		suite.addTestSuite(PersistenceTest.class);
 		suite.addTestSuite(RollbackTest.class);
+		suite.addTestSuite(ReplicationTest.class);
 		return suite;
 	}
 }

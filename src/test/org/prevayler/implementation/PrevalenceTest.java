@@ -12,7 +12,7 @@ public abstract class PrevalenceTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		File tempFile = File.createTempFile("Prevalence", "Base");
-		tempFile.delete();
+		tempFile.delete();  //I don't want a file. I want a directory.
 		assertTrue("Unable to create directory " + tempFile, tempFile.mkdirs());
 		_testDirectory = tempFile.getAbsolutePath();
 	}

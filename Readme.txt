@@ -1,8 +1,6 @@
 Prevayler 2.00
 ==================
-Prevayler(TM) is the free-software prevalence layer for Java. It is ridiculously simple (therefore robust) and provides transparent persistence for native Java objects. Allows object queries to run 3 to 4 orders of magnitude faster than using a database through JDBC.
-
-This release (2.00) features transparent system replication.
+Prevayler(TM) is the free-software prevalence layer for Java. It is ridiculously simple and provides transparent persistence for native Java objects. Allows object queries to run 3 to 4 orders of magnitude faster than using a database through JDBC.
 
 
 Requirements
@@ -33,8 +31,6 @@ The following classes have the main() method and can be run directly. They are s
 5) org.prevayler.demos.demo2.MainReplica - An application that connects to the MainReplicaSerever above and transparently replicates the bank application.
 
 6) org.prevayler.test.scalability.Main - Runs manipulation and query scalability tests against Prevayler and any JDBC database. Just follow the instructions.
-
-7) org.prevayler.test.Main - The functional tests used to test Prevayler during development.
 
 
 More Learning Resources

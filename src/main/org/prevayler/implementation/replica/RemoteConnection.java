@@ -14,6 +14,7 @@ import org.prevayler.implementation.*;
 class RemoteConnection extends Thread implements TransactionSubscriber {
 
 	static final String REMOTE_TRANSACTION = "RemoteTransaction";
+	static final String SUBSCRIBER_UP_TO_DATE = "SubscriberUpToDate";
 
 	private final TransactionPublisher _publisher;
 	private Transaction _remoteTransaction;
@@ -35,6 +36,7 @@ class RemoteConnection extends Thread implements TransactionSubscriber {
 		try {		
 			long initialTransaction = ((Long)_fromRemote.readObject()).longValue();
 			_publisher.addSubscriber(this, initialTransaction);
+			_toRemote.writeObject(SUBSCRIBER_UP_TO_DATE);
 			while (true) publishRemoteTransaction();
 		} catch (Exception ex) {
 			ex.printStackTrace();

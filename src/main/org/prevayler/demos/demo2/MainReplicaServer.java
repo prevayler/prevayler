@@ -23,8 +23,8 @@ public class MainReplicaServer {
 
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new Bank());
-		factory.configurePrevalenceBase("demo2Acid");
-		factory.configureReplicationServer(true);
+		factory.configurePrevalenceBase("demo2");
+		factory.configureReplicationServer(PrevaylerFactory.DEFAULT_REPLICATION_PORT);
 		Prevayler prevayler = factory.create();
 
 		Main.startGui(prevayler);

@@ -21,12 +21,12 @@ public class CentralPublisher extends AbstractPublisher {
 	public CentralPublisher(Clock clock, TransactionCensor censor, TransactionLogger logger) {
 		super(new PausableClock(clock));
 		_pausableClock = (PausableClock)_clock; //This is just to avoid casting the inherited _clock every time.
-		
+
 		_censor = censor;
 		_logger = logger;
 	}
 
-	public synchronized void publish(Transaction transaction) {
+	public synchronized void publish(Transaction transaction) { //TODO Optimization: Remove this synchronization and create a transaction pipeline: timestamp, approve, log, notify. The clock must be adapted to reflect this change.
 		_pausableClock.pause();
 		try {
 			Date executionTime = _pausableClock.time();

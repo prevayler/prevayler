@@ -11,7 +11,7 @@ import java.util.*;
  * The NumberKeeper and all its references are the prevalent system.
  * i.e: They are the "business objects" and will be transparently persisted by Prevayler.
  */
-class NumberKeeper {
+class NumberKeeper implements java.io.Serializable {
 
   private final List numbers = new ArrayList();
 

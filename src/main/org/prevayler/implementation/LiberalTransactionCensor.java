@@ -8,8 +8,9 @@ import java.util.Date;
 
 import org.prevayler.Transaction;
 
-public interface TransactionCensor {
-	
-	public void approve(Transaction transaction, Date executionTime) throws RuntimeException, Error;
+public class LiberalTransactionCensor implements TransactionCensor {
+
+	public void approve(Transaction transaction, Date executionTime) throws RuntimeException, Error {
+	}
 
 }

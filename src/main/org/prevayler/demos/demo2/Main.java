@@ -18,7 +18,7 @@ public class Main {
 			+ "\n  6000 transactions per second. For demoing purposes, though, a"
 			+ "\n  snapshot will be taken every 20 seconds...");
 
-		Prevayler prevayler = PrevaylerFactory.createPrevayler(new Bank(), "demo2Acid");
+		Prevayler prevayler = PrevaylerFactory.createPrevayler(new Bank(), "demo2");
 		startSnapshots(prevayler);
 	}
 
