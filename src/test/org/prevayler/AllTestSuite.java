@@ -14,6 +14,7 @@ public class AllTestSuite extends TestCase {
 	public static Test suite() {
 		TestSuite suite = new TestSuite();
 		suite.addTest(org.prevayler.implementation.Suite.suite());
+		suite.addTest(org.prevayler.foundation.Suite.suite());
 		return suite;
 	}
 }

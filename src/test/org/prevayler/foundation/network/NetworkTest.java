@@ -5,19 +5,11 @@
 //   See the license distributed along with this file for more details.
 //Contributions: anon.
 
-package org.prevayler.foundation;
+package org.prevayler.foundation.network;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 
 import junit.framework.TestCase;
-
-import org.prevayler.foundation.network.Network;
-import org.prevayler.foundation.network.NetworkImpl;
-import org.prevayler.foundation.network.NewNetworkMock;
-import org.prevayler.foundation.network.ObjectReceiver;
-import org.prevayler.foundation.network.ObjectReceiverMock;
-import org.prevayler.foundation.network.ServiceMock;
 
 
 /**
@@ -30,7 +22,7 @@ public class NetworkTest extends TestCase {
 
     private Network network;
     
-    private int port = 4567;
+    private int port = 31176;
     
     private ServiceMock mockService;
     
@@ -47,9 +39,7 @@ public class NetworkTest extends TestCase {
     private String testObject2 = "test Object 2";
     
     public void setUp () {
-        if (!mockTest) {
-            port = determinePort();
-        }
+        port++;
         network = setNetworkToTest();
         mockService = new ServiceMock();
         client1 = new Client();
@@ -61,19 +51,6 @@ public class NetworkTest extends TestCase {
         
     }
     
-    private int determinePort() {
-        int portToUse = 0;
-        try {
-            ServerSocket _serverSocket = new ServerSocket(portToUse);
-            portToUse = _serverSocket.getLocalPort();
-            System.out.println("Using port :" + portToUse);
-            _serverSocket.close();
-        } catch (IOException exception) {
-            fail("No available server port");
-        }
-        return portToUse;
-    }
-
     private Network setNetworkToTest() {
         if (mockTest) {
             return  new NewNetworkMock();
@@ -96,7 +73,6 @@ public class NetworkTest extends TestCase {
     }
     
     public void test2Clients() throws Exception {
-//        port++; 
         network.startService(mockService,port);
         client1.connect(port);
         client2.connect(port);
