@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-$Id: PrefixmappingPage.java,v 1.1 2003/03/26 21:51:19 jacobk Exp $
--->
+
 <project name="Prevayler" default="compile.core" basedir=".">
 
     <property file="${user.home}/.${ant.project.name}-build.properties"/>
