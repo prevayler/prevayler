@@ -11,7 +11,7 @@ import org.prevayler.util.clock.ClockedSystem;
 public class Bank extends ClockedSystem {
 
 	private long nextAccountNumber = 1;
-	private final Map accountsByNumber = new HashMap();
+	private Map accountsByNumber = new HashMap();
 	private transient BankListener bankListener;
     
 	public Account createAccount(String holder) throws Account.InvalidHolder {

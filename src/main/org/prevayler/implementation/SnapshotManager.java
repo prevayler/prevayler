@@ -38,8 +38,6 @@ public class SnapshotManager {
 	}
 
 
-	/** Serializes prevalentSystem and writes it to snapshotFile. You can overload this method to use a serialization mechanism other than Java's. E.g: XML.
-	*/
 	void writeSnapshot(Object prevalentSystem, File snapshotFile) throws IOException {
         OutputStream out = new FileOutputStream(snapshotFile);
         try {
@@ -49,6 +47,8 @@ public class SnapshotManager {
         }
 	}
 
+	/** Serializes prevalentSystem and writes it to snapshotFile. You can overload this method to use a serialization mechanism other than Java's. E.g: XML.
+	*/
     protected void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
         ObjectOutputStream stream = new ObjectOutputStream(out);
         stream.writeObject(prevalentSystem);
@@ -84,8 +84,6 @@ public class SnapshotManager {
 	}
 
 
-	/** Deserializes and returns the object contained in snapshotFile. You can overload this method to use a deserialization mechanism other than Java's. E.g: XML.
-	*/
 	Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {
         FileInputStream in = new FileInputStream(snapshotFile);
         try {
@@ -93,6 +91,8 @@ public class SnapshotManager {
         } finally { in.close(); }
 	}
 
+	/** Deserializes and returns the object contained in snapshotFile. You can overload this method to use a deserialization mechanism other than Java's. E.g: XML.
+	*/
     protected Object readSnapshot(InputStream in) throws IOException, ClassNotFoundException {
         ObjectInputStream ois = new ObjectInputStream(in);
         return ois.readObject();

@@ -5,12 +5,15 @@ import java.util.*;
 
 public class Account implements java.io.Serializable {
 
-	private final long number;
-	private final Clock clock;
+	private long number;
+	private Clock clock;
 	private String holder;
 	private long balance = 0;
 	private List transactionHistory = new ArrayList();
 	private transient Set listeners;
+    
+    private Account() {
+    }
     
 	Account(long number, String holder, Clock clock) throws InvalidHolder {
 		this.clock = clock;
@@ -60,7 +63,7 @@ public class Account implements java.io.Serializable {
 
     private void register(long amount) {
 		balance += amount;
-        transactionHistory.add(new Transaction(amount));
+        transactionHistory.add(new AccountEntry(amount, clock));
 		notifyListeners();
 	}
     
@@ -108,26 +111,4 @@ public class Account implements java.io.Serializable {
 			super("Invalid holder name.");
 		}
 	}
-
-    private class Transaction implements java.io.Serializable {
-
-        private final long amount;
-        private final Date timestamp;
-
-        private Transaction(long amount) {
-            this.amount = amount;
-            this.timestamp = clock.time();
-        }
-
-        public String toString() {
-            return timestampString() + "      Amount: " + amount;
-        }
-
-        private String timestampString() {
-            return new java.text.SimpleDateFormat("yyyy/MM/dd  hh:mm:ss.SSS").format(timestamp);
-        }
-
-
-    }
-    
 }

@@ -12,7 +12,7 @@ import java.util.Date;
  */
 public abstract class ClockedSystem implements java.io.Serializable {
 
-	private final BrokenClock _brokenClock = new BrokenClock();
+	private BrokenClock _brokenClock = new BrokenClock();
 
 
 	/** Returns the clock used by this system for ALL its date/time related functions.
