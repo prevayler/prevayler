@@ -4,6 +4,7 @@
 
 package org.prevayler.implementation.replication;
 
+import org.prevayler.foundation.network.ObjectSocket;
 import org.prevayler.implementation.Capsule;
 import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionTimestamp;
@@ -12,9 +13,6 @@ import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.Date;
 
 
@@ -29,22 +27,21 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 	private final TransactionPublisher _publisher;
 	private TransactionCapsule _remoteCapsule;
 
-	private final ObjectOutputStream _toRemote;
-	private final ObjectInputStream _fromRemote;
+	private final ObjectSocket _remote;
 
 
-	ServerConnection(TransactionPublisher publisher, Socket remoteSocket) throws IOException {
+	ServerConnection(TransactionPublisher publisher, ObjectSocket remoteSocket) throws IOException {
 		_publisher = publisher;
-		_fromRemote = new ObjectInputStream(remoteSocket.getInputStream());
-		_toRemote = new ObjectOutputStream(remoteSocket.getOutputStream());
+		_remote = remoteSocket;
 		setDaemon(true);
 		start();
 	}
 
 
+
 	public void run() {
 		try {		
-			long initialTransaction = ((Long)_fromRemote.readObject()).longValue();
+			long initialTransaction = ((Long)_remote.readObject()).longValue();
 			_publisher.subscribe(new POBox(this), initialTransaction);
 			send(SUBSCRIBER_UP_TO_DATE);
 			
@@ -61,9 +58,9 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 			public void run() {
 				try {
 					while (true) {
-						synchronized (_toRemote) {
-							_toRemote.writeObject(CLOCK_TICK);
-							_toRemote.writeObject(_publisher.clock().time());
+						synchronized (_remote) {
+							_remote.writeObject(CLOCK_TICK);
+							_remote.writeObject(_publisher.clock().time());
 						}
 						Thread.sleep(1000);
 					}
@@ -78,7 +75,7 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 
 
 	void publishRemoteTransaction() throws Exception {
-		_remoteCapsule = (TransactionCapsule)_fromRemote.readObject();
+		_remoteCapsule = (TransactionCapsule)_remote.readObject();
 		try {
 			_publisher.publish(_remoteCapsule);
 		} catch (RuntimeException rx) {
@@ -95,14 +92,13 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 		Date executionTime = transactionTimestamp.executionTime();
 
 		try {
-			synchronized (_toRemote) {
-				_toRemote.writeObject(capsule == _remoteCapsule
+			synchronized (_remote) {
+				_remote.writeObject(capsule == _remoteCapsule
 					? (Object)REMOTE_TRANSACTION
 					: capsule
 				);
-				_toRemote.writeObject(executionTime);
-				_toRemote.writeLong(systemVersion);
-				_toRemote.flush();
+				_remote.writeObject(executionTime);
+				_remote.writeObject(new Long(systemVersion));
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -112,9 +108,9 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 
 
 	private void send(Object object) {
-		synchronized (_toRemote) {
+		synchronized (_remote) {
 			try {
-				_toRemote.writeObject(object);
+				_remote.writeObject(object);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

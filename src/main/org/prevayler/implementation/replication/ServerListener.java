@@ -4,10 +4,12 @@
 
 package org.prevayler.implementation.replication;
 
+import org.prevayler.foundation.network.Network;
+import org.prevayler.foundation.network.NetworkImpl;
+import org.prevayler.foundation.network.ObjectServerSocket;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 
 
 /** Reserved for future implementation.
@@ -15,16 +17,19 @@ import java.net.ServerSocket;
 public class ServerListener extends Thread {
 
 	private final TransactionPublisher _publisher;
-	private final ServerSocket _serverSocket;
+	private final ObjectServerSocket _serverSocket;
 
 
 	public ServerListener(TransactionPublisher publisher, int port) throws IOException {
-		_serverSocket = new ServerSocket(port);
+		this(publisher, port, new NetworkImpl());
+	}
+
+	public ServerListener(TransactionPublisher publisher, int port, Network network) throws IOException {
+		_serverSocket = network.openObjectServerSocket(port);
 		_publisher = publisher;
 		setDaemon(true);
 		start();
 	} 
-
 
 	public void run() {
 		try {

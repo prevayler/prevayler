@@ -5,6 +5,9 @@
 package org.prevayler.implementation.replication;
 
 import org.prevayler.Clock;
+import org.prevayler.foundation.network.Network;
+import org.prevayler.foundation.network.NetworkImpl;
+import org.prevayler.foundation.network.ObjectSocket;
 import org.prevayler.implementation.Capsule;
 import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionTimestamp;
@@ -13,9 +16,6 @@ import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.Date;
 
 
@@ -33,17 +33,19 @@ public class ClientPublisher implements TransactionPublisher {
 	private RuntimeException _myTransactionRuntimeException;
 	private Error _myTransactionError;
 
-	private final ObjectOutputStream _toServer;
-	private final ObjectInputStream _fromServer;
+	private final ObjectSocket _server;
 
 
 	public ClientPublisher(String serverIpAddress, int serverPort) throws IOException {
+		this(serverIpAddress, serverPort, new NetworkImpl());
+	}
+
+	public ClientPublisher(String serverIpAddress, int serverPort, Network network) throws IOException {
 		System.out.println("The replication logic is still under development.");
-		Socket socket = new Socket(serverIpAddress, serverPort);
-		_toServer = new ObjectOutputStream(socket.getOutputStream());   // Get the OUTPUT stream first. JDK 1.3.1_01 for Windows will lock up if you get the INPUT stream first.
-		_fromServer = new ObjectInputStream(socket.getInputStream());
+		_server = network.openSocket(serverIpAddress, serverPort);
 		startListening();
 	}
+
 
 	private void startListening() {
 		Thread listener = new Thread() {
@@ -64,7 +66,7 @@ public class ClientPublisher implements TransactionPublisher {
 		if (_subscriber != null) throw new UnsupportedOperationException("The current implementation can only support one subscriber. Future implementations will support more.");
 		_subscriber = subscriber;
 		synchronized (_upToDateMonitor) {
-			_toServer.writeObject(new Long(initialTransaction));
+			_server.writeObject(new Long(initialTransaction));
 			wait(_upToDateMonitor);
 		}
 	}
@@ -82,7 +84,7 @@ public class ClientPublisher implements TransactionPublisher {
 			_myCapsule = capsule;
 			
 			try {
-				_toServer.writeObject(capsule);
+				_server.writeObject(capsule);
 			} catch (IOException iox) {
 				iox.printStackTrace();
 				while (true) Thread.yield(); // TODO Reconnect to the server.
@@ -106,7 +108,7 @@ public class ClientPublisher implements TransactionPublisher {
 
 
 	private void receiveTransactionFromServer() throws IOException, ClassNotFoundException {
-		Object transactionCandidate = _fromServer.readObject();
+		Object transactionCandidate = _server.readObject();
 		
 		if (transactionCandidate.equals(ServerConnection.SUBSCRIBER_UP_TO_DATE)) {
 			synchronized (_upToDateMonitor) { _upToDateMonitor.notify(); }
@@ -124,12 +126,12 @@ public class ClientPublisher implements TransactionPublisher {
 			return;
 		}
 
-		Date timestamp = (Date)_fromServer.readObject();
+		Date timestamp = (Date)_server.readObject();
 		_clock.advanceTo(timestamp);
 
 		if (transactionCandidate.equals(ServerConnection.CLOCK_TICK)) return;
 
-		long systemVersion = _fromServer.readLong();
+		long systemVersion = ((Long)_server.readObject()).longValue();
 
 		if (transactionCandidate.equals(ServerConnection.REMOTE_TRANSACTION)) {
 			_subscriber.receive(new TransactionTimestamp(_myCapsule, systemVersion, timestamp));
@@ -164,8 +166,7 @@ public class ClientPublisher implements TransactionPublisher {
 
 
 	public void close() throws IOException {
-		_fromServer.close();
-		_toServer.close();
+		_server.close();
 	}
 
 }
