@@ -27,8 +27,8 @@ to call keySet().iterator().
 By codifying all of these naming conventions from the various
 collections frameworks, you can come up with a query tool for POJOs
 that is likely to be able to handle 90% of the cases.  And it's
-arguable that the other 10% should be refactored to fit the standard
-naming patterns anyway. ;-)
+arguable that in the other 10%, the containers should be refactored to
+fit the standard naming patterns anyway. ;-)
 
 --daveo@swtworkbench.com
 
