@@ -44,10 +44,13 @@ public class BaptismProblemTest extends TestCase {
         // END SNIPPET: ex2
 
         // START SNIPPET: ex3
-        assertEquals(c1, c2);
-        assertEquals(c1, c3);
-        assertEquals(c2, c3);
-
+        assertSame(c1, c2);
+        assertSame(c2, c3);
+        
+        assertFalse(c.equals(c1));
+        assertFalse(c.equals(c2));
+        assertFalse(c.equals(c3));
+        
         assertFalse(0 == c3.getTimeInMillis());
         // END SNIPPET: ex3
     }
