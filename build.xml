@@ -6,7 +6,6 @@
 
 <project name="Prevayler" default="compile.core" basedir=".">
 
-
     <property file="${user.home}/.${ant.project.name}-build.properties"/>
     <property file="${user.home}/.build.properties"/>
     <property environment="env"/> <!-- provides property file access to system environment variables -->
@@ -126,7 +125,7 @@
             <mapper type="glob" from="sample.*" to="*" />
         </copy>
         <copy file="${basedir}/log4j.xml" todir="${classesdir.main}" />
-        <copy file="${rootdir}/docs/license.txt" tofile="${classesdir.main}/Prevayler.license.txt" />
+        <copy file="${rootdir}/docs/License.txt" tofile="${classesdir.main}/Prevayler.license.txt" />
         <!-- Fileset for unit tests.  Default values specified in sample.build.properties.  Override in build.properties -->
         <fileset id="unit.test.files"
             dir="${srcdir.test}"
