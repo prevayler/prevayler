@@ -39,6 +39,9 @@ public class PrevaylerFactory {
 	private String _prevalenceBase;
 	private SnapshotManager _snapshotManager;
 
+	private long _transactionLogSizeThreshold;
+	private long _transactionLogAgeThreshold;
+	
 	private int _serverPort = -1;
 	private String _remoteServerIpAddress;
 	private int _remoteServerPort;
@@ -213,7 +216,7 @@ public class PrevaylerFactory {
 	private TransactionLogger logger() throws IOException, ClassNotFoundException {
 		return _transientMode
 			? (TransactionLogger)new TransientLogger()
-			: new PersistentLogger(prevalenceBase());		
+			: new PersistentLogger(prevalenceBase(), _transactionLogSizeThreshold, _transactionLogAgeThreshold);		
 	}
 
 
@@ -221,6 +224,16 @@ public class PrevaylerFactory {
 		return _snapshotManager != null
 			? _snapshotManager
 			: new SnapshotManager(prevalentSystem(), prevalenceBase());
+	}
+
+
+	public void configureTransactionLogFileSizeThreshold(long sizeInBytes) {
+		_transactionLogSizeThreshold = sizeInBytes;
+	}
+
+	
+	public void configureTransactionLogFileAgeThreshold(long ageInMilliseconds) {
+		_transactionLogAgeThreshold = ageInMilliseconds;
 	}
 
 }

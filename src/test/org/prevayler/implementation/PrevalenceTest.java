@@ -25,8 +25,12 @@ public abstract class PrevalenceTest extends TestCase {
 	    delete(_testDirectory);
 	}
 
-	static public void delete(String dir) {
-	    delete(new File(dir));
+	protected void deleteFromTestDirectory(String fileName) {
+	    delete(new File(_testDirectory + File.separator + fileName));
+	}
+
+	static public void delete(String fileName) {
+	    delete(new File(fileName));
 	}
 
 	static private void delete(File file) {

@@ -105,7 +105,7 @@ public class PersistenceTest extends PrevalenceTest {
 
 
 	private void newPrevalenceBase() throws Exception {
-		_prevalenceBase = _testDirectory + "\\" + System.currentTimeMillis();
+		_prevalenceBase = _testDirectory + File.separator + System.currentTimeMillis();
 	}
 
 

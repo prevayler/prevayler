@@ -31,7 +31,7 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	private boolean _nextTransactionInitialized = false;
 
 
-	public PersistentLogger(String directory) throws IOException, ClassNotFoundException {
+	public PersistentLogger(String directory, long logSizeThreshold, long logAgeThreshold) throws IOException, ClassNotFoundException {
 		_directory = FileManager.produceDirectory(directory);
 	}
 
