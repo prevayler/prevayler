@@ -213,7 +213,7 @@ public class PrevaylerFactory {
 	}
 
 
-	private TransactionLogger logger() throws IOException, ClassNotFoundException {
+	private TransactionLogger logger() throws IOException {
 		return _transientMode
 			? (TransactionLogger)new TransientLogger()
 			: new PersistentLogger(prevalenceBase(), _transactionLogSizeThreshold, _transactionLogAgeThreshold);		

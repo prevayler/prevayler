@@ -41,7 +41,7 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	 * @param logSizeThresholdInBytes Size of the current transactionLog file beyond which it is closed and a new one started. Zero indicates no size threshold. This is useful transactionLog backup purposes.
 	 * @param logAgeThresholdInMillis Age of the current transactionLog file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful transactionLog backup purposes.
 	 */
-	public PersistentLogger(String directory, long logSizeThresholdInBytes, long logAgeThresholdInMillis) throws IOException, ClassNotFoundException {
+	public PersistentLogger(String directory, long logSizeThresholdInBytes, long logAgeThresholdInMillis) throws IOException {
 		_directory = FileManager.produceDirectory(directory);
 		_logSizeThresholdInBytes = logSizeThresholdInBytes;
 		_logAgeThresholdInMillis = logAgeThresholdInMillis;

@@ -35,7 +35,7 @@ public class ClientPublisher implements TransactionPublisher {
 	private final ObjectInputStream _fromServer;
 
 
-	public ClientPublisher(String serverIpAddress, int serverPort) throws IOException, ClassNotFoundException {
+	public ClientPublisher(String serverIpAddress, int serverPort) throws IOException {
 		System.out.println("The replication logic is still under development.");
 		Socket socket = new Socket(serverIpAddress, serverPort);
 		_toServer = new ObjectOutputStream(socket.getOutputStream());   // Get the OUTPUT stream first. JDK 1.3.1_01 for Windows will lock up if you get the INPUT stream first.
