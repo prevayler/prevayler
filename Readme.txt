@@ -2,7 +2,7 @@ Prevayler 1.02
 ==================
 Prevayler is the free-software prevalence layer for Java. It is ridiculously simple (therefore robust) and provides transparent persistence for native Java objects. Allows object queries to run 3 to 4 orders of magnitude faster than using a database through JDBC.
 
-This release uses the same mature implementation as release 1.00 with a new interface-based API.
+If you really know Java and OO, Prevayler will allow you to shutdown your database and application server for good. No more overhead. No more glitches. No more licenses. No more installations.  No more administration. No more mappings. No more restrictions.
 
 
 Requirements
