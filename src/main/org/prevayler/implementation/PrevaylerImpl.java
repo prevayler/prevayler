@@ -49,14 +49,11 @@ public class PrevaylerImpl implements Prevayler {
 	public Clock clock() { return _clock; }
 
 
-	/** Publishes transaction and executes it on the underlying prevalentSystem(). If a Logger is used as the publisher (default), this method will only return after transaction has been written to disk.
-	 */
 	public void execute(Transaction transaction) { _publisher.publish(transaction); }
 
 
-	/** Performs query making sure that no other transaction is being executed by prevayler() and no other query is being performed by this QueryExecuter at the same time. This is acheived by synchronizing on prevayler().prevalentSystem().
-		*/
 	public Object execute(Query query) throws Exception {
+		//TODO Guarantee that the clock will not advance during query execution. Logically, advancing the clock is the same as executing a "clock advance transaction". Any one who advances the clock, therefore, must synchronize on the _prevalentSystem too.
 		synchronized (_prevalentSystem) {
 			return query.query(_prevalentSystem, clock().time());
 		}
@@ -73,11 +70,6 @@ public class PrevaylerImpl implements Prevayler {
 	public Object prevalentSystem() { return _prevalentSystem; }
 
 
-	/** Produces a complete serialized image of the underlying PrevalentSystem.
-	     * This will accelerate future system startups. Taking a snapshot once a day is enough for most applications.
-	     * PrevaylerImpl synchronizes on prevalentSystem() in order to take the snapshot. This means that transaction execution will be blocked while the snapshot is taken.
-	     * @throws IOException if there is trouble writing to the snapshot file.
-	     */
 	public void takeSnapshot() throws IOException {
 	    synchronized (_prevalentSystem) {
 	        _snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);

@@ -75,6 +75,8 @@ public class PrevaylerFactory {
 	}
 
 
+	/** The Clock interface can be implemented by the application if it requires Prevayler to use a special time source other than the machine clock.
+	 */
 	public void configureClock(Clock clock) {
 		_clock = clock;
 	}

@@ -4,12 +4,12 @@
 
 package org.prevayler;
 
-
-/** The clock used by every business object in a prevalent system for ALL its date/time related functions.
+/** Tells the time.
+ * @see Prevayler.
  */
 public interface Clock {
 
-	/** Tells the time. The same value will be returned for every call, throughout the execution of a transaction, ensuring that each transaction is executed in a single moment in time. Without this, the transactions could not be deterministically re-executed during crash-recovery.
+	/** Tells the time.
 	 * @return A Date greater or equal to the one returned by the last call to this method. If the time is the same as the last call, the SAME Date object is returned rather than a new, equal one.
 	 */
 	public java.util.Date time();
