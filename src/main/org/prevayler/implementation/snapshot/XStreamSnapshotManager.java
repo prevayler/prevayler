@@ -5,19 +5,16 @@
 
 package org.prevayler.implementation.snapshot;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import com.thoughtworks.xstream.XStream;
+import org.prevayler.foundation.serialization.Deserializer;
+import org.prevayler.foundation.serialization.SerializationStrategy;
+import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.foundation.serialization.XStreamSerializationStrategy;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.io.File;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.StreamException;
 
 
 /**
@@ -40,9 +37,10 @@ import com.thoughtworks.xstream.io.StreamException;
  * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager
  */
 public class XStreamSnapshotManager extends AbstractSnapshotManager {
+
     public static final String SUFFIX = "xstreamsnapshot";
 
-    private XStream _xstream;
+    private SerializationStrategy _strategy;
     
     /**
      * Creates a new XStreamSnapshotManager using a default XStream instance.
@@ -72,7 +70,7 @@ public class XStreamSnapshotManager extends AbstractSnapshotManager {
      * @throws IOException if there's a problem reading the latest snapshot.
 	 */
 	public XStreamSnapshotManager(XStream xstream, Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
-		_xstream = xstream;
+		_strategy = new XStreamSerializationStrategy(xstream);
 		init(newPrevalentSystem, snapshotDirectoryName);
 	}
 
@@ -80,13 +78,11 @@ public class XStreamSnapshotManager extends AbstractSnapshotManager {
 	 * @see org.prevayler.implementation.snapshot.SnapshotManager#writeSnapshot(Object, OutputStream)
 	 */
 	public void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
-        Writer writer = new BufferedWriter(new OutputStreamWriter(out));
+		Serializer serializer = _strategy.createSerializer(out);
 		try {
-			_xstream.toXML(prevalentSystem, writer);
-		} catch (StreamException se) {
-			throw new IOException("Unable to serialize with XStream: " + se.getMessage());
+			serializer.writeObject(prevalentSystem);
 		} finally {
-			if (writer != null) writer.close();
+			serializer.flush();
 		}
 	}
 
@@ -94,15 +90,9 @@ public class XStreamSnapshotManager extends AbstractSnapshotManager {
 	/**
 	 * @see org.prevayler.implementation.snapshot.SnapshotManager#readSnapshot(InputStream)
 	 */
-	public Object readSnapshot(InputStream in) throws IOException {
-        Reader reader = new BufferedReader(new InputStreamReader(in));
-		try {
-			return _xstream.fromXML(reader);
-		} catch (StreamException se) {
-			throw new IOException("Unable to deserialize with XStream: " + se.getMessage());
-		} finally {
-			if (reader != null) reader.close();
-		}
+	public Object readSnapshot(InputStream in) throws IOException, ClassNotFoundException {
+		Deserializer deserializer = _strategy.createDeserializer(in);
+		return deserializer.readObject();
 	}
 
 
@@ -120,4 +110,5 @@ public class XStreamSnapshotManager extends AbstractSnapshotManager {
 	public static File latestSnapshotFile(File directory) throws IOException {
 		return latestSnapshotFile(directory, SUFFIX);
 	}
+
 }
