@@ -1,6 +1,6 @@
-// Prevayler(TM) - The Open-Source Prevalence Layer.
-// Copyright (C) 2001-2003 Klaus Wuestefeld.
-// This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License version 2.1 as published by the Free Software Foundation. This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+//Prevayler(TM) - The Free-Software Prevalence Layer.
+//Copyright (C) 2001-2003 Klaus Wuestefeld
+//This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 package org.prevayler.implementation;
 
@@ -54,19 +54,27 @@ public class PrevaylerImpl implements Prevayler {
 	public Clock clock() { return _clock; }
 
 
-	public void execute(Transaction transaction) { _publisher.publish(transaction); }
+	public void execute(Transaction transaction) {
+		publish((Transaction)deepCopy(transaction));
+	}
 
 
-	public Object execute(Query query) throws Exception {
+	private void publish(Transaction transaction) {
+		_publisher.publish(transaction);
+	}
+
+
+	public Object execute(Query sensitiveQuery) throws Exception {
 		synchronized (_prevalentSystem) {
-			return query.query(_prevalentSystem, clock().time());
+			return sensitiveQuery.query(_prevalentSystem, clock().time());
 		}
 	}
 
 
 	public Object execute(TransactionWithQuery transactionWithQuery) throws Exception {
-		TransactionWithQueryExecuter executer = new TransactionWithQueryExecuter(transactionWithQuery);
-		execute(executer);
+		TransactionWithQuery copy = (TransactionWithQuery)deepCopy(transactionWithQuery);
+		TransactionWithQueryExecuter executer = new TransactionWithQueryExecuter(copy);
+		publish(executer);
 		return executer.result();
 	}
 
@@ -75,6 +83,14 @@ public class PrevaylerImpl implements Prevayler {
 	    synchronized (_prevalentSystem) {
 	        _snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
 	    }
+	}
+
+
+	public void close() throws IOException { _publisher.close(); }
+
+
+	private Object deepCopy(Object transaction) {   //TODO Optimizations: 1) Publish the byte array of the serialized transaction (this will save the Censor and the Logger from having to serialize the transaction again). This is also a step towards transaction multiplexing (useful to avoid hickups due to very large transactions). The Censor can use the actual given transaction if it is Immutable instead of deserializing a new one from the byte array. 2) Make the baptism fail-fast feature optional (default is on). If it is off, the given transaction can be used instead of deserializing a new one from the byte array.
+		return _snapshotManager.deepCopy(transaction, "Unable to produce a deep copy of the transaction. Deep copies of transactions are executed instead of the transactions themselves so that the behaviour of the system during transaction execution is exactly the same as during transaction recovery from the log.");
 	}
 
 
@@ -88,7 +104,6 @@ public class PrevaylerImpl implements Prevayler {
 						transaction.executeOn(_prevalentSystem, executionTime);
 					} catch (RuntimeException rx) {
 						if (!_ignoreRuntimeExceptions) throw rx;
-						rx.printStackTrace();
 					}
 				}
 			}

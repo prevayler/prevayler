@@ -1,6 +1,6 @@
-// Prevayler(TM) - The Open-Source Prevalence Layer.
-// Copyright (C) 2001-2003 Klaus Wuestefeld.
-// This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License version 2.1 as published by the Free Software Foundation. This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+//Prevayler(TM) - The Free-Software Prevalence Layer.
+//Copyright (C) 2001-2003 Klaus Wuestefeld
+//This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 package org.prevayler.implementation.replication;
 
@@ -60,7 +60,7 @@ public class ClientPublisher implements TransactionPublisher {
 
 
 	public synchronized void addSubscriber(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
-		if (_subscriber != null) throw new UnsupportedOperationException("The current implementation of RemoteTransactionPublisher can only support one subscriber. Future implementations will support more.");
+		if (_subscriber != null) throw new UnsupportedOperationException("The current implementation can only support one subscriber. Future implementations will support more.");
 		_subscriber = subscriber;
 		synchronized (_upToDateMonitor) {
 			_toServer.writeObject(new Long(initialTransaction));
@@ -69,8 +69,13 @@ public class ClientPublisher implements TransactionPublisher {
 	}
 
 
+	public void removeSubscriber(TransactionSubscriber subscriber) {
+		throw new UnsupportedOperationException("Removing subscribers is not yet supported by the current implementation.");
+	}
+
+
 	public synchronized void publish(Transaction transaction) {
-		if (_subscriber == null) throw new IllegalStateException("To publish a transaction, the RemoteTransactionPublisher needs a registered subscriber.");
+		if (_subscriber == null) throw new IllegalStateException("To publish a transaction, this ClientPublisher needs a registered subscriber.");
 		synchronized (_myTransactionMonitor) {
 			_myTransaction = transaction;
 			
@@ -152,5 +157,10 @@ public class ClientPublisher implements TransactionPublisher {
 		return _clock;
 	}
 
+
+	public void close() throws IOException {
+		_fromServer.close();
+		_toServer.close();
+	}
 
 }

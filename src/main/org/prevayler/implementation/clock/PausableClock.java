@@ -1,6 +1,6 @@
-//Prevayler(TM) - The Open-Source Prevalence Layer.
-//Copyright (C) 2001-2003 Klaus Wuestefeld.
-//This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License version 2.1 as published by the Free Software Foundation. This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+//Prevayler(TM) - The Free-Software Prevalence Layer.
+//Copyright (C) 2001-2003 Klaus Wuestefeld
+//This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 package org.prevayler.implementation.clock;
 
@@ -20,13 +20,18 @@ public class PausableClock implements Clock {
 		resume();
 	}
 
+	public Date time() { return _activeClock.time(); }
+
 	public void pause() {
-		_brokenClock.advanceTo(_realClock.time());
+		advanceTo(_realClock.time());
 		_activeClock = _brokenClock;
+	}
+
+	public void advanceTo(Date time) {
+		_brokenClock.advanceTo(time);
 	}
 
 	public void resume() { _activeClock = _realClock; }
 
-	public Date time() { return _activeClock.time(); }
-
+	public Date realTime() { return _realClock.time(); }
 }

@@ -1,3 +1,7 @@
+//Prevayler(TM) - The Free-Software Prevalence Layer.
+//Copyright (C) 2001-2003 Klaus Wuestefeld
+//This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
 package org.prevayler.implementation;
 
 import java.io.File;
@@ -27,19 +31,16 @@ public abstract class PrevalenceTest extends TestCase {
 
 	static private void delete(File file) {
 	    if (file.isDirectory()) deleteDirectoryContents(file);
-		if (!file.delete()) {
-			System.gc(); 
-			assertTrue("Unable to delete " + file, file.delete());
-		}
+		assertTrue("Unable to delete " + file, file.delete());
 	}
 
 	static private void deleteDirectoryContents(File directory) {
-		File[] files = directory.listFiles(new PrevalenceFilter());
+		File[] files = directory.listFiles(new PrevalenceFileFilter());
 		if (files == null) return;
 	    for (int i = 0; i < files.length; i++) delete(files[i]);
 	}
 
-	static private class PrevalenceFilter implements FileFilter {
+	static private class PrevalenceFileFilter implements FileFilter {
 		public boolean accept(File file) {
 			return file.getName().endsWith("transactionLog")
 				|| file.getName().endsWith("snapshot")

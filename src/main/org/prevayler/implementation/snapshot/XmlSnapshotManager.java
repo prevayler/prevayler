@@ -1,3 +1,8 @@
+//Prevayler(TM) - The Free-Software Prevalence Layer.
+//Copyright (C) 2001-2003 Klaus Wuestefeld
+//This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//Contributions: Alexandre Nodari
+
 package org.prevayler.implementation.snapshot;
 import java.io.*;
 
@@ -24,7 +29,6 @@ import com.skaringa.javaxml.*;
  * everything mentioned above on the classpath.</p>
  *
  * @see org.prevayler.implementation.snapshot.SnapshotManager
- * @author Alexandre Nodari
  */
 public class XmlSnapshotManager extends SnapshotManager {
 

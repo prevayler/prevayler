@@ -11,14 +11,19 @@ Prevayler is the original free software prevalence layer implementation for Java
 
 Free Software License
 =========================
-The Prevayler library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License version 2.1 as published by the Free Software Foundation. The Prevayler library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License in the "docs" directory for more details.
+The Prevayler library is free software. See license.txt in the "docs" directory for more details.
+
+
+Features
+============
+Prevayler implements ACID transactions and transparent business object persistence. It does not yet implement replication, which will enable load-balancing and fault-tolerance.
 
 
 Performance Scalability
 ===========================
 10000 (ten thousand) times faster than Oracle. 3000 (three thousand) times faster than MySQL.
 
-These are typical results for the Prevayler query scalability test running against DBMSs using JDBC, even with a local database fully cached in RAM.
+These are typical results for the Prevayler query scalability test running against DBMSs using JDBC, even when the DBMSs use local databases fully cached in RAM.
 
 You can compile and run the test for yourself. Its source code is available for inspection in the "src" directory starting at: org.prevayler.demos.scalability.Main. It runs transaction-processing and query scalability tests against Prevayler and any JDBC database. Just follow the instructions displayed on the console.
 
@@ -30,7 +35,7 @@ Hundreds of organizations use Prevayler worldwide. No bugs have ever been found 
 
 Required Java Platform
 ==========================
-Prevayler is written and compiled against the APIs of the Java 2 Platform Standard Edition version 1.3, and targeted to run on either version 1.3 or 1.4 of the Java 2 Platform Standard Edition.
+Prevayler is written and compiled against the APIs of the Java 2 Platform Standard Edition version 1.4.
 
 
 Running Prevayler
@@ -63,7 +68,7 @@ The prevalence concepts are ridiculously simple. Unlike using a database, though
 2- Run the demos above and understand their source code. Use the javadoc in the "docs/api/beginners" directory as a reference.
 3- Write a little application of your own using the Bank demo as an example.
 
-The source code to Prevayler is available in the "src" directory. You are strongly invited to visit it. The whole Prevayler implementation is only a few hundred lines of code.
+The source code to Prevayler is available in the "src" directory. You are dearly invited to visit it. The whole Prevayler implementation is only a few hundred lines of code.
 
 
 Tutorial

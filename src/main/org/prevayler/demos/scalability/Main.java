@@ -1,7 +1,3 @@
-// Prevayler(TM) - The Open-Source Prevalence Layer.
-// Copyright (C) 2001 Klaus Wuestefeld.
-// This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License version 2.1 as published by the Free Software Foundation. This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-
 package org.prevayler.demos.scalability;
 
 import org.prevayler.demos.scalability.prevayler.*;
@@ -117,15 +113,14 @@ public class Main {
 			"# database can run the tests without paging memory to disk.\n" +
 			"#\n" +
 			"# Running the tests with one hundred thousand objects\n" +
-			"# (default option) requires approx. 64MB free RAM.\n" +
-			"# Running the tests with one million objects requires\n" +
-			"# approx. 470MB free RAM. The VM must be started with a\n" +
-			"# sufficient maximum heap size or you will get an\n" +
-			"# OutOfMemoryError.\n" +
-			"# Example for Linux and Windows:  java -Xmx512000000 ...\n" +
+			"# (default option) requires approx. 128MB free RAM.\n" +
+			"# The VM must be started with a sufficient maximum heap" +			"# size or you will get an OutOfMemoryError.\n" +
+			"# Example for Linux and Windows:  java -Xmx128000000 ...\n" +
 			"#\n" +
+			"# Running the tests with one million objects requires\n" +
+			"# approx. 940MB free RAM." +
 			"# Running the tests with ten million objects requires\n" +
-			"# approx. 4.7GB free RAM and a 64bit VM.\n" +
+			"# approx. 9.4GB free RAM and a 64bit VM.\n" +
 			"#\n" +
 			"# IMPORTANT: Remember to shutdown all other non-vital\n" +
 			"# processes before running the tests. Even the database\n" +

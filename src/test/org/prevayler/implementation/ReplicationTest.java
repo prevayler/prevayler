@@ -1,3 +1,7 @@
+//Prevayler(TM) - The Free-Software Prevalence Layer.
+//Copyright (C) 2001-2003 Klaus Wuestefeld
+//This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
 package org.prevayler.implementation;
 
 import java.io.IOException;
@@ -98,6 +102,11 @@ public class ReplicationTest extends PrevalenceTest {
 	}
 
 	private String clientValue() {
+		try {
+			Thread.sleep(10);  //The client is notified assynchronously.
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		return ((AppendingSystem)_client.prevalentSystem()).value();
 	}
 

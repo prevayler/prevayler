@@ -1,3 +1,8 @@
+//Prevayler(TM) - The Free-Software Prevalence Layer.
+//Copyright (C) 2001-2003 Klaus Wuestefeld
+//This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//Contributions: Jon Tirsén.
+
 package org.prevayler.implementation.publishing.censorship;
 
 import org.prevayler.Transaction;
@@ -13,7 +18,7 @@ public class StrictTransactionCensor implements TransactionCensor {
 	private Object _royalFoodTaster;
 	private final SnapshotManager _snapshotManager;
 
-
+	
 	public StrictTransactionCensor(SnapshotManager snapshotManager) {
 		_snapshotManager = snapshotManager;
 		_king = _snapshotManager.recoveredPrevalentSystem();
@@ -22,7 +27,8 @@ public class StrictTransactionCensor implements TransactionCensor {
 
 	public void approve(Transaction transaction, Date executionTime) throws RuntimeException, Error {
 		try {
-			transaction.executeOn(royalFoodTaster(), executionTime);
+			Transaction transactionCopy = (Transaction)_snapshotManager.deepCopy(transaction, "Unable to produce a copy of the transaction for trying out before applying it to the real system.");
+			transactionCopy.executeOn(royalFoodTaster(), executionTime);
 		} catch (RuntimeException rx) {
 			letTheFoodTasterDie();
 			throw rx;
@@ -43,7 +49,6 @@ public class StrictTransactionCensor implements TransactionCensor {
 
 	private void produceNewFoodTaster() {
 		try {
-			// TODO Optimization: use some sort of producer-consumer stream so that serialization and deserialization can occur in parallel, avoiding the need for RAM for this array with the whole serialized system. 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			synchronized (_king) { _snapshotManager.writeSnapshot(_king, out); }
 			_royalFoodTaster = _snapshotManager.readSnapshot(new ByteArrayInputStream(out.toByteArray()));
@@ -54,3 +59,5 @@ public class StrictTransactionCensor implements TransactionCensor {
 	}
 
 }
+
+

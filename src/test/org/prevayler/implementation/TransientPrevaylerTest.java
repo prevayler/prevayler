@@ -1,3 +1,7 @@
+//Prevayler(TM) - The Free-Software Prevalence Layer.
+//Copyright (C) 2001-2003 Klaus Wuestefeld
+//This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
 package org.prevayler.implementation;
 
 import java.io.IOException;
@@ -42,7 +46,7 @@ public class TransientPrevaylerTest extends PrevalenceTest {
 
 	/** The baptism problem occurs when a Transaction keeps a direct reference to a business object instead of querying for it given the Prevalent System. 
 	 */
-/* TODO public void testFailFastBaptismProblem() {
+	public void testFailFastBaptismProblem() {
 		append("a");
 
 		AppendingSystem directReference = (AppendingSystem)prevayler.prevalentSystem();
@@ -50,8 +54,6 @@ public class TransientPrevaylerTest extends PrevalenceTest {
 		
 		assertState("a");
 	}
-*/
-
 
 	protected void tearDown() throws Exception {
 		prevayler = null;
