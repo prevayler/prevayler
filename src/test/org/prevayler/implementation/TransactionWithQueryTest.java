@@ -8,8 +8,6 @@ import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
 
-import java.io.IOException;
-
 public class TransactionWithQueryTest extends FileIOTest {
 
 	public void testJavaJournal() throws Exception {
