@@ -12,13 +12,13 @@ public class MachineClock extends BrokenClock {
 
 	/** @return The local machine time.
 	*/
-	public Date time() {
+	public synchronized Date time() {
 		update();
 		return super.time();
 	}
 
 
-	private void update() {
+	private synchronized void update() {
 		long newTime = System.currentTimeMillis();
 		if (newTime != _millis) advanceTo(new Date(newTime));
 	}

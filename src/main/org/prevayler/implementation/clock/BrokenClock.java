@@ -8,7 +8,6 @@ import java.util.Date;
 
 import org.prevayler.*;
 
-
 /** A deterministic Clock that always returns the same time until it is forced to advance. This class is useful as a Clock mock in order to run automated tests involving date/time related rules. A new BrokenClock's time() starts off at new Date(0);
  */
 public class BrokenClock implements Clock {
@@ -17,7 +16,7 @@ public class BrokenClock implements Clock {
 	protected long _millis;
 
 	public BrokenClock() {
-			this(new Date(0));
+		this(new Date(0));
 	}
 
 	public BrokenClock(Date time) {
@@ -25,7 +24,7 @@ public class BrokenClock implements Clock {
 		_millis = time.getTime();
 	}
 
-	public Date time() { return _time; }
+	public synchronized Date time() { return _time; }
 
 	public synchronized void advanceTo(Date newTime) {
 		long newMillis = newTime.getTime();
