@@ -2,8 +2,8 @@ package org.prevayler.demos.demo2;
 
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.foundation.serialization.SkaringaSerializationStrategy;
 import org.prevayler.demos.demo2.business.Bank;
+import org.prevayler.foundation.serialization.SkaringaSerializer;
 
 public class MainSkaringa {
 
@@ -13,7 +13,7 @@ public class MainSkaringa {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalenceDirectory("demo2Skaringa");
 		factory.configurePrevalentSystem(new Bank());
-		factory.configureSnapshotSerializationStrategy(new SkaringaSerializationStrategy());
+		factory.configureSnapshotSerializer(new SkaringaSerializer());
 		Prevayler prevayler = factory.create();
 
 		Main.startSnapshots(prevayler);

@@ -13,20 +13,20 @@ import java.io.ObjectStreamException;
 import java.io.UTFDataFormatException;
 
 import org.prevayler.foundation.monitor.Monitor;
-import org.prevayler.foundation.serialization.Deserializer;
-import org.prevayler.foundation.serialization.SerializationStrategy;
+import org.prevayler.foundation.serialization.JournalDeserializer;
+import org.prevayler.foundation.serialization.JournalSerializationStrategy;
 
 
 public class SimpleInputStream {
 
 	private final File _file;
-	private final Deserializer _delegate;
+	private final JournalDeserializer _delegate;
 	private boolean _EOF = false;
     private Monitor _monitor;
 	private FileInputStream _fileStream;
 
 
-	public SimpleInputStream(File file, SerializationStrategy strategy, Monitor monitor) throws IOException {
+	public SimpleInputStream(File file, JournalSerializationStrategy strategy, Monitor monitor) throws IOException {
 	    _monitor = monitor;
 		_file = file;
 		_fileStream = new FileInputStream(file);

@@ -1,13 +1,12 @@
 package org.prevayler.demos.demo2;
 
+import com.thoughtworks.xstream.XStream;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.foundation.serialization.XStreamSerializationStrategy;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.AccountEntry;
 import org.prevayler.demos.demo2.business.Bank;
-
-import com.thoughtworks.xstream.XStream;
+import org.prevayler.foundation.serialization.XStreamSerializer;
 
 public class MainXStream {
 
@@ -17,7 +16,7 @@ public class MainXStream {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalenceDirectory("demo2XStream");
 		
-		factory.configureSnapshotSerializationStrategy(new XStreamSerializationStrategy() {
+		factory.configureSnapshotSerializer(new XStreamSerializer() {
 			protected XStream createXStream() {
 				XStream xstream = new XStream();
 				xstream.alias("bank", Bank.class);  //This mapping is optional. It just makes the XML in the snapshot file look prettier.

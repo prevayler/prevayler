@@ -1,19 +1,18 @@
 package org.prevayler.foundation;
 
-import org.prevayler.foundation.serialization.JavaSerializationStrategy;
+import org.prevayler.foundation.serialization.Serializer;
 
-/**
- * @deprecated Use an appropriate SerializationStrategy instead.
- */
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 public class DeepCopier {
 
-	public static Object deepCopy(Object original, String errorMessage) {
-		try {
-			return new JavaSerializationStrategy(null).deepCopy(original);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException(errorMessage);
-		}
+	public static Object deepCopy(Object original, Serializer serializer) throws IOException, ClassNotFoundException {
+		ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+		serializer.writeObject(byteOut, original);
+		ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+		return serializer.readObject(byteIn);
 	}
 
 }

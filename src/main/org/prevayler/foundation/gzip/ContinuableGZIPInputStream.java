@@ -1,4 +1,4 @@
-package org.prevayler.foundation.serialization;
+package org.prevayler.foundation.gzip;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

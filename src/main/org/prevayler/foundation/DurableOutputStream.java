@@ -3,10 +3,15 @@
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //Contributions: Justin Sampson.
 package org.prevayler.foundation;
-import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.foundation.serialization.SerializationStrategy;
+import org.prevayler.foundation.serialization.JournalSerializationStrategy;
+import org.prevayler.foundation.serialization.JournalSerializer;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class DurableOutputStream {
 	/**
@@ -24,7 +29,7 @@ public class DurableOutputStream {
 	private final File _file;
 
 	/** All access guarded by _writeLock. */
-	private final Serializer _serializer;
+	private final JournalSerializer _serializer;
 
 	/** All access guarded by _syncLock. */
 	private final FileOutputStream _fileOutputStream;
@@ -50,7 +55,7 @@ public class DurableOutputStream {
 	/** All access guarded by _syncLock. */
 	private int _fileSyncCount = 0;
 
-	public DurableOutputStream(File file, SerializationStrategy strategy) throws IOException {
+	public DurableOutputStream(File file, JournalSerializationStrategy strategy) throws IOException {
 		_file = file;
 		_fileOutputStream = new FileOutputStream(file);
 		_fileDescriptor = _fileOutputStream.getFD();
@@ -67,11 +72,11 @@ public class DurableOutputStream {
 				_active.write(b);
 			}
 
-			public void write(byte[] b, int off, int len) throws IOException {
+			public void write(byte[] b, int off, int len) {
 				_active.write(b, off, len);
 			}
 
-			public void write(int b) throws IOException {
+			public void write(int b) {
 				_active.write(b);
 			}
 		};

@@ -1,4 +1,6 @@
-package org.prevayler.foundation.serialization;
+package org.prevayler.foundation.gzip;
+
+import org.prevayler.foundation.gzip.ContinuableGZIPInputStream;
 
 import java.io.EOFException;
 import java.io.IOException;

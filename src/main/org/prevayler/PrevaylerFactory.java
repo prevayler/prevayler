@@ -7,10 +7,11 @@ package org.prevayler;
 
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.monitor.SimpleMonitor;
-import org.prevayler.foundation.serialization.JavaSerializationStrategy;
-import org.prevayler.foundation.serialization.SerializationStrategy;
-import org.prevayler.foundation.serialization.SkaringaSerializationStrategy;
-import org.prevayler.foundation.serialization.XStreamSerializationStrategy;
+import org.prevayler.foundation.serialization.JavaSerializer;
+import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.foundation.serialization.SkaringaSerializer;
+import org.prevayler.foundation.serialization.XStreamSerializer;
+import org.prevayler.foundation.serialization.JournalSerializationStrategy;
 import org.prevayler.implementation.PrevaylerImpl;
 import org.prevayler.implementation.clock.MachineClock;
 import org.prevayler.implementation.journal.Journal;
@@ -57,9 +58,9 @@ public class PrevaylerFactory {
     private Monitor _monitor;
 	private ClassLoader _classLoader;
 
-	private SerializationStrategy _journalSerializationStrategy;
-	private Map _snapshotSerializationStrategies = new HashMap();
-	private String _primarySnapshotSerializationStrategy;
+	private JournalSerializationStrategy _journalSerializationStrategy;
+	private Map _snapshotSerializers = new HashMap();
+	private String _primarySnapshotSuffix;
 
 	public static final int DEFAULT_REPLICATION_PORT = 8756;
 
@@ -165,8 +166,8 @@ public class PrevaylerFactory {
 
 
 	/** Configures the prevalent system that will be used by the Prevayler created by this factory.
-	 * @param newPrevalentSystem If the default SerializationStrategy is used, this prevalentSystem must be Serializable. If another SerializationStrategy is used, this prevalentSystem must be compatible with it.
-     * @see #configureSnapshotSerializationStrategy(String,SerializationStrategy)
+	 * @param newPrevalentSystem If the default Serializer is used, this prevalentSystem must be Serializable. If another Serializer is used, this prevalentSystem must be compatible with it.
+     * @see #configureSnapshotSerializer(String,Serializer)
 	 */
 	public void configurePrevalentSystem(Object newPrevalentSystem) {
 		_prevalentSystem = newPrevalentSystem;
@@ -217,28 +218,28 @@ public class PrevaylerFactory {
 
 
 	/**
-	 * @deprecated Use {@link #configureSnapshotSerializationStrategy(String,SerializationStrategy)} and {@link #configureJournalSerializationStrategy(SerializationStrategy)} instead, giving a {@link JavaSerializationStrategy} with the desired classloader.
+	 * @deprecated Use {@link #configureSnapshotSerializer(String,Serializer)} and {@link #configureJournalSerializer(Serializer)} instead, giving a {@link JavaSerializer} with the desired classloader.
 	 */
 	public void configureClassLoader(ClassLoader classLoader) {
 		_classLoader = classLoader;
 	}
 
 
-	public void configureJournalSerializationStrategy(SerializationStrategy strategy) {
-		_journalSerializationStrategy = strategy;
-	}
-	
-	
-	public void configureSnapshotSerializationStrategy(JavaSerializationStrategy strategy) {
-		configureSnapshotSerializationStrategy("snapshot", strategy);
+	public void configureJournalSerializer(Serializer serializer) {
+		_journalSerializationStrategy = new JournalSerializationStrategy(serializer);
 	}
 
-	public void configureSnapshotSerializationStrategy(XStreamSerializationStrategy strategy) {
-		configureSnapshotSerializationStrategy("xstreamsnapshot", strategy);
+	
+	public void configureSnapshotSerializer(JavaSerializer serializer) {
+		configureSnapshotSerializer("snapshot", serializer);
 	}
 
-	public void configureSnapshotSerializationStrategy(SkaringaSerializationStrategy strategy) {
-		configureSnapshotSerializationStrategy("skaringasnapshot", strategy);
+	public void configureSnapshotSerializer(XStreamSerializer serializer) {
+		configureSnapshotSerializer("xstreamsnapshot", serializer);
+	}
+
+	public void configureSnapshotSerializer(SkaringaSerializer serializer) {
+		configureSnapshotSerializer("skaringasnapshot", serializer);
 	}
 
 	/**
@@ -247,10 +248,10 @@ public class PrevaylerFactory {
 	 * call to this method establishes the <i>primary</i> strategy, which will be used for writing
 	 * snapshots as well as for deep-copying the prevalent system whenever necessary.
 	 */
-	public void configureSnapshotSerializationStrategy(String suffix, SerializationStrategy strategy) {
-		_snapshotSerializationStrategies.put(suffix, strategy);
-		if (_primarySnapshotSerializationStrategy == null) {
-			_primarySnapshotSerializationStrategy = suffix;
+	public void configureSnapshotSerializer(String suffix, Serializer serializer) {
+		_snapshotSerializers.put(suffix, serializer);
+		if (_primarySnapshotSuffix == null) {
+			_primarySnapshotSuffix = suffix;
 		}
 	}
 
@@ -278,7 +279,7 @@ public class PrevaylerFactory {
 	}
 
 
-	private TransactionPublisher publisher(GenericSnapshotManager snapshotManager) throws IOException, ClassNotFoundException {
+	private TransactionPublisher publisher(GenericSnapshotManager snapshotManager) throws IOException {
 		if (_remoteServerIpAddress != null) return new ClientPublisher(_remoteServerIpAddress, _remoteServerPort);
 		return new CentralPublisher(clock(), censor(snapshotManager), journal()); 
 	}
@@ -298,16 +299,16 @@ public class PrevaylerFactory {
 	}
 
 	
-	private SerializationStrategy journalSerializationStrategy() {
+	private JournalSerializationStrategy journalSerializationStrategy() {
 		if (_journalSerializationStrategy != null) return _journalSerializationStrategy;
-		return new JavaSerializationStrategy(_classLoader);
+		return new JournalSerializationStrategy(new JavaSerializer(_classLoader));
 	}
 
 
 	private GenericSnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
 		if (_nullSnapshotManager != null) return _nullSnapshotManager;
-		if (!_snapshotSerializationStrategies.isEmpty()) return new GenericSnapshotManager(_snapshotSerializationStrategies, _primarySnapshotSerializationStrategy, prevalentSystem(), prevalenceDirectory());
-		return new GenericSnapshotManager(new JavaSerializationStrategy(_classLoader), prevalentSystem(), prevalenceDirectory());
+		if (!_snapshotSerializers.isEmpty()) return new GenericSnapshotManager(_snapshotSerializers, _primarySnapshotSuffix, prevalentSystem(), prevalenceDirectory());
+		return new GenericSnapshotManager(new JavaSerializer(_classLoader), prevalentSystem(), prevalenceDirectory());
 	}
 
 	
