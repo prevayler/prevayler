@@ -43,13 +43,13 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
 		fieldBox.add(gap());
 		fieldBox.add(labelContainer("Transaction History"));
 		historyList = new JList();
-		historyList.disable();
+		historyList.setEnabled(false);
 		fieldBox.add(new JScrollPane(historyList));
 		
 		fieldBox.add(gap());
 		fieldBox.add(labelContainer("Balance"));
 		balanceField = new JTextField();
-		balanceField.disable();
+		balanceField.setEnabled(false);
 		fieldBox.add(balanceField);
 	}
 

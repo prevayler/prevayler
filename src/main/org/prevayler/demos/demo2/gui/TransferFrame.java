@@ -30,7 +30,7 @@ class TransferFrame extends AccountFrame {
 	protected void addFields(Box fieldBox) {
         fieldBox.add(labelContainer("From Account"));
         sourceField = new JTextField();
-        sourceField.disable();
+        sourceField.setEnabled(false);
         fieldBox.add(sourceField);
 		
 		fieldBox.add(gap());
