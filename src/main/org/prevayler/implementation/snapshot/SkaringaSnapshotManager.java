@@ -31,6 +31,7 @@ import java.io.IOException;
  *
  * @see org.prevayler.implementation.snapshot.SnapshotManager
  * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager
+ * @deprecated Use org.prevayler.foundation.serialization.SkaringaSerializer instead.
  */
 public class SkaringaSnapshotManager extends GenericSnapshotManager {
 	public static final String SUFFIX = "skaringasnapshot";
