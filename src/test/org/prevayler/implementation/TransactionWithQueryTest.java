@@ -24,7 +24,7 @@ public class TransactionWithQueryTest extends FileIOTest {
 		recover(strategy);
 	}
 
-	public void NOT_WORKING_testSkaringaJournal() throws Exception {
+	public void testSkaringaJournal() throws Exception {
 		Serializer strategy = new SkaringaSerializer();
 
 		startAndCrash(strategy);

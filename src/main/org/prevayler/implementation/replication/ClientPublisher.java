@@ -5,7 +5,8 @@
 package org.prevayler.implementation.replication;
 
 import org.prevayler.Clock;
-import org.prevayler.Transaction;
+import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.clock.BrokenClock;
 import org.prevayler.implementation.publishing.TransactionPublisher;
@@ -27,7 +28,7 @@ public class ClientPublisher implements TransactionPublisher {
 	private TransactionSubscriber _subscriber;
 	private final Object _upToDateMonitor = new Object();
 
-	private Transaction _myTransaction;
+	private TransactionCapsule _myTransactionCapsule;
 	private final Object _myTransactionMonitor = new Object();
 	private RuntimeException _myTransactionRuntimeException;
 	private Error _myTransactionError;
@@ -35,9 +36,12 @@ public class ClientPublisher implements TransactionPublisher {
 	private final ObjectOutputStream _toServer;
 	private final ObjectInputStream _fromServer;
 
+	private final Serializer _journalSerializer;
 
-	public ClientPublisher(String serverIpAddress, int serverPort) throws IOException {
+
+	public ClientPublisher(String serverIpAddress, int serverPort, Serializer journalSerializer) throws IOException {
 		System.out.println("The replication logic is still under development.");
+		_journalSerializer = journalSerializer;
 		Socket socket = new Socket(serverIpAddress, serverPort);
 		_toServer = new ObjectOutputStream(socket.getOutputStream());   // Get the OUTPUT stream first. JDK 1.3.1_01 for Windows will lock up if you get the INPUT stream first.
 		_fromServer = new ObjectInputStream(socket.getInputStream());
@@ -75,13 +79,13 @@ public class ClientPublisher implements TransactionPublisher {
 	}
 
 
-	public synchronized void publish(Transaction transaction) {
+	public synchronized void publish(TransactionCapsule transactionCapsule) {
 		if (_subscriber == null) throw new IllegalStateException("To publish a transaction, this ClientPublisher needs a registered subscriber.");
 		synchronized (_myTransactionMonitor) {
-			_myTransaction = transaction;
+			_myTransactionCapsule = transactionCapsule;
 			
 			try {
-				_toServer.writeObject(transaction);
+				_toServer.writeObject(transactionCapsule);
 			} catch (IOException iox) {
 				iox.printStackTrace();
 				while (true) Thread.yield();
@@ -131,12 +135,13 @@ public class ClientPublisher implements TransactionPublisher {
 		long systemVersion = _fromServer.readLong();
 
 		if (transactionCandidate.equals(ServerConnection.REMOTE_TRANSACTION)) {
-			_subscriber.receive(new TransactionTimestamp(_myTransaction, systemVersion, timestamp));
+			_subscriber.receive(new TransactionTimestamp(_myTransactionCapsule, systemVersion, timestamp));
 			notifyMyTransactionMonitor();
 			return;
 		}
 
-		_subscriber.receive(new TransactionTimestamp((Transaction)transactionCandidate, systemVersion, timestamp));
+		TransactionCapsule capsule = ((TransactionCapsule) transactionCandidate).withSerializer(_journalSerializer);
+		_subscriber.receive(new TransactionTimestamp(capsule, systemVersion, timestamp));
 	}
 
 

@@ -4,8 +4,6 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.Transaction;
-import org.prevayler.foundation.DeepCopier;
 import org.prevayler.foundation.serialization.Serializer;
 
 import java.io.Serializable;
@@ -15,22 +13,22 @@ public class TransactionTimestamp implements Serializable {
 
 	static final long serialVersionUID = 1L;
 
-	private final Transaction _transaction;
+	private final TransactionCapsule _transactionCapsule;
 	private final long _systemVersion;
 	private final long _executionTime;
 
-	public TransactionTimestamp(Transaction transaction, long systemVersion, Date executionTime) {
-		this(transaction, systemVersion, executionTime.getTime());
+	public TransactionTimestamp(TransactionCapsule transactionCapsule, long systemVersion, Date executionTime) {
+		this(transactionCapsule, systemVersion, executionTime.getTime());
 	}
 
-	private TransactionTimestamp(Transaction transaction, long systemVersion, long executionTime) {
-		_transaction = transaction;
+	private TransactionTimestamp(TransactionCapsule transactionCapsule, long systemVersion, long executionTime) {
+		_transactionCapsule = transactionCapsule;
 		_systemVersion = systemVersion;
 		_executionTime = executionTime;
 	}
 
-	public Transaction transaction() {
-		return _transaction;
+	public TransactionCapsule capsule() {
+		return _transactionCapsule;
 	}
 
 	public long systemVersion() {
@@ -41,14 +39,8 @@ public class TransactionTimestamp implements Serializable {
 		return new Date(_executionTime);
 	}
 
-	public TransactionTimestamp deepCopy(Serializer journalSerializer) {
-		try {
-			Transaction transactionCopy = (Transaction) DeepCopier.deepCopy(_transaction, journalSerializer);
-			return new TransactionTimestamp(transactionCopy, _systemVersion, _executionTime);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException("Unable to produce a copy of the transaction for trying out before applying it to the real system.");
-		}
+	public TransactionTimestamp cleanCopy(Serializer journalSerializer) {
+		return new TransactionTimestamp(_transactionCapsule.cleanCopy(), _systemVersion, _executionTime);
 	}
 
 }

@@ -33,7 +33,6 @@ public class Suite extends TestCase {
 		suite.addTestSuite(SnapshotSerializerTest.class);
 		suite.addTestSuite(MultiMemberGZIPTest.class);
 		suite.addTestSuite(FileLockerTest.class);
-		suite.addTestSuite(ConfusedFoodTasterTest.class);
 		suite.addTestSuite(ConfusedFoodTasterStressTest.class);
 		return suite;
 	}

@@ -26,7 +26,7 @@ public class StrictTransactionCensor implements TransactionCensor {
 
 	public void approve(TransactionTimestamp transactionTimestamp) throws RuntimeException, Error {
 		try {
-			TransactionTimestamp timestampCopy = transactionTimestamp.deepCopy(_journalSerializer);
+			TransactionTimestamp timestampCopy = transactionTimestamp.cleanCopy(_journalSerializer);
 			PrevalentSystemGuard royalFoodTaster = royalFoodTaster(transactionTimestamp.systemVersion() - 1);
 			royalFoodTaster.receive(timestampCopy);
 		} catch (RuntimeException rx) {

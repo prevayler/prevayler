@@ -5,9 +5,9 @@
 package org.prevayler.implementation.publishing;
 
 import org.prevayler.Clock;
-import org.prevayler.Transaction;
 import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.Turn;
+import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.clock.PausableClock;
@@ -39,14 +39,14 @@ public class CentralPublisher extends AbstractPublisher {
 	}
 
 
-	public void publish(Transaction transaction) {
+	public void publish(TransactionCapsule transactionCapsule) {
 		synchronized (_pendingPublicationsMonitor) {  //Blocks all new subscriptions until the publication is over.
 			if (_pendingPublications == 0) _pausableClock.pause();
 			_pendingPublications++;
 		}
 
 		try {
-			publishWithoutWorryingAboutNewSubscriptions(transaction);  // Suggestions for a better method name are welcome.  :)
+			publishWithoutWorryingAboutNewSubscriptions(transactionCapsule);  // Suggestions for a better method name are welcome.  :)
 		} finally {
 			synchronized (_pendingPublicationsMonitor) {
 				_pendingPublications--;
@@ -59,15 +59,15 @@ public class CentralPublisher extends AbstractPublisher {
 	}
 
 
-	private void publishWithoutWorryingAboutNewSubscriptions(Transaction transaction) {
-		TransactionGuide guide = approve(transaction);
+	private void publishWithoutWorryingAboutNewSubscriptions(TransactionCapsule transactionCapsule) {
+		TransactionGuide guide = approve(transactionCapsule);
 		_journal.append(guide);
 		notifySubscribers(guide);
 	}
 
-	private TransactionGuide approve(Transaction transaction) {
+	private TransactionGuide approve(TransactionCapsule transactionCapsule) {
 		synchronized (_nextTurnMonitor) {
-			TransactionTimestamp timestamp = new TransactionTimestamp(transaction, _nextTransaction, _pausableClock.realTime());
+			TransactionTimestamp timestamp = new TransactionTimestamp(transactionCapsule, _nextTransaction, _pausableClock.realTime());
 
 			_censor.approve(timestamp);
 

@@ -5,13 +5,13 @@
 
 package org.prevayler;
 
-import org.prevayler.implementation.PrevaylerDirectory;
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.monitor.SimpleMonitor;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
+import org.prevayler.implementation.PrevaylerDirectory;
 import org.prevayler.implementation.PrevaylerImpl;
 import org.prevayler.implementation.clock.MachineClock;
 import org.prevayler.implementation.journal.Journal;
@@ -287,8 +287,9 @@ public class PrevaylerFactory {
 	public Prevayler create() throws IOException, ClassNotFoundException {
 		GenericSnapshotManager snapshotManager = snapshotManager();
 		TransactionPublisher publisher = publisher(snapshotManager);
-		if (_serverPort != -1) new ServerListener(publisher, _serverPort);
-		return new PrevaylerImpl(snapshotManager, publisher, monitor(), journalSerializer());
+		Serializer journalSerializer = journalSerializer();
+		if (_serverPort != -1) new ServerListener(publisher, _serverPort, journalSerializer);
+		return new PrevaylerImpl(snapshotManager, publisher, monitor(), journalSerializer);
 	}
 
 
@@ -304,7 +305,7 @@ public class PrevaylerFactory {
 
 
 	private TransactionPublisher publisher(GenericSnapshotManager snapshotManager) throws IOException {
-		if (_remoteServerIpAddress != null) return new ClientPublisher(_remoteServerIpAddress, _remoteServerPort);
+		if (_remoteServerIpAddress != null) return new ClientPublisher(_remoteServerIpAddress, _remoteServerPort, journalSerializer());
 		return new CentralPublisher(clock(), censor(snapshotManager), journal()); 
 	}
 

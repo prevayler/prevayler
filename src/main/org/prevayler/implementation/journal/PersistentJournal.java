@@ -123,7 +123,7 @@ public class PersistentJournal implements Journal {
 	private DurableOutputStream createOutputJournal(long transactionNumber) {
 		File file = _directory.journalFile(transactionNumber, _journalSuffix);
 		try {
-			return new DurableOutputStream(file, _journalSerializer);
+			return new DurableOutputStream(file);
 		} catch (IOException iox) {
 			handle(iox, file, "creating");
 			return null;

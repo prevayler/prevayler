@@ -3,7 +3,6 @@
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //Contributions: Justin Sampson.
 package org.prevayler.foundation;
-import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
 
@@ -27,9 +26,6 @@ public class DurableOutputStream {
 
 	/** The File object is only stashed for the sake of the file() getter. */
 	private final File _file;
-
-	/** All access guarded by _writeLock. */
-	private final Serializer _serializer;
 
 	/** All access guarded by _syncLock. */
 	private final FileOutputStream _fileOutputStream;
@@ -55,11 +51,10 @@ public class DurableOutputStream {
 	/** All access guarded by _syncLock. */
 	private int _fileSyncCount = 0;
 
-	public DurableOutputStream(File file, Serializer serializer) throws IOException {
+	public DurableOutputStream(File file) throws IOException {
 		_file = file;
 		_fileOutputStream = new FileOutputStream(file);
 		_fileDescriptor = _fileOutputStream.getFD();
-		_serializer = serializer;
 	}
 
 	public void sync(TransactionGuide guide) throws IOException {
@@ -88,9 +83,8 @@ public class DurableOutputStream {
 			}
 
 			try {
-				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-				_serializer.writeObject(bytes, timestamp.transaction());
-				Chunk chunk = new Chunk(bytes.toByteArray());
+				Chunk chunk = new Chunk(timestamp.capsule().serialized());
+				chunk.setParameter("withQuery", String.valueOf(timestamp.capsule().withQuery()));
 				chunk.setParameter("systemVersion", String.valueOf(timestamp.systemVersion()));
 				chunk.setParameter("executionTime", String.valueOf(timestamp.executionTime().getTime()));
 				Chunking.writeChunk(_active, chunk);

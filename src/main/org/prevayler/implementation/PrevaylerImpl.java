@@ -60,12 +60,12 @@ public class PrevaylerImpl implements Prevayler {
 
 
 	public void execute(Transaction transaction) {
-        publish((Transaction)deepCopy(transaction));    //TODO Optimizations: 1) Publish the byte array of the serialized transaction (this will save the Censor and the Logger from having to serialize the transaction again). This is also a step towards transaction multiplexing (useful to avoid hickups due to very large transactions). The Censor can use the actual given transaction if it is Immutable instead of deserializing a new one from the byte array. 2) Make the baptism fail-fast feature optional (default is on). If it is off, the given transaction can be used instead of deserializing a new one from the byte array.
+        publish(new TransactionCapsule(transaction, _journalSerializer));    //TODO Optimizations: 1) Publish the byte array of the serialized transaction (this will save the Censor and the Logger from having to serialize the transaction again). This is also a step towards transaction multiplexing (useful to avoid hickups due to very large transactions). The Censor can use the actual given transaction if it is Immutable instead of deserializing a new one from the byte array. 2) Make the baptism fail-fast feature optional (default is on). If it is off, the given transaction can be used instead of deserializing a new one from the byte array.
 	}
 
 
-	private void publish(Transaction transaction) {
-		_publisher.publish(transaction);
+	private void publish(TransactionCapsule transactionCapsule) {
+		_publisher.publish(transactionCapsule);
 	}
 
 
@@ -75,10 +75,9 @@ public class PrevaylerImpl implements Prevayler {
 
 
 	public Object execute(TransactionWithQuery transactionWithQuery) throws Exception {
-		TransactionWithQuery copy = (TransactionWithQuery)deepCopy(transactionWithQuery);
-		TransactionWithQueryExecuter executer = new TransactionWithQueryExecuter(copy);
-		publish(executer);
-		return executer.result();
+		TransactionCapsule capsule = new TransactionCapsule(transactionWithQuery, _journalSerializer);
+		publish(capsule);
+		return capsule.result();
 	}
 
 

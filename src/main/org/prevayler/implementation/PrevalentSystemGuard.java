@@ -2,7 +2,6 @@ package org.prevayler.implementation;
 
 import org.prevayler.Clock;
 import org.prevayler.Query;
-import org.prevayler.Transaction;
 import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.DeepCopier;
 import org.prevayler.foundation.serialization.Serializer;
@@ -43,10 +42,10 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 		}
 	}
 
-	public void receive(TransactionTimestamp transactionTimstamp) {
-		Transaction transaction = transactionTimstamp.transaction();
-		long systemVersion = transactionTimstamp.systemVersion();
-		Date executionTime = transactionTimstamp.executionTime();
+	public void receive(TransactionTimestamp transactionTimestamp) {
+		TransactionCapsule capsule = transactionTimestamp.capsule();
+		long systemVersion = transactionTimestamp.systemVersion();
+		Date executionTime = transactionTimestamp.executionTime();
 
 		synchronized (this) {
 			if (systemVersion != _systemVersion + 1) {
@@ -58,7 +57,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 
 			try {
 				synchronized (_prevalentSystem) {
-					transaction.executeOn(_prevalentSystem, executionTime);
+					capsule.executeOn(_prevalentSystem, executionTime);
 				}
 			} catch (RuntimeException rx) {
 				if (!_ignoreRuntimeExceptions) throw rx;  //TODO Guarantee that transactions received from pending transaction recovery don't ever throw RuntimeExceptions. Maybe use a wrapper for that.

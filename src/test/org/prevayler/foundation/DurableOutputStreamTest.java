@@ -3,6 +3,7 @@ package org.prevayler.foundation;
 import org.prevayler.foundation.monitor.NullMonitor;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.implementation.AppendTransaction;
+import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
 
@@ -19,7 +20,7 @@ public class DurableOutputStreamTest extends FileIOTest {
 
 			File file = new File(_testDirectory, "stream" + i + ".bin");
 
-			DurableOutputStream out = new DurableOutputStream(file, new JavaSerializer());
+			DurableOutputStream out = new DurableOutputStream(file);
 
 			Turn myTurn = Turn.first();
 			out.sync(new TransactionGuide(timestamp("first"), myTurn));
@@ -47,18 +48,18 @@ public class DurableOutputStreamTest extends FileIOTest {
 	private long _systemVersion = 42;
 
 	private TransactionTimestamp timestamp(String value) {
-		return new TransactionTimestamp(new AppendTransaction(value), _systemVersion++, new Date());
+		return new TransactionTimestamp(new TransactionCapsule(new AppendTransaction(value), new JavaSerializer()), _systemVersion++, new Date());
 	}
 
 	private String value(TransactionTimestamp timestamp) {
-		return ((AppendTransaction) timestamp.transaction()).toAdd;
+		return ((AppendTransaction) timestamp.capsule().deserialize()).toAdd;
 	}
 
 	public void testMultiThreaded() throws Exception {
 		for (int i = 0; i < 10 /*5000*/; i++) {
 //            System.out.println("i=" + i);
 			File file = new File(_testDirectory, "stream" + i + ".bin");
-			DurableOutputStream out = new DurableOutputStream(file, new JavaSerializer());
+			DurableOutputStream out = new DurableOutputStream(file);
 
 			Turn one = Turn.first();
 			Turn two = one.next();

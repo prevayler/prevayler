@@ -4,7 +4,8 @@
 
 package org.prevayler.implementation.replication;
 
-import org.prevayler.Transaction;
+import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.POBox;
 import org.prevayler.implementation.publishing.TransactionPublisher;
@@ -26,13 +27,16 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 	static final String CLOCK_TICK = "ClockTick";
 
 	private final TransactionPublisher _publisher;
-	private Transaction _remoteTransaction;
+	private TransactionCapsule _remoteTransactionCapsule;
 
 	private final ObjectOutputStream _toRemote;
 	private final ObjectInputStream _fromRemote;
 
+	private final Serializer _journalSerializer;
 
-	ServerConnection(TransactionPublisher publisher, Socket remoteSocket) throws IOException {
+
+	ServerConnection(TransactionPublisher publisher, Socket remoteSocket, Serializer journalSerializer) throws IOException {
+		_journalSerializer = journalSerializer;
 		_publisher = publisher;
 		_fromRemote = new ObjectInputStream(remoteSocket.getInputStream());
 		_toRemote = new ObjectOutputStream(remoteSocket.getOutputStream());
@@ -77,9 +81,9 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 
 
 	void publishRemoteTransaction() throws Exception {
-		_remoteTransaction = (Transaction)_fromRemote.readObject();
+		_remoteTransactionCapsule = ((TransactionCapsule)_fromRemote.readObject()).withSerializer(_journalSerializer);
 		try {
-			_publisher.publish(_remoteTransaction);
+			_publisher.publish(_remoteTransactionCapsule);
 		} catch (RuntimeException rx) {
 			send(rx);
 		} catch (Error error) {
@@ -88,16 +92,16 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 	}
 
 
-	public void receive(TransactionTimestamp transactionTimstamp) {
-		Transaction transaction = transactionTimstamp.transaction();
-		long systemVersion = transactionTimstamp.systemVersion();
-		Date executionTime = transactionTimstamp.executionTime();
+	public void receive(TransactionTimestamp transactionTimestamp) {
+		TransactionCapsule transactionCapsule = transactionTimestamp.capsule();
+		long systemVersion = transactionTimestamp.systemVersion();
+		Date executionTime = transactionTimestamp.executionTime();
 
 		try {
 			synchronized (_toRemote) {
-				_toRemote.writeObject(transaction == _remoteTransaction
+				_toRemote.writeObject(transactionCapsule == _remoteTransactionCapsule
 					? (Object)REMOTE_TRANSACTION
-					: transaction
+					: transactionCapsule
 				);
 				_toRemote.writeObject(executionTime);
 				_toRemote.writeLong(systemVersion);
