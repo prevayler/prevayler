@@ -270,15 +270,19 @@
         <ant target="dist" inheritAll="false">
             <property name="app.version" value="SNAPSHOT"/>
         </ant>
-        <copy file="${libdir}/${app.name}-SNAPSHOT.jar" todir="${distdir}/jars" />
-        <copy file="${targetdir}/${app.name}-SNAPSHOT.*" todir="${distdir}/distributions" />
+        <!--<macroscp file="${libdir}/${app.name}-SNAPSHOT.jar" todir="jars"/>
+        <macroscp file="${targetdir}/${app.name}-SNAPSHOT.*" todir="distributions"/>-->
+        <copy file="${libdir}/${app.name}-SNAPSHOT.jar" todir="${distdir}/jars"/>
+        <copy file="${targetdir}/${app.name}-SNAPSHOT.*" todir="${distdir}/distributions"/>
 
         <tstamp/>
         <ant target="dist" inheritAll="false">
             <property name="app.version" value="${DSTAMP}"/>
         </ant>
-        <macroscp file="${libdir}/${app.name}-${DSTAMP}.jar" todir="jars"/>
-        <macroscp file="${targetdir}/${app.name}-${DSTAMP}.*" todir="distributions"/>
+        <!--<macroscp file="${libdir}/${app.name}-${DSTAMP}.jar" todir="jars"/>
+        <macroscp file="${targetdir}/${app.name}-${DSTAMP}.*" todir="distributions"/>-->
+        <copy file="${libdir}/${app.name}-${DSTAMP}.jar" todir="${distdir}/jars"/>
+        <copy file="${targetdir}/${app.name}-${DSTAMP}.*" todir="${distdir}/distributions"/>
     </target>
 
 <!-- ==================== Test Targets ================================== -->
