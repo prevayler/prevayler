@@ -5,6 +5,7 @@
 package org.prevayler.implementation;
 
 import java.io.*;
+
 import org.prevayler.*;
 import org.prevayler.implementation.log.TransactionLogger;
 
@@ -19,77 +20,107 @@ import org.prevayler.implementation.log.TransactionLogger;
  */
 public class SnapshotPrevayler implements Prevayler {
 
-	protected final Object _prevalentSystem;
-	long _systemVersion = 0;
+    protected final Object _prevalentSystem;
+    long _systemVersion = 0;
 
-	protected final SnapshotManager _snapshotManager;
+    protected final SnapshotManager _snapshotManager;
+    private boolean _ignoreStartupErrors;
 
-	protected final TransactionPublisher _publisher;
-	private final TransactionSubscriber _subscriber = subscriber();
-
-
-	/** Creates a SnapshotPrevayler that will use the current directory to read and write its snapshot files.
-	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
-	 */
-	public SnapshotPrevayler(Object newPrevalentSystem) throws IOException, ClassNotFoundException {
-		this(newPrevalentSystem, "PrevalenceBase");
-	}
-
-	/** @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
-	 * @param prevalenceBase The directory where the snapshot files and transactionLog files will be read and written.
-	 */
-	public SnapshotPrevayler(Object newPrevalentSystem, String prevalenceBase) throws IOException, ClassNotFoundException {
-		this(newPrevalentSystem, new SnapshotManager(prevalenceBase), new TransactionLogger(prevalenceBase));
-	}
-
-	/** @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
-	 * @param snapshotManager The SnapshotManager that will be used for reading and writing snapshot files.
-	 * @param transactionPublisher The TransactionPublisher that will be used for publishing transactions executed with this SnapshotPrevayler.
-	 */
-	public SnapshotPrevayler(Object newPrevalentSystem, SnapshotManager snapshotManager, TransactionPublisher transactionPublisher) throws IOException, ClassNotFoundException {
-		_snapshotManager = snapshotManager;
-
-		_systemVersion = _snapshotManager.latestVersion();
-		_prevalentSystem = _snapshotManager.readSnapshot(newPrevalentSystem, _systemVersion);
-
-		_publisher = transactionPublisher;
-		_publisher.addSubscriber(_subscriber, _systemVersion + 1);
-	}
+    protected final TransactionPublisher _publisher;
+    private final TransactionSubscriber _subscriber = subscriber();
 
 
-	/** Returns the underlying prevalent system.
-	 */
-	public Object prevalentSystem() {
-		return _prevalentSystem;
-	}
+    /** Creates a SnapshotPrevayler that will use the current directory to read and write its snapshot files.
+     * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
+     */
+    public SnapshotPrevayler(Object newPrevalentSystem) throws IOException, ClassNotFoundException {
+        this(newPrevalentSystem, "PrevalenceBase");
+    }
+
+    /** @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
+     * @param prevalenceBase The directory where the snapshot files and transactionLog files will be read and written.
+     */
+    public SnapshotPrevayler(Object newPrevalentSystem, String prevalenceBase) throws IOException, ClassNotFoundException {
+        this(newPrevalentSystem, new SnapshotManager(prevalenceBase), new TransactionLogger(prevalenceBase), false);
+    }
+
+    /** @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
+     * @param prevalenceBase The directory where the snapshot files and transactionLog files will be read and written.
+     * @param ignoreStartupErrors All transaction exceptions during startup are ignored
+     */
+    public SnapshotPrevayler(Object newPrevalentSystem, String prevalenceBase, boolean ignoreStartupErrors) throws IOException, ClassNotFoundException {
+        this(newPrevalentSystem, new SnapshotManager(prevalenceBase), new TransactionLogger(prevalenceBase), ignoreStartupErrors);
+    }
+
+    /** @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
+     * @param snapshotManager The SnapshotManager that will be used for reading and writing snapshot files.
+     * @param transactionPublisher The TransactionPublisher that will be used for publishing transactions executed with this SnapshotPrevayler.
+     */
+    public SnapshotPrevayler(Object newPrevalentSystem, SnapshotManager snapshotManager, TransactionPublisher transactionPublisher) throws IOException, ClassNotFoundException {
+        this(newPrevalentSystem, snapshotManager, transactionPublisher, false);
+    }
+
+    /** @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
+     * @param snapshotManager The SnapshotManager that will be used for reading and writing snapshot files.
+     * @param transactionPublisher The TransactionPublisher that will be used for publishing transactions executed with this SnapshotPrevayler.
+     * @param ignoreStartupErrors All transaction exceptions during startup are ignored
+     */
+    public SnapshotPrevayler(Object newPrevalentSystem, SnapshotManager snapshotManager, TransactionPublisher transactionPublisher, boolean ignoreStartupErrors) throws IOException, ClassNotFoundException {
+        _snapshotManager = snapshotManager;
+        _ignoreStartupErrors = ignoreStartupErrors;
+
+        _systemVersion = _snapshotManager.latestVersion();
+        _prevalentSystem = _snapshotManager.readSnapshot(newPrevalentSystem, _systemVersion);
+
+        _publisher = transactionPublisher;
+        _publisher.addSubscriber(_subscriber, _systemVersion + 1);
+        _ignoreStartupErrors = false;
+    }
 
 
-	/** Produces a complete serialized image of the underlying PrevalentSystem.
-	 * This will accelerate future system startups. Taking a snapshot once a day is enough for most applications.
-	 * Subsequent calls to execute(Transaction) will be Publisherd until the snapshot is taken.
-	 * @throws IOException if there is trouble writing to the snapshot file.
-	 */
-	public void takeSnapshot() throws IOException {
-		synchronized (_subscriber) {
-			_snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
-		}
-	}
+    /** Returns the underlying prevalent system.
+     */
+    public Object prevalentSystem() {
+        return _prevalentSystem;
+    }
 
 
-	/** Publishes transaction and executes it on the underlying prevalentSystem(). If a Logger is used as the publisher (default), this method will only return after transaction has been written to disk.
-	 */
-	public void execute(Transaction transaction) {
-		_publisher.publish(transaction);
-	}
+    /** Produces a complete serialized image of the underlying PrevalentSystem.
+     * This will accelerate future system startups. Taking a snapshot once a day is enough for most applications.
+     * Subsequent calls to execute(Transaction) will be Publisherd until the snapshot is taken.
+     * @throws IOException if there is trouble writing to the snapshot file.
+     */
+    public void takeSnapshot() throws IOException {
+        synchronized (_subscriber) {
+            _snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
+        }
+    }
 
 
-	private TransactionSubscriber subscriber() {
-		return new TransactionSubscriber() {
-			public synchronized void receive(Transaction transaction) {
-				_systemVersion++;
-				transaction.executeOn(_prevalentSystem);
-			}
-		};
-	}
+    /** Publishes transaction and executes it on the underlying prevalentSystem(). If a Logger is used as the publisher (default), this method will only return after transaction has been written to disk.
+     */
+    public void execute(Transaction transaction) {
+        _publisher.publish(transaction);
+    }
+
+
+    private TransactionSubscriber subscriber() {
+        return new TransactionSubscriber() {
+            public synchronized void receive(Transaction transaction) {
+                _systemVersion++;
+                if (_ignoreStartupErrors) {
+                    try {
+                        transaction.executeOn(_prevalentSystem);
+                    } catch (Throwable e) {
+                        System.out.println("Transaction error was ignored");
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    transaction.executeOn(_prevalentSystem);
+                }
+            }
+        };
+    }
 
 }
