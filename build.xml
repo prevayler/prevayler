@@ -355,6 +355,15 @@
 
     </target>
 
+    <target name="run.demo.bank.rollback" depends="compile.core"
+            description="Runs rollback bank demonstration" >
+
+        <java fork="true" classname="org.prevayler.demos.demo2.MainRollback" >
+            <classpath refid="build.test.classpath" />
+        </java>
+
+    </target>
+
     <target name="run.demo.bank.replica" depends="compile.core"
             description="Runs replica bank demonstration" >
 
