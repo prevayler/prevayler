@@ -14,23 +14,18 @@ import org.prevayler.foundation.DeepCopier;
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
-import org.prevayler.implementation.publishing.TransactionSubscriber;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
 import java.io.IOException;
-import java.util.Date;
 
 public class PrevaylerImpl implements Prevayler {
 
-	private final Object _prevalentSystem;
-	private long _systemVersion = 0;
-
+	private final PrevalentSystemGuard _guard;
 	private final Clock _clock;
 
 	private final GenericSnapshotManager _snapshotManager;
 
 	private final TransactionPublisher _publisher;
-	private boolean _ignoreRuntimeExceptions;
     private Monitor _monitor;
 
 	private final Serializer _journalSerializer;
@@ -48,21 +43,17 @@ public class PrevaylerImpl implements Prevayler {
 	    _monitor = prevaylerMonitor;
 		_snapshotManager = snapshotManager;
 
-		_prevalentSystem = _snapshotManager.recoveredPrevalentSystem();
-		
-		_systemVersion = _snapshotManager.recoveredVersion();
+		_guard = new PrevalentSystemGuard(_snapshotManager.recoveredPrevalentSystem(), _snapshotManager.recoveredVersion());
 
 		_publisher = transactionPublisher;
 		_clock = _publisher.clock();
 
-		_ignoreRuntimeExceptions = true;     //During pending transaction recovery (rolling forward), RuntimeExceptions are ignored because they were already thrown and handled during the first transaction execution.
-		_publisher.addSubscriber(subscriber(), _systemVersion + 1);
-		_ignoreRuntimeExceptions = false;
+		_guard.subscribeTo(_publisher);
 
 		_journalSerializer = journalSerializer;
 	}
 
-	public Object prevalentSystem() { return _prevalentSystem; }
+	public Object prevalentSystem() { return _guard.prevalentSystem(); }
 
 
 	public Clock clock() { return _clock; }
@@ -79,9 +70,7 @@ public class PrevaylerImpl implements Prevayler {
 
 
 	public Object execute(Query sensitiveQuery) throws Exception {
-		synchronized (_prevalentSystem) {
-			return sensitiveQuery.query(_prevalentSystem, clock().time());
-		}
+		return _guard.executeQuery(sensitiveQuery, clock().time());
 	}
 
 
@@ -105,9 +94,7 @@ public class PrevaylerImpl implements Prevayler {
 
 
 	public void takeSnapshot() throws IOException {
-	    synchronized (_prevalentSystem) {
-	        _snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
-	    }
+		_guard.takeSnapshot(_snapshotManager);
 	}
 
 
@@ -120,23 +107,6 @@ public class PrevaylerImpl implements Prevayler {
 			ex.printStackTrace();
 			throw new RuntimeException("Unable to produce a deep copy of a transaction. Deep copies of transactions are executed instead of the transactions themselves so that the behaviour of the system during transaction execution is exactly the same as during transaction recovery from the journal.");
 		}
-	}
-
-	private TransactionSubscriber subscriber() {
-		return new TransactionSubscriber() {
-	
-			public void receive(Transaction transaction, Date executionTime) {
-				synchronized (_prevalentSystem) {
-					_systemVersion++;
-					try {
-						transaction.executeOn(_prevalentSystem, executionTime);
-					} catch (RuntimeException rx) {
-						if (!_ignoreRuntimeExceptions) throw rx;  //TODO Guarantee that transactions received from pending transaction recovery don't ever throw RuntimeExceptions. Maybe use a wrapper for that.
-					}
-				}
-			}
-	
-		};
 	}
 
 }
