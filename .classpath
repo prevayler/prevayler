@@ -4,6 +4,6 @@
     <classpathentry kind="src" path="src/main"/>
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry kind="lib" path="C:/eclipse/plugins/org.junit_3.8.1/junit.jar"/>
-    <classpathentry kind="lib" path="C:/maven/repository/skaringa/jars/skaringa-r1p8.jar"/>
+    <classpathentry kind="lib" path="C:/Klaus/prevayler/prevaylerRun/skaringa-r1p8.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
