@@ -6,6 +6,8 @@ package org.prevayler.implementation.replica;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Date;
+
 import org.prevayler.Transaction;
 import org.prevayler.implementation.*;
 
@@ -68,16 +70,17 @@ public class RemotePublisher extends Thread implements TransactionPublisher {
 
 	private void receiveTransactionFromServer() throws IOException, ClassNotFoundException {
 		Object transactionCandidate = _fromServer.readObject();
-
+		Date timestamp = (Date)_fromServer.readObject();
+		
 		if (transactionCandidate.equals(RemoteConnection.REMOTE_TRANSACTION)) {
 			synchronized (_myTransactionMonitor) {
-				_subscriber.receive(_myTransaction);
+				_subscriber.receive(_myTransaction, timestamp);
 				_myTransactionMonitor.notify();
 			}
 			return;
 		}
 
-		_subscriber.receive((Transaction)transactionCandidate);
+		_subscriber.receive((Transaction)transactionCandidate, timestamp);
 	}
 
 

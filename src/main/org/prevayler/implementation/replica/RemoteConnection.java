@@ -6,6 +6,8 @@ package org.prevayler.implementation.replica;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Date;
+
 import org.prevayler.Transaction;
 import org.prevayler.implementation.*;
 
@@ -46,12 +48,15 @@ class RemoteConnection extends Thread implements TransactionSubscriber {
 	}
 
 
-	public void receive(Transaction transaction) {
+	public void receive(Transaction transaction, Date timestamp) {
 		try {
-			_toRemote.writeObject(transaction == _remoteTransaction
-				? (Object)REMOTE_TRANSACTION
-				: transaction
-			);
+			synchronized (_toRemote) {
+				_toRemote.writeObject(transaction == _remoteTransaction
+					? (Object)REMOTE_TRANSACTION
+					: transaction
+				);
+				_toRemote.writeObject(timestamp);
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

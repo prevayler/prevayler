@@ -12,24 +12,28 @@ import java.io.ObjectOutputStream;
 import org.prevayler.Prevayler;
 import org.prevayler.Transaction;
 
+import org.prevayler.implementation.clock.Clock;
+
 
 public class TransientPrevayler implements Prevayler {
 
-    private final Object _prevalentSystem;
+	private final Object _prevalentSystem;
+	private final Clock _clock;
 
 
-    public TransientPrevayler(Object prevalentSystem) {
-        _prevalentSystem = prevalentSystem;
-    }
+	public TransientPrevayler(Object prevalentSystem, Clock clock) {
+		_prevalentSystem = prevalentSystem;
+		_clock = clock;
+	}
 
 	public Object prevalentSystem() {
-        return _prevalentSystem;
-    }
+		return _prevalentSystem;
+	}
 
 	public void execute(Transaction transaction) {
 		Transaction copy = serializeInMemory(transaction);
 		synchronized (_prevalentSystem) {
-			copy.executeOn(_prevalentSystem);
+			copy.executeOn(_prevalentSystem, _clock.time());
 		}
 	}
 

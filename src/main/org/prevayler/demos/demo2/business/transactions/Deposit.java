@@ -1,5 +1,7 @@
 package org.prevayler.demos.demo2.business.transactions;
 
+import java.util.Date;
+
 import org.prevayler.demos.demo2.business.Account;
 
 public class Deposit extends AccountTransaction {
@@ -11,7 +13,7 @@ public class Deposit extends AccountTransaction {
 		_amount = amount;
 	}
 
-	public void executeAndQuery(Account account) throws Account.InvalidAmount {
-		account.deposit(_amount);
+	public void executeAndQuery(Account account, Date timestamp) throws Account.InvalidAmount {
+		account.deposit(_amount, timestamp);
 	}
 }

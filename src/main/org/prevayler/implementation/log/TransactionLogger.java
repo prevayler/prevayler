@@ -10,6 +10,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 
 import org.prevayler.Transaction;
 import org.prevayler.foundation.FileManager;
@@ -17,7 +18,7 @@ import org.prevayler.foundation.SimpleInputStream;
 import org.prevayler.foundation.SimpleOutputStream;
 import org.prevayler.implementation.TransactionSubscriber;
 import org.prevayler.implementation.TransientPublisher;
-import org.prevayler.util.clock.ClockTick;
+import org.prevayler.implementation.clock.Clock;
 
 
 /** A TransactionPublisher that will write all published transactions to .transactionLog files before publishing them to the subscribers.
@@ -25,19 +26,16 @@ import org.prevayler.util.clock.ClockTick;
 public class TransactionLogger extends TransientPublisher implements FileFilter {
 
 	private final File _directory;
+	private final Clock _clock;
 
 	private boolean _nextTransactionKnown = false;
 	private long _nextTransaction;
 	private SimpleOutputStream _outputLog;
-	private ClockTickBuffer _skippedTicks = new ClockTickBuffer();
-
-	static private final Transaction NULL_TRANSACTION = new Transaction() {
-		public void executeOn(Object system) {}  //Do nothing.
-	};
 
 
-	public TransactionLogger(String directory) throws IOException, ClassNotFoundException {
+	public TransactionLogger(String directory, Clock clock) throws IOException, ClassNotFoundException {
 		_directory = FileManager.produceDirectory(directory);
+		_clock = clock;
 		File lastFile = lastTransactionFile();
 		if (lastFile != null) {
 			_nextTransaction = number(lastFile) + transactionCount(lastFile);
@@ -49,19 +47,12 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 	public synchronized void publish(Transaction transaction) {
 		if (!_nextTransactionKnown) throw new RuntimeException("The sequence number for the next transaction to be logged is undefined. This happens when there are no transactionLog files in the directory and publish() is called before a TransactionSubscriber has been added.");
 
-		if (transaction instanceof ClockTick)
-			_skippedTicks.addTick((ClockTick)transaction);
-		else	 {
-			if (_outputLog == null || !_outputLog.isValid()) createNewOutputLog();
-			if (_skippedTicks.getCount() > 0) {
-				outputToLog(_skippedTicks);
-				_skippedTicks = new ClockTickBuffer();
-			}
-			outputToLog(transaction);
-		}
+		if (_outputLog == null || !_outputLog.isValid()) createNewOutputLog();
+		Date timestamp = _clock.time();
+		outputToLog(new TransactionLogEntry(transaction, timestamp));
 
 		_nextTransaction++;
-		super.publish(transaction);
+		super.notifySubscribers(transaction, timestamp);
 	}
 
 
@@ -82,8 +73,7 @@ public class TransactionLogger extends TransientPublisher implements FileFilter 
 			_nextTransaction = initialTransaction;
 			_nextTransactionKnown = true;
 		} else {
-System.out.println("TODO"); //We must find a way to uncomment this next line so that Prevayler can detect missing transactions. Probably we'll have to make the SnapshotPrevayler not count ClockTicks or not count the redundant ones.
-//			if (initialTransaction > _nextTransaction) throw new IOException("Unable to find transactions from " + _nextTransaction + " to " + (initialTransaction - 1) + ".");
+			if (initialTransaction > _nextTransaction) throw new IOException("Unable to find transactions from " + _nextTransaction + " to " + (initialTransaction - 1) + ".");
 			long initialFileCandidate = initialTransaction;
 			while (!transactionLogFile(initialFileCandidate).exists()) {
 				initialFileCandidate--;
@@ -125,7 +115,7 @@ System.out.println("TODO"); //We must find a way to uncomment this next line so 
 
 
 	protected void createNewOutputLog() {
-		File file = transactionLogFile(_nextTransaction - _skippedTicks.getCount());
+		File file = transactionLogFile(_nextTransaction);
 		try {
 			_outputLog = new SimpleOutputStream(file);
 		} catch (IOException iox) {
@@ -147,59 +137,26 @@ System.out.println("TODO"); //We must find a way to uncomment this next line so 
 		SimpleInputStream inputLog = new SimpleInputStream(transactionLogFile(recoveringTransaction));
 		while(recoveringTransaction < _nextTransaction) {
 			try {
-				Object logEntry = inputLog.readObject();
-				Transaction transaction;
-
-				if (logEntry instanceof ClockTickBuffer){
-					ClockTickBuffer buffer = (ClockTickBuffer)logEntry;
-
-					long skippedTicks = buffer.getCount() - 1;
-					while (skippedTicks-- > 0) {
-						if (recoveringTransaction >= initialTransaction)
-							subscriber.receive(NULL_TRANSACTION);
-						recoveringTransaction++;
-					}
-
-					transaction = buffer._lastClockTick;
-				} else {
-                    transaction = transactionFromLogEntry(logEntry);
-                }
+				TransactionLogEntry entry = (TransactionLogEntry)inputLog.readObject();
 
 				if (recoveringTransaction >= initialTransaction)
-					subscriber.receive(transaction);
+					subscriber.receive(entry.transaction, entry.timestamp);
 
 				recoveringTransaction++;
 
 			} catch (EOFException eof) {
 				File logFile = transactionLogFile(recoveringTransaction);
-System.out.println("TODO"); //We must find a way to uncomment this next line. Since the ClockTick log optimization, it causes trouble when called by the replication logic for example.
-//				if (!logFile.exists()) throwNotFound(recoveringTransaction);
-				if (!logFile.exists()) return;
+				if (!logFile.exists()) throwNotFound(recoveringTransaction);
 				inputLog = new SimpleInputStream(logFile);
 			}
 		}
 	}
 
-    protected Transaction transactionFromLogEntry(Object logEntry) {
-        return (Transaction)logEntry;
-    }
-
 
     /** Returns the number of objects left in the stream and closes it.
 	 */
 	static private long transactionCount(File logFile) throws IOException, ClassNotFoundException {
-		SimpleInputStream inputLog = new SimpleInputStream(logFile);
-		long result = 0;
-		while (true) {
-			try {
-				Object logEntry = inputLog.readObject();
-				if (logEntry instanceof ClockTickBuffer)
-					result += ((ClockTickBuffer)logEntry).getCount() - 1;
-			} catch (EOFException eof) {
-				return result;
-			}
-			result++;
-		}
+		return new SimpleInputStream(logFile).countObjectsLeft();
 	}
 
 

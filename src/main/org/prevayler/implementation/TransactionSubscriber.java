@@ -4,11 +4,13 @@
 
 package org.prevayler.implementation;
 
+import java.util.Date;
+
 import org.prevayler.Transaction;
 
 
 public interface TransactionSubscriber {
 
-	public void receive(Transaction transaction);
+	public void receive(Transaction transaction, Date timestamp);
 
 }

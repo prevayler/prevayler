@@ -1,6 +1,5 @@
 package org.prevayler.test;
 
-import org.prevayler.implementation.*;
 import junit.framework.TestCase;
 
 public class ReplicationTest extends TestCase {
@@ -35,11 +34,8 @@ public class ReplicationTest extends TestCase {
 	}
 
 	private void connectionUp() {toDo();}
-	private void connectionDown() {toDo();}
 	private void serverUp() {toDo();}
-	private void serverDown() {toDo();}
 	private void clientUp() {toDo();}
-	private void clientDown() {toDo();}
 
 	private void serverTransaction(String appendix) {toDo();}
 	private void clientTransaction(String appendix) {toDo();}

@@ -5,10 +5,9 @@
 package org.prevayler.implementation;
 
 import java.io.*;
+import java.util.Date;
 
 import org.prevayler.*;
-import org.prevayler.implementation.log.TransactionLogger;
-
 
 /**
  * Provides transparent persistence for native Java business objects in a prevalent system.
@@ -27,20 +26,6 @@ public class SnapshotPrevayler implements Prevayler {
     private final TransactionSubscriber _subscriber = subscriber();
 	private boolean _ignoreRuntimeExceptions;
 
-
-    /** Creates a SnapshotPrevayler that will use the current directory to read and write its snapshot files.
-     * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
-     */
-    public SnapshotPrevayler(Object newPrevalentSystem) throws IOException, ClassNotFoundException {
-        this(newPrevalentSystem, "PrevalenceBase");
-    }
-
-    /** @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
-     * @param prevalenceBase The directory where the snapshot files and transactionLog files will be read and written.
-     */
-    public SnapshotPrevayler(Object newPrevalentSystem, String prevalenceBase) throws IOException, ClassNotFoundException {
-        this(newPrevalentSystem, new SnapshotManager(prevalenceBase), new TransactionLogger(prevalenceBase));
-    }
 
     /** @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
      * @param snapshotManager The SnapshotManager that will be used for reading and writing snapshot files.
@@ -89,11 +74,11 @@ public class SnapshotPrevayler implements Prevayler {
     private TransactionSubscriber subscriber() {
         return new TransactionSubscriber() {
 
-            public void receive(Transaction transaction) {
+            public void receive(Transaction transaction, Date timestamp) {
             	synchronized (_prevalentSystem) {
 	                _systemVersion++;
                     try {
-                        transaction.executeOn(_prevalentSystem);
+                        transaction.executeOn(_prevalentSystem, timestamp);
                     } catch (RuntimeException rx) {
                     	if (!_ignoreRuntimeExceptions) throw rx;
                         rx.printStackTrace();

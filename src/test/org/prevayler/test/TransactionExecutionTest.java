@@ -1,6 +1,7 @@
 package org.prevayler.test;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import junit.framework.TestCase;
 
@@ -15,7 +16,7 @@ public class TransactionExecutionTest extends TestCase {
 
 
 	protected void setUp() throws Exception {
-		prevayler = PrevaylerFactory.createTransient(new AppendingSystem());
+		prevayler = PrevaylerFactory.createTransientPrevayler(new AppendingSystem());
 	}
 	
 	public void testTransactionExecution() {
@@ -69,7 +70,7 @@ class Appendix implements Transaction {
 		
 	private final String appendix;
 		
-	public void executeOn(Object prevalentSystem) {
+	public void executeOn(Object prevalentSystem, Date ignoredToo) {
 		((AppendingSystem)prevalentSystem).append(appendix);
 	}
 
@@ -82,7 +83,7 @@ class DirectReferenceTransaction implements Transaction {
 
 	private final AppendingSystem illegalDirectReference;
 
-	public void executeOn(Object ignored) {
+	public void executeOn(Object ignored, Date ignoredToo) {
 		illegalDirectReference.append("anything");
 	}
 

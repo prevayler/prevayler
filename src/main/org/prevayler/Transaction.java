@@ -4,6 +4,7 @@
 
 package org.prevayler;
 
+import java.util.Date;
 
 /**
  * An atomic transaction to be executed on a prevalent system. Any operation which changes the observable state of a prevalent system must be encapsulated as a Transaction.
@@ -13,6 +14,6 @@ public interface Transaction extends java.io.Serializable {
 	/**
 	 * This method is called by Prevayler.execute(Transaction) to execute this transaction on the given prevalent system. See org.prevayler.demos for usage examples.
 	 */
-	public void executeOn(Object prevalentSystem);
+	public void executeOn(Object prevalentSystem, Date timestamp);
 
 }

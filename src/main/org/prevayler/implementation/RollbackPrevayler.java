@@ -1,6 +1,7 @@
 package org.prevayler.implementation;
 
 import org.prevayler.Transaction;
+import org.prevayler.implementation.clock.MachineClock;
 import org.prevayler.implementation.log.TransactionLogger;
 
 import java.io.ByteArrayInputStream;
@@ -12,7 +13,7 @@ public class RollbackPrevayler extends SnapshotPrevayler {
     private Object foodTaster;
 
     public RollbackPrevayler(Object prevalentSystem, String prevaylerBase) throws ClassNotFoundException, IOException {
-        super(prevalentSystem, new SnapshotManager(prevaylerBase), new TransactionLogger(prevaylerBase));
+        super(prevalentSystem, new SnapshotManager(prevaylerBase), new TransactionLogger(prevaylerBase, new MachineClock()));
 
         // restore a foodTaster
         doRollback();
@@ -39,7 +40,8 @@ public class RollbackPrevayler extends SnapshotPrevayler {
 
     public void execute(Transaction transaction) {
         try {
-            transaction.executeOn(foodTaster);
+System.out.println("The RollbackPrevayler isn't ready to be used.");//The correct timestamp must be passed below, instead of null.
+            transaction.executeOn(foodTaster, null);
             _publisher.publish(transaction);
         } catch (RuntimeException rx) {
             doRollback();

@@ -1,5 +1,7 @@
 package org.prevayler.demos.demo2.business.transactions;
 
+import java.util.Date;
+
 import org.prevayler.demos.demo2.business.*;
 
 
@@ -11,7 +13,7 @@ public class AccountDeletion extends BankTransaction {
 		_accountNumber = account.number();
 	}
 
-	protected Object executeAndQuery(Bank bank) throws Bank.AccountNotFound {
+	protected Object executeAndQuery(Bank bank, Date ignored) throws Bank.AccountNotFound {
 		bank.deleteAccount(_accountNumber);
 		return null;
 	}

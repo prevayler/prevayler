@@ -7,15 +7,14 @@ package org.prevayler.demos.demo2;
 import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.demos.demo2.gui.BankFrame;
 import org.prevayler.implementation.SnapshotPrevayler;
+import org.prevayler.implementation.XmlSnapshotManager;
+import org.prevayler.implementation.clock.MachineClock;
 import org.prevayler.implementation.log.TransactionLogger;
-import org.prevayler.util.XmlSnapshotManager;
-import org.prevayler.util.clock.ClockActor;
 
 public class MainXml {
 
 	public static void main(String[] args) throws Exception {
-		SnapshotPrevayler prevayler = new SnapshotPrevayler(new Bank(), new XmlSnapshotManager("demo2Xml"), new TransactionLogger("demo2Xml"));
-		new ClockActor(prevayler);
+		SnapshotPrevayler prevayler = new SnapshotPrevayler(new Bank(), new XmlSnapshotManager("demo2Xml"), new TransactionLogger("demo2Xml", new MachineClock()));
 
 		new BankFrame(prevayler);
 

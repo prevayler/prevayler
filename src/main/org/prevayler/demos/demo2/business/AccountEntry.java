@@ -3,8 +3,6 @@ package org.prevayler.demos.demo2.business;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.prevayler.util.clock.Clock;
-
 public class AccountEntry implements Serializable {
 
         private long amount;
@@ -13,9 +11,9 @@ public class AccountEntry implements Serializable {
 		private AccountEntry() {
 		}
 		
-        AccountEntry(long amount, Clock clock) {
+        AccountEntry(long amount, Date timestamp) {
             this.amount = amount;
-            this.timestamp = clock.time();
+            this.timestamp = timestamp;
         }
 
         public String toString() {

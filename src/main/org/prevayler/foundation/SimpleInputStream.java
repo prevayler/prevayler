@@ -46,6 +46,17 @@ public class SimpleInputStream {
 		_EOF = true;
 	}
 
+	public long countObjectsLeft() throws IOException, ClassNotFoundException {
+		long result = 0;
+		while (true) {
+			try {
+				readObject();
+			} catch (EOFException eof) {
+				return result;
+			}
+			result++;
+		}	
+	}
 
 	private void message(Exception exception) {
 		System.out.println(
@@ -56,5 +67,4 @@ public class SimpleInputStream {
 			"\n      - Tampering with the file (that is NOT OK)."
 		);
 	}
-
 }

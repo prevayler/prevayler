@@ -4,6 +4,8 @@
 
 package org.prevayler.test.old;
 
+import java.util.Date;
+
 import org.prevayler.Transaction;
 
 
@@ -19,7 +21,7 @@ class Addition implements Transaction {
 	}
 
 
-	public void executeOn(Object prevalentSystem) {
+	public void executeOn(Object prevalentSystem, Date timestamp) {
 		((AddingSystem)prevalentSystem).add(_value);
 	}
 

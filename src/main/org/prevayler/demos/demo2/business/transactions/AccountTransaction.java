@@ -1,5 +1,7 @@
 package org.prevayler.demos.demo2.business.transactions;
 
+import java.util.Date;
+
 import org.prevayler.demos.demo2.business.*;
 
 
@@ -12,10 +14,10 @@ abstract class AccountTransaction extends BankTransaction {
 		_accountNumber = account.number();
 	}
 
-	protected Object executeAndQuery(Bank bank) throws Exception {
-		executeAndQuery(bank.findAccount(_accountNumber));
+	protected Object executeAndQuery(Bank bank, Date timestamp) throws Exception {
+		executeAndQuery(bank.findAccount(_accountNumber), timestamp);
 		return null;
 	}
 
-	protected abstract void executeAndQuery(Account account) throws Exception;
+	protected abstract void executeAndQuery(Account account, Date timestamp) throws Exception;
 }

@@ -4,6 +4,8 @@
 
 package org.prevayler.test.scalability.prevayler;
 
+import java.util.Date;
+
 import org.prevayler.Transaction;
 import org.prevayler.test.scalability.Record;
 
@@ -19,7 +21,7 @@ class TestTransaction implements Transaction {
 		this.idToDelete = idToDelete;
 	}
 
-	public void executeOn(Object system) {
+	public void executeOn(Object system, Date ignored) {
 		((TransactionSystem)system).performTransaction(recordToInsert, recordToUpdate, idToDelete);
 	}
 }

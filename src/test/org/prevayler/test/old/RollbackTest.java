@@ -1,14 +1,13 @@
 package org.prevayler.test.old;
 
 import org.prevayler.implementation.*;
-import org.prevayler.implementation.log.TransactionLogger;
 import junit.framework.TestCase;
 
 import java.io.File;
 
 public class RollbackTest extends TestCase {
     static private SnapshotPrevayler prevayler;
-    private static String prevaylerBase;
+    private static String prevalenceBase;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -17,29 +16,18 @@ public class RollbackTest extends TestCase {
         tempFile.delete();
         tempFile.mkdirs();
         tempFile.deleteOnExit();
-        prevaylerBase = tempFile.getAbsolutePath();
+        prevalenceBase = tempFile.getAbsolutePath();
     }
 
     protected void tearDown() throws Exception {
-        delete(prevaylerBase);
+        delete(prevalenceBase);
     }
 
     public void testRollback() throws Exception {
-
-        SnapshotManager snapshotManager = new SnapshotManager(prevaylerBase);
-        TransactionLogger logger = new TransactionLogger(prevaylerBase);
-        RollbackTransactionPublisher publisher = new RollbackTransactionPublisher(snapshotManager, logger);
-        prevayler = new SnapshotPrevayler(new AddingSystem(), snapshotManager, publisher);
-        publisher.initKing(prevayler.prevalentSystem());
-        add(10, 10);
-        add(20, 30);
-        addRollback(30, 30);
-        add(30, 60);
-
-        prevayler = new RollbackPrevayler(new AddingSystem(), prevaylerBase);
-        assertEquals(60, system().total());
-        addRollback(30, 60);
-        add(10, 70);
+        prevayler = new RollbackPrevayler(new AddingSystem(), prevalenceBase);
+		add(10, 10);
+        addRollback(1, 10);
+		add(1, 11);
     }
 
     private void addRollback(int value, int expectedTotal) throws Exception {

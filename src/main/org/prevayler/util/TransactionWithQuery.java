@@ -4,6 +4,8 @@
 
 package org.prevayler.util;
 
+import java.util.Date;
+
 import org.prevayler.*;
 
 
@@ -28,9 +30,9 @@ public abstract class TransactionWithQuery implements Transaction {
 
 	/** Called by the Prevayler. Calls the protected executeAndQuery(Object prevalentSystem) method implemented by the subclass.
 	 */
-	public final void executeOn(Object prevalentSystem) {
+	public final void executeOn(Object prevalentSystem, Date timestamp) {
 		try {
-			_result = executeAndQuery(prevalentSystem);
+			_result = executeAndQuery(prevalentSystem, timestamp);
 		} catch (RuntimeException rx) {
 			throw rx;   //This is necessary when using the rollback feature.
 		} catch (Exception ex) {
@@ -41,6 +43,6 @@ public abstract class TransactionWithQuery implements Transaction {
 
 	/** The subclass will implement this method doing its modifications on the given prevaylentSystem and also returning any Object or throwing any Exception it wants.
 	 */
-	protected abstract Object executeAndQuery(Object prevalentSystem) throws Exception;
+	protected abstract Object executeAndQuery(Object prevalentSystem, Date timestamp) throws Exception;
 
 }

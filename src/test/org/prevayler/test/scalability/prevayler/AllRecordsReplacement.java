@@ -4,6 +4,8 @@
 
 package org.prevayler.test.scalability.prevayler;
 
+import java.util.Date;
+
 import org.prevayler.Transaction;
 import org.prevayler.test.scalability.RecordIterator;
 
@@ -15,7 +17,7 @@ class AllRecordsReplacement implements Transaction {
 		this.newRecords = newRecords;
 	}
 
-	public void executeOn(Object system) {
+	public void executeOn(Object system, Date ignored) {
 		((ScalabilitySystem)system).replaceAllRecords(newRecords);
 	}
 }

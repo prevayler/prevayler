@@ -1,12 +1,10 @@
 package org.prevayler.demos.demo2.business;
 
-import org.prevayler.util.clock.Clock;
 import java.util.*;
 
 public class Account implements java.io.Serializable {
 
 	private long number;
-	private Clock clock;
 	private String holder;
 	private long balance = 0;
 	private List transactionHistory = new ArrayList();
@@ -15,8 +13,7 @@ public class Account implements java.io.Serializable {
     private Account() {
     }
     
-	Account(long number, String holder, Clock clock) throws InvalidHolder {
-		this.clock = clock;
+	Account(long number, String holder) throws InvalidHolder {
 		this.number = number;
 		holder(holder);
 	}
@@ -51,19 +48,19 @@ public class Account implements java.io.Serializable {
 		return balance;
 	}
 
-	public void deposit(long amount) throws InvalidAmount {
+	public void deposit(long amount, Date timestamp) throws InvalidAmount {
 		verify(amount);
-        register(amount);
+        register(amount, timestamp);
 	}
 
-	public void withdraw(long amount) throws InvalidAmount {
+	public void withdraw(long amount, Date timestamp) throws InvalidAmount {
 		verify(amount);
-        register(-amount);
+        register(-amount, timestamp);
 	}
 
-    private void register(long amount) {
+    private void register(long amount, Date timestamp) {
 		balance += amount;
-        transactionHistory.add(new AccountEntry(amount, clock));
+        transactionHistory.add(new AccountEntry(amount, timestamp));
 		notifyListeners();
 	}
     

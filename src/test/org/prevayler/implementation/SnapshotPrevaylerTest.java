@@ -1,15 +1,17 @@
 package org.prevayler.implementation;
 
 import java.io.IOException;
+import java.util.Date;
 
 import junit.framework.TestCase;
 import org.prevayler.Transaction;
+import org.prevayler.util.PrevaylerFactory;
 
 public class SnapshotPrevaylerTest extends TestCase {
     public void testIgnoreStartupExceptions() throws IOException, ClassNotFoundException {
 
         String prevalenceBase = "PrevalenceBase" + System.currentTimeMillis();
-        SnapshotPrevayler prevayler = new SnapshotPrevayler(new TestSystem(), prevalenceBase);
+        SnapshotPrevayler prevayler = PrevaylerFactory.createSnapshotPrevayler(new TestSystem(), prevalenceBase);
 
         try {
             prevayler.execute(new FailingTransaction());
@@ -23,7 +25,7 @@ public class SnapshotPrevaylerTest extends TestCase {
 
         assertEquals(2, ((TestSystem) prevayler.prevalentSystem()).list1.size());
 
-        prevayler = new SnapshotPrevayler(new TestSystem(), prevalenceBase);
+        prevayler = PrevaylerFactory.createSnapshotPrevayler(new TestSystem(), prevalenceBase);
         assertEquals(2, ((TestSystem) prevayler.prevalentSystem()).list1.size());
 
         try {
@@ -33,7 +35,7 @@ public class SnapshotPrevaylerTest extends TestCase {
     }
 
     public static class FailingTransaction implements Transaction {
-        public void executeOn(Object prevalentSystem) {
+        public void executeOn(Object prevalentSystem, Date ignored) {
             ((TestSystem) prevalentSystem).list1.add("test");
             throw new IllegalStateException("fail");
         }

@@ -4,6 +4,8 @@
 
 package org.prevayler.test.old;
 
+import java.util.Date;
+
 import org.prevayler.Transaction;
 
 
@@ -19,7 +21,7 @@ class RollbackAddition implements Transaction {
 	}
 
 
-	public void executeOn(Object prevalentSystem) {
+	public void executeOn(Object prevalentSystem, Date ignored) {
 		((AddingSystem)prevalentSystem).add(_value);
         throw new RuntimeException("Testing Rollback");
 	}

@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import org.prevayler.foundation.FileManager;
 import org.prevayler.implementation.SnapshotPrevayler;
+import org.prevayler.util.PrevaylerFactory;
 
 import junit.framework.TestCase;
 
@@ -74,7 +75,7 @@ public class PersistenceTest extends TestCase {
 
 	private void crashRecover() throws Exception {
 		out("CrashRecovery.");
-		prevayler = new SnapshotPrevayler(new AddingSystem(), prevalenceBase());
+		prevayler = PrevaylerFactory.createSnapshotPrevayler(new AddingSystem(), prevalenceBase());
 	}
 
 	private void snapshot() throws IOException {

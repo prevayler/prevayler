@@ -1,5 +1,7 @@
 package org.prevayler.demos.demo2.business.transactions;
 
+import java.util.Date;
+
 import org.prevayler.demos.demo2.business.Bank;
 
 public class Transfer extends BankTransaction {
@@ -16,8 +18,8 @@ public class Transfer extends BankTransaction {
 	}
 
 
-	public Object executeAndQuery(Bank bank) throws Exception {
-		bank.transfer(_originAccountNumber, _destinationAccountNumber, _amount);
+	public Object executeAndQuery(Bank bank, Date timestamp) throws Exception {
+		bank.transfer(_originAccountNumber, _destinationAccountNumber, _amount, timestamp);
 		return null;
 	}
 

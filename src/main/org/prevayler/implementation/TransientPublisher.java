@@ -4,26 +4,28 @@
 
 package org.prevayler.implementation;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.*;
+
 import org.prevayler.Transaction;
 
 
 /** A TransactionPublisher that DOES NOT persist the published Transactions. This class is used to run demos or application tests orders of magnitude faster than with the logging turned on. It is also extended by many other TransactionPublisher implementations.
  */
-public class TransientPublisher implements TransactionPublisher {
+public abstract class TransientPublisher implements TransactionPublisher {
 
 	private final Set _subscribers = new HashSet();
 
 
 	public void addSubscriber(TransactionSubscriber subscriber, long initialTransactionIgnored) throws IOException, ClassNotFoundException {
-		_subscribers.add(subscriber);
+		synchronized (_subscribers) { _subscribers.add(subscriber);	}
 	}
 
-
-	public void publish(Transaction transaction) {
-		Iterator i = _subscribers.iterator();
-		while (i.hasNext()) ((TransactionSubscriber)i.next()).receive(transaction);
+	protected void notifySubscribers(Transaction transaction, Date timestamp) {
+		synchronized (_subscribers) {
+			Iterator i = _subscribers.iterator();
+			while (i.hasNext()) ((TransactionSubscriber)i.next()).receive(transaction, timestamp);
+		}
 	}
 
 }

@@ -1,15 +1,14 @@
-package org.prevayler.util;
+package org.prevayler.implementation;
 
 import java.io.*;
 
 import javax.xml.transform.stream.*;
 
-import org.prevayler.implementation.SnapshotManager;
 
 import com.skaringa.javaxml.*;
 
 /**
- * @author Alexandre
+ * @author Alexandre Nodari
  *
  * Writes and reads snapshots to/from XML files.
  * @see org.prevayler.implementation.SnapshotManager

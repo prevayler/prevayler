@@ -1,5 +1,7 @@
 package org.prevayler.demos.demo2.business.transactions;
 
+import java.util.Date;
+
 import org.prevayler.demos.demo2.business.Account;
 
 public class HolderChange extends AccountTransaction {
@@ -12,7 +14,7 @@ public class HolderChange extends AccountTransaction {
 		_newHolder = newHolder;
 	}
 
-	public void executeAndQuery(Account account) throws Account.InvalidHolder {
+	public void executeAndQuery(Account account, Date ignored) throws Account.InvalidHolder {
 		account.holder(_newHolder);
 	}
 }

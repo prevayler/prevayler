@@ -1,17 +1,15 @@
 package org.prevayler.demos.demo2.business;
 	
-import org.prevayler.util.clock.AbstractClockedSystem;
-
 import java.util.*;
 
-public class Bank extends AbstractClockedSystem {
+public class Bank implements java.io.Serializable {
 
 	private long nextAccountNumber = 1;
 	private Map accountsByNumber = new HashMap();
 	private transient BankListener bankListener;
     
 	public Account createAccount(String holder) throws Account.InvalidHolder {
-		Account account = new Account(nextAccountNumber, holder, clock());
+		Account account = new Account(nextAccountNumber, holder);
 		accountsByNumber.put(new Long(nextAccountNumber++), account);
 		
 		if (bankListener != null) bankListener.accountCreated(account);
@@ -46,12 +44,13 @@ public class Bank extends AbstractClockedSystem {
 		return account;
 	}
 
-	public void transfer(long sourceNumber, long destinationNumber, long amount) throws AccountNotFound, Account.InvalidAmount {
+	public void transfer(long sourceNumber, long destinationNumber, long amount, Date timestamp) throws AccountNotFound, Account.InvalidAmount {
 		Account source = findAccount(sourceNumber);
 		Account destination = findAccount(destinationNumber);
 
-		source.withdraw(amount);
-		destination.deposit(amount);
+		source.withdraw(amount, timestamp);
+		if (amount == 666) throw new RuntimeException("Runtime Exception simulated for rollback demonstration purposes.");
+		destination.deposit(amount, timestamp);
 	}
 
 	private Account searchAccount(long number) {

@@ -3,7 +3,6 @@
 	<name>prevayler</name>
 	<comment></comment>
 	<projects>
-		<project>prevayler</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -1,5 +1,7 @@
 package org.prevayler.demos.demo2.business.transactions;
 
+import java.util.Date;
+
 import org.prevayler.demos.demo2.business.*;
 
 
@@ -12,7 +14,7 @@ public class Withdrawal extends AccountTransaction {
 		_amount = amount;
 	}
 
-	public void executeAndQuery(Account account) throws Account.InvalidAmount {
-		account.withdraw(_amount);
+	public void executeAndQuery(Account account, Date timestamp) throws Account.InvalidAmount {
+		account.withdraw(_amount, timestamp);
 	}
 }

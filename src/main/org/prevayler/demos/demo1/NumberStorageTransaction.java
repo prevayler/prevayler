@@ -4,6 +4,8 @@
 
 package org.prevayler.demos.demo1;
 
+import java.util.Date;
+
 import org.prevayler.Transaction;
 
 
@@ -19,7 +21,7 @@ class NumberStorageTransaction implements Transaction {
 		_numberToKeep = numberToKeep;
 	}
 
-	public void executeOn(Object prevalentSystem) {
+	public void executeOn(Object prevalentSystem, Date ignored) {
 		((NumberKeeper)prevalentSystem).keep(_numberToKeep);
 	}
 }
