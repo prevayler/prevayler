@@ -1,7 +1,7 @@
 //Prevayler(TM) - The Free-Software Prevalence Layer.
 //Copyright (C) 2001-2003 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-//Contributions: Jon Tirsï¿½n.
+//Contributions: Jon Tirsèn.
 
 package org.prevayler.implementation.publishing.censorship;
 
@@ -51,7 +51,7 @@ public class StrictTransactionCensor implements TransactionCensor {
 	}
 
 	private void letTheFoodTasterDie() {
-		_royalFoodTaster = null; // Producing the new food taster now could avoid the next transaction having to wait for its lazy evaluation. Trying to serialize the whole system in RAM right after an OutOfMemoryError has been thrown, for example, isn't a very good idea, though. In that case, there probably will not even be a next transaction...  ;)
+		_royalFoodTaster = null;  // At this moment the pipeline might contain transactions that have already been approved by this censor but not yet applied to the _king. It is a requirement, therefore, that the _royalFoodTaster must not be initialized now, but only when the next transaction arrives to be approved.
 	}
 
 	private Object royalFoodTaster() {
