@@ -77,7 +77,9 @@
         <delete dir="${build.home}" />
         <delete dir="${dist.home}" />
         <delete dir="${lib.home}" />
-        <delete dir="${doc.home}/api" />
+        <delete includeEmptyDirs="true">
+            <fileset dir="${doc.home}/api" includes="**/**" excludes="**/README" />
+        </delete>
         <delete dir="${unit.test.home}" />
         <delete dir="${log4j.log.path}" />
 
