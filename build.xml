@@ -185,7 +185,7 @@
         </antcall>
         <!-- advanced -->
         <antcall target="-javadoc.sub">
-            <param name="jdocincludes"   value="org/prevayler, org/prevayler/implementation/**" />
+            <param name="jdocincludes"   value="org/prevayler, org/prevayler/implementation/**, org/prevayler/foundation/serialization/**" />
             <param name="jdocsourcepath" value="${srcdir.main}" />
             <param name="jdocdestdir"    value="${docdir}/api/advanced" />
         </antcall>
