@@ -151,7 +151,7 @@ public class PrevaylerFactory {
 
 
 	/** Configures the directory where the created Prevayler will read and write its .journal and .snapshot files. The default is a directory called "PrevalenceBase" under the current directory.
-	 * @param prevalenceBase Will be ignored for the .snapshot files if a SnapshotManager is configured.
+	 * @param prevalenceDirectory Will be ignored for the .snapshot files if a SnapshotManager is configured.
 	 */
 	public void configurePrevalenceDirectory(String prevalenceDirectory) {
 		_prevalenceDirectory = prevalenceDirectory;
@@ -214,7 +214,7 @@ public class PrevaylerFactory {
 	private ClassLoader classLoader() {
 	 	return(_classLoader != null ? _classLoader : getClass().getClassLoader());
 	}
-	
+
 	public void configureClassLoader(ClassLoader classLoader) {
 		_classLoader = classLoader;
 		if (_journalSerializationStrategy == null) {
