@@ -8,8 +8,10 @@ import java.util.Date;
 
 import org.prevayler.Transaction;
 
+// START SNIPPET: censor
 public interface TransactionCensor {
 	
 	public void approve(Transaction transaction, Date executionTime) throws RuntimeException, Error;
 
 }
+//END SNIPPET: censor
