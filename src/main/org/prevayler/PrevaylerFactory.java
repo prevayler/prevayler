@@ -1,20 +1,21 @@
 package org.prevayler;
 
 import java.io.IOException;
+import java.io.Serializable;
 
-import org.prevayler.implementation.CentralPublisher;
-import org.prevayler.implementation.LiberalTransactionCensor;
 import org.prevayler.implementation.PrevaylerImpl;
-import org.prevayler.implementation.SnapshotManager;
-import org.prevayler.implementation.StrictTransactionCensor;
-import org.prevayler.implementation.TransactionCensor;
-import org.prevayler.implementation.TransactionPublisher;
 import org.prevayler.implementation.clock.MachineClock;
-import org.prevayler.implementation.log.PersistentLogger;
-import org.prevayler.implementation.log.TransactionLogger;
-import org.prevayler.implementation.log.TransientLogger;
-import org.prevayler.implementation.replica.PublishingServer;
-import org.prevayler.implementation.replica.RemotePublisher;
+import org.prevayler.implementation.logging.PersistentLogger;
+import org.prevayler.implementation.logging.TransactionLogger;
+import org.prevayler.implementation.logging.TransientLogger;
+import org.prevayler.implementation.publishing.CentralPublisher;
+import org.prevayler.implementation.publishing.TransactionPublisher;
+import org.prevayler.implementation.publishing.censorship.LiberalTransactionCensor;
+import org.prevayler.implementation.publishing.censorship.StrictTransactionCensor;
+import org.prevayler.implementation.publishing.censorship.TransactionCensor;
+import org.prevayler.implementation.replication.ServerListener;
+import org.prevayler.implementation.replication.ClientPublisher;
+import org.prevayler.implementation.snapshot.SnapshotManager;
 
 /** Provides easy access to all Prevayler configurations and implementations available in this distribution.
  * Static methods are also provided as short-cuts for the most common configurations. 
@@ -42,7 +43,7 @@ public class PrevaylerFactory {
 	/** Creates a Prevayler that will use a directory called "PrevalenceBase" under the current directory to read and write its .snapshot and .transactionLog files.
  	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 */
-	public static Prevayler createPrevayler(Object newPrevalentSystem) throws IOException, ClassNotFoundException {
+	public static Prevayler createPrevayler(Serializable newPrevalentSystem) throws IOException, ClassNotFoundException {
 		return createPrevayler(newPrevalentSystem, "PrevalenceBase");
 	}
 
@@ -51,30 +52,30 @@ public class PrevaylerFactory {
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 * @param prevalenceBase The directory where the .snapshot files and .transactionLog files will be read and written.
 	 */
-	public static Prevayler createPrevayler(Object newPrevalentSystem, String prevalenceBase) throws IOException, ClassNotFoundException {
+	public static Prevayler createPrevayler(Serializable prevalentSystem, String prevalenceBase) throws IOException, ClassNotFoundException {
 		PrevaylerFactory factory = new PrevaylerFactory();
-		factory.configurePrevalentSystem(newPrevalentSystem);
+		factory.configurePrevalentSystem(prevalentSystem);
 		factory.configurePrevalenceBase(prevalenceBase);
 		return factory.create();
 	}
 
 
-	/** Creates a Prevayler that will execute Transactions WITHOUT writing them to disk. It will use a directory called "PrevalenceBase" to read and write its .snapshot files. This is useful for stand-alone applications which have a "Save" button, for example, or for running automated tests MUCH faster than with a regular Prevayler.
-	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
+	/** Creates a Prevayler that will execute Transactions WITHOUT writing them to disk. It will use a directory called "PrevalenceBase" to read and write its .snapshot files. This is useful for running automated tests MUCH faster than with a regular Prevayler.
+	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for system startup.
 	 */
-	public static Prevayler createTransientPrevayler(Object newPrevalentSystem) {
+	public static Prevayler createTransientPrevayler(Serializable newPrevalentSystem) {
 		return createTransientPrevayler(newPrevalentSystem, "PrevalenceBase");
 	}
 
 
-	/** Creates a Prevayler that will execute Transactions WITHOUT writing them to disk. It will use the given prevalenceBase directory to read and write its .snapshot files. This is useful for stand-alone applications which have a "Save" button, for example, or for running automated tests MUCH faster than with a persistent Prevayler.
+	/** Creates a Prevayler that will execute Transactions WITHOUT writing them to disk. It will use the given snapshotDirectory to read and write its .snapshot files, though. This is useful for stand-alone applications that have a "Save" button, for example.
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
-	 * @param prevalenceBase The directory where the .snapshot files will be read and written.
+	 * @param snapshotDirectory The directory where the .snapshot files will be read and written.
 	 */
-	public static Prevayler createTransientPrevayler(Object newPrevalentSystem, String prevalenceBase) {
+	public static Prevayler createTransientPrevayler(Serializable newPrevalentSystem, String snapshotDirectory) {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(newPrevalentSystem);
-		factory.configurePrevalenceBase(prevalenceBase);
+		factory.configurePrevalenceBase(snapshotDirectory);
 		factory.configureTransientMode(true);
 		try {
 			return factory.create();
@@ -105,6 +106,7 @@ public class PrevaylerFactory {
 
 
 	/** Configures the directory where the created Prevayler will read and write its .transactionLog and .snapshot files. The default is a directory called "PrevalenceBase" under the current directory.
+	 * @param prevalenceBase Will be ignored for the .snapshot files if a SnapshotManager is configured.
 	 */
 	public void configurePrevalenceBase(String prevalenceBase) {
 		_prevalenceBase = prevalenceBase;
@@ -112,15 +114,15 @@ public class PrevaylerFactory {
 
 
 	/** Configures the prevalent system that will be used by the Prevayler created by this factory.
-	 * @param prevalentSystem Will be ignored if a SnapshotManager is configured too. A SnapshotManager already has a prevalent system.
-	 * @see #configureSnapshotManager(SnapshotManager)
+	 * @param newPrevalentSystem Will be ignored if a SnapshotManager is configured too because a SnapshotManager already has a prevalent system. If the default SnapshotManager is used, this prevalentSystem must be Serializable. If another SnapshotManager is used, this prevalentSystem must be compatible with it. 
+	 * @see configureSnapshotManager()
 	 */
-	public void configurePrevalentSystem(Object prevalentSystem) {
-		_prevalentSystem = prevalentSystem;
+	public void configurePrevalentSystem(Object newPrevalentSystem) {
+		_prevalentSystem = newPrevalentSystem;
 	}
 
 
-	/** Reserved for implementation in Prevayler release 2.1.
+	/** Reserved for future implementation.
 	 */
 	public void configureReplicationClient(String remoteServerIpAddress, int remoteServerPort) {
 		_remoteServerIpAddress = remoteServerIpAddress;
@@ -128,15 +130,14 @@ public class PrevaylerFactory {
 	}
 
 
-	/** Reserved for implementation in Prevayler release 2.1.
+	/** Reserved for future implementation.
 	 */
 	public void configureReplicationServer(int port) {
 		_serverPort = port;
 	}
 
 
-	/** Configures the SnapshotManager to be used by the Prevayler created by this factory. The default is a SnapshotManager which uses plain Java serialization to create its .snapshot files. Another option is the XmlSnapshotManager.
-	 * @see org.prevayler.implementation.XmlSnapshotManager
+	/** Configures the SnapshotManager to be used by the Prevayler created by this factory. The default is a SnapshotManager which uses plain Java serialization to create its .snapshot files.
 	 */
 	public void configureSnapshotManager(SnapshotManager snapshotManager) {
 		_snapshotManager = snapshotManager;
@@ -157,7 +158,7 @@ public class PrevaylerFactory {
 	public Prevayler create() throws IOException, ClassNotFoundException {
 		SnapshotManager snapshotManager = snapshotManager();
 		TransactionPublisher publisher = publisher(snapshotManager);
-		if (_serverPort != -1) new PublishingServer(publisher, _serverPort);
+		if (_serverPort != -1) new ServerListener(publisher, _serverPort);
 		return new PrevaylerImpl(snapshotManager, publisher);
 	}
 
@@ -174,7 +175,7 @@ public class PrevaylerFactory {
 
 
 	private TransactionPublisher publisher(SnapshotManager snapshotManager) throws IOException, ClassNotFoundException {
-		if (_remoteServerIpAddress != null) return new RemotePublisher(_remoteServerIpAddress, _remoteServerPort);
+		if (_remoteServerIpAddress != null) return new ClientPublisher(_remoteServerIpAddress, _remoteServerPort);
 		return new CentralPublisher(clock(), censor(snapshotManager), logger()); 
 	}
 
