@@ -5,14 +5,10 @@
 
 package org.prevayler.implementation.publishing.censorship;
 
-import org.prevayler.Transaction;
-import org.prevayler.foundation.DeepCopier;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.PrevalentSystemGuard;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
-
-import java.util.Date;
 
 public class StrictTransactionCensor implements TransactionCensor {
 
@@ -28,26 +24,17 @@ public class StrictTransactionCensor implements TransactionCensor {
 		_snapshotSerializer = snapshotManager.primarySerializer();
 	}
 
-	public void approve(Transaction transaction, long systemVersion, Date executionTime) throws RuntimeException, Error {
+	public void approve(TransactionTimestamp transactionTimestamp) throws RuntimeException, Error {
 		try {
-			Transaction transactionCopy = deepCopy(transaction);
-			PrevalentSystemGuard royalFoodTaster = royalFoodTaster(systemVersion - 1);
-			royalFoodTaster.receive(new TransactionTimestamp(transactionCopy, systemVersion, executionTime));
+			TransactionTimestamp timestampCopy = transactionTimestamp.deepCopy(_journalSerializer);
+			PrevalentSystemGuard royalFoodTaster = royalFoodTaster(transactionTimestamp.systemVersion() - 1);
+			royalFoodTaster.receive(timestampCopy);
 		} catch (RuntimeException rx) {
 			letTheFoodTasterDie();
 			throw rx;
 		} catch (Error error) {
 			letTheFoodTasterDie();
 			throw error;
-		}
-	}
-
-	private Transaction deepCopy(Transaction transaction) {
-		try {
-			return (Transaction)DeepCopier.deepCopy(transaction, _journalSerializer);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException("Unable to produce a copy of the transaction for trying out before applying it to the real system.");
 		}
 	}
 

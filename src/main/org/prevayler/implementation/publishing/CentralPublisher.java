@@ -15,25 +15,24 @@ import org.prevayler.implementation.journal.Journal;
 import org.prevayler.implementation.publishing.censorship.TransactionCensor;
 
 import java.io.IOException;
-import java.util.Date;
 
 public class CentralPublisher extends AbstractPublisher {
 
 	private final PausableClock _pausableClock;
 	private final TransactionCensor _censor;
 	private final Journal _journal;
-	private long _nextTransaction;
 
 	private volatile int _pendingPublications = 0;
 	private final Object _pendingPublicationsMonitor = new Object();
 
 	private Turn _nextTurn = Turn.first();
+	private long _nextTransaction;
 	private final Object _nextTurnMonitor = new Object();
 
 
 	public CentralPublisher(Clock clock, TransactionCensor censor, Journal journal) {
 		super(new PausableClock(clock));
-		_pausableClock = (PausableClock)_clock; //This is just to avoid casting the inherited _clock every time.
+		_pausableClock = (PausableClock) _clock; //This is just to avoid casting the inherited _clock every time.
 
 		_censor = censor;
 		_journal = journal;
@@ -61,71 +60,54 @@ public class CentralPublisher extends AbstractPublisher {
 
 
 	private void publishWithoutWorryingAboutNewSubscriptions(Transaction transaction) {
-		Turn myTurn = nextTurn();
-		Date executionTime = realTime(myTurn);  //TODO realTime() and approve in the same turn.
-		long systemVersion = approve(transaction, executionTime, myTurn);
-		TransactionTimestamp timestamp = new TransactionTimestamp(transaction, systemVersion, executionTime);
-		TransactionGuide guide = new TransactionGuide(timestamp, myTurn);
-
+		TransactionGuide guide = approve(transaction);
 		_journal.append(guide);
 		notifySubscribers(guide);
 	}
 
-
-	private Turn nextTurn() {
+	private TransactionGuide approve(Transaction transaction) {
 		synchronized (_nextTurnMonitor) {
-			Turn result = _nextTurn;
+			TransactionTimestamp timestamp = new TransactionTimestamp(transaction, _nextTransaction, _pausableClock.realTime());
+
+			_censor.approve(timestamp);
+
+			// Only count this transaction once approved.
+			Turn turn = _nextTurn;
 			_nextTurn = _nextTurn.next();
-			return result;
+			_nextTransaction++;
+
+			return new TransactionGuide(timestamp, turn);
 		}
 	}
 
-
-	private Date realTime(Turn myTurn) {
-		try {
-			myTurn.start();
-			return _pausableClock.realTime();
-		} finally {	myTurn.end(); }
-	}
-
-
-	private long approve(Transaction transaction, Date executionTime, Turn myTurn) throws RuntimeException, Error {
-		try {
-			myTurn.start();
-
-			_censor.approve(transaction, _nextTransaction, executionTime);
-
-			long systemVersion = _nextTransaction++;
-
-			myTurn.end();
-
-			return systemVersion;
-		} catch (RuntimeException r) { myTurn.alwaysSkip(); throw r;
-		} catch (Error e) { myTurn.alwaysSkip(); throw e; }
-	}
-
-
 	private void notifySubscribers(TransactionGuide guide) {
+		guide.startTurn();
 		try {
-			guide.startTurn();
 			_pausableClock.advanceTo(guide.executionTime());
 			notifySubscribers(guide.timestamp());
-		} finally {	guide.endTurn(); }
+		} finally {
+			guide.endTurn();
+		}
 	}
 
 
 	public void addSubscriber(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
 		synchronized (_pendingPublicationsMonitor) {
 			while (_pendingPublications != 0) Cool.wait(_pendingPublicationsMonitor);
-			
+
 			_journal.update(subscriber, initialTransaction);
-			_nextTransaction = _journal.nextTransaction();
+
+			synchronized (_nextTurnMonitor) {
+				_nextTransaction = _journal.nextTransaction();
+			}
 
 			super.addSubscriber(subscriber);
 		}
 	}
 
 
-	public void close() throws IOException { _journal.close(); }
+	public void close() throws IOException {
+		_journal.close();
+	}
 
 }

@@ -22,8 +22,8 @@ public class TransientJournal implements Journal {
 	public void append(TransactionGuide guide) {
 		if (!_initialTransactionInitialized) throw new IllegalStateException("Journal.update() has to be called at least once before Journal.journal().");
 
+		guide.startTurn();
 		try {
-			guide.startTurn();
 			guide.checkSystemVersion(_initialTransaction + journal.size());
 			journal.add(guide.timestamp());
 		} finally {

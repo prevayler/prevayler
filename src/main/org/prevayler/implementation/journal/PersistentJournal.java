@@ -65,8 +65,8 @@ public class PersistentJournal implements Journal {
 		DurableOutputStream myOutputJournal;
 		DurableOutputStream outputJournalToClose = null;
 
+		guide.startTurn();
 		try {
-			guide.startTurn();
 			guide.checkSystemVersion(_nextTransaction);
 
 			if (!isOutputJournalStillValid()) {
@@ -88,8 +88,8 @@ public class PersistentJournal implements Journal {
 			handle(iox, _outputJournal.file(), "writing to");
 		}
 
+		guide.startTurn();
 		try {
-			guide.startTurn();
 			try {
 				if (outputJournalToClose != null) outputJournalToClose.close();
 			} catch (IOException iox) {
@@ -98,7 +98,6 @@ public class PersistentJournal implements Journal {
 		} finally {
 			guide.endTurn();
 		}
-		
 	}
 
 

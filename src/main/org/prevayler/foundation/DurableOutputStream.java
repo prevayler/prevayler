@@ -68,8 +68,8 @@ public class DurableOutputStream {
 		// When a thread arrives here, all we care about at first is that it
 		// gets properly sequenced according to its turn.
 
+		guide.startTurn();
 		try {
-			guide.startTurn();
 			thisWrite = writeObject(guide.timestamp());
 		} finally {
 			guide.endTurn();
