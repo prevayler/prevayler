@@ -9,6 +9,7 @@ import org.prevayler.Transaction;
 import org.prevayler.foundation.DeepCopier;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.PrevalentSystemGuard;
+import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
 import java.util.Date;
@@ -31,7 +32,7 @@ public class StrictTransactionCensor implements TransactionCensor {
 		try {
 			Transaction transactionCopy = deepCopy(transaction);
 			PrevalentSystemGuard royalFoodTaster = royalFoodTaster(systemVersion - 1);
-			royalFoodTaster.receive(transactionCopy, systemVersion, executionTime);
+			royalFoodTaster.receive(new TransactionTimestamp(transactionCopy, systemVersion, executionTime));
 		} catch (RuntimeException rx) {
 			letTheFoodTasterDie();
 			throw rx;

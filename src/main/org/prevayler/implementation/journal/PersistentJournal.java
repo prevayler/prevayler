@@ -5,21 +5,19 @@
 
 package org.prevayler.implementation.journal;
 
-import org.prevayler.Transaction;
 import org.prevayler.foundation.DurableInputStream;
 import org.prevayler.foundation.DurableOutputStream;
 import org.prevayler.foundation.StopWatch;
-import org.prevayler.foundation.Turn;
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.PrevaylerDirectory;
+import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 
 
 /** A Journal that will write all transactions to .journal files.
@@ -61,41 +59,44 @@ public class PersistentJournal implements Journal {
 	}
 
 
-	public void append(Transaction transaction, Date executionTime, Turn myTurn) {
+	public void append(TransactionGuide guide) {
 		if (!_nextTransactionInitialized) throw new IllegalStateException("Journal.update() has to be called at least once before Journal.append().");
 
 		DurableOutputStream myOutputJournal;
 		DurableOutputStream outputJournalToClose = null;
 
-		long systemVersion;
 		try {
-			myTurn.start();
+			guide.startTurn();
+			guide.checkSystemVersion(_nextTransaction);
+
 			if (!isOutputJournalStillValid()) {
 				outputJournalToClose = _outputJournal;
 				_outputJournal = createOutputJournal(_nextTransaction);
 				_journalAgeTimer = StopWatch.start();
 			}
-			systemVersion = _nextTransaction++;
+
+			_nextTransaction++;
+
 			myOutputJournal = _outputJournal;
 		} finally {
-			myTurn.end();
+			guide.endTurn();
 		}
 
 		try {
-			myOutputJournal.sync(new TransactionTimestamp(transaction, systemVersion, executionTime), myTurn);
+			myOutputJournal.sync(guide);
 		} catch (IOException iox) {
 			handle(iox, _outputJournal.file(), "writing to");
 		}
 
 		try {
-			myTurn.start();
+			guide.startTurn();
 			try {
 				if (outputJournalToClose != null) outputJournalToClose.close();
 			} catch (IOException iox) {
 				handle(iox, outputJournalToClose.file(), "closing");
 			}
 		} finally {
-			myTurn.end();
+			guide.endTurn();
 		}
 		
 	}
@@ -178,7 +179,12 @@ public class PersistentJournal implements Journal {
 					}
 
 					TransactionTimestamp entry = input.read();
-					subscriber.receive(entry.transaction(), recoveringTransaction, entry.timestamp());
+
+					if (entry.systemVersion() != recoveringTransaction) {
+						throw new IOException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
+					}
+
+					subscriber.receive(entry);
 				} else {
 					input.skip();
 				}

@@ -4,14 +4,12 @@
 
 package org.prevayler.implementation.journal;
 
-import org.prevayler.Transaction;
-import org.prevayler.foundation.Turn;
+import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -21,15 +19,15 @@ public class TransientJournal implements Journal {
 	private long _initialTransaction;
 	private boolean _initialTransactionInitialized = false;
 
-
-	public void append(Transaction transaction, Date executionTime, Turn myTurn) {
+	public void append(TransactionGuide guide) {
 		if (!_initialTransactionInitialized) throw new IllegalStateException("Journal.update() has to be called at least once before Journal.journal().");
 
 		try {
-			myTurn.start();
-			journal.add(new TransactionTimestamp(transaction, _initialTransaction + journal.size(), executionTime));
+			guide.startTurn();
+			guide.checkSystemVersion(_initialTransaction + journal.size());
+			journal.add(guide.timestamp());
 		} finally {
-			myTurn.end();
+			guide.endTurn();
 		}
 	}
 
@@ -46,7 +44,11 @@ public class TransientJournal implements Journal {
 
 		while (i != journal.size()) {
 			TransactionTimestamp entry = (TransactionTimestamp)journal.get(i);
-			subscriber.receive(entry.transaction(), _initialTransaction + i, entry.timestamp());
+			long recoveringTransaction = _initialTransaction + i;
+			if (entry.systemVersion() != recoveringTransaction) {
+				throw new IOException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
+			}
+			subscriber.receive(entry);
 			i++;
 		}
 	}

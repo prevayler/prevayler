@@ -43,7 +43,11 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 		}
 	}
 
-	public void receive(Transaction transaction, long systemVersion, Date executionTime) {
+	public void receive(TransactionTimestamp transactionTimstamp) {
+		Transaction transaction = transactionTimstamp.transaction();
+		long systemVersion = transactionTimstamp.systemVersion();
+		Date executionTime = transactionTimstamp.executionTime();
+
 		synchronized (this) {
 			if (systemVersion != _systemVersion + 1) {
 				throw new IllegalStateException(

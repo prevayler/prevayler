@@ -8,6 +8,8 @@ import org.prevayler.Clock;
 import org.prevayler.Transaction;
 import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.Turn;
+import org.prevayler.implementation.TransactionGuide;
+import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.clock.PausableClock;
 import org.prevayler.implementation.journal.Journal;
 import org.prevayler.implementation.publishing.censorship.TransactionCensor;
@@ -60,11 +62,13 @@ public class CentralPublisher extends AbstractPublisher {
 
 	private void publishWithoutWorryingAboutNewSubscriptions(Transaction transaction) {
 		Turn myTurn = nextTurn();
-
 		Date executionTime = realTime(myTurn);  //TODO realTime() and approve in the same turn.
 		long systemVersion = approve(transaction, executionTime, myTurn);
-		_journal.append(transaction, executionTime, myTurn);
-		notifySubscribers(transaction, systemVersion, executionTime, myTurn);
+		TransactionTimestamp timestamp = new TransactionTimestamp(transaction, systemVersion, executionTime);
+		TransactionGuide guide = new TransactionGuide(timestamp, myTurn);
+
+		_journal.append(guide);
+		notifySubscribers(guide);
 	}
 
 
@@ -101,12 +105,12 @@ public class CentralPublisher extends AbstractPublisher {
 	}
 
 
-	private void notifySubscribers(Transaction transaction, long systemVersion, Date executionTime, Turn myTurn) {
+	private void notifySubscribers(TransactionGuide guide) {
 		try {
-			myTurn.start();
-			_pausableClock.advanceTo(executionTime);
-			notifySubscribers(transaction, systemVersion, executionTime);
-		} finally {	myTurn.end(); }
+			guide.startTurn();
+			_pausableClock.advanceTo(guide.executionTime());
+			notifySubscribers(guide.timestamp());
+		} finally {	guide.endTurn(); }
 	}
 
 

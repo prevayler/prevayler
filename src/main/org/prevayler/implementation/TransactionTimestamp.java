@@ -31,7 +31,7 @@ public class TransactionTimestamp implements Serializable {
 		return _systemVersion;
 	}
 
-    public Date timestamp() {
+    public Date executionTime() {
         return new Date(_executionTime);
     }
 

@@ -6,9 +6,8 @@
 package org.prevayler.implementation.publishing;
 
 import org.prevayler.Clock;
-import org.prevayler.Transaction;
+import org.prevayler.implementation.TransactionTimestamp;
 
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,9 +37,9 @@ public abstract class AbstractPublisher implements TransactionPublisher {
 		_subscribers.remove(subscriber);
 	}
 
-    protected synchronized void notifySubscribers(Transaction transaction, long systemVersion, Date executionTime) {
+    protected synchronized void notifySubscribers(TransactionTimestamp transactionTimestamp) {
 		Iterator i = _subscribers.iterator();
-        while (i.hasNext()) ((TransactionSubscriber) i.next()).receive(transaction, systemVersion, executionTime);
+        while (i.hasNext()) ((TransactionSubscriber) i.next()).receive(transactionTimestamp);
     }
 
 }

@@ -6,6 +6,7 @@ package org.prevayler.implementation.replication;
 
 import org.prevayler.Clock;
 import org.prevayler.Transaction;
+import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.clock.BrokenClock;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
@@ -130,12 +131,12 @@ public class ClientPublisher implements TransactionPublisher {
 		long systemVersion = _fromServer.readLong();
 
 		if (transactionCandidate.equals(ServerConnection.REMOTE_TRANSACTION)) {
-			_subscriber.receive(_myTransaction, systemVersion, timestamp);
+			_subscriber.receive(new TransactionTimestamp(_myTransaction, systemVersion, timestamp));
 			notifyMyTransactionMonitor();
 			return;
 		}
 
-		_subscriber.receive((Transaction)transactionCandidate, systemVersion, timestamp);
+		_subscriber.receive(new TransactionTimestamp((Transaction)transactionCandidate, systemVersion, timestamp));
 	}
 
 

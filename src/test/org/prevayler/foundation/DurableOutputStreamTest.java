@@ -3,6 +3,7 @@ package org.prevayler.foundation;
 import org.prevayler.foundation.monitor.NullMonitor;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.implementation.AppendTransaction;
+import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
 
 import java.io.EOFException;
@@ -21,8 +22,8 @@ public class DurableOutputStreamTest extends FileIOTest {
 			DurableOutputStream out = new DurableOutputStream(file, new JavaSerializer());
 
 			Turn myTurn = Turn.first();
-			out.sync(timestamp("first"), myTurn);
-			out.sync(timestamp("second"), myTurn.next());
+			out.sync(new TransactionGuide(timestamp("first"), myTurn));
+			out.sync(new TransactionGuide(timestamp("second"), myTurn.next()));
 			out.close();
 
 			assertTrue(out.reallyClosed());
@@ -120,8 +121,8 @@ public class DurableOutputStreamTest extends FileIOTest {
 
 		public void run() {
 			try {
-				_out.sync(timestamp(_id + ".first"), _firstTurn);
-				_out.sync(timestamp(_id + ".second"), _secondTurn);
+				_out.sync(new TransactionGuide(timestamp(_id + ".first"), _firstTurn));
+				_out.sync(new TransactionGuide(timestamp(_id + ".second"), _secondTurn));
 			} catch (IOException e) {
 				_ex = e;
 			}

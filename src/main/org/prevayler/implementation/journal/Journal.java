@@ -4,18 +4,16 @@
 
 package org.prevayler.implementation.journal;
 
-import org.prevayler.Transaction;
-import org.prevayler.foundation.Turn;
+import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 import java.io.IOException;
-import java.util.Date;
 
 // START SNIPPET: journal
  
 public interface Journal {
 
-	public void append(Transaction transaction, Date executionTime, Turn threadSynchronizationTurn);
+	public void append(TransactionGuide guide);
 
 	public void update(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException;
 

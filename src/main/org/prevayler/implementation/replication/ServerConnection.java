@@ -5,6 +5,7 @@
 package org.prevayler.implementation.replication;
 
 import org.prevayler.Transaction;
+import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.POBox;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
@@ -87,7 +88,11 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 	}
 
 
-	public void receive(Transaction transaction, long systemVersion, Date executionTime) {
+	public void receive(TransactionTimestamp transactionTimstamp) {
+		Transaction transaction = transactionTimstamp.transaction();
+		long systemVersion = transactionTimstamp.systemVersion();
+		Date executionTime = transactionTimstamp.executionTime();
+
 		try {
 			synchronized (_toRemote) {
 				_toRemote.writeObject(transaction == _remoteTransaction

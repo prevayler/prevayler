@@ -5,10 +5,8 @@
 
 package org.prevayler.implementation.publishing;
 
-import org.prevayler.Transaction;
 import org.prevayler.implementation.TransactionTimestamp;
 
-import java.util.Date;
 import java.util.LinkedList;
 
 
@@ -27,8 +25,8 @@ public class POBox extends Thread implements TransactionSubscriber {
 	}
 
 
-	public synchronized void receive(Transaction transaction, long systemVersion, Date executionTime) {
-		_queue.add(new TransactionTimestamp(transaction, systemVersion, executionTime));
+	public synchronized void receive(TransactionTimestamp transactionTimestamp) {
+		_queue.add(transactionTimestamp);
 		notify();
 	}
 
@@ -36,7 +34,7 @@ public class POBox extends Thread implements TransactionSubscriber {
 	public void run() {
 		while (true) {
 			TransactionTimestamp notification = waitForNotification();
-			_delegate.receive(notification.transaction(), notification.systemVersion(), notification.timestamp());
+			_delegate.receive(notification);
 		}
 	}
 

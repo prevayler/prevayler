@@ -4,6 +4,7 @@
 //Contributions: Justin Sampson.
 package org.prevayler.foundation;
 import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
 
 import java.io.ByteArrayOutputStream;
@@ -61,17 +62,17 @@ public class DurableOutputStream {
 		_serializer = serializer;
 	}
 
-	public void sync(TransactionTimestamp timestamp, Turn myTurn) throws IOException {
+	public void sync(TransactionGuide guide) throws IOException {
 		int thisWrite;
 
 		// When a thread arrives here, all we care about at first is that it
 		// gets properly sequenced according to its turn.
 
 		try {
-			myTurn.start();
-			thisWrite = writeObject(timestamp);
+			guide.startTurn();
+			thisWrite = writeObject(guide.timestamp());
 		} finally {
-			myTurn.end();
+			guide.endTurn();
 		}
 
 		// Now, having ended the turn, the next thread is allowed to come in
@@ -91,7 +92,7 @@ public class DurableOutputStream {
 				_serializer.writeObject(bytes, timestamp.transaction());
 				Chunk chunk = new Chunk(bytes.toByteArray());
 				chunk.setParameter("systemVersion", String.valueOf(timestamp.systemVersion()));
-				chunk.setParameter("executionTime", String.valueOf(timestamp.timestamp().getTime()));
+				chunk.setParameter("executionTime", String.valueOf(timestamp.executionTime().getTime()));
 				Chunking.writeChunk(_active, chunk);
 			} catch (IOException exception) {
 				internalClose();
