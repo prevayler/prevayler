@@ -44,6 +44,7 @@ public class ReplicationTest extends PrevalenceTest {
 	}
 */
 
+
 	private void serverAppend(String appendix, String expectedResult) {
 		append(_server, appendix, expectedResult);
 	}

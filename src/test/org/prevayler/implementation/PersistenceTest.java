@@ -48,11 +48,15 @@ public class PersistenceTest extends PrevalenceTest {
 		verify("abcdefgh");
 
 		snapshot();
-		File snapshot =   new File(_prevalenceBase, "0000000000000000008.snapshot");
+		_prevayler = null;
+		System.gc();  //Necessary to move the transactionLog file.
+		File lastSnapshot =   new File(_prevalenceBase, "0000000000000000008.snapshot");
+		File lastTransactionLog =   new File(_prevalenceBase, "0000000000000000008.transactionLog");
 		newPrevalenceBase();
 		FileManager.produceDirectory(_prevalenceBase);
-		snapshot.renameTo(new File(_prevalenceBase, "0000000000000000008.snapshot"));
-		
+		lastSnapshot.renameTo(new File(_prevalenceBase, "0000000000000000008.snapshot"));  //Moving the file.
+		lastTransactionLog.renameTo(new File(_prevalenceBase, "0000000000000000008.transactionLog"));
+
 		crashRecover();
 		append("i","abcdefghi");
 		append("j","abcdefghij");

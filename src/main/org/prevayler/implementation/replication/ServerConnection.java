@@ -107,4 +107,5 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 			}
 		}
 	}
+
 }

@@ -25,23 +25,19 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 
 	private final File _directory;
 	private long _nextTransaction;
-	private boolean _nextTransactionKnown = false;
 	private SimpleOutputStream _outputLog;
 
 
 	public PersistentLogger(String directory) throws IOException, ClassNotFoundException {
 		_directory = FileManager.produceDirectory(directory);
 		File lastFile = lastTransactionFile();
-		if (lastFile != null) {
-			_nextTransaction = number(lastFile) + transactionCount(lastFile);
-			_nextTransactionKnown = true;
-		}
+		_nextTransaction = lastFile == null
+			? 1
+			: number(lastFile) + transactionCount(lastFile);
 	}
 
 
 	public synchronized void log(Transaction transaction, Date executionTime) {
-		if (!_nextTransactionKnown) throw new RuntimeException("The sequence number for the next transaction to be logged is undefined. This happens when there are no transactionLog files in the directory and publish() is called before a TransactionSubscriber has been added.");
-
 		if (_outputLog == null || !_outputLog.isValid()) createNewOutputLog();
 		outputToLog(new TransactionLogEntry(transaction, executionTime));
 
@@ -108,18 +104,15 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	/** If there are no log files in the directory (when a snapshot is taken and all log files are manually deleted, for example), the initialTransaction parameter in the first call to this method will define what the next transaction number will be. We have to find clearer/simpler semantics.
 	 */
 	public synchronized void update(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
-		if (!_nextTransactionKnown) {
-			_nextTransaction = initialTransaction;
-			_nextTransactionKnown = true;
-		} else {
-			if (initialTransaction > _nextTransaction) throw new IOException("Unable to find transactions from " + _nextTransaction + " to " + (initialTransaction - 1) + ".");
-			long initialFileCandidate = initialTransaction;
-			while (!transactionLogFile(initialFileCandidate).exists()) {
-				initialFileCandidate--;
-				if (initialFileCandidate <= 0) throwNotFound(initialTransaction);
-			}
-			update(subscriber, initialTransaction, initialFileCandidate);
+		if (initialTransaction > _nextTransaction) throw new IOException("Unable to find transactions from " + _nextTransaction + " to " + (initialTransaction - 1) + ".");
+		if (initialTransaction == _nextTransaction) return;
+
+		long initialFileCandidate = initialTransaction;
+		while (!transactionLogFile(initialFileCandidate).exists()) {
+			initialFileCandidate--;
+			if (initialFileCandidate <= 0) throwNotFound(initialTransaction);
 		}
+		update(subscriber, initialTransaction, initialFileCandidate);
 	}
 
 

@@ -7,3 +7,4 @@ dependencies
 build.properties
 log4j.xml
 maven.log
+.classpath

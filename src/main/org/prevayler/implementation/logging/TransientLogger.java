@@ -21,9 +21,11 @@ public class TransientLogger implements TransactionLogger {
 		log.add(new TransactionLogEntry(transaction, executionTime));
 	}
 
-	public synchronized void update(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
+	public synchronized void update(TransactionSubscriber subscriber, long initialTransaction) throws IOException {
 		int i = (int)initialTransaction - 1;  //Lists are zero based.
-		while (i < log.size()) {
+		if (i > log.size()) throw new IOException("Unable to find transactions from " + (log.size() + 1) + " to " + i + ".");
+
+		while (i != log.size()) {
 			TransactionLogEntry entry = (TransactionLogEntry)log.get(i);
 			subscriber.receive(entry.transaction, entry.timestamp);
 			i++;
