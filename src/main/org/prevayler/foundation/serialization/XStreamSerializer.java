@@ -32,18 +32,34 @@ public class XStreamSerializer implements Serializer {
 		}
 	};
 
+	private String _encoding;
+
+	/**
+	 * Use the default character encoding for XML serialization.
+	 */
+	public XStreamSerializer() {
+		_encoding = null;
+	}
+
+	/**
+	 * Use the specified character encoding for XML serialization.
+	 */
+	public XStreamSerializer(String encoding) {
+		_encoding = encoding;
+	}
+
 	private XStream getXStream() {
 		return (XStream) _xstreams.get();
 	}
 
 	public void writeObject(OutputStream stream, Object object) throws IOException {
-		OutputStreamWriter writer = new OutputStreamWriter(stream);
+		OutputStreamWriter writer = _encoding == null ? new OutputStreamWriter(stream) : new OutputStreamWriter(stream, _encoding);
 		getXStream().toXML(object, writer);
 		writer.flush();
 	}
 
 	public Object readObject(InputStream stream) throws IOException, ClassNotFoundException {
-		return getXStream().fromXML(new InputStreamReader(stream));
+		return getXStream().fromXML(_encoding == null ? new InputStreamReader(stream) : new InputStreamReader(stream, _encoding));
 	}
 
 	/**
