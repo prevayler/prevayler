@@ -6,8 +6,7 @@ import java.math.BigDecimal;
 
 public class Record implements Serializable {
 
-	static private final Random random = new Random();
-	static private final String largeString = generateLargeString();
+	private static final String largeString = generateLargeString();
 
 	private final long id;
 	private final String name;
@@ -17,6 +16,25 @@ public class Record implements Serializable {
 	private final long date1;
 	private final long date2;
 
+	private static final Random RANDOM = new Random();
+
+
+	public Record(long id) {
+		this(id, RANDOM);
+	}
+
+	
+	public Record(long id, Random random) {
+		this(
+				id,
+				"NAME" + (id % 10000),
+				(id % 10000) == 0 ? largeString + id : null,
+				new BigDecimal(random.nextInt()),
+				new BigDecimal(random.nextInt()),
+				new Date(random.nextInt(10000000)),
+				new Date(random.nextInt(10000000))
+			);
+	}
 
 	public Record(long id, String name, String string1, BigDecimal bigDecimal1, BigDecimal bigDecimal2, Date date1, Date date2) {
 		this.id = id;
@@ -26,20 +44,6 @@ public class Record implements Serializable {
 		this.bigDecimal2 = bigDecimal2;
 		this.date1 = date1.getTime();
 		this.date2 = date2.getTime();
-	}
-
-	Record(long id) {
-		this.id = id;
-		name = "NAME" + (id % 10000);
-
-		string1 = (id % 10000) == 0
-			? largeString + id
-			: null;
-
-		bigDecimal1 = randomBigDecimal();
-		bigDecimal2 = randomBigDecimal();
-		date1 = randomDate();
-		date2 = randomDate();
 	}
 
 	public long getId() {
@@ -70,17 +74,22 @@ public class Record implements Serializable {
 		return new Date(date2);
 	}
 
+	public int hashCode() {
+		return (int)(id
+			+ name.hashCode()
+			+ ("" + string1).hashCode()
+			+ bigDecimal1.hashCode()
+			+ bigDecimal2.hashCode()
+			+ date1
+			+ date2
+		);
+	}
+
+
 	static private String generateLargeString() {
 		char[] chars = new char[980];
 		Arrays.fill(chars, 'A'); 
 		return new String(chars);
 	}
 
-	static private BigDecimal randomBigDecimal() {
-		return new BigDecimal(random.nextInt());
-	}
-
-	static private long randomDate() {
-		return random.nextInt(10000000);
-	}
 }

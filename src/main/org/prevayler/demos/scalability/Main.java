@@ -60,12 +60,18 @@ public class Main {
 	}
 
 	static private void runPrevaylerTransaction() throws Exception {
+		PrevaylerTransactionSubject subject = new PrevaylerTransactionSubject(prevaylerTransactionLogDirectory(), prevaylerJournalSerializer());
 		new TransactionTestRun(
-			new PrevaylerTransactionSubject(prevaylerTransactionLogDirectory(), prevaylerJournalSerializer()),
+			subject,
 			numberOfObjects(),
 			prevaylerTransactionThreadsMin(),
 			prevaylerTransactionThreadsMax()
 		);
+		if (isPrevaylerTransactionConsistencyChecked()) {
+			out("Checking transaction log consistency.");
+			if (!subject.isConsistent()) throw new RuntimeException("Transaction log consistency check failed.");
+			out("Transaction log OK.\n");
+		}
 	}
 
 	static private void runJdbcQuery() {
@@ -155,16 +161,24 @@ public class Main {
 			"\n" +
 			"PrevaylerTransactionThreadsMinimum = 1\n" +
 			"PrevaylerTransactionThreadsMaximum = 5\n" +
+			"#\n" +
 			"# More threads can produce better results on machines with\n" +
 			"# multiple disks.\n" +
 			"\n" +
+			"TransactionTestCheckConsistency = YES\n" +
+			"# TransactionTestCheckConsistency = NO\n" +
+			"#\n" +
+			"# Verifies the integrity of the journal files produced in\n" +
+			"# your particular environment.\n" +
+			"\n" +
 			"TransactionLogDirectory = TransactionTest\n" +
-			"PrevaylerJournalSerializer = " + JavaSerializer.class.getName() + "\n" +
 			"#\n" +
 			"# The full path name can be used. Example for Windows:\n" +
 			"# TransactionLogDirectory1 = c:\\\\temp\\\\TransactionTest\n" +
 			"# The back-slash (\\) is the escape character so you must\n" +
 			"# use two back-slashes (\\\\).\n" +
+			"\n" +
+			"PrevaylerJournalSerializer = " + JavaSerializer.class.getName() + "\n" +
 			"\n" +
 			"\n" +
 			"###########################################################\n" +
@@ -249,6 +263,10 @@ public class Main {
 		return intProperty("PrevaylerTransactionThreadsMaximum");
 	}
 
+	static private boolean isPrevaylerTransactionConsistencyChecked() {
+		return booleanProperty("TransactionTestCheckConsistency");
+	}
+	
 	static private String prevaylerTransactionLogDirectory() {
 		String result = property("TransactionLogDirectory");
 		out("\n\nPrevayler TransactionLog Directory: " + result);
