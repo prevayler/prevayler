@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false" threshold="debug">
+    <appender name="A1" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <!-- Output the elapsed time [thread,context] Priority Class::Method - Text LF -->
+            <param name="ConversionPattern" value="%-4r [%t] %-5p %c{1}::%M - %m%n"/>
+        </layout>
+    </appender>
+    <appender name="A2" class="org.apache.log4j.FileAppender">
+        <param name="File" value="@log4j.system.variable.dynamic.name@/main.log" />
+        <param name="Append" value="false" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <!-- Output the elapsed time [thread,context] Priority Class::Method - Text LF -->
+            <param name="ConversionPattern" value="%-4r [%t] %-5p %c{1}::%M - %m%n"/>
+        </layout>
+    </appender>
+    <appender name="JUnitAppender" class="org.apache.log4j.FileAppender">
+        <param name="File" value="@log4j.system.variable.dynamic.name@/test.log" />
+        <param name="Append" value="true" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-4r [%t] %-5p %c %x - %m%n"/>
+        </layout>
+    </appender>
+
+    <!--<logger name="com.skaringa">
+		<level value="info"/>
+	</logger>-->
+
+    <!-- Appenders for running JUnit tests -->
+    <!-- Using additivity="false" on the "test.org.prevayler"
+         logger allows us to exclude the "root" logger levels and appenders 
+         making this logger, essentially, the root for all test cases.
+         So, leave this logger alone.  To add loggers so you can see logging
+         output for JUnit testcases, use the following syntax:
+         <logger name="test.org.prevayler.test">
+             <level value="debug"/>
+         </logger>
+    -->
+    <logger name="test.org.prevayler" additivity="false">
+        <level value="off"/>
+        <appender-ref ref="JUnitAppender"/>
+    </logger>
+
+    <!-- Note: This root logger will be inherited by all loggers unless you use additivity="false". -->
+    <root>
+        <level value="warn"/>
+        <!--<appender-ref ref="A1"/>-->
+        <appender-ref ref="A2"/>
+    </root>
+</log4j:configuration>

@@ -9,6 +9,7 @@
     <property file="${user.home}/.build.properties"/>
     <property environment="env"/> <!-- provides access to system environment variables -->
     <property file="build.properties"/>
+    <property file="sample.build.properties"/>
 
 
 <!-- ==================== File and Directory Names ======================== -->
@@ -19,6 +20,8 @@
     <property name="lib.home"               location="${basedir}/lib" />
     <property name="contrib.home"           location="${contrib.path}" />
     <property name="dependencies.home"      location="${dependencies.path}" />
+    <property name="unit.test.home"         location="${basedir}/unit_tests" />
+    <property name="unit.test.report.home"  location="${unit.test.home}/reports" />
     <property name="src.home"               location="${basedir}/src" />
     <property name="src.core.home"          location="${src.home}/main" />
     <property name="src.test.home"          location="${src.home}/test" />
@@ -26,6 +29,13 @@
     <property name="src.packages"           value="org.prevayler.*" />
     <property name="src.packages.excludes"  value="org.prevayler.demos.*, org.prevayler.test.*" />
 
+    <property name="log4j.system.variable.dynamic.name" value="$${${app.name}.log.home}" />
+    <property name="log4j.system.variable.name" value="${app.name}.log.home" />
+    <property name="log4j.log.path" location="${build.home}/logs" />
+
+    <fileset dir="${src.test.home}" id="unit.test.files"
+             includes="${unit.test.includes}"
+             excludes="${unit.test.excludes}" />
 
 <!--  ==================== Compilation Control Options ==================== -->
 
@@ -66,6 +76,7 @@
         <delete dir="${dist.home}" />
         <delete dir="${lib.home}" />
         <delete dir="${doc.home}/api" />
+        <delete dir="${unit.test.home}" />
 
     </target>
 
@@ -103,6 +114,18 @@
     <target name="prepare" >
 
         <mkdir  dir="${build.home}" />
+        <mkdir  dir="${log4j.log.path}" />
+        <copy todir="${basedir}" >
+            <fileset dir="${basedir}">
+                <present present="srconly" targetdir="${basedir}">
+                    <mapper type="glob" from="sample.*" to="*" />
+                </present>
+            </fileset>
+            <filterset>
+                <filter token="log4j.system.variable.dynamic.name" value="${log4j.system.variable.dynamic.name}" />
+            </filterset>
+            <mapper type="glob" from="sample.*" to="*" />
+        </copy>
         <copy file="${basedir}/log4j.xml" todir="${build.home}" />
         <tstamp/>
 
@@ -174,15 +197,16 @@
 
         <!-- Generate ZIP distribution -->
         <zip destfile="${dist.home}/${file.name.dist}.zip">
-            <zipfileset dir="${basedir}"        prefix="${app.name}" includes="*.xml, *.incl, *.properties, *.txt"/>
+            <zipfileset dir="${basedir}"        prefix="${app.name}" includes="*.xml, *.incl, *.properties, *.txt" excludes="log4j.xml, build.properties"/>
             <zipfileset dir="${contrib.home}"   prefix="${app.name}/${contrib.path}"/>
             <zipfileset dir="${doc.home}"       prefix="${app.name}/docs"/>
             <zipfileset dir="${lib.home}"       prefix="${app.name}/lib"/>
             <zipfileset dir="${src.home}"       prefix="${app.name}/src"/>
         </zip>
 
+        <!-- Generate GZIP distribution -->
         <tar destfile="${dist.home}/${file.name.dist}.tar" longfile="gnu">
-            <tarfileset dir="${basedir}"        prefix="${app.name}" includes="*.xml, *.incl, *.properties, *.txt"/>
+            <tarfileset dir="${basedir}"        prefix="${app.name}" includes="*.xml, *.incl, *.properties, *.txt" excludes="log4j.xml, build.properties"/>
             <tarfileset dir="${contrib.home}"   prefix="${app.name}/${contrib.path}"/>
             <tarfileset dir="${doc.home}"       prefix="${app.name}/docs"/>
             <tarfileset dir="${lib.home}"       prefix="${app.name}/lib"/>
@@ -307,6 +331,44 @@
 
     </target>
 
+    <target name="test" depends="compile.test"
+            description="Runs JUnit tests" >
+
+        <mkdir dir="${unit.test.home}" />
+        <mkdir dir="${unit.test.report.home}" />
+        <junit dir="${unit.test.home}" printsummary="yes" haltonfailure="no" fork="yes" >
+            <classpath refid="build.test.classpath" />
+            <sysproperty
+                key="${log4j.system.variable.name}"
+                value="${log4j.log.path}" />
+            <!--<sysproperty
+                key="log4j.configuration"
+                value="file:./log4j.xml" />-->
+            <formatter
+                type="xml"
+                usefile="yes" />
+            <batchtest todir="${unit.test.report.home}" >
+                <fileset refid="unit.test.files" />
+            </batchtest>
+        </junit>
+        <antcall target="-test.report.html" />
+
+    </target>
+
+    <target name="-test.report.html"
+            description="Convert the junit xml files to html" >
+
+        <junitreport todir="${unit.test.report.home}" >
+            <fileset dir="${unit.test.report.home}" >
+                <include name="TEST-*.xml" />
+            </fileset>
+            <report
+                format="frames"
+                todir="${unit.test.report.home}/html" />
+        </junitreport>
+
+    </target>
+
 <!-- ==================== Demo Targets ================================== -->
 
 <!--
@@ -334,6 +396,7 @@
 
         <java fork="true" classname="org.prevayler.demos.demo2.MainXml" >
             <classpath refid="build.test.classpath" />
+            <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
         </java>
 
     </target>
