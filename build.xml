@@ -125,7 +125,7 @@
             <mapper type="glob" from="sample.*" to="*" />
         </copy>
         <copy file="${basedir}/log4j.xml" todir="${classesdir.main}" />
-        <copy file="${rootdir}/docs/license.txt" tofile="${classesdir.main}/Prevayler.license.txt" />
+        <copy file="${rootdir}/docs/License.txt" tofile="${classesdir.main}/Prevayler.license.txt" />
         <!-- Fileset for unit tests.  Default values specified in sample.build.properties.  Override in build.properties -->
         <fileset id="unit.test.files"
             dir="${srcdir.test}"
@@ -219,6 +219,9 @@
     </target>
     <target name="dist" depends="-distvalidcheck, jar, javadoc, -download.dist"
             description="Create binary distribution" >
+        <delete>
+            <fileset dir="${targetdir}" includes="*.zip, *.tar.gz"/>
+        </delete>
         <!-- Klaus added jars to root/lib, so this is redundant -->
         <!--<copy todir="${libdir}" file="${skaringa.jar}"/>
         <copy todir="${libdir}" file="${commons-logging.jar}"/>
@@ -229,22 +232,57 @@
         <copy todir="${libdir}" file="${xalan.jar}"/>-->
         <!-- Generate ZIP distribution -->
         <zip destfile="${targetdir}/${dist.name}.zip">
-            <zipfileset dir="${rootdir}"     prefix="${app.name}${app.version}"/>
-            <zipfileset dir="${libdir}"      prefix="${app.name}${app.version}" includes="${app.name}*.jar"/>
-            <zipfileset dir="${libdir}"      prefix="${app.name}${app.version}/lib" excludes="${app.name}*.jar"/>
-            <zipfileset dir="${docdir}"      prefix="${app.name}${app.version}/docs"/>
-            <zipfileset dir="${srcdir.main}" prefix="${app.name}${app.version}/src"/>
+            <zipfileset dir="${rootdir}"     prefix="${dist.name}"/>
+            <zipfileset dir="${libdir}"      prefix="${dist.name}" includes="${app.name}*.jar"/>
+            <zipfileset dir="${libdir}"      prefix="${dist.name}/lib" excludes="${app.name}*.jar"/>
+            <zipfileset dir="${docdir}"      prefix="${dist.name}/docs"/>
+            <zipfileset dir="${srcdir.main}" prefix="${dist.name}/src"/>
         </zip>
         <!-- Generate GZIP distribution -->
         <tar destfile="${targetdir}/${dist.name}.tar" longfile="gnu">
-            <tarfileset dir="${rootdir}"     prefix="${app.name}${app.version}"/>
-            <tarfileset dir="${libdir}"      prefix="${app.name}${app.version}" includes="${app.name}*.jar"/>
-            <tarfileset dir="${libdir}"      prefix="${app.name}${app.version}/lib" excludes="${app.name}*.jar"/>
-            <tarfileset dir="${docdir}"      prefix="${app.name}${app.version}/docs"/>
-            <tarfileset dir="${srcdir.main}" prefix="${app.name}${app.version}/src"/>
+            <tarfileset dir="${rootdir}"     prefix="${dist.name}"/>
+            <tarfileset dir="${libdir}"      prefix="${dist.name}" includes="${app.name}*.jar"/>
+            <tarfileset dir="${libdir}"      prefix="${dist.name}/lib" excludes="${app.name}*.jar"/>
+            <tarfileset dir="${docdir}"      prefix="${dist.name}/docs"/>
+            <tarfileset dir="${srcdir.main}" prefix="${dist.name}/src"/>
         </tar>
         <gzip src="${targetdir}/${dist.name}.tar" zipfile="${targetdir}/${dist.name}.tar.gz"/>
         <delete file="${targetdir}/${dist.name}.tar" />
+    </target>
+
+    <target name="damagecontrol">
+    	<property name="distdir" value="/home/projects/prevayler/dist" />
+        <property name="scp" value="scp"/>
+        <property name="damagecontrol.username" value="dcontrol"/>
+        <macrodef name="macroscp">
+            <attribute name="file"/>
+            <attribute name="todir"/>
+            <sequential>
+                <exec dir="." executable="${scp}" failonerror="true">
+                    <arg path="@{file}"/>
+                    <arg value="${damagecontrol.username}@dist.codehaus.org:/home/projects/prevayler/dist/@{todir}"/>
+                </exec>
+            </sequential>
+        </macrodef>
+
+        <ant target="clean"/>
+
+        <ant target="dist" inheritAll="false">
+            <property name="app.version" value="SNAPSHOT"/>
+        </ant>
+        <!--<macroscp file="${libdir}/${app.name}-SNAPSHOT.jar" todir="jars"/>
+        <macroscp file="${targetdir}/${app.name}-SNAPSHOT.*" todir="distributions"/>-->
+        <copy file="${libdir}/${app.name}-SNAPSHOT.jar" todir="${distdir}/jars"/>
+        <copy file="${targetdir}/${app.name}-SNAPSHOT.*" todir="${distdir}/distributions"/>
+
+        <tstamp/>
+        <ant target="dist" inheritAll="false">
+            <property name="app.version" value="${DSTAMP}"/>
+        </ant>
+        <!--<macroscp file="${libdir}/${app.name}-${DSTAMP}.jar" todir="jars"/>
+        <macroscp file="${targetdir}/${app.name}-${DSTAMP}.*" todir="distributions"/>-->
+        <copy file="${libdir}/${app.name}-${DSTAMP}.jar" todir="${distdir}/jars"/>
+        <copy file="${targetdir}/${app.name}-${DSTAMP}.*" todir="${distdir}/distributions"/>
     </target>
 
 <!-- ==================== Test Targets ================================== -->
@@ -263,9 +301,13 @@
                 key="log4j.configuration"
                 value="file:./log4j.xml" />-->
             <formatter
+                type="plain"
+                usefile="yes" />
+            <formatter
                 type="xml"
                 usefile="yes" />
-            <batchtest todir="${testreportdir}" >
+            <test todir="${testreportdir}" name="${testcase}" if="testcase" />
+            <batchtest todir="${testreportdir}" unless="testcase" >
                 <fileset refid="unit.test.files" />
                 <fileset refid="unit.test.files.contrib" />
             </batchtest>
@@ -368,8 +410,8 @@
         </java>
     </target>
 
-    <target name="run.demo.bank.xml" depends="compile.core, -demo.init"
-            description="Same as simple bank demo, but uses skaringa xml serialization" >
+    <target name="run.demo.bank.skaringa" depends="compile.core, -demo.init"
+            description="Same as simple bank demo, but uses Skaringa xml serialization" >
         <java dir="${cachedir.demo}" fork="true" classname="org.prevayler.demos.demo2.MainXml" >
             <classpath refid="build.run.classpath" />
             <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
