@@ -6,10 +6,6 @@
 package org.prevayler.foundation;
 
 import org.prevayler.foundation.monitor.Monitor;
-import org.prevayler.implementation.Capsule;
-import org.prevayler.implementation.TransactionCapsule;
-import org.prevayler.implementation.TransactionTimestamp;
-import org.prevayler.implementation.TransactionWithQueryCapsule;
 
 import java.io.BufferedInputStream;
 import java.io.EOFException;
@@ -19,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectStreamException;
 import java.io.UTFDataFormatException;
-import java.util.Date;
 
 public class DurableInputStream {
 
@@ -36,27 +31,7 @@ public class DurableInputStream {
 	}
 
 
-	public void skip() throws IOException {
-		readChunk();
-	}
-
-	public TransactionTimestamp read() throws IOException, ClassNotFoundException {
-		Chunk chunk = readChunk();
-		boolean withQuery = Boolean.valueOf(chunk.getParameter("withQuery")).booleanValue();
-		long systemVersion = Long.parseLong(chunk.getParameter("systemVersion"));
-		long executionTime = Long.parseLong(chunk.getParameter("executionTime"));
-
-		Capsule capsule;
-		if (withQuery) {
-			capsule = new TransactionWithQueryCapsule(chunk.getBytes());
-		} else {
-			capsule = new TransactionCapsule(chunk.getBytes());
-		}
-
-		return new TransactionTimestamp(capsule, systemVersion, new Date(executionTime));
-	}
-
-	private Chunk readChunk() throws IOException {
+	public Chunk readChunk() throws IOException {
 		if (_EOF) throw new EOFException();
 
 		try {

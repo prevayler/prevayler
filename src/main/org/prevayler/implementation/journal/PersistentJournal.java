@@ -5,18 +5,23 @@
 
 package org.prevayler.implementation.journal;
 
+import org.prevayler.foundation.Chunk;
 import org.prevayler.foundation.DurableInputStream;
 import org.prevayler.foundation.DurableOutputStream;
 import org.prevayler.foundation.StopWatch;
 import org.prevayler.foundation.monitor.Monitor;
+import org.prevayler.implementation.Capsule;
 import org.prevayler.implementation.PrevaylerDirectory;
+import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
+import org.prevayler.implementation.TransactionWithQueryCapsule;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 
 /** A Journal that will write all transactions to .journal files.
@@ -158,30 +163,28 @@ public class PersistentJournal implements Journal {
 	}
 
 
-	private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, File initialJournal)
-			throws IOException, ClassNotFoundException {
+	private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, File initialJournal) throws IOException {
 		long recoveringTransaction = PrevaylerDirectory.journalVersion(initialJournal);
 		File journal = initialJournal;
 		DurableInputStream input = new DurableInputStream(journal, _monitor);
 
 		while(true) {
 			try {
+				Chunk chunk = input.readChunk();
+
 				if (recoveringTransaction >= initialTransaction) {
 					if (!journal.getName().endsWith(_journalSuffix)) {
-						input.skip(); // If this throws EOF, we're at the end of the journal, which is okay...
 						throw new IOException("There are transactions needing to be recovered from " +
 								journal + ", but only " + _journalSuffix + " files are supported");
 					}
 
-					TransactionTimestamp entry = input.read();
+					TransactionTimestamp entry = timestamp(chunk);
 
 					if (entry.systemVersion() != recoveringTransaction) {
 						throw new IOException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
 					}
 
 					subscriber.receive(entry);
-				} else {
-					input.skip();
 				}
 
 				recoveringTransaction++;
@@ -195,6 +198,21 @@ public class PersistentJournal implements Journal {
 			}
 		}
 		return recoveringTransaction;
+	}
+
+	private TransactionTimestamp timestamp(Chunk chunk) {
+		boolean withQuery = Boolean.valueOf(chunk.getParameter("withQuery")).booleanValue();
+		long systemVersion = Long.parseLong(chunk.getParameter("systemVersion"));
+		long executionTime = Long.parseLong(chunk.getParameter("executionTime"));
+
+		Capsule capsule;
+		if (withQuery) {
+			capsule = new TransactionWithQueryCapsule(chunk.getBytes());
+		} else {
+			capsule = new TransactionCapsule(chunk.getBytes());
+		}
+
+		return new TransactionTimestamp(capsule, systemVersion, new Date(executionTime));
 	}
 
 	protected void handle(IOException iox, File journal, String action) {

@@ -1,21 +1,12 @@
 package org.prevayler.foundation;
 
-import org.prevayler.foundation.monitor.NullMonitor;
-import org.prevayler.foundation.serialization.JavaSerializer;
-import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.implementation.AppendTransaction;
-import org.prevayler.implementation.TransactionCapsule;
-import org.prevayler.implementation.TransactionGuide;
-import org.prevayler.implementation.TransactionTimestamp;
-
-import java.io.EOFException;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.util.Date;
+import java.io.OutputStream;
 
 public class DurableOutputStreamTest extends FileIOTest {
-
-	private final Serializer _journalSerializer = new JavaSerializer();
 
 	public void testSingleThreaded() throws Exception {
 		for (int i = 0; i < 10 /*5000*/; i++) {
@@ -26,36 +17,21 @@ public class DurableOutputStreamTest extends FileIOTest {
 			DurableOutputStream out = new DurableOutputStream(file);
 
 			Turn myTurn = Turn.first();
-			out.sync(new TransactionGuide(timestamp("first"), myTurn));
-			out.sync(new TransactionGuide(timestamp("second"), myTurn.next()));
+			out.sync(new DummyGuide("first", myTurn));
+			out.sync(new DummyGuide("second", myTurn.next()));
 			out.close();
 
 			assertTrue(out.reallyClosed());
 			assertEquals(2, out.fileSyncCount());
 
-			DurableInputStream in = new DurableInputStream(file, new NullMonitor());
-			assertEquals("first", value(in.read()));
-			assertEquals("second", value(in.read()));
-			try {
-				in.read();
-				fail("expected end of file");
-			} catch (EOFException e) {
-			}
-
-			in.close();
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			assertEquals("first", reader.readLine());
+			assertEquals("second", reader.readLine());
+			assertEquals(null, reader.readLine());
+			reader.close();
 
 			delete(file);
 		}
-	}
-
-	private long _systemVersion = 42;
-
-	private TransactionTimestamp timestamp(String value) {
-		return new TransactionTimestamp(new TransactionCapsule(new AppendTransaction(value), _journalSerializer), _systemVersion++, new Date());
-	}
-
-	private String value(TransactionTimestamp timestamp) {
-		return ((AppendTransaction) timestamp.capsule().deserialize(_journalSerializer)).toAdd;
 	}
 
 	public void testMultiThreaded() throws Exception {
@@ -92,31 +68,43 @@ public class DurableOutputStreamTest extends FileIOTest {
 			assertTrue(out.reallyClosed());
 			assertEquals(syncsBeforeClose, out.fileSyncCount());
 
-			DurableInputStream in = new DurableInputStream(file, new NullMonitor());
-			assertEquals("2.first", value(in.read()));
-			assertEquals("1.first", value(in.read()));
-			assertEquals("2.second", value(in.read()));
-			assertEquals("1.second", value(in.read()));
-			try {
-				in.read();
-				fail("expected end of file");
-			} catch (EOFException e) {
-			}
-
-			in.close();
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			assertEquals("2.first", reader.readLine());
+			assertEquals("1.first", reader.readLine());
+			assertEquals("2.second", reader.readLine());
+			assertEquals("1.second", reader.readLine());
+			assertEquals(null, reader.readLine());
+			reader.close();
 
 			delete(file);
 		}
 	}
 
-	class Worker implements Runnable {
-		DurableOutputStream _out;
-		int _id;
-		Turn _firstTurn;
-		Turn _secondTurn;
-		Exception _ex;
+	private static class DummyGuide extends Guided {
 
-		Worker(DurableOutputStream out, int id, Turn firstTurn, Turn secondTurn) {
+		private final String _value;
+
+		public DummyGuide(String value, Turn turn) {
+			super(turn);
+			_value = value;
+		}
+
+		public void writeTo(OutputStream stream) throws IOException {
+			stream.write(_value.getBytes());
+			stream.write('\n');
+		}
+
+	}
+
+	private static class Worker implements Runnable {
+
+		private final DurableOutputStream _out;
+		private final int _id;
+		private final Turn _firstTurn;
+		private final Turn _secondTurn;
+		public Exception _ex;
+
+		public Worker(DurableOutputStream out, int id, Turn firstTurn, Turn secondTurn) {
 			_out = out;
 			_id = id;
 			_firstTurn = firstTurn;
@@ -125,11 +113,13 @@ public class DurableOutputStreamTest extends FileIOTest {
 
 		public void run() {
 			try {
-				_out.sync(new TransactionGuide(timestamp(_id + ".first"), _firstTurn));
-				_out.sync(new TransactionGuide(timestamp(_id + ".second"), _secondTurn));
+				_out.sync(new DummyGuide(_id + ".first", _firstTurn));
+				_out.sync(new DummyGuide(_id + ".second", _secondTurn));
 			} catch (IOException e) {
 				_ex = e;
 			}
 		}
+
 	}
+
 }
