@@ -65,13 +65,7 @@ public class CentralPublisher extends AbstractPublisher {
 
 		Date executionTime = realTime(myTurn);  //TODO realTime() and approve in the same turn.
 		approve(transaction, executionTime, myTurn);
-		
-		_journal.append(transaction, executionTime, myTurn);
-		synchronized (_transactionsToJournalMonitor) {
-			_transactionsToJournal--;
-			if (_transactionsToJournal == 0) _transactionsToJournalMonitor.notify(); 
-		}
-		
+		journal(transaction, myTurn, executionTime);
 		notifySubscribers(transaction, executionTime, myTurn);
 	}
 
@@ -111,7 +105,16 @@ public class CentralPublisher extends AbstractPublisher {
 		myTurn.alwaysSkip();
 	}
 
+	
+	private void journal(Transaction transaction, Turn myTurn, Date executionTime) {
+		_journal.append(transaction, executionTime, myTurn);
+		synchronized (_transactionsToJournalMonitor) {
+			_transactionsToJournal--;
+			if (_transactionsToJournal == 0) _transactionsToJournalMonitor.notify(); 
+		}
+	}
 
+	
 	private void notifySubscribers(Transaction transaction, Date executionTime, Turn myTurn) {
 		try {
 			myTurn.start();
