@@ -10,7 +10,7 @@ import java.util.Date;
 /** A system that has a clock which it used for all its date/time related functions.
  * If any business object were to access the system clock directly, with methods like new Date() and System.currentTimeMillis(), its behaviour would NOT be deterministic. You can use this as the base class for your own prevalent systems.
  */
-public abstract class AbstractClockedSystem implements java.io.Serializable {
+public abstract class AbstractClockedSystem implements java.io.Serializable, ClockedSystem {
 
 	private BrokenClock _brokenClock = new BrokenClock();
 
