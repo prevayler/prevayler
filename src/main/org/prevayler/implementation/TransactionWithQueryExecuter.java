@@ -11,14 +11,6 @@ import org.prevayler.*;
 
 public class TransactionWithQueryExecuter implements Transaction {
 
-	public static Transaction wrap(Object transactionPossiblyWithQuery) {
-		if (transactionPossiblyWithQuery instanceof TransactionWithQuery) {
-			return new TransactionWithQueryExecuter((TransactionWithQuery) transactionPossiblyWithQuery);
-		} else {
-			return (Transaction) transactionPossiblyWithQuery;
-		}
-	}
-
 	public static Object strip(Transaction possiblyWithQueryExecuter) {
 		if (possiblyWithQueryExecuter instanceof TransactionWithQueryExecuter) {
 			return ((TransactionWithQueryExecuter) possiblyWithQueryExecuter)._delegate;

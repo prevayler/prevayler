@@ -22,7 +22,6 @@ public class Suite extends TestCase {
 		suite.addTestSuite(PersistenceTest.class);
 		suite.addTestSuite(JournalFileRollingTest.class);
 		suite.addTestSuite(SkipOldTransactionsTest.class);
-		suite.addTestSuite(HideTransactionWithQueryExecuterFromSerializersTest.class);
 		suite.addTestSuite(ChunkingTest.class);
 		suite.addTestSuite(CheckpointTest.class);
 		suite.addTestSuite(RollbackTest.class);

@@ -9,7 +9,6 @@ import org.prevayler.Transaction;
 import org.prevayler.foundation.DeepCopier;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
-import org.prevayler.implementation.TransactionWithQueryExecuter;
 
 import java.util.Date;
 
@@ -44,7 +43,7 @@ public class StrictTransactionCensor implements TransactionCensor {
 
 	private Transaction deepCopy(Transaction transaction) {
 		try {
-			return TransactionWithQueryExecuter.wrap(DeepCopier.deepCopy(TransactionWithQueryExecuter.strip(transaction), _journalSerializer));
+			return (Transaction)DeepCopier.deepCopy(transaction, _journalSerializer);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new RuntimeException("Unable to produce a copy of the transaction for trying out before applying it to the real system.");
