@@ -1,4 +1,4 @@
-package org.prevayler.socketserver.example.transactions;
+package junkyard;
 
 /*
  * Copyright (c) 2003 Advanced Systems Concepts, Inc.  All rights reserved.
@@ -9,14 +9,9 @@ package org.prevayler.socketserver.example.transactions;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
-import org.prevayler.Transaction;
 import org.prevayler.socketserver.example.server.Todo;
 import org.prevayler.socketserver.example.server.TodoList;
-import org.prevayler.socketserver.transactions.RemoteTransaction;
 import org.prevayler.socketserver.util.Log;
 
 /**

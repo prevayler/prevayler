@@ -1,4 +1,4 @@
-package org.prevayler.socketserver.example.transactions;
+package junkyard;
 
 import java.beans.PropertyDescriptor;
 
