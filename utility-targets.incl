@@ -23,6 +23,11 @@
         -->
         <echo>compsrcdir  : ${compsrcdir}${line.separator}compdestdir : ${compdestdir}${line.separator}compincludes: ${compincludes}${line.separator}compexcludes: ${compexcludes}${line.separator}compcprefid : ${compcprefid}</echo>
         <!-- Compile Java classes as necessary -->
+        <depend
+            srcdir="${compsrcdir}"
+            destdir="${compdestdir}"
+            cache="${compdestdir}/../dependcache"
+            closure="yes" />
         <javac
             srcdir="${compsrcdir}"
             destdir="${compdestdir}"
