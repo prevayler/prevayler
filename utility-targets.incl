@@ -2,12 +2,164 @@
 <!-- ==================== General Utility Targets ========================= -->
 <!-- ====================================================================== -->
 
+<!-- ==================== Compile Targets ================================ -->
+
+    <target name="-compile.sub" >
+        <!-- default values to use if not overridden.  "csrcdir" and "cdestdir" must be specified -->
+        <property name="cincludes" value="**/*.java" />
+        <property name="cexcludes" value="**/old**/**" />
+        <property name="ccprefid"  value="build.main.classpath" />
+        <echo>csrcdir  : ${csrcdir}${line.separator}cdestdir : ${cdestdir}${line.separator}cincludes: ${cincludes}${line.separator}cexcludes: ${cexcludes}${line.separator}ccprefid : ${ccprefid}</echo>
+        <!-- Compile Java classes as necessary -->
+        <javac
+            srcdir="${csrcdir}"
+            destdir="${cdestdir}"
+            includes="${cincludes}"
+            excludes="${cexcludes}"
+            debug="${build.debug}"
+            deprecation="${build.deprecation}"
+            optimize="${build.optimize}"
+            verbose="${build.verbose}">
+            <classpath refid="${ccprefid}" />
+        </javac>
+
+        <!-- Loop through java source directories. Since the javac task can
+             take multiple colon-separated source directories but filesets
+             don't provide the same functionality, we can't just directly use
+             a copy task, or the fileset used in the copy task will fail.
+             Instead, we loop through the colon-separated source directories
+             and pass each directory individually to a target containing a
+             copy task. If the source directory is a single one, this will act
+             just like an antcall, so it is compatible with single or multiple
+             source directories. The one caveat is that source directories need
+             to be made relative rather than absolute or this will fail on
+             Windows. Since we loop on the colon, source paths prefixed with a
+             drive letter + colon will be incorrectly parsed. This is solved
+             using a pathelement + pathconvert + map combo on a single, fully
+             qualified, source direcory like the following...
+             <pathconvert targetos="unix" property="somepath.unix">
+                <path><pathelement location="${somepath}"/></path>
+                <map from="${basedir}${file.separator}" to=""/>
+            </pathconvert>
+            This provides the following behavior...
+            somepath=C:\myclasses\builds\myproject\src\main
+            somepath.unix=src/main
+            
+            If one specifies colon-separated paths by hand in, for instance, a
+            properties file, then the paths should be relative or they should,
+            at least, be specified without using drive letters. Paths prefixed
+            with "/" on Windows are interpereted by ant to be pointing to the
+            root of the current drive and won't confuse a foreach loop
+            delimited by a colon. Otherwise, if one is able to define each
+            pathelement separately, paths can be pathconverted to appropriate
+            relative colon-separated paths using the pathconvert example above,
+            but removing targetos="unix" and adding dirSep="/" and pathSep=":".
+        -->
+        <!--<echo>[${srcdir}]</echo>-->
+        <pathconvert targetos="unix" property="csrcdir.unix">
+            <path><pathelement location="${csrcdir}"/></path>
+            <map from="${basedir}${file.separator}" to=""/>
+        </pathconvert>
+        <!--<echo>[${srcdir.unix}]</echo>-->
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties" >
+            <classpath refid="build.classpath" />
+        </taskdef>
+        <foreach list="${csrcdir.unix}" target="-post.compile" param="cresdir" delimiter=":" trim="true" >
+            <param name="cdestdir"  value="${cdestdir}" />
+            <param name="cincludes" value="${cincludes}" />
+            <param name="cexcludes" value="${cexcludes}" />
+        </foreach>
+    </target>
+
+    <target name="-post.compile" if="cresdir" >
+        <echo>copy resources from [${cresdir}]</echo>
+        <!-- Copy application resources -->
+        <copy todir="${cdestdir}" >
+            <fileset
+                dir="${cresdir}"
+                excludes="${cexcludes}, **/*.java, **/project.xml, **/build.*, **/log4j.*"
+                includes="${cincludes},
+                          **/*.properties,
+                          **/*.ini,
+                          **/*.character-sets,
+                          **/*.dtd,
+                          **/*.xsd,
+                          **/*.*ml" />
+        </copy>
+    </target>
+
+
+<!-- ==================== Javadoc Targets ================================ -->
+
+    <target name="-javadoc.sub" >
+        <property name="jdexcludepackagenames" value="" />
+        <condition property="javadoc.breakiterator" value="-breakiterator" >
+            <or>
+                <equals arg1="${ant.java.version}" arg2="1.4" />
+                <equals arg1="${ant.java.version}" arg2="1.5" />
+            </or>
+        </condition>
+        <property name="javadoc.breakiterator" value="" />
+
+        <condition property="javadoc.jdk.href" value="http://java.sun.com/products/jdk/1.2/docs/api/">
+            <equals arg1="${ant.java.version}" arg2="1.2" />
+        </condition>
+        <condition property="javadoc.jdk.href" value="http://java.sun.com/j2se/1.3/docs/api/">
+            <equals arg1="${ant.java.version}" arg2="1.3" />
+        </condition>
+        <condition property="javadoc.jdk.href" value="http://java.sun.com/j2se/1.4/docs/api/">
+            <equals arg1="${ant.zojava.version}" arg2="1.4" />
+        </condition>
+        <condition property="javadoc.jdk.href" value="http://java.sun.com/j2se/1.5/docs/api/">
+            <equals arg1="${ant.java.version}" arg2="1.5" />
+        </condition>
+        <property name="javadoc.jdk.href" value="" />
+
+        <property name="javadoc.jdk.offline" value="false" />
+        <property name="javadoc.jdk.packaglistLoc" value="" />
+
+        <javadoc
+            sourcepath="${jdsourcepath}"
+            packagenames="${jdpackagenames}"
+            excludepackagenames="${jdexcludepackagenames}"
+            destdir="${jddestdir}"
+            author="true"
+            version="true"
+            use="true"
+            additionalparam="${javadoc.breakiterator}"
+            windowtitle="${app.name}&#8482; v${app.version} API Documentation" >
+
+            <!-- <packageset...> below only works with Ant 1.5+.
+                 We can use <packageset...> and remove "packagenames", "excludepackagenames",
+                 and "sourcepath" attributes of the javadoc task -->
+            <!--<packageset dir="${jdsourcepath}" defaultexcludes="yes" >
+                <include name="${src.package.path}/**" />
+            </packageset>-->
+
+            <header><![CDATA[<a href="${app.url}" target="_blank">${app.name} Online</a>]]></header>
+            <doctitle><![CDATA[<h1>${app.Name}</h1>]]></doctitle>
+            <footer><![CDATA[<a href="${app.url}" target="_blank">${app.name} Online</a>]]></footer>
+            <bottom><![CDATA[<i>${app.trademark}<br>Copyright &#169; ${app.year} ${app.company} All Rights Reserved.</i>]]></bottom>
+            <link offline="${javadoc.jdk.offline}" href="${javadoc.jdk.href}" packagelistLoc="${javadoc.jdk.packagelistLoc}" />
+            <classpath refid="build.main.classpath" />
+        </javadoc>
+    </target>
+
+
+<!-- ==================== Jar Targets ================================ -->
+
+    <target name="-jar.sub" if="jarfile" >
+        <jar jarfile="${jarfile}"
+             basedir="${jbasedir}"
+             excludes="${jexcludes}" />
+    </target>
+
 
 <!-- ==================== Download Targets ================================ -->
 
     <target name="clean.dependencies"
             description="Removes downloaded library dependencies" >
-        <delete dir="${dependencies.home}" />
+        <delete dir="${dependenciesdir}" />
     </target>
 
     <target name="-proxyflags">
@@ -28,24 +180,24 @@
     </target>
 
     <target name="-downloadfile" unless="destfileexists!" depends="-setproxy, -testdestfileexist">
-        <get src="${sourcefile}" dest="${dependencies.home}/file" />
-        <move file="${dependencies.home}/file" tofile="${destfile}" />
+        <get src="${sourcefile}" dest="${dependenciesdir}/file" />
+        <move file="${dependenciesdir}/file" tofile="${destfile}" />
     </target>
 
     <target name="-downloadzip" unless="destfileexists!" depends="-setproxy, -testdestfileexist">
         <!-- Download and extract the package -->
-        <get src="${sourcefile}" dest="${dependencies.home}/file.zip" />
-        <unzip src="${dependencies.home}/file.zip" dest="${dependencies.home}"/>
-        <delete file="${dependencies.home}/file.zip"/>
+        <get src="${sourcefile}" dest="${dependenciesdir}/file.zip" />
+        <unzip src="${dependenciesdir}/file.zip" dest="${dependenciesdir}"/>
+        <delete file="${dependenciesdir}/file.zip"/>
     </target>
 
     <target name="-downloadgz" unless="destfileexists!" depends="-setproxy, -testdestfileexist">
         <!-- Download and extract the package -->
-        <get src="${sourcefile}" dest="${dependencies.home}/file.tar.gz" />
-        <gunzip src="${dependencies.home}/file.tar.gz" dest="${dependencies.home}/file.tar"/>
-        <untar src="${dependencies.home}/file.tar" dest="${dependencies.home}"/>
-        <delete file="${dependencies.home}/file.tar"/>
-        <delete file="${dependencies.home}/file.tar.gz"/>
+        <get src="${sourcefile}" dest="${dependenciesdir}/file.tar.gz" />
+        <gunzip src="${dependenciesdir}/file.tar.gz" dest="${dependenciesdir}/file.tar"/>
+        <untar src="${dependenciesdir}/file.tar" dest="${dependenciesdir}"/>
+        <delete file="${dependenciesdir}/file.tar"/>
+        <delete file="${dependenciesdir}/file.tar.gz"/>
     </target>
 
 
@@ -63,7 +215,7 @@
 
     <target name="download.vizant" depends="-proxyflags"
             description="Download binary package needed to run vizant" >
-        <mkdir dir="${dependencies.home}" />
+        <mkdir dir="${dependenciesdir}" />
         <!-- Downdown any sub package or tools needed. -->
         <antcall target="-downloadfile">
             <param name="sourcefile" value="${vizant.loc}"/>
