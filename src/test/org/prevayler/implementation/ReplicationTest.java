@@ -70,7 +70,7 @@ public class ReplicationTest extends FileIOTest {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configureReplicationServer(PrevaylerFactory.DEFAULT_REPLICATION_PORT + portOffset);
 		factory.configurePrevalentSystem(new AppendingSystem());
-		factory.configurePrevalenceBase(_testDirectory + File.separator + "server");
+		factory.configurePrevalenceDirectory(_testDirectory + File.separator + "server");
 		factory.configureTransientMode(true);
 		_server = factory.create();
 	}
@@ -79,7 +79,7 @@ public class ReplicationTest extends FileIOTest {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configureReplicationClient("localhost", PrevaylerFactory.DEFAULT_REPLICATION_PORT + portOffset);
 		factory.configurePrevalentSystem(new AppendingSystem());
-		factory.configurePrevalenceBase(_testDirectory + File.separator + "client");
+		factory.configurePrevalenceDirectory(_testDirectory + File.separator + "client");
 		_client = factory.create();
 	}
 
@@ -88,7 +88,7 @@ public class ReplicationTest extends FileIOTest {
 		factory.configureReplicationClient("localhost", PrevaylerFactory.DEFAULT_REPLICATION_PORT + remoteServerPortOffset);
 		factory.configureReplicationServer(PrevaylerFactory.DEFAULT_REPLICATION_PORT + serverPortOffset);
 		factory.configurePrevalentSystem(new AppendingSystem());
-		factory.configurePrevalenceBase(_testDirectory + File.separator + "clientWithServer");
+		factory.configurePrevalenceDirectory(_testDirectory + File.separator + "clientWithServer");
 		_clientWithServer = factory.create();
 	}
 

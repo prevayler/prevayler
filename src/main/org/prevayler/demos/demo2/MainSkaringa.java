@@ -11,7 +11,7 @@ public class MainSkaringa {
 		out("A snapshot using Skaringa's XML serialization will be taken every 20 seconds...");
 
 		PrevaylerFactory factory = new PrevaylerFactory();
-		factory.configurePrevalenceBase("demo2Skaringa");
+		factory.configurePrevalenceDirectory("demo2Skaringa");
 		factory.configureSnapshotManager(new SkaringaSnapshotManager(new Bank(), "demo2Skaringa"));
 		Prevayler prevayler = factory.create();
 

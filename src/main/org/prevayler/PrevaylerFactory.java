@@ -39,7 +39,7 @@ public class PrevaylerFactory {
 	private boolean _transactionFiltering = true;
 
 	private boolean _transientMode;
-	private String _prevalenceBase;
+	private String _prevalenceDirectory;
 	private SnapshotManager _snapshotManager;
 
 	private long _journalSizeThreshold;
@@ -69,7 +69,7 @@ public class PrevaylerFactory {
 	public static Prevayler createPrevayler(Serializable newPrevalentSystem, String prevalenceBase) throws IOException, ClassNotFoundException {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(newPrevalentSystem);
-		factory.configurePrevalenceBase(prevalenceBase);
+		factory.configurePrevalenceDirectory(prevalenceBase);
 		return factory.create();
 	}
 
@@ -107,7 +107,7 @@ public class PrevaylerFactory {
 	public static Prevayler createCheckpointPrevayler(Serializable newPrevalentSystem, String snapshotDirectory) {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(newPrevalentSystem);
-		factory.configurePrevalenceBase(snapshotDirectory);
+		factory.configurePrevalenceDirectory(snapshotDirectory);
 		factory.configureTransientMode(true);
 		try {
 			return factory.create();
@@ -149,8 +149,8 @@ public class PrevaylerFactory {
 	/** Configures the directory where the created Prevayler will read and write its .journal and .snapshot files. The default is a directory called "PrevalenceBase" under the current directory.
 	 * @param prevalenceBase Will be ignored for the .snapshot files if a SnapshotManager is configured.
 	 */
-	public void configurePrevalenceBase(String prevalenceBase) {
-		_prevalenceBase = prevalenceBase;
+	public void configurePrevalenceDirectory(String prevalenceDirectory) {
+		_prevalenceDirectory = prevalenceDirectory;
 	}
 
 
@@ -228,7 +228,7 @@ public class PrevaylerFactory {
 
 
     private String prevalenceBase() {
-		return _prevalenceBase != null ? _prevalenceBase : "PrevalenceBase";
+		return _prevalenceDirectory != null ? _prevalenceDirectory : "PrevalenceBase";
 	}
 
 

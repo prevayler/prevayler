@@ -19,7 +19,7 @@ public class MainReplicaServer {
 
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new Bank());
-		factory.configurePrevalenceBase("demo2");
+		factory.configurePrevalenceDirectory("demo2");
 		factory.configureReplicationServer(PrevaylerFactory.DEFAULT_REPLICATION_PORT);
 		Prevayler prevayler = factory.create();
 

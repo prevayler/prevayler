@@ -15,7 +15,7 @@ public class MainXStream {
 		out("A snapshot using XStream's XML serialization will be taken every 20 seconds...");
 
 		PrevaylerFactory factory = new PrevaylerFactory();
-		factory.configurePrevalenceBase("demo2XStream");
+		factory.configurePrevalenceDirectory("demo2XStream");
 		
 		XStream xstream = new XStream();
 		xstream.alias("bank", Bank.class);
