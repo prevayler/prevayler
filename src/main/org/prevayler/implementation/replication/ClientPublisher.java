@@ -8,7 +8,6 @@ import org.prevayler.Clock;
 import org.prevayler.foundation.network.Network;
 import org.prevayler.foundation.network.ObjectSocket;
 import org.prevayler.implementation.Capsule;
-import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.clock.BrokenClock;
 import org.prevayler.implementation.publishing.TransactionPublisher;
@@ -134,7 +133,7 @@ public class ClientPublisher implements TransactionPublisher {
 			return;
 		}
 
-		TransactionCapsule capsule = (TransactionCapsule) transactionCandidate;
+		Capsule capsule = (Capsule) transactionCandidate;
 		_subscriber.receive(new TransactionTimestamp(capsule, systemVersion, timestamp));
 	}
 
