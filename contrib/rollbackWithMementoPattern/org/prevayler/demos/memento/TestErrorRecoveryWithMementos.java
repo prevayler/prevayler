@@ -75,7 +75,7 @@ public class TestErrorRecoveryWithMementos {
   
   private static Object execute(MementoTransaction command) {
     try {
-      return new MementoManagerCommand(command).executeAndQuery(prevayler.prevalentSystem());
+      return new MementoManagerCommand(command).executeOn(prevayler.prevalentSystem(), prevayler.clock().time());
     } catch (Exception exception) {
       System.out.println("FAILURE!");
       exception.printStackTrace(System.out);

@@ -2,6 +2,7 @@ package org.prevayler.demos.memento.commands;
 
 import java.io.Serializable;
 import javax.swing.JOptionPane;
+import java.util.Date;
 import org.prevayler.util.memento.MementoCollector;
 import org.prevayler.util.memento.MementoTransaction;
 import org.prevayler.demos.memento.Account;
@@ -59,7 +60,7 @@ public class Deposit extends MementoTransaction {
       throw new RuntimeException();
     }
     
-    account.deposit(amount);
+    account.deposit(amount, new Date()); //dummy'ed date to make things work
     
     System.out.println("* Deposited " + amount + " into account " + account.numberString());
     

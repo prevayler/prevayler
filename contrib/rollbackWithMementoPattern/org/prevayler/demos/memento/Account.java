@@ -112,7 +112,7 @@ public class Account implements java.io.Serializable {
     }
 
 	public class InvalidAmount extends Exception {
-		InvalidAmount(String message) {
+		public InvalidAmount(String message) {
 			super(message);
 		}
 	}
@@ -122,7 +122,7 @@ public class Account implements java.io.Serializable {
 	}
 
 	public class InvalidHolder extends Exception {
-		InvalidHolder() {
+		public InvalidHolder() {
 			super("Invalid holder name.");
 		}
 	}
