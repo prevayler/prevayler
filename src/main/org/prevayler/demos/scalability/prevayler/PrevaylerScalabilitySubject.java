@@ -24,4 +24,5 @@ abstract class PrevaylerScalabilitySubject implements ScalabilityTestSubject {
 			throw new RuntimeException("Unexpected Exception: " + ex);
 		}
 	}
+
 }
