@@ -100,7 +100,7 @@
             <fileset dir="${basedir}" >
                 <include name="PrevalenceBase**/**" />
                 <include name="**Test/**" />
-                <include name="ScalabilityTestProperties.txt" />
+                <include name="ScalabilityTest.properties" />
             </fileset>
         </delete>
 
@@ -306,24 +306,23 @@
 
 <!-- ==================== Test Targets ================================== -->
 
+    <target name="run.test.functional" depends="compile"
+            description="Runs the functional tests used to test Prevayler during development" >
+
+        <java fork="true" classname="org.prevayler.test.Main" >
+            <classpath refid="build.test.classpath" />
+        </java>
+
+    </target>
+
     <target name="run.test.scalability" depends="compile"
             description="Runs manipulation and query scalability tests against Prevayler and any JDBC database" >
 
-        <java fork="true" classname="org.prevayler.test.scalability.ScalabilityTest" >
+        <java fork="true" classname="org.prevayler.test.scalability.Main" >
             <classpath refid="build.test.classpath" />
         </java>
 
     </target>
-
-    <target name="run.test.full" depends="compile"
-            description="Runs the functional tests used to test Prevayler during development" >
-
-        <java fork="true" classname="org.prevayler.test.FullTest" >
-            <classpath refid="build.test.classpath" />
-        </java>
-
-    </target>
-
 
 <!-- ==================== Demo Targets ================================== -->
 
@@ -373,16 +372,5 @@
         </parallel>
 
     </target>
-
-<!--
-    <target name="run.demo.addingmachine" depends="compile.core"
-            description="Runs the simple adding machine demonstration and usage of 'SnapshotMaker'" >
-
-        <java fork="false" classname="org.prevayler.demos.demo3.Main" >
-            <classpath refid="build.test.classpath" />
-        </java>
-
-    </target>
--->
 
 </project>
