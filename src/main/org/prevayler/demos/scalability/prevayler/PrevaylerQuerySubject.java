@@ -12,7 +12,11 @@ public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject {
 
 	public PrevaylerQuerySubject() throws java.io.IOException, ClassNotFoundException {
 		if (new File(PREVALENCE_BASE).exists()) PrevalenceTest.delete(PREVALENCE_BASE);
-		prevayler = PrevaylerFactory.createPrevayler(new QuerySystem(), PREVALENCE_BASE);
+		PrevaylerFactory factory = new PrevaylerFactory();
+		factory.configurePrevalentSystem(new QuerySystem());
+		factory.configurePrevalenceDirectory(PREVALENCE_BASE);
+		factory.configureTransactionFiltering(false);
+		prevayler = factory.create();
 	}
 
 
