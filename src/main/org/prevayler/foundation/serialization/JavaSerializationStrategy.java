@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Writes and reads objects using Java serialization. This strategy can be used for both snapshots and journals.
+ * Writes and reads objects using Java serialization. This strategy can be used for snapshots, journals or both.
  */
 public class JavaSerializationStrategy extends AbstractSerializationStrategy {
 

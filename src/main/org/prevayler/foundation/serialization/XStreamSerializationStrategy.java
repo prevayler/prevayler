@@ -8,7 +8,7 @@ import com.thoughtworks.xstream.XStream;
 
 
 /**
- * Writes and reads objects using XML. This strategy works for both snapshots and journals.
+ * Writes and reads objects using XML. This strategy can be used for snapshots, journals or both.
  *
  * <p>This implementation requires the <a href="http://xstream.codehaus.org/">XStream</a>
  * Java and XML language binding framework which provides for Java object XML serialization.</p>
