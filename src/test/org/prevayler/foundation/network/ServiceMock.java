@@ -18,8 +18,8 @@ import org.prevayler.foundation.Cool;
 /**
  * Useful class comments should go here
  *
- * $Revision: 1.1 $
- * $Date: 2005/01/13 02:12:14 $
+ * $Revision: 1.2 $
+ * $Date: 2005/02/16 04:28:34 $
  * $Author: peter_mxgroup $
  */
 public class ServiceMock implements Service {
@@ -29,7 +29,7 @@ public class ServiceMock implements Service {
     private Map serverMock = new HashMap(); // the testcode receiver
     private int index = 1;
 
-    public ObjectReceiver serverFor(ObjectReceiver client) {
+    public synchronized ObjectReceiver serverFor(ObjectReceiver client) {
         Integer key = new Integer(index);
         ObjectReceiver mock = new ObjectReceiverMock();
         serverMock.put(key, mock);

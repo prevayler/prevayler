@@ -8,40 +8,20 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.prevayler.foundation.Cool;
 
-public class NetworkMock implements OldNetwork {
 
-	private final Map _serverSocketByPort = new HashMap();
-	private Permit _permit = new Permit();
+public class NetworkMock extends BaseNetworkMock 
+                         implements OldNetwork {
+
 	
 	public synchronized ObjectSocket openSocket(String serverIpAddress, int serverPort) throws IOException {
-		if (!serverIpAddress.equals("localhost")) throw new IllegalArgumentException("Only localhost connections are supported by the NetworkMock.");
+	    crashIfNotLocal(serverIpAddress);
+        return startClient(serverPort);
 		
-		ObjectServerSocketMock server = server(serverPort); 
-		if (server == null) throw new IOException("No server is listening on this port.");
-		return server.openClientSocket();
 	}
 
 	public synchronized ObjectServerSocket openObjectServerSocket(int serverPort) throws IOException {
-		ObjectServerSocketMock old = server(serverPort);
-		if (old != null) throw new IOException("Port already in use.");
-
-		ObjectServerSocketMock result = new ObjectServerSocketMock(_permit);
-		_serverSocketByPort.put(new Integer(serverPort), result);
-		
-		return result;
+	    return startServer(serverPort);
 	}
-
-	public void crash() {
-		_permit.expire();
-	}
-
-	public void recover() {
-		_permit = new Permit();
-	}
-
-	private ObjectServerSocketMock server(int serverPort) {
-		return (ObjectServerSocketMock) _serverSocketByPort.get(new Integer(serverPort));
-	}
-
 }

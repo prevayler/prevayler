@@ -1,10 +1,27 @@
+/*
+ * BaseNetworkMock.java
+ *
+ * Copyright (c) 2004 MoneySwitch Ltd.
+ * Level 5, 55 Lavender St, Milsons Point 2061.
+ * All rights reserved.
+ *
+ */
 package org.prevayler.foundation.network;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.prevayler.foundation.Cool;
 
+
+/**
+ * Useful class comments should go here
+ *
+ * $Revision: 1.3 $
+ * $Date: 2005/02/16 04:28:34 $
+ * $Author: peter_mxgroup $
+ */
 public class BaseNetworkMock {
     protected final Map _serverSocketByPort = new HashMap();
     protected Permit _permit = new Permit();
@@ -27,7 +44,12 @@ public class BaseNetworkMock {
     protected ObjectSocket startClient(int serverPort) throws IOException {
         ObjectServerSocketMock server = findServer(serverPort); 
         if (server == null) throw new IOException("No server is listening on this port.");
-        return server.openClientSocket();
+        try {
+            return server.openClientSocket();
+        } catch (IOException e) {
+            Cool.sleep(5);
+            return server.openClientSocket(); //TODO Eliminate this retry because client must try and reconnect anyway.
+        }
     }
 
     protected ObjectServerSocket startServer(int serverPort) throws IOException {
