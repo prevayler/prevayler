@@ -10,10 +10,10 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Date;
 
-import org.prevayler.Monitor;
 import org.prevayler.Transaction;
 import org.prevayler.foundation.DurableOutputStream;
 import org.prevayler.foundation.FileManager;
+import org.prevayler.foundation.Monitor;
 import org.prevayler.foundation.SimpleInputStream;
 import org.prevayler.foundation.StopWatch;
 import org.prevayler.foundation.Turn;
@@ -21,7 +21,7 @@ import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 
-/** A Journal that will write all transactions to .transactionLog files.
+/** A Journal that will write all transactions to .journal files.
  */
 public class PersistentJournal implements FileFilter, Journal {
 
@@ -41,8 +41,8 @@ public class PersistentJournal implements FileFilter, Journal {
 
 	/**
 	 * @param directory Where transaction journal files will be read and written.
-	 * @param journalSizeThresholdInBytes Size of the current transactionLog file beyond which it is closed and a new one started. Zero indicates no size threshold. This is useful transactionLog backup purposes.
-	 * @param journalAgeThresholdInMillis Age of the current transactionLog file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful transactionLog backup purposes.
+	 * @param journalSizeThresholdInBytes Size of the current journal file beyond which it is closed and a new one started. Zero indicates no size threshold. This is useful journal backup purposes.
+	 * @param journalAgeThresholdInMillis Age of the current journal file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful journal backup purposes.
 	 */
 	public PersistentJournal(String directory, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis, ClassLoader loader, Monitor monitor) throws IOException {
 	    _monitor = monitor;
@@ -135,7 +135,7 @@ public class PersistentJournal implements FileFilter, Journal {
 	private void initializeNextTransaction(long initialTransactionWanted, long nextTransaction) throws IOException {
 		if (_nextTransactionInitialized) {
 			if (_nextTransaction < initialTransactionWanted) throw new IOException("The transaction log has not yet reached transaction " + initialTransactionWanted + ". The last logged transaction was " + (_nextTransaction - 1) + ".");
-			if (nextTransaction < _nextTransaction) throw new IOException("Unable to find transactionLog file containing transaction " + nextTransaction + ". Might have been manually deleted.");
+			if (nextTransaction < _nextTransaction) throw new IOException("Unable to find journal file containing transaction " + nextTransaction + ". Might have been manually deleted.");
 			if (nextTransaction > _nextTransaction) throw new IllegalStateException();
 			return;
 		}

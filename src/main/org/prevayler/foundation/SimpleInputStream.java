@@ -12,7 +12,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectStreamException;
 import java.io.UTFDataFormatException;
 
-import org.prevayler.Monitor;
 
 public class SimpleInputStream {
 

@@ -13,7 +13,7 @@ import java.util.*;
 class TransactionFilesReader {
 
 	private final File _transactionFile;
-	private final long _firstPossibleTransaction;   //This is the number in the name of the .transactionLog file.
+	private final long _firstPossibleTransaction;   //This is the number in the name of the .journal file.
 	private final LoggedTransactionRecoverer _recoverer;
 
 	private final TransactionFilesReader _previousFileReader;
@@ -120,10 +120,10 @@ class TransactionFilesReader {
 	}
 
 
-	/** 0000000000000000000-000.transactionLog is the format of the transaction log filename. The first long number (19 digits) is the number of the next transaction to be written at the moment the file is created. All transactions written to a file, therefore, have a sequence number greater or equal to the number in its filename. The second number (3 digits) is used just to distinguish between several files created at the same time by threads running in parallel. */
+	/** 0000000000000000000-000.journal is the format of the transaction log filename. The first long number (19 digits) is the number of the next transaction to be written at the moment the file is created. All transactions written to a file, therefore, have a sequence number greater or equal to the number in its filename. The second number (3 digits) is used just to distinguish between several files created at the same time by threads running in parallel. */
 	static private long number(File file) {
 		String name = file.getName();
-		if (!name.endsWith(".transactionLog")) throw new NotATransactionLogFile();
+		if (!name.endsWith(".journal")) throw new NotATransactionLogFile();
 		if (name.length != 38) throw new NotATransactionLogFile();
 		if (!name.getChar(19).equals('-')) throw new NotATransactionLogFile();
 		try {
@@ -138,9 +138,9 @@ class TransactionFilesReader {
 	static private void message(Exception exception) {
 		out(  "\n" + exception + " (File: " + logFile + ")" +
 			"\n   The above is a stream corruption that can be caused by:" +
-			"\n      - A system crash while writing to the transactionLog file (that is OK)." +
+			"\n      - A system crash while writing to the journal file (that is OK)." +
 			"\n      - A corruption in the file system (that is NOT OK)." +
-			"\n      - Tampering with the transactionLog file (that is NOT OK)." +
+			"\n      - Tampering with the journal file (that is NOT OK)." +
 			"\n   Looking for the next transaction...\n" );
 	}
 

@@ -9,7 +9,6 @@ import java.util.Date;
 
 import org.prevayler.Clock;
 import org.prevayler.Prevayler;
-import org.prevayler.Monitor;
 import org.prevayler.Query;
 import org.prevayler.SureTransactionWithQuery;
 import org.prevayler.Transaction;

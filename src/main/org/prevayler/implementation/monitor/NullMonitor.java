@@ -9,7 +9,7 @@ package org.prevayler.implementation.monitor;
 import java.io.File;
 import java.io.IOException;
 
-import org.prevayler.Monitor;
+import org.prevayler.foundation.Monitor;
 
 /**
  * A Null Monitor, that does no logging at all.
@@ -20,43 +20,43 @@ import org.prevayler.Monitor;
 public class NullMonitor implements Monitor {
 
     /**
-     * @see org.prevayler.Monitor#snapshotTaken(long)
+     * @see org.prevayler.foundation.Monitor#snapshotTaken(long)
      */
     public void snapshotTaken(long version) {
     }
 
     /**
-     * @see org.prevayler.Monitor#handleExceptionWhileCreatingLogFile(java.io.IOException, java.io.File)
+     * @see org.prevayler.foundation.Monitor#handleExceptionWhileCreatingLogFile(java.io.IOException, java.io.File)
      */
     public void handleExceptionWhileCreatingLogFile(IOException exception, File file) {
     }
 
     /**
-     * @see org.prevayler.Monitor#handleExceptionWhileWritingLogFile(java.io.IOException, java.io.File)
+     * @see org.prevayler.foundation.Monitor#handleExceptionWhileWritingLogFile(java.io.IOException, java.io.File)
      */
     public void handleExceptionWhileWritingLogFile(IOException exception, File file) {
     }
 
     /**
-     * @see org.prevayler.Monitor#ignoringStreamCorruption(java.lang.Exception, java.io.File)
+     * @see org.prevayler.foundation.Monitor#ignoringStreamCorruption(java.lang.Exception, java.io.File)
      */
     public void ignoringStreamCorruption(Exception exception, File file) {
     }
 
     /**
-     * @see org.prevayler.Monitor#journalInitialized(java.io.File, java.lang.ClassLoader, long, long)
+     * @see org.prevayler.foundation.Monitor#journalInitialized(java.io.File, java.lang.ClassLoader, long, long)
      */
     public void journalInitialized(File directory, ClassLoader loader, long sizeThresholdInBytes, long ageThresholdInMillis) {
     }
 
     /**
-     * @see org.prevayler.Monitor#readingTransactionLogFile(java.io.File, java.lang.ClassLoader)
+     * @see org.prevayler.foundation.Monitor#readingTransactionLogFile(java.io.File, java.lang.ClassLoader)
      */
     public void readingTransactionLogFile(File file, ClassLoader loader) {
     }
 
     /**
-     * @see org.prevayler.Monitor#lastSnapshotRecovered(long)
+     * @see org.prevayler.foundation.Monitor#lastSnapshotRecovered(long)
      */
     public void lastSnapshotRecovered(long version) {
     }

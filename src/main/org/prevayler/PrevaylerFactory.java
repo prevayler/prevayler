@@ -8,6 +8,7 @@ package org.prevayler;
 import java.io.IOException;
 import java.io.Serializable;
 
+import org.prevayler.foundation.*;
 import org.prevayler.implementation.PrevaylerImpl;
 import org.prevayler.implementation.clock.MachineClock;
 import org.prevayler.implementation.journal.PersistentJournal;
@@ -27,7 +28,7 @@ import org.prevayler.implementation.snapshot.SnapshotManager;
 
 /** Provides easy access to all Prevayler configurations and implementations available in this distribution.
  * Static methods are also provided as short-cuts for the most common configurations. 
- * <br>By default, the Prevayler instances created by this class will write their Transactions to .transactionLog files before executing them. The FileDescriptor.sync() method is called to make sure the Java file write-buffers have been written to the operating system. Many operating systems, including most recent versions of Linux and Windows, allow the hard-drive's write-cache to be disabled. This guarantees no executed Transaction will be lost in the event of a power shortage, for example.
+ * <br>By default, the Prevayler instances created by this class will write their Transactions to .journal files before executing them. The FileDescriptor.sync() method is called to make sure the Java file write-buffers have been written to the operating system. Many operating systems, including most recent versions of Linux and Windows, allow the hard-drive's write-cache to be disabled. This guarantees no executed Transaction will be lost in the event of a power shortage, for example.
  * <br>Also by default, the Prevayler instances created by this class will filter out all Transactions that would throw a RuntimeException or Error if executed on the Prevalent System. This requires enough RAM to hold another copy of the prevalent system. 
  * @see Prevayler 
  */
@@ -42,8 +43,8 @@ public class PrevaylerFactory {
 	private String _prevalenceBase;
 	private SnapshotManager _snapshotManager;
 
-	private long _transactionLogSizeThreshold;
-	private long _transactionLogAgeThreshold;
+	private long _journalSizeThreshold;
+	private long _journalAgeThreshold;
 	
 	private int _serverPort = -1;
 	private String _remoteServerIpAddress;
@@ -54,7 +55,7 @@ public class PrevaylerFactory {
 	public static final int DEFAULT_REPLICATION_PORT = 8756;
 
 
-	/** Creates a Prevayler that will use a directory called "PrevalenceBase" under the current directory to read and write its .snapshot and .transactionLog files.
+	/** Creates a Prevayler that will use a directory called "PrevalenceBase" under the current directory to read and write its .snapshot and .journal files.
  	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 */
 	public static Prevayler createPrevayler(Serializable newPrevalentSystem) throws IOException, ClassNotFoundException {
@@ -62,9 +63,9 @@ public class PrevaylerFactory {
 	}
 
 
-	/** Creates a Prevayler that will use the given prevalenceBase directory to read and write its .snapshot and .transactionLog files.
+	/** Creates a Prevayler that will use the given prevalenceBase directory to read and write its .snapshot and .journal files.
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
-	 * @param prevalenceBase The directory where the .snapshot files and .transactionLog files will be read and written.
+	 * @param prevalenceBase The directory where the .snapshot files and .journal files will be read and written.
 	 */
 	public static Prevayler createPrevayler(Serializable newPrevalentSystem, String prevalenceBase) throws IOException, ClassNotFoundException {
 		PrevaylerFactory factory = new PrevaylerFactory();
@@ -145,7 +146,7 @@ public class PrevaylerFactory {
 	}
 
 
-	/** Configures the directory where the created Prevayler will read and write its .transactionLog and .snapshot files. The default is a directory called "PrevalenceBase" under the current directory.
+	/** Configures the directory where the created Prevayler will read and write its .journal and .snapshot files. The default is a directory called "PrevalenceBase" under the current directory.
 	 * @param prevalenceBase Will be ignored for the .snapshot files if a SnapshotManager is configured.
 	 */
 	public void configurePrevalenceBase(String prevalenceBase) {
@@ -195,7 +196,7 @@ public class PrevaylerFactory {
 	 * Configures the size (in bytes) of the journal file.
 	 */
 	public void configureJournalFileSizeThreshold(long sizeInBytes) {
-		_transactionLogSizeThreshold = sizeInBytes;
+		_journalSizeThreshold = sizeInBytes;
 	}
 
 
@@ -203,7 +204,7 @@ public class PrevaylerFactory {
 	 * Sets the age (in milliseconds) of the journal file.
 	 */
 	public void configureJournalFileAgeThreshold(long ageInMilliseconds) {
-		_transactionLogAgeThreshold = ageInMilliseconds;
+		_journalAgeThreshold = ageInMilliseconds;
 	}
 
 	private ClassLoader classLoader() {
@@ -215,8 +216,8 @@ public class PrevaylerFactory {
 	}
 
 	/** Returns a Prevayler created according to what was defined by calls to the configuration methods above.
-	 * @throws IOException If there is trouble creating the Prevalence Base directory or reading a .transactionLog or .snapshot file.
-	 * @throws ClassNotFoundException If a class of a serialized Object is not found when reading a .transactionLog or .snapshot file.
+	 * @throws IOException If there is trouble creating the Prevalence Base directory or reading a .journal or .snapshot file.
+	 * @throws ClassNotFoundException If a class of a serialized Object is not found when reading a .journal or .snapshot file.
 	 */
 	public Prevayler create() throws IOException, ClassNotFoundException {
 		SnapshotManager snapshotManager = snapshotManager();
@@ -257,7 +258,7 @@ public class PrevaylerFactory {
 	private Journal journal() throws IOException {
 		return _transientMode
 			? (Journal)new TransientJournal()
-			: new PersistentJournal(prevalenceBase(), _transactionLogSizeThreshold, _transactionLogAgeThreshold, classLoader(), monitor());		
+			: new PersistentJournal(prevalenceBase(), _journalSizeThreshold, _journalAgeThreshold, classLoader(), monitor());		
 	}
 
 

@@ -10,7 +10,7 @@ public class Main {
 	
 	public static void main(String[] ignored) throws Exception {
 		out("\nOne snapshot per day is more than enough for most applications"
-			+ "\n  because the transactionLog recovery rate is in the order of"
+			+ "\n  because the journal recovery rate is in the order of"
 			+ "\n  6000 transactions per second. For demoing purposes, though, a"
 			+ "\n  snapshot will be taken every 20 seconds...");
 

@@ -13,7 +13,7 @@ import java.util.*;
 */
 public class TransactionLogManager {
 	
-	private final File _transactionLogDirectory;
+	private final File _journalDirectory;
 	private final int _transactionLogs;
 
 	private final List _availableLoggers = new LinkedList();

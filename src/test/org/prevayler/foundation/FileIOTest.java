@@ -34,6 +34,7 @@ public abstract class FileIOTest extends TestCase {
 
 	static public void delete(File file) {
 	    if (file.isDirectory()) deleteDirectoryContents(file);
+    	assertTrue("File does not exist: " + file, file.exists());
 	    if (!file.delete()) {
 	    	System.gc();
 	    	assertTrue("Unable to delete " + file, file.delete());

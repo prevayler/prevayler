@@ -6,7 +6,7 @@ import org.prevayler.demos.demo2.business.Bank;
 
 
 public class MainReplica {
-// TODO Fix exception that is thrown when replicating with no transactionLog created. 
+// TODO Fix exception that is thrown when replicating with no journal created. 
 	public static void main(String[] args) throws Exception {
 		out(    "This demo shows how your application can be replicated"
 			+ "\nwithout changing ONE SINGLE LINE OF CODE in the"

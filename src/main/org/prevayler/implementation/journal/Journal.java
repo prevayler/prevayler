@@ -11,7 +11,8 @@ import org.prevayler.Transaction;
 import org.prevayler.foundation.Turn;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
-// START SNIPPET: transactionLogger
+// START SNIPPET: journal
+ 
 public interface Journal {
 
 	public void append(Transaction transaction, Date executionTime, Turn threadSynchronizationTurn);
@@ -21,4 +22,4 @@ public interface Journal {
 	public void close() throws IOException;
 
 }
-// END SNIPPET: transactionLogger
+// END SNIPPET: journal

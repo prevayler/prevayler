@@ -4,7 +4,7 @@
 // ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 // FOR A PARTICULAR PURPOSE.
 // Contributed by Carlos Villela.
-package org.prevayler;
+package org.prevayler.foundation;
 
 import java.io.File;
 import java.io.IOException;
