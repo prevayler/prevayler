@@ -5,7 +5,6 @@
 package org.prevayler.implementation;
 
 import java.io.File;
-import java.io.FileFilter;
 
 import junit.framework.TestCase;
 
@@ -22,7 +21,7 @@ public abstract class PrevalenceTest extends TestCase {
 	}
 
 	protected void tearDown() throws Exception {
-//	    delete(_testDirectory);
+	    delete(_testDirectory);
 	}
 
 	protected void deleteFromTestDirectory(String fileName) {
