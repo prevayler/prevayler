@@ -17,7 +17,7 @@ public class GenericSnapshotManager {
 
 	private Map _strategies;
 	private String _primarySuffix;
-	private File _directory;
+	private FileManager _fileManager;
 	private long _recoveredVersion;
 	private Object _recoveredPrevalentSystem;
 
@@ -47,9 +47,10 @@ public class GenericSnapshotManager {
 		_strategies = strategies;
 		_primarySuffix = primarySuffix;
 
-		_directory = FileManager.produceDirectory(snapshotDirectoryName);
+		_fileManager = new FileManager(snapshotDirectoryName);
+		_fileManager.produceDirectory();
 
-		File latestSnapshot = FileManager.latestSnapshot(_directory);
+		File latestSnapshot = _fileManager.latestSnapshot();
 		_recoveredVersion = latestSnapshot == null ? 0 : FileManager.snapshotVersion(latestSnapshot);
 		_recoveredPrevalentSystem = latestSnapshot == null
 				? newPrevalentSystem
@@ -59,7 +60,7 @@ public class GenericSnapshotManager {
 	GenericSnapshotManager(Object newPrevalentSystem) {
 		_strategies = Collections.singletonMap("snapshot", new JavaSerializer());
 		_primarySuffix = "snapshot";
-		_directory = null;
+		_fileManager = null;
 		_recoveredVersion = 0;
 		_recoveredPrevalentSystem = newPrevalentSystem;
 	}
@@ -78,7 +79,7 @@ public class GenericSnapshotManager {
 	}
 
 	public void writeSnapshot(Object prevalentSystem, long version) throws IOException {
-		File tempFile = File.createTempFile("snapshot" + version + "temp", "generatingSnapshot", _directory);
+		File tempFile = _fileManager.createTempFile("snapshot" + version + "temp", "generatingSnapshot");
 
 		writeSnapshot(prevalentSystem, tempFile);
 
@@ -99,7 +100,7 @@ public class GenericSnapshotManager {
 
 
 	private File snapshotFile(long version) {
-		return FileManager.snapshotFile(version, _directory, _primarySuffix);
+		return _fileManager.snapshotFile(version, _primarySuffix);
 	}
 
 	private Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {

@@ -27,7 +27,7 @@ import org.prevayler.implementation.publishing.TransactionSubscriber;
  */
 public class PersistentJournal implements FileFilter, Journal {
 
-	private final File _directory;
+	private final FileManager _fileManager;
 	private DurableOutputStream _outputJournal;
 
 	private final long _journalSizeThresholdInBytes;
@@ -49,7 +49,8 @@ public class PersistentJournal implements FileFilter, Journal {
 	public PersistentJournal(String directory, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis,
 							 Serializer journalSerializer, Monitor monitor) throws IOException {
 	    _monitor = monitor;
-		_directory = FileManager.produceDirectory(directory);
+		_fileManager = new FileManager(directory);
+		_fileManager.produceDirectory();
 		_journalSizeThresholdInBytes = journalSizeThresholdInBytes;
 		_journalAgeThresholdInMillis = journalAgeThresholdInMillis;
 		_journalSerializer = journalSerializer;
@@ -210,9 +211,7 @@ public class PersistentJournal implements FileFilter, Journal {
 	}
 
 	private File journalFile(long transaction) {
-		String fileName = "0000000000000000000" + transaction;
-		fileName = fileName.substring(fileName.length() - 19) + ".journal";
-		return new File(_directory, fileName);
+		return _fileManager.journalFile(transaction);
 	}
 
 	static private long number(File file) {

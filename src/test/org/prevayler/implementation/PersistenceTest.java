@@ -53,7 +53,7 @@ public class PersistenceTest extends FileIOTest {
 		File lastSnapshot =   new File(_prevalenceBase, "0000000000000000008.snapshot");
 		File lastTransactionLog =   new File(_prevalenceBase, "0000000000000000008.journal");
 		newPrevalenceBase();
-		FileManager.produceDirectory(_prevalenceBase);
+		new FileManager(_prevalenceBase).produceDirectory();
 		lastSnapshot.renameTo(new File(_prevalenceBase, "0000000000000000008.snapshot"));  //Moving the file.
 		lastTransactionLog.renameTo(new File(_prevalenceBase, "0000000000000000008.journal"));
 

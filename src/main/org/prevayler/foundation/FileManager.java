@@ -8,21 +8,29 @@ import java.io.*;
 
 public class FileManager {
 
-	public static final int DIGITS_IN_SNAPSHOT_FILENAME = 19;
-	public static final String SNAPSHOT_SUFFIX_PATTERN = "[a-zA-Z0-9]*[Ss]napshot";
-	public static final String SNAPSHOT_FILENAME_PATTERN = "\\d{" + DIGITS_IN_SNAPSHOT_FILENAME + "}\\." +
+	private static final int DIGITS_IN_SNAPSHOT_FILENAME = 19;
+	private static final String SNAPSHOT_SUFFIX_PATTERN = "[a-zA-Z0-9]*[Ss]napshot";
+	private static final String SNAPSHOT_FILENAME_PATTERN = "\\d{" + DIGITS_IN_SNAPSHOT_FILENAME + "}\\." +
 			SNAPSHOT_SUFFIX_PATTERN;
 
-	public static File produceDirectory(String directoryName) throws IOException {
-		File directory = new File(directoryName);
-		if (!directory.exists() && !directory.mkdirs()) throw new IOException("Directory doesn't exist and could not be created: " + directoryName);
-		if (!directory.isDirectory()) throw new IOException("Path exists but is not a directory: " + directoryName);
-		return directory;
+	private File _directory;
+
+	public FileManager(String directory) {
+		this(new File(directory));
 	}
 
-	public static File snapshotFile(long version, File directory, String suffix) {
+	public FileManager(File directory) {
+		_directory = directory;
+	}
+
+	public void produceDirectory() throws IOException {
+		if (!_directory.exists() && !_directory.mkdirs()) throw new IOException("Directory doesn't exist and could not be created: " + _directory);
+		if (!_directory.isDirectory()) throw new IOException("Path exists but is not a directory: " + _directory);
+	}
+
+	public File snapshotFile(long version, String suffix) {
 		String fileName = "0000000000000000000" + version;
-		return new File(directory, fileName.substring(fileName.length() - DIGITS_IN_SNAPSHOT_FILENAME) + "." + suffix);
+		return new File(_directory, fileName.substring(fileName.length() - DIGITS_IN_SNAPSHOT_FILENAME) + "." + suffix);
 	}
 
 	public static void checkValidSnapshotSuffix(String suffix) {
@@ -44,9 +52,9 @@ public class FileManager {
 	/**
 	 * Find the latest snapshot file. Returns null if no snapshot file was found.
 	 */
-	public static File latestSnapshot(File directory) throws IOException {
-		File[] files = directory.listFiles();
-		if (files == null) throw new IOException("Error reading file list from directory " + directory);
+	public File latestSnapshot() throws IOException {
+		File[] files = _directory.listFiles();
+		if (files == null) throw new IOException("Error reading file list from directory " + _directory);
 
 		File latestSnapshot = null;
 		long latestVersion = 0;
@@ -59,6 +67,16 @@ public class FileManager {
 			}
 		}
 		return latestSnapshot;
+	}
+
+	public File journalFile(long transaction) {
+		String fileName = "0000000000000000000" + transaction;
+		fileName = fileName.substring(fileName.length() - 19) + ".journal";
+		return new File(_directory, fileName);
+	}
+
+	public File createTempFile(String prefix, String suffix) throws IOException {
+		return File.createTempFile(prefix, suffix, _directory);
 	}
 
 }

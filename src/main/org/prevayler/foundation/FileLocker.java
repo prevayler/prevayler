@@ -26,7 +26,7 @@ public class FileLocker {
 	 * it will be closed by {@link #release(File)}.
 	 * 
 	 * @return A channel for accessing the file if successful; or null if not successful.
-	 * @throws OverlappingFileLockException If the JVM detects that another thread already holds a lock on the file. This
+	 * @throws java.nio.channels.OverlappingFileLockException If the JVM detects that another thread already holds a lock on the file. This
 	 *                                      should never happen if this method is used exclusively for file locking.
 	 */
 	public static synchronized FileChannel acquire(File file) throws IOException {
