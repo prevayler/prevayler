@@ -17,7 +17,7 @@ import org.prevayler.foundation.serialization.SerializationStrategy;
 import org.prevayler.foundation.monitor.*;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
-import org.prevayler.implementation.snapshot.SnapshotManager;
+import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
 
 public class PrevaylerImpl implements Prevayler {
@@ -27,7 +27,7 @@ public class PrevaylerImpl implements Prevayler {
 
 	private final Clock _clock;
 
-	private final SnapshotManager _snapshotManager;
+	private final GenericSnapshotManager _snapshotManager;
 
 	private final TransactionPublisher _publisher;
 	private boolean _ignoreRuntimeExceptions;
@@ -43,7 +43,7 @@ public class PrevaylerImpl implements Prevayler {
 	 * @param prevaylerMonitor The Monitor that will be used to monitor interesting calls to this PrevaylerImpl.
 	 * @param journalSerializationStrategy
 	 */
-	public PrevaylerImpl(SnapshotManager snapshotManager, TransactionPublisher transactionPublisher,
+	public PrevaylerImpl(GenericSnapshotManager snapshotManager, TransactionPublisher transactionPublisher,
 						 Monitor prevaylerMonitor, SerializationStrategy journalSerializationStrategy) throws IOException, ClassNotFoundException {
 	    _monitor = prevaylerMonitor;
 		_snapshotManager = snapshotManager;

@@ -9,20 +9,18 @@ import org.prevayler.Transaction;
 import org.prevayler.foundation.serialization.SerializationStrategy;
 import org.prevayler.implementation.snapshot.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
 public class StrictTransactionCensor implements TransactionCensor {
 
 	private final Object _king;
 	private Object _royalFoodTaster;
-	private final SnapshotManager _snapshotManager;
+	private final GenericSnapshotManager _snapshotManager;
 
 	private final SerializationStrategy _journalSerializationStrategy;
 
 
-	public StrictTransactionCensor(SnapshotManager snapshotManager, SerializationStrategy journalSerializationStrategy) {
+	public StrictTransactionCensor(GenericSnapshotManager snapshotManager, SerializationStrategy journalSerializationStrategy) {
 		_snapshotManager = snapshotManager;
 		_journalSerializationStrategy = journalSerializationStrategy;
 		_king = _snapshotManager.recoveredPrevalentSystem();
@@ -62,9 +60,9 @@ public class StrictTransactionCensor implements TransactionCensor {
 
 	private void produceNewFoodTaster() {
 		try {
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			synchronized (_king) { _snapshotManager.writeSnapshot(_king, out); }
-			_royalFoodTaster = _snapshotManager.readSnapshot(new ByteArrayInputStream(out.toByteArray()));
+			synchronized (_king) {
+				_royalFoodTaster = _snapshotManager.primaryStrategy().deepCopy(_king);
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new RuntimeException("Unable to produce a copy of the prevalent system for trying out transactions before applying them to the real system.");

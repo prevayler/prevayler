@@ -22,9 +22,6 @@ import com.thoughtworks.xstream.XStream;
  * <a href="http://xstream.codehaus.org/javadoc/com/thoughtworks/xstream/io/HierarchicalStreamDriver.html">HierarchicalStreamDriver</a>
  * and the default implementation for XStream is the highly performant XppDriver.  However, XStream will fall back to the DomDriver if XPP3 is
  * not found in the classpath making the XPP3 library entirely optional.</p>
- *
- * @see org.prevayler.implementation.snapshot.SnapshotManager
- * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager
  */
 public class XStreamSerializationStrategy extends AbstractSerializationStrategy {
 

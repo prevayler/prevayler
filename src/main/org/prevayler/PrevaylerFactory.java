@@ -25,7 +25,6 @@ import org.prevayler.implementation.replication.ClientPublisher;
 import org.prevayler.implementation.replication.ServerListener;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 import org.prevayler.implementation.snapshot.NullSnapshotManager;
-import org.prevayler.implementation.snapshot.SnapshotManager;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -47,7 +46,7 @@ public class PrevaylerFactory {
 
 	private boolean _transientMode;
 	private String _prevalenceDirectory;
-	private SnapshotManager _snapshotManager;
+	private NullSnapshotManager _nullSnapshotManager;
 
 	private long _journalSizeThreshold;
 	private long _journalAgeThreshold;
@@ -94,7 +93,7 @@ public class PrevaylerFactory {
 	public static Prevayler createTransientPrevayler(Serializable newPrevalentSystem) {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(newPrevalentSystem);
-		factory.configureSnapshotManager(new NullSnapshotManager(newPrevalentSystem, "Transient Prevaylers are unable to take snapshots."));
+		factory.configureNullSnapshotManager(new NullSnapshotManager(newPrevalentSystem, "Transient Prevaylers are unable to take snapshots."));
 		factory.configureTransientMode(true);
 		try {
 			return factory.create();
@@ -166,8 +165,8 @@ public class PrevaylerFactory {
 
 
 	/** Configures the prevalent system that will be used by the Prevayler created by this factory.
-	 * @param newPrevalentSystem Will be ignored if a SnapshotManager is configured too because a SnapshotManager already has a prevalent system. If the default SnapshotManager is used, this prevalentSystem must be Serializable. If another SnapshotManager is used, this prevalentSystem must be compatible with it. 
-	 * @see #configureSnapshotManager(SnapshotManager)
+	 * @param newPrevalentSystem If the default SerializationStrategy is used, this prevalentSystem must be Serializable. If another SerializationStrategy is used, this prevalentSystem must be compatible with it.
+     * @see #configureSnapshotSerializationStrategy(String,SerializationStrategy)
 	 */
 	public void configurePrevalentSystem(Object newPrevalentSystem) {
 		_prevalentSystem = newPrevalentSystem;
@@ -189,11 +188,8 @@ public class PrevaylerFactory {
 	}
 
 
-	/** Configures the SnapshotManager to be used by the Prevayler created by this factory. The default is a SnapshotManager which uses plain Java serialization to create its .snapshot files.
-	 * @deprecated Use {@link #configureSnapshotSerializationStrategy(String,SerializationStrategy)} instead.
-	 */
-	public void configureSnapshotManager(SnapshotManager snapshotManager) {
-		_snapshotManager = snapshotManager;
+	private void configureNullSnapshotManager(NullSnapshotManager snapshotManager) {
+		_nullSnapshotManager = snapshotManager;
 	}
 
 
@@ -264,7 +260,7 @@ public class PrevaylerFactory {
 	 * @throws ClassNotFoundException If a class of a serialized Object is not found when reading a .journal or .snapshot file.
 	 */
 	public Prevayler create() throws IOException, ClassNotFoundException {
-		SnapshotManager snapshotManager = snapshotManager();
+		GenericSnapshotManager snapshotManager = snapshotManager();
 		TransactionPublisher publisher = publisher(snapshotManager);
 		if (_serverPort != -1) new ServerListener(publisher, _serverPort);
 		return new PrevaylerImpl(snapshotManager, publisher, monitor(), journalSerializationStrategy());
@@ -282,13 +278,13 @@ public class PrevaylerFactory {
 	}
 
 
-	private TransactionPublisher publisher(SnapshotManager snapshotManager) throws IOException, ClassNotFoundException {
+	private TransactionPublisher publisher(GenericSnapshotManager snapshotManager) throws IOException, ClassNotFoundException {
 		if (_remoteServerIpAddress != null) return new ClientPublisher(_remoteServerIpAddress, _remoteServerPort);
 		return new CentralPublisher(clock(), censor(snapshotManager), journal()); 
 	}
 
 
-	private TransactionCensor censor(SnapshotManager snapshotManager) {
+	private TransactionCensor censor(GenericSnapshotManager snapshotManager) {
 		return _transactionFiltering
 			? (TransactionCensor) new StrictTransactionCensor(snapshotManager, journalSerializationStrategy())
 			: new LiberalTransactionCensor(); 
@@ -308,8 +304,8 @@ public class PrevaylerFactory {
 	}
 
 
-	private SnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
-		if (_snapshotManager != null) return _snapshotManager;
+	private GenericSnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
+		if (_nullSnapshotManager != null) return _nullSnapshotManager;
 		if (!_snapshotSerializationStrategies.isEmpty()) return new GenericSnapshotManager(_snapshotSerializationStrategies, _primarySnapshotSerializationStrategy, prevalentSystem(), prevalenceDirectory());
 		return new GenericSnapshotManager(new JavaSerializationStrategy(_classLoader), prevalentSystem(), prevalenceDirectory());
 	}

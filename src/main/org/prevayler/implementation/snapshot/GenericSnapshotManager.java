@@ -1,67 +1,101 @@
 package org.prevayler.implementation.snapshot;
 
+import org.prevayler.foundation.FileManager;
+import org.prevayler.foundation.serialization.Deserializer;
+import org.prevayler.foundation.serialization.JavaSerializationStrategy;
 import org.prevayler.foundation.serialization.SerializationStrategy;
 import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.foundation.serialization.Deserializer;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.InputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Map;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
 
-public class GenericSnapshotManager extends AbstractSnapshotManager {
+public class GenericSnapshotManager {
 
 	private Map _strategies;
-	private String _primaryStrategy;
+	private String _primarySuffix;
+	private File _directory;
+	private long _recoveredVersion;
+	private Object _recoveredPrevalentSystem;
 
 	public GenericSnapshotManager(SerializationStrategy strategy, Object newPrevalentSystem, String snapshotDirectoryName)
 			throws IOException, ClassNotFoundException {
 		this(strategy, "snapshot", newPrevalentSystem, snapshotDirectoryName);
 	}
 
-	public GenericSnapshotManager(SerializationStrategy strategy, String suffix, Object newPrevalentSystem, String snapshotDirectoryName)
+	public GenericSnapshotManager(SerializationStrategy strategy, String suffix, Object newPrevalentSystem,
+								  String snapshotDirectoryName)
 			throws IOException, ClassNotFoundException {
 		this(Collections.singletonMap(suffix, strategy), suffix, newPrevalentSystem, snapshotDirectoryName);
 	}
 
-	// this is only here for NullSnapshotManager support
-	GenericSnapshotManager(SerializationStrategy strategy, Object newPrevalentSystem) {
-		_strategies = Collections.singletonMap("snapshot", strategy);
-		_primaryStrategy = "snapshot";
-		nullInit(newPrevalentSystem);
-	}
-
-	public GenericSnapshotManager(Map strategies, String primaryStrategy, Object newPrevalentSystem, String snapshotDirectoryName)
+	public GenericSnapshotManager(Map strategies, String primarySuffix, Object newPrevalentSystem,
+								  String snapshotDirectoryName)
 			throws IOException, ClassNotFoundException {
+		for (Iterator iterator = strategies.keySet().iterator(); iterator.hasNext();) {
+			String suffix = (String) iterator.next();
+			checkValidSuffix(suffix);
+		}
+
 		_strategies = strategies;
-		_primaryStrategy = primaryStrategy;
-		init(newPrevalentSystem, snapshotDirectoryName);
+		_primarySuffix = primarySuffix;
+
+		_directory = FileManager.produceDirectory(snapshotDirectoryName);
+
+		File latestSnapshot = latestSnapshot(_directory);
+		_recoveredVersion = latestSnapshot == null ? 0 : version(latestSnapshot);
+		_recoveredPrevalentSystem = latestSnapshot == null
+				? newPrevalentSystem
+				: readSnapshot(latestSnapshot);
 	}
 
-	protected String suffix() {
-		return _primaryStrategy;
+	GenericSnapshotManager(Object newPrevalentSystem) {
+		_strategies = Collections.singletonMap("snapshot", new JavaSerializationStrategy());
+		_primarySuffix = "snapshot";
+		_directory = null;
+		_recoveredVersion = 0;
+		_recoveredPrevalentSystem = newPrevalentSystem;
 	}
 
-	private SerializationStrategy primaryStrategy() {
-		return (SerializationStrategy) _strategies.get(_primaryStrategy);
+
+	public SerializationStrategy primaryStrategy() {
+		return (SerializationStrategy) _strategies.get(_primarySuffix);
 	}
 
-	protected Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {
-		String suffix = snapshotFile.getName().substring(snapshotFile.getName().indexOf('.') + 1);
-		if (!_strategies.containsKey(suffix)) throw new IOException(snapshotFile.toString() + " cannot be read; only " + _strategies.keySet().toString() + " supported");
-
-		SerializationStrategy strategy = (SerializationStrategy) _strategies.get(suffix);
-        FileInputStream in = new FileInputStream(snapshotFile);
-        try {
-			Deserializer deserializer = strategy.createDeserializer(in);
-			return deserializer.readObject();
-        } finally { in.close(); }
+	public Object recoveredPrevalentSystem() {
+		return _recoveredPrevalentSystem;
 	}
 
-	public void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
+	public long recoveredVersion() {
+		return _recoveredVersion;
+	}
+
+	public void writeSnapshot(Object prevalentSystem, long version) throws IOException {
+		File tempFile = File.createTempFile("snapshot" + version + "temp", "generatingSnapshot", _directory);
+
+		writeSnapshot(prevalentSystem, tempFile);
+
+		File permanent = snapshotFile(version);
+		permanent.delete();
+		if (!tempFile.renameTo(permanent)) throw new IOException(
+				"Temporary snapshot file generated: " + tempFile + "\nUnable to rename it permanently to: " + permanent);
+	}
+
+	private void writeSnapshot(Object prevalentSystem, File snapshotFile) throws IOException {
+		OutputStream out = new FileOutputStream(snapshotFile);
+		try {
+			writeSnapshot(prevalentSystem, out);
+		} finally {
+			out.close();
+		}
+	}
+
+	private void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
 		Serializer serializer = primaryStrategy().createSerializer(out);
 		try {
 			serializer.writeObject(prevalentSystem);
@@ -70,9 +104,71 @@ public class GenericSnapshotManager extends AbstractSnapshotManager {
 		}
 	}
 
-	public Object readSnapshot(InputStream in) throws IOException, ClassNotFoundException {
-		Deserializer deserializer = primaryStrategy().createDeserializer(in);
-		return deserializer.readObject();
+
+	private File snapshotFile(long version) {
+		return snapshotFile(version, _directory, _primarySuffix);
+	}
+
+	private static File snapshotFile(long version, File directory, String suffix) {
+		String fileName = "0000000000000000000" + version;
+		return new File(directory, fileName.substring(fileName.length() - DIGITS_IN_SNAPSHOT_FILENAME) + "." + suffix);
+	}
+
+	private Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {
+		String suffix = snapshotFile.getName().substring(snapshotFile.getName().indexOf('.') + 1);
+		if (!_strategies.containsKey(suffix)) throw new IOException(
+				snapshotFile.toString() + " cannot be read; only " + _strategies.keySet().toString() + " supported");
+
+		SerializationStrategy strategy = (SerializationStrategy) _strategies.get(suffix);
+		FileInputStream in = new FileInputStream(snapshotFile);
+		try {
+			Deserializer deserializer = strategy.createDeserializer(in);
+			return deserializer.readObject();
+		} finally {
+			in.close();
+		}
+	}
+
+
+	private static final int DIGITS_IN_SNAPSHOT_FILENAME = 19;
+	private static final String SNAPSHOT_SUFFIX_PATTERN = "[a-zA-Z0-9]*[Ss]napshot";
+	private static final String SNAPSHOT_FILENAME_PATTERN = "\\d{" + DIGITS_IN_SNAPSHOT_FILENAME + "}\\." +
+			SNAPSHOT_SUFFIX_PATTERN;
+
+	private static void checkValidSuffix(String suffix) {
+		if (!suffix.matches(SNAPSHOT_SUFFIX_PATTERN)) {
+			throw new IllegalStateException(
+					"Snapshot filename suffix must match /" + SNAPSHOT_SUFFIX_PATTERN + "/, but '" + suffix + "' does not");
+		}
+	}
+
+	/**
+	 * Returns -1 if fileName is not the name of a snapshot file.
+	 */
+	private static long version(File file) {
+		String fileName = file.getName();
+		if (!fileName.matches(SNAPSHOT_FILENAME_PATTERN)) return -1;
+		return Long.parseLong(fileName.substring(0, fileName.indexOf(".")));    // "00000.snapshot" becomes "00000".
+	}
+
+	/**
+	 * Find the latest snapshot file. Returns null if no snapshot file was found.
+	 */
+	public static File latestSnapshot(File directory) throws IOException {
+		File[] files = directory.listFiles();
+		if (files == null) throw new IOException("Error reading file list from directory " + directory);
+
+		File latestSnapshot = null;
+		long latestVersion = 0;
+		for (int i = 0; i < files.length; i++) {
+			File candidateSnapshot = files[i];
+			long candidateVersion = version(candidateSnapshot);
+			if (candidateVersion > latestVersion) {
+				latestVersion = candidateVersion;
+				latestSnapshot = candidateSnapshot;
+			}
+		}
+		return latestSnapshot;
 	}
 
 }

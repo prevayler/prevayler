@@ -2,10 +2,10 @@ package org.prevayler.demos.demo2;
 
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
+import org.prevayler.foundation.serialization.XStreamSerializationStrategy;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.AccountEntry;
 import org.prevayler.demos.demo2.business.Bank;
-import org.prevayler.implementation.snapshot.XStreamSnapshotManager;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -22,11 +22,11 @@ public class MainXStream {
 		xstream.alias("account", Account.class);
 		xstream.alias("accountEntry", AccountEntry.class);
 		
-		factory.configureSnapshotManager(new XStreamSnapshotManager(xstream, new Bank(), "demo2XStream"));
+		factory.configureSnapshotSerializationStrategy(new XStreamSerializationStrategy(xstream));
+		factory.configurePrevalentSystem(new Bank());
 		Prevayler prevayler = factory.create();
 
 		Main.startSnapshots(prevayler);
-
 	}
 
 	private static void out(String message) {
