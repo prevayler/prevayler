@@ -35,7 +35,12 @@ public class ObjectServerSocketMock implements ObjectServerSocket {
 		return result;
 	}
 
-	synchronized ObjectSocket openClientSocket() throws IOException {
+	ObjectSocket openClientSocket() throws IOException {
+		while (!_isWaiting) Cool.sleep(50);
+		return openClientSocketImmediately();
+	}
+
+	synchronized private ObjectSocket openClientSocketImmediately() throws IOException {
 		_permit.check();
 		if (!_isWaiting) throw new IOException("No thread is accepting connections on this port.");
 		ObjectSocketMock result = new ObjectSocketMock(_permit);
