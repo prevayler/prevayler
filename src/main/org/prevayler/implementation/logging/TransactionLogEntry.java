@@ -5,7 +5,7 @@ import java.util.Date;
 
 import org.prevayler.Transaction;
 
-class TransactionLogEntry implements Serializable {
+class TransactionLogEntry implements Serializable { //TODO Eliminate duplicity with TransactionTimestamp.
 
 	final Transaction transaction;
 	final Date timestamp;
