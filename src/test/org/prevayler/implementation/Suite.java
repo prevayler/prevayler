@@ -8,7 +8,7 @@ public class Suite extends TestCase {
 	public static Test suite() {
 		TestSuite suite = new TestSuite();
 		suite.addTestSuite(PrevaylerFactoryTest.class);
-		suite.addTestSuite(TransactionExecutionTest.class);
+		suite.addTestSuite(TransientPrevaylerTest.class);
 		suite.addTestSuite(QueryExecutionTest.class);
 		suite.addTestSuite(PersistenceTest.class);
 		suite.addTestSuite(RollbackTest.class);

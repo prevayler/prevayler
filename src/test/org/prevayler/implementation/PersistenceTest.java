@@ -5,15 +5,13 @@
 package org.prevayler.implementation;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 
 import org.prevayler.Prevayler;
+import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileManager;
 
-import junit.framework.TestCase;
-
-public class PersistenceTest extends TestCase {
+public class PersistenceTest extends PrevalenceTest {
 
 	private Prevayler prevayler;
 	private String prevalenceBase;
@@ -24,30 +22,30 @@ public class PersistenceTest extends TestCase {
 
 		crashRecover(); //There is nothing to recover at first. A new system will be created.
 		crashRecover();
-		add(40,40);
-		add(30,70);
-		verify(70);
+		append("a","a");
+		append("b","ab");
+		verify("ab");
 
 		crashRecover();
-		verify(70);
+		verify("ab");
 
-		add(20,90);
-		add(15,105);
+		append("c","abc");
+		append("d","abcd");
 		snapshot();
 		snapshot();
-		verify(105);
-
-		crashRecover();
-		snapshot();
-		add(10,115);
-		snapshot();
-		add(5,120);
-		add(4,124);
-		verify(124);
+		verify("abcd");
 
 		crashRecover();
-		add(3,127);
-		verify(127);
+		snapshot();
+		append("e","abcde");
+		snapshot();
+		append("f","abcdef");
+		append("g","abcdefg");
+		verify("abcdefg");
+
+		crashRecover();
+		append("h","abcdefgh");
+		verify("abcdefgh");
 
 		snapshot();
 		File snapshot =   new File(prevalenceBase, "0000000000000000008.snapshot");
@@ -56,25 +54,21 @@ public class PersistenceTest extends TestCase {
 		snapshot.renameTo(new File(prevalenceBase, "0000000000000000008.snapshot"));
 		
 		crashRecover();
-		add(10,137);
-		add(2,139);
+		append("i","abcdefghi");
+		append("j","abcdefghij");
 		crashRecover();
-		add(10,149);
-		add(3,152);
+		append("k","abcdefghijk");
+		append("l","abcdefghijkl");
 		crashRecover();
-		add(11,163);
-		add(4,167);
+		append("m","abcdefghijklm");
+		append("n","abcdefghijklmn");
 		crashRecover();
-		verify(167);
+		verify("abcdefghijklmn");
 	}
-
-    protected void tearDown() throws Exception {
-        RollbackTest.delete(prevalenceBase);
-    }
 
 	private void crashRecover() throws Exception {
 		out("CrashRecovery.");
-		prevayler = PrevaylerFactory.createPrevayler(new AddingSystem(), prevalenceBase());
+		prevayler = PrevaylerFactory.createPrevayler(new AppendingSystem(), prevalenceBase());
 	}
 
 	private void snapshot() throws IOException {
@@ -83,21 +77,21 @@ public class PersistenceTest extends TestCase {
 	}
 
 
-	private void add(long value, long expectedTotal) throws Exception {
-		out("Adding " + value);
-		prevayler.execute(new Addition(value));
-		verify(expectedTotal);
+	private void append(String appendix, String expectedResult) throws Exception {
+		out("Appending " + appendix);
+		prevayler.execute(new Appendix(appendix));
+		verify(expectedResult);
 	}
 
 
-	private void verify(long expectedTotal) {
-		out("Expecting total: " + expectedTotal);
-		compare(system().total(), expectedTotal, "Total");
+	private void verify(String expectedResult) {
+		out("Expecting result: " + expectedResult);
+		compare(system().value(), expectedResult, "Result");
 	}
 
 
-	private AddingSystem system() {
-		return (AddingSystem)prevayler.prevalentSystem();
+	private AppendingSystem system() {
+		return (AppendingSystem)prevayler.prevalentSystem();
 	}
 
 
@@ -107,11 +101,11 @@ public class PersistenceTest extends TestCase {
 
 
 	private void newPrevalenceBase() throws Exception {
-		prevalenceBase = "PrevalenceBase" + System.currentTimeMillis();
+		prevalenceBase = _testDirectory + "\\" + System.currentTimeMillis();
 	}
 
-	private void compare(long observed, long expected, String measurement) {
-		verify(observed == expected, measurement + ": " + observed + "   Expected: " + expected);
+	private void compare(String observed, String expected, String measurement) {
+		verify(observed.equals(expected), measurement + ": " + observed + "   Expected: " + expected);
 	}
 
 	private static void verify(boolean condition, String message) {
@@ -123,24 +117,5 @@ public class PersistenceTest extends TestCase {
 	private static void out(Object obj) {
 		if (false) System.out.println(obj);   //Change this line to see what the test is doing.
 	}
-
-	public static void deletePrevalenceFiles(String directoryName) {
-		File directory = new File(directoryName);
-		if(!directory.exists()) return;
-	
-		File[] files = directory.listFiles(new PersistenceTest.PrevalenceFilter());
-	
-		for(int i = 0; i < files.length; ++i){
-			assertTrue("Unable to delete " + files[i], files[i].delete());
-		}
-	}
-
-	static private class PrevalenceFilter implements FilenameFilter {
-		public boolean accept(File directory, String filename) {
-			return filename.endsWith("transactionLog")
-				|| filename.endsWith("snapshot");
-		}
-	}
-
 
 }

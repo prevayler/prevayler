@@ -18,7 +18,7 @@ public class Transfer extends BankTransaction {
 	}
 
 
-	public Object executeOn(Bank bank, Date timestamp) throws Exception {
+	public Object executeAndQuery(Bank bank, Date timestamp) throws Exception {
 		bank.transfer(_originAccountNumber, _destinationAccountNumber, _amount, timestamp);
 		return null;
 	}

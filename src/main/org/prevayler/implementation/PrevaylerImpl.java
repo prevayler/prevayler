@@ -52,14 +52,6 @@ public class PrevaylerImpl implements Prevayler {
 	/** Publishes transaction and executes it on the underlying prevalentSystem(). If a Logger is used as the publisher (default), this method will only return after transaction has been written to disk.
 	 */
 	public void execute(Transaction transaction) {
-
-		// sequence
-		// timestamp
-		// feed taster (rollback if necessary)
-		// write to disk
-		// sync()
-		// execute on prevalent system
-
 		_publisher.publish(transaction);
 	}
 
@@ -67,7 +59,7 @@ public class PrevaylerImpl implements Prevayler {
 		*/
 	public Object execute(Query query) throws Exception {
 		synchronized (_prevalentSystem) {
-			return query.executeOn(_prevalentSystem, clock().time());
+			return query.query(_prevalentSystem, clock().time());
 		}
 	}
 

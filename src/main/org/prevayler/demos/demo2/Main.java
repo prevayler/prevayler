@@ -5,9 +5,9 @@
 package org.prevayler.demos.demo2;
 
 import org.prevayler.Prevayler;
+import org.prevayler.PrevaylerFactory;
 import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.demos.demo2.gui.BankFrame;
-import org.prevayler.implementation.PrevaylerFactory;
 
 
 public class Main {

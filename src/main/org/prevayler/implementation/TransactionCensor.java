@@ -35,22 +35,25 @@ public class TransactionCensor implements TransactionPublisher {
 		} catch (RuntimeException rx) {
 			letTheFoodTasterDie();
 			throw rx;
+		} catch (Error error) {
+			letTheFoodTasterDie();
+			throw error;
 		}
 		_delegate.publish(transaction);
 	}
 
 	private void letTheFoodTasterDie() {
-		_royalFoodTaster = null;
+		_royalFoodTaster = null; // Producing the new food taster now could avoid the next transaction having to wait for it's lazy evaluation. Trying to serialize the whole system in RAM right after an OutOfMemoryError has been thrown, for example, isn't a very good idea, though. In that case, there probably will not even be a next transaction...  ;)
 	}
 
 	private Object royalFoodTaster() {
 		if (_royalFoodTaster == null) produceNewFoodTaster();
-		return _royalFoodTaster; 
+		return _royalFoodTaster;
 	}
 
 	private void produceNewFoodTaster() {
 		try {
-			// TODO Optimization: use a sort of producer-consumer stream so that serialization as deserialization can occur in parallel, avoiding the need for RAM for this array with the whole serialized system. 
+			// TODO Optimization: use some sort of producer-consumer stream so that serialization as deserialization can occur in parallel, avoiding the need for RAM for this array with the whole serialized system. 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			synchronized (_king) { _snapshotManager.writeSnapshot(_king, out); }
 			_royalFoodTaster = _snapshotManager.readSnapshot(new ByteArrayInputStream(out.toByteArray()));

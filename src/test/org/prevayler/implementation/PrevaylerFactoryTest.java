@@ -2,26 +2,21 @@ package org.prevayler.implementation;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.prevayler.Prevayler;
-import org.prevayler.implementation.PrevaylerFactory;
+import org.prevayler.PrevaylerFactory;
 
 
-public class PrevaylerFactoryTest extends TestCase {
+public class PrevaylerFactoryTest extends PrevalenceTest {
 
 	private static final Object POJO = new Object(); 
 
 	public void testTransientPrevaylerCreation() {
-		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler(POJO);
+		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler(POJO,_testDirectory);
 		assertEquals(POJO, prevayler.prevalentSystem());
 	}
 
 	public void testSnapshotPrevaylerCreation() throws IOException, ClassNotFoundException {
-		Prevayler prevayler = PrevaylerFactory.createPrevayler(POJO);
-		assertEquals(POJO, prevayler.prevalentSystem());
-
-		prevayler = PrevaylerFactory.createPrevayler(POJO, "anything");
+		Prevayler prevayler = PrevaylerFactory.createPrevayler(POJO, _testDirectory);
 		assertEquals(POJO, prevayler.prevalentSystem());
 	}
 

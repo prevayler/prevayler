@@ -7,9 +7,9 @@ import org.prevayler.demos.demo2.business.Bank;
 
 public abstract class BankTransaction implements TransactionWithQuery {
 
-	public Object executeOn(Object bank, Date timestamp) throws Exception {
-		return executeOn((Bank)bank, timestamp);
+	public Object executeAndQuery(Object bank, Date timestamp) throws Exception {
+		return executeAndQuery((Bank)bank, timestamp);
 	}
 
-	protected abstract Object executeOn(Bank bank, Date timestamp) throws Exception;
+	protected abstract Object executeAndQuery(Bank bank, Date timestamp) throws Exception;
 }

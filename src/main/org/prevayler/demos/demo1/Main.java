@@ -5,7 +5,7 @@
 package org.prevayler.demos.demo1;
 
 import org.prevayler.Prevayler;
-import org.prevayler.implementation.PrevaylerFactory;
+import org.prevayler.PrevaylerFactory;
 
 import java.io.*;
 

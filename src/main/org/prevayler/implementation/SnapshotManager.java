@@ -12,23 +12,17 @@ import org.prevayler.foundation.*;
  */
 public class SnapshotManager {
 
-	private final File directory;
-
-
-	public SnapshotManager() throws IOException {
-		this("PrevalenceBase");
-	}
-
+	private final File _directory;
 
 	/** @param snapshotDirectoryName The path of the directory where the last snapshot file will be read and where the new snapshot files will be created.
 	*/
 	public SnapshotManager(String snapshotDirectoryName) throws IOException {
-		directory = FileManager.produceDirectory(snapshotDirectoryName);
+		_directory = FileManager.produceDirectory(snapshotDirectoryName);
 	}
 
 
 	void writeSnapshot(Object prevalentSystem, long version) throws IOException {
-		File tempFile = File.createTempFile("snapshot" + version + "temp", "generatingSnapshot", directory);
+		File tempFile = File.createTempFile("snapshot" + version + "temp", "generatingSnapshot", _directory);
 
 		writeSnapshot(prevalentSystem, tempFile);
 
@@ -65,8 +59,8 @@ public class SnapshotManager {
 	/** Returns zero if no snapshot file was found.
 	*/
 	long latestVersion() throws IOException {
-		String[] fileNames = directory.list();
-		if (fileNames == null) throw new IOException("Error reading file list from directory " + directory);
+		String[] fileNames = _directory.list();
+		if (fileNames == null) throw new IOException("Error reading file list from directory " + _directory);
 
 		long result = 0;
 		for (int i = 0; i < fileNames.length; i++) {
@@ -101,7 +95,7 @@ public class SnapshotManager {
 
     private File snapshotFile(long version) {
 		String fileName = "0000000000000000000" + version;
-		return new File(directory, fileName.substring(fileName.length() - 19) + "." + suffix());
+		return new File(_directory, fileName.substring(fileName.length() - 19) + "." + suffix());
 	}
 
 

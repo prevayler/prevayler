@@ -8,6 +8,6 @@ import java.util.Date;
 
 public interface Query {
 	
-	public Object executeOn(Object prevalentSystem, Date executionTime) throws Exception;
+	public Object query(Object prevalentSystem, Date executionTime) throws Exception;
 
 }

@@ -4,18 +4,17 @@
 
 package org.prevayler.scalability.prevayler;
 
-import org.prevayler.implementation.PersistenceTest;
-import org.prevayler.implementation.PrevaylerFactory;
+import org.prevayler.PrevaylerFactory;
+import org.prevayler.implementation.PrevalenceTest;
 
 public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject {
 
-	static final String LOG_DIRECTORY = "QueryTest";
-
+	static final String PREVALENCE_BASE = "QueryTest";
 
 	public PrevaylerQuerySubject() throws java.io.IOException, ClassNotFoundException {
-		PersistenceTest.deletePrevalenceFiles(LOG_DIRECTORY);
+		PrevalenceTest.delete(PREVALENCE_BASE);
 
-		prevayler = PrevaylerFactory.createPrevayler(new QuerySystem(), LOG_DIRECTORY);
+		prevayler = PrevaylerFactory.createPrevayler(new QuerySystem(), PREVALENCE_BASE);
 	}
 
 

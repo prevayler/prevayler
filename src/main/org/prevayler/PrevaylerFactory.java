@@ -1,8 +1,10 @@
-package org.prevayler.implementation;
+package org.prevayler;
 
 import java.io.IOException;
 
-import org.prevayler.Prevayler;
+import org.prevayler.implementation.PrevaylerImpl;
+import org.prevayler.implementation.SnapshotManager;
+import org.prevayler.implementation.TransientPublisher;
 import org.prevayler.implementation.clock.MachineClock;
 import org.prevayler.implementation.log.TransactionLogger;
 
@@ -23,11 +25,14 @@ public class PrevaylerFactory {
 		return createPrevayler(_prevalentSystem, _prevalenceBase);
 	}
 
-	public static Prevayler createTransientPrevayler(Object prevalentSystem) {
+	public static Prevayler createTransientPrevayler(Object newPrevalentSystem) {
+		return createTransientPrevayler(newPrevalentSystem, "PrevalenceBase");
+	}
+
+	public static Prevayler createTransientPrevayler(Object newPrevalentSystem, String snapshotDirectory) {
 		try {
-			return createPrevayler(prevalentSystem, "PrevalenceBase" + System.currentTimeMillis());
+			return new PrevaylerImpl(newPrevalentSystem, new SnapshotManager(snapshotDirectory), new TransientPublisher(new MachineClock()));
 		} catch (Exception e) {
-			// TODO Implement TransientPublisher to be able to create a really transient Prevayler and remove this exception.
 			e.printStackTrace();
 			return null;
 		}

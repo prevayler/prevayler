@@ -14,7 +14,7 @@ public interface TransactionWithQuery extends Serializable {
 	
 	/** Performs the necessary modifications on the given prevaylentSystem and also returns an Object or throws an Exception.
 	 */
-	public Object executeOn(Object prevalentSystem, Date executionTime) throws Exception;
+	public Object executeAndQuery(Object prevalentSystem, Date executionTime) throws Exception;
 
 	
 }

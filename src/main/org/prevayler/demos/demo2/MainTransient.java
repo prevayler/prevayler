@@ -5,8 +5,8 @@
 package org.prevayler.demos.demo2;
 
 import org.prevayler.Prevayler;
+import org.prevayler.PrevaylerFactory;
 import org.prevayler.demos.demo2.business.Bank;
-import org.prevayler.implementation.PrevaylerFactory;
 
 
 
@@ -21,7 +21,7 @@ public class MainTransient {
 			+ "\n(Pay no attention to the 'Robustness Reminder' this time ;)"
 		);
 
-		//Below is the single line that was changed from Main.java to disable transaction logging. Notice the use of the TransientPublisher:
+		//Below is the single line that was changed from Main.java to disable transaction logging. Notice the use of the AbstractPublisher:
 		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler(new Bank());
 
 		Main.startGui(prevayler);

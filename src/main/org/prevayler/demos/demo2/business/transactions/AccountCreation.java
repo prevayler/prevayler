@@ -13,7 +13,7 @@ public class AccountCreation extends BankTransaction {
 		_holder = holder;
 	}
 
-	protected Object executeOn(Bank bank, Date ignored) throws Account.InvalidHolder {
+	protected Object executeAndQuery(Bank bank, Date ignored) throws Account.InvalidHolder {
 		return bank.createAccount(_holder);
 	}
 

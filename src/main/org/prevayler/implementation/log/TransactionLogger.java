@@ -18,12 +18,12 @@ import org.prevayler.foundation.FileManager;
 import org.prevayler.foundation.SimpleInputStream;
 import org.prevayler.foundation.SimpleOutputStream;
 import org.prevayler.implementation.TransactionSubscriber;
-import org.prevayler.implementation.TransientPublisher;
+import org.prevayler.implementation.AbstractPublisher;
 
 
 /** A TransactionPublisher that will write all published transactions to .transactionLog files before publishing them to the subscribers.
  */
-public class TransactionLogger extends TransientPublisher implements FileFilter {
+public class TransactionLogger extends AbstractPublisher implements FileFilter {
 
 	private final File _directory;
 	private boolean _nextTransactionKnown = false;
