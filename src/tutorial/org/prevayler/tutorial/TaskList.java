@@ -19,17 +19,19 @@ import java.util.List;
  */
 public class TaskList implements Serializable {
 
-    private final List tasks = new ArrayList();
+    private List tasks = new ArrayList();
 
     /**
-     * @param task the task to add.
+     * @param task
+     *            the task to add.
      */
     public void addTask(Task task) {
         tasks.add(task);
     }
 
     /**
-     * @param task the task to remove.
+     * @param task
+     *            the task to remove.
      */
     public void removeTask(Task task) {
         tasks.remove(task);
@@ -41,5 +43,4 @@ public class TaskList implements Serializable {
     public List getTasks() {
         return Collections.unmodifiableList(tasks);
     }
-
 }

@@ -17,7 +17,7 @@ import java.io.Serializable;
 public class Task implements Serializable {
 
     public static final int MAX_PRIORITY = 10;
-
+    public static final int MED_PRIORITY = 5;
     public static final int MIN_PRIORITY = 0;
 
     private String description;
@@ -25,6 +25,14 @@ public class Task implements Serializable {
     private int priority;
 
     /**
+     * Creates a new Task.
+     */
+    public Task() {
+    }
+
+    /**
+     * Creates a new Task.
+     * 
      * @param description
      *            description of this task.
      * @param priority
