@@ -4,29 +4,15 @@
 
 package org.prevayler.test;
 
+import junit.framework.TestResult;
+import junit.textui.ResultPrinter;
+
 /** The main class for testing Prevayler.
 */
 public class Main {
-
 	static public void main(String[] args) throws Exception {
-
-		header("RollbackTest...");
-		RollbackTest.run();
-
-		header("PersistenceTest...");
-		PersistenceTest.run();
-
-		header("S U C C E S S ! ! !  Can't you think of any more tests?");
-	}
-
-	static private void header(String head) {
-		out("");
-		out("");
-		out("> > > " + head);
-	}
-
-	static private void out(Object obj) {
-		System.out.println(obj);
-	}
-
+        TestResult testResult = new TestResult();
+        testResult.addListener(new ResultPrinter(System.out));
+        AllTestSuite.suite().run(testResult);
+    }
 }

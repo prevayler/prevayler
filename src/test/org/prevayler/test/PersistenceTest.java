@@ -10,13 +10,14 @@ import java.io.IOException;
 
 import org.prevayler.foundation.FileManager;
 import org.prevayler.implementation.SnapshotPrevayler;
+import junit.framework.TestCase;
 
-public class PersistenceTest {
+public class PersistenceTest extends TestCase {
 
-	static private SnapshotPrevayler prevayler;
-	static private String prevalenceBase;
+	private SnapshotPrevayler prevayler;
+	private String prevalenceBase;
 
-	static public void run() throws Exception {
+	public void testPersistence() throws Exception {
 
 		newPrevalenceBase();
 
@@ -66,45 +67,45 @@ public class PersistenceTest {
 		verify(167);
 	}
 
-	static private void crashRecover() throws Exception {
+	private void crashRecover() throws Exception {
 		out("CrashRecovery.");
 		prevayler = new SnapshotPrevayler(new AddingSystem(), prevalenceBase());
 	}
 
-	static private void snapshot() throws IOException {
+	private void snapshot() throws IOException {
 		out("Snapshot.");
 		prevayler.takeSnapshot();
 	}
 
 
-	static private void add(long value, long expectedTotal) throws Exception {
+	private void add(long value, long expectedTotal) throws Exception {
 		out("Adding " + value);
 		prevayler.execute(new Addition(value));
 		verify(expectedTotal);
 	}
 
 
-	static private void verify(long expectedTotal) {
+	private void verify(long expectedTotal) {
 		out("Expecting total: " + expectedTotal);
 		compare(system().total(), expectedTotal, "Total");
 	}
 
 
-	static private AddingSystem system() {
+	private AddingSystem system() {
 		return (AddingSystem)prevayler.prevalentSystem();
 	}
 
 
-	static private String prevalenceBase() {
+	private String prevalenceBase() {
 		return prevalenceBase;
 	}
 
 
-	static private void newPrevalenceBase() throws Exception {
+	private void newPrevalenceBase() throws Exception {
 		prevalenceBase = "PrevalenceBase" + System.currentTimeMillis();
 	}
 
-	static public void deletePrevalenceFiles(String directoryName) {
+	public static void deletePrevalenceFiles(String directoryName) {
 		File directory = new File(directoryName);
 		if(!directory.exists()) return;
 
@@ -117,17 +118,17 @@ public class PersistenceTest {
 	}
 
 
-	static private void compare(long observed, long expected, String measurement) {
+	private void compare(long observed, long expected, String measurement) {
 		verify(observed == expected, measurement + ": " + observed + "   Expected: " + expected);
 	}
 
-	static private void verify(boolean condition, String message) {
+	private static void verify(boolean condition, String message) {
 		if (!condition) {
 			throw new RuntimeException(message);
 		}
 	}
 
-	static private void out(Object obj) {
+	private static void out(Object obj) {
 		//System.out.println(obj);   //Uncomment this line to see what the test is doing.
 	}
 
