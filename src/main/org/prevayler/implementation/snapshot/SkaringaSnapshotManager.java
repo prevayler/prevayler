@@ -5,11 +5,10 @@
 
 package org.prevayler.implementation.snapshot;
 
-import java.io.*;
+import org.prevayler.foundation.serialization.SkaringaSerializationStrategy;
 
-import javax.xml.transform.stream.*;
-
-import com.skaringa.javaxml.*;
+import java.io.File;
+import java.io.IOException;
 
 
 /**
@@ -33,43 +32,11 @@ import com.skaringa.javaxml.*;
  * @see org.prevayler.implementation.snapshot.SnapshotManager
  * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager
  */
-public class SkaringaSnapshotManager extends AbstractSnapshotManager {
+public class SkaringaSnapshotManager extends GenericSnapshotManager {
 	public static final String SUFFIX = "skaringasnapshot";
 
 	public SkaringaSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
-		init(newPrevalentSystem, snapshotDirectoryName);
-	}
-
-
-    /**
-	 * @see org.prevayler.implementation.snapshot.SnapshotManager#writeSnapshot(Object, OutputStream)
-	 */
-	public void writeSnapshot(Object prevalentSystem, OutputStream out) throws IOException {
-		StreamResult result = new StreamResult(out);
-		try {
-			transformer().serialize(prevalentSystem, result);
-		} catch (SerializerException se) {
-			throw new IOException("Unable to serialize with Skaringa: " + se.getMessage());
-		} finally {
-			OutputStream stream = result.getOutputStream(); 
-            if (stream != null) stream.close();
-		}
-	}
-
-
-	/**
-	 * @see org.prevayler.implementation.snapshot.SnapshotManager#readSnapshot(InputStream)
-	 */
-	public Object readSnapshot(InputStream in) throws IOException {
-		StreamSource source = new StreamSource(in);
-		try {
-			return transformer().deserialize(source);
-		} catch (DeserializerException de) {
-			throw new IOException("Unable to deserialize with Skaringa: " + de.getMessage());
-		} finally {
-            InputStream stream = source.getInputStream(); 
-			if (stream != null) stream.close();
-		}
+		super(new SkaringaSerializationStrategy(), newPrevalentSystem, snapshotDirectoryName);
 	}
 
 
@@ -80,19 +47,6 @@ public class SkaringaSnapshotManager extends AbstractSnapshotManager {
 		return SUFFIX;
 	}
 
-
-	private ObjectTransformer transformer() throws IOException {
-		try {
-			return ObjectTransformerFactory.getInstance().getImplementation();
-//			Other options you can try:
-//			trans.setProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
-//			trans.setProperty(javax.xml.transform.OutputKeys.ENCODING, "ISO-8859-1");
-//			trans.setProperty(com.skaringa.javaxml.PropertyKeys.OMIT_XSI_TYPE, "true");
-		}
-		catch (NoImplementationException nie) {
-			throw new IOException("Unable to start Skaringa: " + nie.getMessage());
-		}
-	}
 
 
 	/**
