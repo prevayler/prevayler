@@ -486,6 +486,7 @@
     <target name="run.demo.scalability" depends="compile.core, -demo.init"
             description="Runs manipulation and query scalability demos against Prevayler and any JDBC database" >
         <java dir="${cachedir.demo}" fork="true" classname="org.prevayler.demos.scalability.Main" >
+            <jvmarg line="${scalability.jvmarg}" />
             <classpath refid="build.run.classpath" />
             <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
         </java>

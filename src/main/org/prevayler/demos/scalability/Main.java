@@ -2,6 +2,7 @@ package org.prevayler.demos.scalability;
 
 import org.prevayler.demos.scalability.prevayler.*;
 import org.prevayler.demos.scalability.jdbc.*;
+import org.prevayler.foundation.serialization.JavaSerializer;
 
 import java.io.*;
 import java.util.*;
@@ -60,7 +61,7 @@ public class Main {
 
 	static private void runPrevaylerTransaction() throws Exception {
 		new TransactionTestRun(
-			new PrevaylerTransactionSubject(prevaylerTransactionLogDirectory()),
+			new PrevaylerTransactionSubject(prevaylerTransactionLogDirectory(), prevaylerJournalSerializer()),
 			numberOfObjects(),
 			prevaylerTransactionThreadsMin(),
 			prevaylerTransactionThreadsMax()
@@ -114,7 +115,8 @@ public class Main {
 			"#\n" +
 			"# Running the tests with one hundred thousand objects\n" +
 			"# (default option) requires approx. 128MB free RAM.\n" +
-			"# The VM must be started with a sufficient maximum heap" +			"# size or you will get an OutOfMemoryError.\n" +
+			"# The VM must be started with a sufficient maximum heap" +
+			"# size or you will get an OutOfMemoryError.\n" +
 			"# Example for Linux and Windows:  java -Xmx128000000 ...\n" +
 			"#\n" +
 			"# Running the tests with one million objects requires\n" +
@@ -152,6 +154,7 @@ public class Main {
 			"# multiple disks.\n" +
 			"\n" +
 			"TransactionLogDirectory = TransactionTest\n" +
+			"PrevaylerJournalSerializer = " + JavaSerializer.class.getName() + "\n" +
 			"#\n" +
 			"# The full path name can be used. Example for Windows:\n" +
 			"# TransactionLogDirectory1 = c:\\\\temp\\\\TransactionTest\n" +
@@ -244,6 +247,13 @@ public class Main {
 	static private String prevaylerTransactionLogDirectory() {
 		String result = property("TransactionLogDirectory");
 		out("\n\nPrevayler TransactionLog Directory: " + result);
+		return result;
+	}
+
+	static private String prevaylerJournalSerializer() {
+		String result = properties.getProperty("PrevaylerJournalSerializer");
+		if (result == null) result = JavaSerializer.class.getName();
+		out("\n\nPrevayler Journal Serializer: " + result);
 		return result;
 	}
 
