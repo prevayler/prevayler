@@ -56,6 +56,7 @@
         <pathelement location="${skaringa.jar}"/>
         <pathelement location="${xstream.jar}"/>
         <pathelement location="${xpp3.jar}"/>
+        <pathelement location="${pl.jar}"/>
         <pathelement location="${jgroups.jar}"/>
         <pathelement location="${log4j.jar}"/>
         <pathelement location="${jaxen.jar}"/>
@@ -357,6 +358,10 @@
             <param name="destfile"   value="${xpp3.jar}"/>
         </antcall>
         <antcall target="-downloadfile">
+            <param name="sourcefile" value="${pl.loc}"/>
+            <param name="destfile"   value="${pl.jar}"/>
+        </antcall>
+        <antcall target="-downloadfile">
             <param name="sourcefile" value="${javamatch.loc}"/>
             <param name="destfile"   value="${javamatch.jar}"/>
         </antcall>
@@ -452,6 +457,14 @@
         </java>
     </target>
 
+    <target name="run.demo.bank.pl" depends="compile.core, -demo.init"
+            description="Same as simple bank demo, but uses PL text format serialization" >
+        <java dir="${cachedir.demo}" fork="true" classname="org.prevayler.demos.demo2.MainPL" >
+            <classpath refid="build.run.classpath" />
+            <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
+        </java>
+    </target>
+    
     <target name="run.demo.bank.transient" depends="compile.core, -demo.init"
             description="Runs transient bank demonstration" >
         <java dir="${cachedir.demo}" fork="true" classname="org.prevayler.demos.demo2.MainTransient" >
