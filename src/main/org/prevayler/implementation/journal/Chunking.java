@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.EOFException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -74,12 +75,16 @@ public class Chunking {
 		while (total < size) {
 			int read = stream.read(bytes, total, size - total);
 			if (read == -1) {
-				throw new IOException("Unexpected end of stream in chunk data");
+				throw new EOFException("Unexpected end of stream in chunk data");
 			}
 			total += read;
 		}
 
-		if (stream.read() != '\r' || stream.read() != '\n') {
+		int cr = stream.read();
+		int lf = stream.read();
+		if (cr == -1 || cr == '\r' && lf == -1) {
+			throw new EOFException("Unexpected end of stream in chunk trailer");
+		} else if (cr != '\r' || lf != '\n') {
 			throw new IOException("Chunk trailer corrupted");
 		}
 
@@ -94,7 +99,7 @@ public class Chunking {
 				if (header.size() == 0) {
 					return null;
 				} else {
-					throw new IOException("Unexpected end of stream in chunk header");
+					throw new EOFException("Unexpected end of stream in chunk header");
 				}
 			}
 			header.write(b);

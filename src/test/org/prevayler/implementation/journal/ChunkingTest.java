@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.EOFException;
 
 public class ChunkingTest extends TestCase {
 
@@ -43,9 +44,9 @@ public class ChunkingTest extends TestCase {
 		checkMalformed("f\r\nabcdefghijklmno\r\n", "Chunk header corrupted");
 		checkMalformed("FFF\r\nabcdefghijklmno\r\n", "Unexpected end of stream in chunk data");
 		checkMalformed("FFF", "Unexpected end of stream in chunk header");
-		checkMalformed("F\r\nabcdefghijklmno", "Chunk trailer corrupted");
 		checkMalformed("F\r\nabcdefghijklmno\n", "Chunk trailer corrupted");
-		checkMalformed("F\r\nabcdefghijklmno\r", "Chunk trailer corrupted");
+		checkMalformed("F\r\nabcdefghijklmno\r", "Unexpected end of stream in chunk trailer");
+		checkMalformed("F\r\nabcdefghijklmno", "Unexpected end of stream in chunk trailer");
 	}
 
 	private void checkMalformed(String input, String message) throws IOException {
@@ -55,6 +56,10 @@ public class ChunkingTest extends TestCase {
 			fail("Should have thrown IOException");
 		} catch (IOException exception) {
 			assertEquals(message, exception.getMessage());
+			if (message.startsWith("Unexpected end of stream")) {
+				assertTrue("Actual exception class was <" + exception.getClass().getName() + ">",
+						exception instanceof EOFException);
+			}
 		}
 	}
 
