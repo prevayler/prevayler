@@ -159,7 +159,13 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 	private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, long initialLogFile)	throws IOException, ClassNotFoundException {
 		long recoveringTransaction = initialLogFile;
 		File logFile = transactionLogFile(recoveringTransaction);
-		SimpleInputStream inputLog = new SimpleInputStream(logFile);
+		SimpleInputStream inputLog = null;
+        try {
+            inputLog = new SimpleInputStream(logFile);
+        } catch (EOFException e) {
+            renameUnusedFile(logFile);
+            return recoveringTransaction;
+        }
 
 		while(true) {
 			try {
@@ -175,7 +181,12 @@ public class PersistentLogger implements FileFilter, TransactionLogger {
 				if (logFile.equals(nextFile)) renameUnusedFile(logFile);  //The first transaction in this log file is incomplete. We need to reuse this file name.
 				logFile = nextFile;
 				if (!logFile.exists()) break;
-				inputLog = new SimpleInputStream(logFile);
+				try {
+                    inputLog = new SimpleInputStream(logFile);
+                } catch (EOFException e) {
+                    renameUnusedFile(logFile);
+                    return recoveringTransaction;
+                }
 			}
 		}
 		return recoveringTransaction;
