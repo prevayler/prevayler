@@ -44,25 +44,16 @@ public class TransactionTimestamp implements Serializable {
 	}
 
 	public Chunk toChunk() {
-		Chunk chunk = new Chunk(_capsule.serialized());
-		chunk.setParameter("withQuery", String.valueOf(_capsule instanceof TransactionWithQueryCapsule));
+		Chunk chunk = _capsule.toChunk();
 		chunk.setParameter("systemVersion", String.valueOf(_systemVersion));
 		chunk.setParameter("executionTime", String.valueOf(_executionTime));
 		return chunk;
 	}
 
 	public static TransactionTimestamp fromChunk(Chunk chunk) {
-		boolean withQuery = Boolean.valueOf(chunk.getParameter("withQuery")).booleanValue();
+		Capsule capsule = Capsule.fromChunk(chunk);
 		long systemVersion = Long.parseLong(chunk.getParameter("systemVersion"));
 		long executionTime = Long.parseLong(chunk.getParameter("executionTime"));
-
-		Capsule capsule;
-		if (withQuery) {
-			capsule = new TransactionWithQueryCapsule(chunk.getBytes());
-		} else {
-			capsule = new TransactionCapsule(chunk.getBytes());
-		}
-
 		return new TransactionTimestamp(capsule, systemVersion, executionTime);
 	}
 

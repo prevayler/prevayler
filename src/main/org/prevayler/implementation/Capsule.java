@@ -1,5 +1,6 @@
 package org.prevayler.implementation;
 
+import org.prevayler.foundation.Chunk;
 import org.prevayler.foundation.serialization.Serializer;
 
 import java.io.ByteArrayInputStream;
@@ -65,5 +66,20 @@ public abstract class Capsule implements Serializable {
 	 * Make a clean copy of this capsule that will have its own query result fields.
 	 */
 	public abstract Capsule cleanCopy();
+
+	Chunk toChunk() {
+		Chunk chunk = new Chunk(_serialized);
+		chunk.setParameter("withQuery", String.valueOf(this instanceof TransactionWithQueryCapsule));
+		return chunk;
+	}
+
+	static Capsule fromChunk(Chunk chunk) {
+		boolean withQuery = Boolean.valueOf(chunk.getParameter("withQuery")).booleanValue();
+		if (withQuery) {
+			return new TransactionWithQueryCapsule(chunk.getBytes());
+		} else {
+			return new TransactionCapsule(chunk.getBytes());
+		}
+	}
 
 }
