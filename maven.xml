@@ -1,0 +1,75 @@
+<project default="jar:install"
+    xmlns:j="jelly:core">
+
+    <preGoal name="xdoc:jelly-transform">
+        <attainGoal name="html2xdoc"/>
+    </preGoal>
+
+    <goal name="cvs:make-patch" description="Creates a patch of *your* changes">
+        <cvs command="-q diff -b -u -N" output="patch.txt"/>
+        <echo>
+            Please create a new issue in PicoContainer's JIRA:
+            http://jira.codehaus.org/secure/BrowseProject.jspa?id=NOTCREATEDYET
+            Then attach the patch.txt file.
+            If your patch consists of entirely new files too, please zip them
+            up and attach them too.
+
+            If your patch includes JUnit tests and a decent description,
+            you increase the chance of having the patch applied by some
+            of the committers.
+        </echo>
+    </goal>
+
+    <!-- C O N T I N U O S   I N T E G R A T I O N -->
+
+    <!--
+     ! Maven doesn't tell us whether compile was ok.
+     ! We'll work around it by creating a file and delete
+     ! it when compile is done. If compile fails, the file
+     ! is still there, and the continuous-integration.sh
+     ! script will send a mail to the list.
+    -->
+    <preGoal name="java:compile">
+        <touch file="${maven.build.dir}/compiling"/>
+    </preGoal>
+
+    <postGoal name="java:compile">
+        <delete file="${maven.build.dir}/compiling"/>
+    </postGoal>
+
+    <preGoal name="test:compile">
+        <touch file="${maven.build.dir}/compiling"/>
+    </preGoal>
+
+    <postGoal name="test:compile">
+        <delete file="${maven.build.dir}/compiling"/>
+    </postGoal>
+
+    <!--
+     ! Maven doesn't tell us whether tests were ok either.
+     ! If the testfailure file is there, and continuous-integration.sh
+     ! script will send a mail to the list.
+    -->
+    <preGoal name="test:test">
+        <delete file="${maven.build.dir}/testfailure"/>
+        <delete>
+            <fileset dir="${basedir}">
+                <include name="${basedir}/PrevalenceBase**" />
+            </fileset>
+        </delete>
+    </preGoal>
+
+    <!--
+     ! Note that if the tests fail, this postGoal will *not*
+     ! be run unless the maven.test.failure.ignore is set to
+     ! true. It is not recommended that developers have this
+     ! set to true, so this should only be set to true in the
+     ! ~/build.properties file on the machine running continuous
+     ! builds.
+    -->
+    <postGoal name="test:test">
+        <j:if test="${pom.getPluginContext('maven-test-plugin').getVariable('maven.test.failure')}">
+            <touch file="${maven.build.dir}/testfailure"/>
+        </j:if>
+    </postGoal>
+</project>
