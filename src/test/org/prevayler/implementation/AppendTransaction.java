@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class AppendTransaction implements Transaction {
 
-	String toAdd;
+	public String toAdd;
 
 	private AppendTransaction() {
 		// Skaringa requires a default constructor, but XStream does not.

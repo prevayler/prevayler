@@ -6,6 +6,7 @@ package org.prevayler.foundation;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.journal.Chunk;
 import org.prevayler.implementation.journal.Chunking;
+import org.prevayler.implementation.TransactionTimestamp;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -62,7 +63,7 @@ public class DurableOutputStream {
 		_serializer = serializer;
 	}
 
-	public void sync(Object object, Turn myTurn) throws IOException {
+	public void sync(TransactionTimestamp timestamp, Turn myTurn) throws IOException {
 		int thisWrite;
 
 		// When a thread arrives here, all we care about at first is that it
@@ -70,7 +71,7 @@ public class DurableOutputStream {
 
 		try {
 			myTurn.start();
-			thisWrite = writeObject(object);
+			thisWrite = writeObject(timestamp);
 		} finally {
 			myTurn.end();
 		}
@@ -81,7 +82,7 @@ public class DurableOutputStream {
 		waitUntilSynced(thisWrite);
 	}
 
-	private int writeObject(Object object) throws IOException {
+	private int writeObject(TransactionTimestamp timestamp) throws IOException {
 		synchronized (_writeLock) {
 			if (_closed) {
 				throw new IOException("already closed");
@@ -89,7 +90,7 @@ public class DurableOutputStream {
 
 			try {
 				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-				_serializer.writeObject(bytes, object);
+				_serializer.writeObject(bytes, timestamp);
 				Chunking.writeChunk(_active, new Chunk(bytes.toByteArray()));
 			} catch (IOException exception) {
 				internalClose();

@@ -9,6 +9,7 @@ import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.journal.Chunk;
 import org.prevayler.implementation.journal.Chunking;
+import org.prevayler.implementation.TransactionTimestamp;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -36,13 +37,13 @@ public class DurableInputStream {
 	}
 
 
-	public Object readObject() throws IOException, ClassNotFoundException {
+	public TransactionTimestamp read() throws IOException, ClassNotFoundException {
 		if (_EOF) throw new EOFException();
 
 		try {
 			Chunk chunk = Chunking.readChunk(_fileStream);
 			if (chunk != null) {
-				return _serializer.readObject(new ByteArrayInputStream(chunk.getBytes()));
+				return (TransactionTimestamp) _serializer.readObject(new ByteArrayInputStream(chunk.getBytes()));
 			}
 		} catch (EOFException eofx) {
 			// Do nothing.

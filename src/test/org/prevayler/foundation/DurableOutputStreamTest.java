@@ -2,10 +2,13 @@ package org.prevayler.foundation;
 
 import org.prevayler.foundation.monitor.NullMonitor;
 import org.prevayler.foundation.serialization.JavaSerializer;
+import org.prevayler.implementation.TransactionTimestamp;
+import org.prevayler.implementation.AppendTransaction;
 
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 public class DurableOutputStreamTest extends FileIOTest {
 
@@ -18,18 +21,18 @@ public class DurableOutputStreamTest extends FileIOTest {
 			DurableOutputStream out = new DurableOutputStream(file, new JavaSerializer());
 
 			Turn myTurn = Turn.first();
-			out.sync("first", myTurn);
-			out.sync("second", myTurn.next());
+			out.sync(timestamp("first"), myTurn);
+			out.sync(timestamp("second"), myTurn.next());
 			out.close();
 
 			assertTrue(out.reallyClosed());
 			assertEquals(2, out.fileSyncCount());
 
 			DurableInputStream in = new DurableInputStream(file, new JavaSerializer(), new NullMonitor());
-			assertEquals("first", in.readObject());
-			assertEquals("second", in.readObject());
+			assertEquals("first", value(in.read()));
+			assertEquals("second", value(in.read()));
 			try {
-				in.readObject();
+				in.read();
 				fail("expected end of file");
 			} catch (EOFException e) {
 			}
@@ -38,6 +41,14 @@ public class DurableOutputStreamTest extends FileIOTest {
 
 			delete(file);
 		}
+	}
+
+	private TransactionTimestamp timestamp(String value) {
+		return new TransactionTimestamp(new AppendTransaction(value), new Date());
+	}
+
+	private String value(TransactionTimestamp timestamp) {
+		return ((AppendTransaction) timestamp.transaction()).toAdd;
 	}
 
 	public void testMultiThreaded() throws Exception {
@@ -75,12 +86,12 @@ public class DurableOutputStreamTest extends FileIOTest {
 			assertEquals(syncsBeforeClose, out.fileSyncCount());
 
 			DurableInputStream in = new DurableInputStream(file, new JavaSerializer(), new NullMonitor());
-			assertEquals("2.first", in.readObject());
-			assertEquals("1.first", in.readObject());
-			assertEquals("2.second", in.readObject());
-			assertEquals("1.second", in.readObject());
+			assertEquals("2.first", value(in.read()));
+			assertEquals("1.first", value(in.read()));
+			assertEquals("2.second", value(in.read()));
+			assertEquals("1.second", value(in.read()));
 			try {
-				in.readObject();
+				in.read();
 				fail("expected end of file");
 			} catch (EOFException e) {
 			}
@@ -107,8 +118,8 @@ public class DurableOutputStreamTest extends FileIOTest {
 
 		public void run() {
 			try {
-				_out.sync(_id + ".first", _firstTurn);
-				_out.sync(_id + ".second", _secondTurn);
+				_out.sync(timestamp(_id + ".first"), _firstTurn);
+				_out.sync(timestamp(_id + ".second"), _secondTurn);
 			} catch (IOException e) {
 				_ex = e;
 			}
