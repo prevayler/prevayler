@@ -20,7 +20,6 @@ public class BrokenClock implements Clock, java.io.Serializable {
 	public synchronized void advanceTo(Date newTime) {
 		long newMillis = newTime.getTime();
 		if (newMillis == _millis) return;
-		if (newMillis < _millis) throw new RuntimeException("A Clock can only be set to the future. Current time: " + _time + " new time: " + newTime);
 		_millis = newMillis;
 		_time = newTime;
 	}
