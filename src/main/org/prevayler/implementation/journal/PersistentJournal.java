@@ -18,7 +18,6 @@ import org.prevayler.implementation.publishing.TransactionSubscriber;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 
 
 /** A Journal that will write all transactions to .journal files.
