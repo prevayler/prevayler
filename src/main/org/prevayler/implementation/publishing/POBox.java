@@ -5,6 +5,7 @@
 
 package org.prevayler.implementation.publishing;
 
+import org.prevayler.foundation.Cool;
 import org.prevayler.implementation.TransactionTimestamp;
 
 import java.util.LinkedList;
@@ -40,17 +41,9 @@ public class POBox extends Thread implements TransactionSubscriber {
 
 
 	private synchronized TransactionTimestamp waitForNotification() {
-		while (_queue.size() == 0) waitWithoutInterruptions();
+		while (_queue.size() == 0) Cool.wait(this);
 		return (TransactionTimestamp)_queue.removeFirst();
 	}
 
-
-	private void waitWithoutInterruptions() {
-		try {
-			wait();
-		} catch (InterruptedException e) {
-			throw new RuntimeException("Unexpected InterruptedException.");
-		}
-	}
 
 }

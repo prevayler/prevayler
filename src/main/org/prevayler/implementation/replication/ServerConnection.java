@@ -106,6 +106,7 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
+			//TODO Cancel subscription.
 		}
 	}
 

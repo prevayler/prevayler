@@ -30,6 +30,29 @@ public class ReplicationTest extends FileIOTest {
 		clientCrashRecover(0);
 		clientAppend("f", "abcdef");
 		serverAppend("g", "abcdefg");
+
+		networkCrash();
+		threadToRestartNetworkAfterAWhile().start();
+		_server.execute(new Appendix("h"));
+		clientAppend("i", "abcdefghi");  //Blocks until the network is restarted.
+		
+		serverAppend("j", "abcdefghij");
+		clientAppend("k", "abcdefghijk");
+	}
+
+
+	private void networkCrash() {
+		// TODO Simulate a network crash.
+	}
+
+
+	private Thread threadToRestartNetworkAfterAWhile() {
+		return new Thread() {
+			public void run() {
+				Cool.sleep(300);
+				//TODO Simulate a network recovery.
+			}
+		};
 	}
 
 	public void testClientFirst() throws Exception {
