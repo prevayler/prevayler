@@ -250,43 +250,32 @@
         <delete file="${targetdir}/${dist.name}.tar" />
     </target>
 
-    <target name="damagecontrol" depends="dist"> <!-- if="dcontrol.passphrase"-->
-        <!--<scp
-            todir="${dcontrol.username}@hogshead.codehaus.org:/www/dist.codehaus.org/prevayler/distributions"
-            keyfile="${user.home}/.ssh/id_dss"
-            passphrase="${dcontrol.passphrase}"
-            trust="true">
-            <fileset dir="${targetdir}">
-                <include name="*.tar.gz"/>
-                <include name="*.zip"/>
-            </fileset>
-        </scp>
-        <scp
-            file="${libdir}/${jar.name.core}.jar"
-            todir="${dcontrol.username}@hogshead.codehaus.org:/www/dist.codehaus.org/prevayler/jars"
-            keyfile="${user.home}/.ssh/id_dss"
-            passphrase="${dcontrol.passphrase}"
-            trust="true"/>-->
-        <copy file="${libdir}/${jar.name.core}.jar"   tofile="${libdir}/${app.name}-SNAPSHOT.jar"/>
-        <copy file="${targetdir}/${dist.name}.zip"    tofile="${targetdir}/${app.name}-SNAPSHOT.zip"/>
-        <copy file="${targetdir}/${dist.name}.tar.gz" tofile="${targetdir}/${app.name}-SNAPSHOT.tar.gz"/>
-        <property name="scp"                           value="scp"/>
-        <property name="dcontrol.username"             value="dcontrol"/>
-        <property name="dcontrol.siteAddress"          value="hogshead.codehaus.org"/>
-        <property name="dcontrol.remoteDirectory.jars" value="/www/dist.codehaus.org/prevayler/jars"/>
-        <property name="dcontrol.remoteDirectory.dist" value="/www/dist.codehaus.org/prevayler/distributions"/>
-        <exec dir="." executable="${scp}">
-            <arg path="${libdir}/${app.name}-SNAPSHOT.jar"/>
-            <arg value="${dcontrol.username}@${dcontrol.siteAddress}:${dcontrol.remoteDirectory.jars}"/>
-        </exec>
-        <exec dir="." executable="${scp}">
-            <arg path="${targetdir}/${app.name}-SNAPSHOT.zip"/>
-            <arg value="${dcontrol.username}@${dcontrol.siteAddress}:${dcontrol.remoteDirectory.dist}"/>
-        </exec>
-        <exec dir="." executable="${scp}">
-            <arg path="${targetdir}/${app.name}-SNAPSHOT.tar.gz"/>
-            <arg value="${dcontrol.username}@${dcontrol.siteAddress}:${dcontrol.remoteDirectory.dist}"/>
-        </exec>
+    <target name="damagecontrol">
+        <property name="scp" value="scp"/>
+        <property name="damagecontrol.username" value="dcontrol"/>
+        <macrodef name="macroscp">
+            <attribute name="file"/>
+            <attribute name="todir"/>
+            <sequential>
+                <exec dir="." executable="${scp}">
+                    <arg path="@{file}"/>
+                    <arg value="${damagecontrol.username}@hogshead.codehaus.org:/www/dist.codehaus.org/prevayler/@{todir}"/>
+                </exec>
+            </sequential>
+        </macrodef>
+
+        <ant target="dist" inheritAll="false">
+            <property name="app.version" value="SNAPSHOT"/>
+        </ant>
+        <macroscp file="${libdir}/${app.name}-SNAPSHOT.jar" todir="jars"/>
+        <macroscp file="${targetdir}/${app.name}-SNAPSHOT.*" todir="distributions"/>
+
+        <tstamp/>
+        <ant target="dist" inheritAll="false">
+            <property name="app.version" value="${DSTAMP}"/>
+        </ant>
+        <macroscp file="${libdir}/${app.name}-${DSTAMP}.jar" todir="jars"/>
+        <macroscp file="${targetdir}/${app.name}-${DSTAMP}.*" todir="distributions"/>
     </target>
 
 <!-- ==================== Test Targets ================================== -->
