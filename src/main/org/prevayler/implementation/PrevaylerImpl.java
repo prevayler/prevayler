@@ -108,7 +108,7 @@ public class PrevaylerImpl implements Prevayler {
 	public void close() throws IOException { _publisher.close(); }
 
 	private Object deepCopy(Object transaction) {
-		return DeepCopier.deepCopy(transaction, _snapshotManager, "Unable to produce a deep copy of a transaction. Deep copies of transactions are executed instead of the transactions themselves so that the behaviour of the system during transaction execution is exactly the same as during transaction recovery from the journal.");
+		return DeepCopier.deepCopy(transaction, "Unable to produce a deep copy of a transaction. Deep copies of transactions are executed instead of the transactions themselves so that the behaviour of the system during transaction execution is exactly the same as during transaction recovery from the journal.");
 	}
 
 	private TransactionSubscriber subscriber() {

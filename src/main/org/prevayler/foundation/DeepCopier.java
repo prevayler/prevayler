@@ -2,20 +2,24 @@ package org.prevayler.foundation;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-
-import org.prevayler.implementation.snapshot.SnapshotManager;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class DeepCopier {
 
-	public static Object deepCopy(Object original, SnapshotManager snapshotManager, String errorMessage) {  //TODO Receive a generic "Serializer" instead of the SnapshotManager.
+	public static Object deepCopy(Object original, String errorMessage) {  //TODO Receive a generic "Serializer".
 		try {
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			snapshotManager.writeSnapshot(original, out);
-			return snapshotManager.readSnapshot(new ByteArrayInputStream(out.toByteArray()));
+			ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+			ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);
+			objectOut.writeObject(original);
+			objectOut.close();
+			ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+			ObjectInputStream objectIn = new ObjectInputStream(byteIn);
+			return objectIn.readObject();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new RuntimeException(errorMessage);
 		}
 	}
-	
+
 }
