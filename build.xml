@@ -60,6 +60,7 @@
         <pathelement location="${log4j.jar}"/>
         <pathelement location="${jaxen.jar}"/>
         <pathelement location="${ognl.jar}"/>
+        <pathelement location="${javamatch.jar}"/>
         <pathelement location="${commons-jxpath.jar}"/>
         <pathelement location="${commons-logging.jar}"/>
         <pathelement location="${xml-apis.jar}"/> <!-- Not required under j2sdk1.4.x. Here to run xml demo under JDK1.3.x -->
@@ -354,6 +355,10 @@
         <antcall target="-downloadfile">
             <param name="sourcefile" value="${xpp3.loc}"/>
             <param name="destfile"   value="${xpp3.jar}"/>
+        </antcall>
+        <antcall target="-downloadfile">
+            <param name="sourcefile" value="${javamatch.loc}"/>
+            <param name="destfile"   value="${javamatch.jar}"/>
         </antcall>
     </target>
     <target name="download.dependencies.test"
