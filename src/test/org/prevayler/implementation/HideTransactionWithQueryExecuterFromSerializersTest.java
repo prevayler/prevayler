@@ -4,10 +4,7 @@ import org.prevayler.Clock;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
-import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.foundation.serialization.SkaringaSerializer;
-import org.prevayler.foundation.serialization.XStreamSerializer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,9 +15,9 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Date;
 
-public class JournalSerializerTest extends FileIOTest {
+public class HideTransactionWithQueryExecuterFromSerializersTest extends FileIOTest {
 
-	public void testConfigureJournalSerializationStrategy() throws IOException, ClassNotFoundException {
+	public void testHideTransactionWithQueryExecuterFromSerializers() throws Exception {
 		Serializer strategy = new MySerializer();
 
 		startAndCrash(strategy);
@@ -35,34 +32,12 @@ public class JournalSerializerTest extends FileIOTest {
 		recover(strategy);
 	}
 
-	public void testJavaJournal() throws IOException, ClassNotFoundException {
-		Serializer strategy = new JavaSerializer();
-
-		startAndCrash(strategy);
-		recover(strategy);
-	}
-
-	public void testXStreamJournal() throws IOException, ClassNotFoundException {
-		Serializer strategy = new XStreamSerializer();
-
-		startAndCrash(strategy);
-		recover(strategy);
-	}
-
-	public void testSkaringaJournal() throws IOException, ClassNotFoundException {
-		Serializer strategy = new SkaringaSerializer();
-
-		startAndCrash(strategy);
-		recover(strategy);
-	}
-
-	private void startAndCrash(Serializer journalSerializer)
-			throws IOException, ClassNotFoundException {
+	private void startAndCrash(Serializer journalSerializer) throws Exception {
 		Prevayler prevayler = createPrevayler(journalSerializer);
 
-		prevayler.execute(new AppendTransaction(" first"));
-		prevayler.execute(new AppendTransaction(" second"));
-		prevayler.execute(new AppendTransaction(" third"));
+		assertEquals("the system first", prevayler.execute(new AppendTransactionWithQuery(" first")));
+		assertEquals("the system first second", prevayler.execute(new AppendTransactionWithQuery(" second")));
+		assertEquals("the system first second third", prevayler.execute(new AppendTransactionWithQuery(" third")));
 		assertEquals("the system first second third", prevayler.prevalentSystem().toString());
 		prevayler.close();
 	}
@@ -93,14 +68,14 @@ public class JournalSerializerTest extends FileIOTest {
 
 		public void writeObject(OutputStream stream, Object object) throws IOException {
 			Writer writer = new OutputStreamWriter(stream, "UTF-8");
-			AppendTransaction transaction = (AppendTransaction) object;
+			AppendTransactionWithQuery transaction = (AppendTransactionWithQuery) object;
 			writer.write(transaction.toAdd);
 			writer.flush();
 		}
 
 		public Object readObject(InputStream stream) throws IOException, ClassNotFoundException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
-			return new AppendTransaction(reader.readLine());
+			return new AppendTransactionWithQuery(reader.readLine());
 		}
 
 	}

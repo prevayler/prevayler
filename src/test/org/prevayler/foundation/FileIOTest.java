@@ -5,6 +5,10 @@
 package org.prevayler.foundation;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.FilenameFilter;
+import java.io.FileReader;
+import java.io.StringWriter;
 
 import junit.framework.TestCase;
 
@@ -45,5 +49,26 @@ public abstract class FileIOTest extends TestCase {
 		File[] files = directory.listFiles();
 		if (files == null) return;
 	    for (int i = 0; i < files.length; i++) delete(files[i]);
+	}
+
+	protected String journalContents() throws IOException {
+		File journal = new File(_testDirectory).listFiles(new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".journal");
+			}
+		})[0];
+
+		FileReader file = new FileReader(journal);
+		StringWriter string = new StringWriter();
+
+		int n;
+		char[] c = new char[1024];
+		while ((n = file.read(c)) != -1) {
+			string.write(c, 0, n);
+		}
+
+		file.close();
+
+		return string.toString();
 	}
 }

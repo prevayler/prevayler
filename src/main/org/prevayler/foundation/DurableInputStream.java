@@ -8,6 +8,7 @@ package org.prevayler.foundation;
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.TransactionTimestamp;
+import org.prevayler.implementation.TransactionWithQueryExecuter;
 import org.prevayler.Transaction;
 
 import java.io.ByteArrayInputStream;
@@ -45,7 +46,7 @@ public class DurableInputStream {
 
 	public TransactionTimestamp read() throws IOException, ClassNotFoundException {
 		Chunk chunk = readChunk();
-		Transaction transaction = (Transaction) _serializer.readObject(new ByteArrayInputStream(chunk.getBytes()));
+		Transaction transaction = TransactionWithQueryExecuter.wrap(_serializer.readObject(new ByteArrayInputStream(chunk.getBytes())));
 		return new TransactionTimestamp(transaction, new Date(Long.parseLong(chunk.getParameter("timestamp"))));
 	}
 

@@ -7,21 +7,17 @@ import org.prevayler.foundation.FileIOTest;
 import org.prevayler.foundation.serialization.Serializer;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Date;
 
 public class SkipOldTransactionsTest extends FileIOTest {
 
-	public void testConfigureJournalSerializationStrategy() throws IOException, ClassNotFoundException {
+	public void testSkipOldTransactions() throws IOException, ClassNotFoundException {
 		Prevayler original = createPrevayler(new MySerializer(false));
 
 		original.execute(new AppendTransaction(" first"));
@@ -58,27 +54,6 @@ public class SkipOldTransactionsTest extends FileIOTest {
 			}
 		});
 		return factory.create();
-	}
-
-	private String journalContents() throws IOException {
-		File journal = new File(_testDirectory).listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".journal");
-			}
-		})[0];
-
-		FileReader file = new FileReader(journal);
-		StringWriter string = new StringWriter();
-
-		int n;
-		char[] c = new char[1024];
-		while ((n = file.read(c)) != -1) {
-			string.write(c, 0, n);
-		}
-
-		file.close();
-
-		return string.toString();
 	}
 
 	private static class MySerializer implements Serializer {
