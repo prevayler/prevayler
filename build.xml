@@ -372,20 +372,10 @@
 
 <!-- ==================== Test Targets ================================== -->
 
-    <target name="run.test.functional" depends="compile.test"
-            description="Runs the functional tests used to test Prevayler during development" >
-
-        <java fork="true" classname="org.prevayler.test.Main" >
-            <classpath refid="build.test.classpath" />
-            <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
-        </java>
-
-    </target>
-
     <target name="run.test.scalability" depends="compile.test"
             description="Runs manipulation and query scalability tests against Prevayler and any JDBC database" >
 
-        <java fork="true" classname="org.prevayler.test.scalability.Main" >
+        <java fork="true" classname="org.prevayler.scalability.Main" >
             <classpath refid="build.test.classpath" />
             <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
         </java>
@@ -475,6 +465,7 @@
 
     </target>
 
+<!--
     <target name="run.demo.bank.rollback" depends="compile.core"
             description="Runs rollback bank demonstration" >
 
@@ -484,6 +475,7 @@
         </java>
 
     </target>
+-->
 
     <target name="run.demo.bank.replica" depends="compile.core"
             description="Runs replica bank demonstration" >
@@ -494,7 +486,7 @@
                 <sysproperty key="${log4j.system.variable.name}" value="${log4j.log.path}" />
             </java>
             <sequential>
-                <sleep seconds="3"/>
+                <sleep seconds="5"/>
                 <java fork="true" classname="org.prevayler.demos.demo2.MainReplica" >
                     <arg value="localhost" />
                     <classpath refid="build.test.classpath" />
