@@ -51,7 +51,7 @@ public class GenericSnapshotManager extends AbstractSnapshotManager {
 
 	protected Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {
 		String suffix = snapshotFile.getName().substring(snapshotFile.getName().indexOf('.') + 1);
-		if (!_strategies.containsKey(suffix)) throw new IOException(snapshotFile.toString() + " cannot be read by " + this.getClass().getName());
+		if (!_strategies.containsKey(suffix)) throw new IOException(snapshotFile.toString() + " cannot be read; only " + _strategies.keySet().toString() + " supported");
 
 		SerializationStrategy strategy = (SerializationStrategy) _strategies.get(suffix);
         FileInputStream in = new FileInputStream(snapshotFile);

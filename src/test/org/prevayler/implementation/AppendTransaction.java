@@ -4,7 +4,7 @@ import org.prevayler.Transaction;
 
 import java.util.Date;
 
-class AppendTransaction implements Transaction {
+public class AppendTransaction implements Transaction {
 
 	String toAdd;
 

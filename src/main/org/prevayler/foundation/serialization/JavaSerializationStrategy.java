@@ -11,6 +11,10 @@ public class JavaSerializationStrategy extends AbstractSerializationStrategy {
 
 	private final ClassLoader _loader;
 
+	public JavaSerializationStrategy() {
+		this(null);
+	}
+
 	public JavaSerializationStrategy(ClassLoader loader) {
 		_loader = loader;
 	}

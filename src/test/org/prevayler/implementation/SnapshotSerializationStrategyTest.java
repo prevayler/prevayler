@@ -74,7 +74,7 @@ public class SnapshotSerializationStrategyTest extends FileIOTest {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new StringBuffer("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);
-		factory.configureSnapshotSerializationStrategy(snapshotSerializationStrategy);
+		factory.configureSnapshotSerializationStrategy("snapshot", snapshotSerializationStrategy);
 		return factory.create();
 	}
 

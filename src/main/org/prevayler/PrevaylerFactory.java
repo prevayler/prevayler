@@ -9,6 +9,8 @@ import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.monitor.SimpleMonitor;
 import org.prevayler.foundation.serialization.JavaSerializationStrategy;
 import org.prevayler.foundation.serialization.SerializationStrategy;
+import org.prevayler.foundation.serialization.SkaringaSerializationStrategy;
+import org.prevayler.foundation.serialization.XStreamSerializationStrategy;
 import org.prevayler.implementation.PrevaylerImpl;
 import org.prevayler.implementation.clock.MachineClock;
 import org.prevayler.implementation.journal.Journal;
@@ -27,6 +29,8 @@ import org.prevayler.implementation.snapshot.SnapshotManager;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Provides easy access to all Prevayler configurations and implementations available in this distribution.
  * Static methods are also provided as short-cuts for the most common configurations. 
@@ -55,7 +59,8 @@ public class PrevaylerFactory {
 	private ClassLoader _classLoader;
 
 	private SerializationStrategy _journalSerializationStrategy;
-	private SerializationStrategy _snapshotSerializationStrategy;
+	private Map _snapshotSerializationStrategies = new HashMap();
+	private String _primarySnapshotSerializationStrategy;
 
 	public static final int DEFAULT_REPLICATION_PORT = 8756;
 
@@ -185,7 +190,7 @@ public class PrevaylerFactory {
 
 
 	/** Configures the SnapshotManager to be used by the Prevayler created by this factory. The default is a SnapshotManager which uses plain Java serialization to create its .snapshot files.
-	 * @deprecated Use {@link #configureSnapshotSerializationStrategy(SerializationStrategy)} instead.
+	 * @deprecated Use {@link #configureSnapshotSerializationStrategy(String,SerializationStrategy)} instead.
 	 */
 	public void configureSnapshotManager(SnapshotManager snapshotManager) {
 		_snapshotManager = snapshotManager;
@@ -216,7 +221,7 @@ public class PrevaylerFactory {
 
 
 	/**
-	 * @deprecated Use {@link #configureSnapshotSerializationStrategy(SerializationStrategy)} and {@link #configureJournalSerializationStrategy(SerializationStrategy)} instead, giving a {@link JavaSerializationStrategy} with the desired classloader.
+	 * @deprecated Use {@link #configureSnapshotSerializationStrategy(String,SerializationStrategy)} and {@link #configureJournalSerializationStrategy(SerializationStrategy)} instead, giving a {@link JavaSerializationStrategy} with the desired classloader.
 	 */
 	public void configureClassLoader(ClassLoader classLoader) {
 		_classLoader = classLoader;
@@ -228,8 +233,29 @@ public class PrevaylerFactory {
 	}
 	
 	
-	public void configureSnapshotSerializationStrategy(SerializationStrategy strategy) {
-		_snapshotSerializationStrategy = strategy;
+	public void configureSnapshotSerializationStrategy(JavaSerializationStrategy strategy) {
+		configureSnapshotSerializationStrategy("snapshot", strategy);
+	}
+
+	public void configureSnapshotSerializationStrategy(XStreamSerializationStrategy strategy) {
+		configureSnapshotSerializationStrategy("xstreamsnapshot", strategy);
+	}
+
+	public void configureSnapshotSerializationStrategy(SkaringaSerializationStrategy strategy) {
+		configureSnapshotSerializationStrategy("skaringasnapshot", strategy);
+	}
+
+	/**
+	 * Configure a serialization strategy for snapshots. This may be called any number of times with
+	 * different suffixes to configure different strategies for reading existing snapshots. The first
+	 * call to this method establishes the <i>primary</i> strategy, which will be used for writing
+	 * snapshots as well as for deep-copying the prevalent system whenever necessary.
+	 */
+	public void configureSnapshotSerializationStrategy(String suffix, SerializationStrategy strategy) {
+		_snapshotSerializationStrategies.put(suffix, strategy);
+		if (_primarySnapshotSerializationStrategy == null) {
+			_primarySnapshotSerializationStrategy = suffix;
+		}
 	}
 
 
@@ -284,7 +310,7 @@ public class PrevaylerFactory {
 
 	private SnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
 		if (_snapshotManager != null) return _snapshotManager;
-		if (_snapshotSerializationStrategy != null) return new GenericSnapshotManager(_snapshotSerializationStrategy, prevalentSystem(), prevalenceDirectory());
+		if (!_snapshotSerializationStrategies.isEmpty()) return new GenericSnapshotManager(_snapshotSerializationStrategies, _primarySnapshotSerializationStrategy, prevalentSystem(), prevalenceDirectory());
 		return new GenericSnapshotManager(new JavaSerializationStrategy(_classLoader), prevalentSystem(), prevalenceDirectory());
 	}
 
