@@ -5,16 +5,14 @@
 
 package org.prevayler;
 
-import java.io.IOException;
-import java.io.Serializable;
-
-import org.prevayler.foundation.monitor.*;
+import org.prevayler.foundation.monitor.Monitor;
+import org.prevayler.foundation.monitor.SimpleMonitor;
 import org.prevayler.foundation.serialization.JavaSerializationStrategy;
 import org.prevayler.foundation.serialization.SerializationStrategy;
 import org.prevayler.implementation.PrevaylerImpl;
 import org.prevayler.implementation.clock.MachineClock;
-import org.prevayler.implementation.journal.PersistentJournal;
 import org.prevayler.implementation.journal.Journal;
+import org.prevayler.implementation.journal.PersistentJournal;
 import org.prevayler.implementation.journal.TransientJournal;
 import org.prevayler.implementation.publishing.CentralPublisher;
 import org.prevayler.implementation.publishing.TransactionPublisher;
@@ -23,10 +21,12 @@ import org.prevayler.implementation.publishing.censorship.StrictTransactionCenso
 import org.prevayler.implementation.publishing.censorship.TransactionCensor;
 import org.prevayler.implementation.replication.ClientPublisher;
 import org.prevayler.implementation.replication.ServerListener;
-import org.prevayler.implementation.snapshot.JavaSnapshotManager;
+import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 import org.prevayler.implementation.snapshot.NullSnapshotManager;
 import org.prevayler.implementation.snapshot.SnapshotManager;
-import org.prevayler.implementation.snapshot.GenericSnapshotManager;
+
+import java.io.IOException;
+import java.io.Serializable;
 
 /** Provides easy access to all Prevayler configurations and implementations available in this distribution.
  * Static methods are also provided as short-cuts for the most common configurations. 
@@ -213,9 +213,6 @@ public class PrevaylerFactory {
 		_journalAgeThreshold = ageInMilliseconds;
 	}
 
-	private ClassLoader classLoader() {
-	 	return(_classLoader != null ? _classLoader : getClass().getClassLoader());
-	}
 
 	public void configureClassLoader(ClassLoader classLoader) {
 		_classLoader = classLoader;
