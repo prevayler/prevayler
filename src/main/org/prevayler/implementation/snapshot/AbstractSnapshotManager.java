@@ -83,12 +83,16 @@ public abstract class AbstractSnapshotManager implements SnapshotManager {
      * Returns zero if no snapshot file was found.
 	 */
 	private long latestVersion() throws IOException {
-		String[] fileNames = _directory.list();
-		if (fileNames == null) throw new IOException("Error reading file list from directory " + _directory);
+		return latestVersion(_directory, suffix());
+	}
+
+	private static long latestVersion(File directory, String suffix) throws IOException {
+		String[] fileNames = directory.list();
+		if (fileNames == null) throw new IOException("Error reading file list from directory " + directory);
 
 		long result = 0;
 		for (int i = 0; i < fileNames.length; i++) {
-			long candidate = version(fileNames[i]);
+			long candidate = version(fileNames[i], suffix);
 			if (candidate > result) result = candidate;
 		}
 		return result;
@@ -116,17 +120,33 @@ public abstract class AbstractSnapshotManager implements SnapshotManager {
 
 
     private File snapshotFile(long version) {
+		return snapshotFile(version, _directory, suffix());
+	}
+
+	private static File snapshotFile(long version, File directory, String suffix) {
 		String fileName = "0000000000000000000" + version;
-		return new File(_directory, fileName.substring(fileName.length() - 19) + "." + suffix());
+		return new File(directory, fileName.substring(fileName.length() - 19) + "." + suffix);
 	}
 
 
 	/**
      * Returns -1 if fileName is not the name of a snapshot file.
 	 */
-	private long version(String fileName) {
-		if (!fileName.endsWith("." + suffix())) return -1;
-		return Long.parseLong(fileName.substring(0, fileName.indexOf("." + suffix())));    // "00000.snapshot" becomes "00000".
+	private static long version(String fileName, String suffix) {
+		if (!fileName.endsWith("." + suffix)) return -1;
+		return Long.parseLong(fileName.substring(0, fileName.indexOf("." + suffix)));    // "00000.snapshot" becomes "00000".
 	}
 
+
+	/**
+     * Find the latest snapshot file. Returns null if no snapshot file was found.
+	 */
+	public static File latestSnapshotFile(File directory, String suffix) throws IOException {
+		long version = latestVersion(directory, suffix);
+		if (version == 0) {
+			return null;
+		} else {
+			return snapshotFile(version, directory, suffix);
+		}
+	}
 }

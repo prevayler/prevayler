@@ -34,6 +34,7 @@ import com.skaringa.javaxml.*;
  * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager
  */
 public class SkaringaSnapshotManager extends AbstractSnapshotManager {
+	public static final String SUFFIX = "skaringasnapshot";
 
 	public SkaringaSnapshotManager(Object newPrevalentSystem, String snapshotDirectoryName) throws ClassNotFoundException, IOException {
 		init(newPrevalentSystem, snapshotDirectoryName);
@@ -76,7 +77,7 @@ public class SkaringaSnapshotManager extends AbstractSnapshotManager {
 	 * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager#suffix()
 	 */
 	protected String suffix() {
-		return "skaringasnapshot";
+		return SUFFIX;
 	}
 
 
@@ -93,4 +94,11 @@ public class SkaringaSnapshotManager extends AbstractSnapshotManager {
 		}
 	}
 
+
+	/**
+     * Find the latest snapshot file. Returns null if no snapshot file was found.
+	 */
+	public static File latestSnapshotFile(File directory) throws IOException {
+		return latestSnapshotFile(directory, SUFFIX);
+	}
 }

@@ -14,6 +14,7 @@ import org.prevayler.foundation.ObjectInputStreamWithClassLoader;
  * Writes and reads snapshots to/from files using standard Java serialization.
  */
 public class JavaSnapshotManager extends AbstractSnapshotManager {
+	public static final String SUFFIX = "snapshot";
 
 	private ClassLoader _loader;
 	
@@ -57,4 +58,15 @@ public class JavaSnapshotManager extends AbstractSnapshotManager {
         }
     }
 
+	protected String suffix() {
+		return SUFFIX;
+	}
+
+
+	/**
+     * Find the latest snapshot file. Returns null if no snapshot file was found.
+	 */
+	public static File latestSnapshotFile(File directory) throws IOException {
+		return latestSnapshotFile(directory, SUFFIX);
+	}
 }

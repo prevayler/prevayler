@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.io.File;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.StreamException;
@@ -39,6 +40,7 @@ import com.thoughtworks.xstream.io.StreamException;
  * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager
  */
 public class XStreamSnapshotManager extends AbstractSnapshotManager {
+    public static final String SUFFIX = "xstreamsnapshot";
 
     private XStream _xstream;
     
@@ -108,7 +110,14 @@ public class XStreamSnapshotManager extends AbstractSnapshotManager {
 	 * @see org.prevayler.implementation.snapshot.AbstractSnapshotManager#suffix()
 	 */
 	protected String suffix() {
-		return "xstreamsnapshot";
+		return SUFFIX;
 	}
 
+
+	/**
+     * Find the latest snapshot file. Returns null if no snapshot file was found.
+	 */
+	public static File latestSnapshotFile(File directory) throws IOException {
+		return latestSnapshotFile(directory, SUFFIX);
+	}
 }
