@@ -10,6 +10,7 @@ import java.util.Date;
 import org.prevayler.Clock;
 import org.prevayler.Prevayler;
 import org.prevayler.Query;
+import org.prevayler.SureTransactionWithQuery;
 import org.prevayler.Transaction;
 import org.prevayler.TransactionWithQuery;
 import org.prevayler.implementation.publishing.TransactionPublisher;
@@ -76,6 +77,16 @@ public class PrevaylerImpl implements Prevayler {
 		TransactionWithQueryExecuter executer = new TransactionWithQueryExecuter(copy);
 		publish(executer);
 		return executer.result();
+	}
+
+	public Object execute(SureTransactionWithQuery sureTransactionWithQuery) {
+		try {
+			return execute((TransactionWithQuery)sureTransactionWithQuery);
+		} catch (RuntimeException runtime) {
+			throw runtime;
+		} catch (Exception checked) {
+			throw new RuntimeException("Unexpected Exception thrown.", checked);
+		}
 	}
 
 
