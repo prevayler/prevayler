@@ -7,6 +7,11 @@ import java.io.IOException;
 /**
  * A strategy for writing objects to and reading objects from streams. Implementations <b>must</b> be safe for
  * concurrent use by multiple threads.
+ * <p>
+ * If an implementation will be used for snapshots, it must be able to write and read the prevalent system it will
+ * be used with, but does not need to be able to write or read any other objects. If an implementation will be used
+ * for journals, it must be able to write and read any transactions it will be used with, but does not need to be
+ * able to write or read any other objects.
  */
 public interface Serializer {
 

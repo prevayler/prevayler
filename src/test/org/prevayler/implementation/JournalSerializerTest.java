@@ -1,14 +1,15 @@
 package org.prevayler.implementation;
 
-import junit.framework.AssertionFailedError;
+import org.prevayler.Clock;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
+import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
 
 import java.io.BufferedReader;
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
@@ -28,24 +29,32 @@ public class JournalSerializerTest extends FileIOTest {
 
 		startAndCrash(strategy);
 
-		assertEquals("1C\r\n" +
-				"TransactionTimestamp\n" +
-				" first\n" +
-				"\r\n" +
-				"1D\r\n" +
-				"TransactionTimestamp\n" +
-				" second\n" +
-				"\r\n" +
-				"1C\r\n" +
-				"TransactionTimestamp\n" +
-				" third\n" +
-				"\r\n", journalContents());
+		assertEquals("6;timestamp=1000002\r\n" +
+				" first\r\n" +
+				"7;timestamp=1000004\r\n" +
+				" second\r\n" +
+				"6;timestamp=1000006\r\n" +
+				" third\r\n", journalContents());
 
+		recover(strategy);
+	}
+
+	public void testJavaJournal() throws IOException, ClassNotFoundException {
+		Serializer strategy = new JavaSerializer();
+
+		startAndCrash(strategy);
 		recover(strategy);
 	}
 
 	public void testXStreamJournal() throws IOException, ClassNotFoundException {
 		Serializer strategy = new XStreamSerializer();
+
+		startAndCrash(strategy);
+		recover(strategy);
+	}
+
+	public void testSkaringaJournal() throws IOException, ClassNotFoundException {
+		Serializer strategy = new SkaringaSerializer();
 
 		startAndCrash(strategy);
 		recover(strategy);
@@ -74,6 +83,13 @@ public class JournalSerializerTest extends FileIOTest {
 		factory.configurePrevalentSystem(new StringBuffer("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);
 		factory.configureJournalSerializer(journalSerializer);
+		factory.configureClock(new Clock() {
+			private long time = 1000000;
+
+			public Date time() {
+				return new Date(++time);
+			}
+		});
 		return factory.create();
 	}
 
@@ -102,35 +118,14 @@ public class JournalSerializerTest extends FileIOTest {
 
 		public void writeObject(OutputStream stream, Object object) throws IOException {
 			Writer writer = new OutputStreamWriter(stream, "UTF-8");
-			if (object instanceof TransactionTimestamp) {
-				TransactionTimestamp timestamp = (TransactionTimestamp) object;
-				AppendTransaction transaction = (AppendTransaction) timestamp.transaction();
-				writer.write("TransactionTimestamp\n");
-				writer.write(transaction.toAdd);
-				writer.write('\n');
-			} else {
-				AppendTransaction transaction = (AppendTransaction) object;
-				writer.write("AppendTransaction\n");
-				writer.write(transaction.toAdd);
-				writer.write('\n');
-			}
+			AppendTransaction transaction = (AppendTransaction) object;
+			writer.write(transaction.toAdd);
 			writer.flush();
 		}
 
 		public Object readObject(InputStream stream) throws IOException, ClassNotFoundException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
-			String type = reader.readLine();
-			if ("TransactionTimestamp".equals(type)) {
-				String toAdd = reader.readLine();
-				return new TransactionTimestamp(new AppendTransaction(toAdd), new Date(87527359273L));
-			} else if ("AppendTransaction".equals(type)) {
-				String toAdd = reader.readLine();
-				return new AppendTransaction(toAdd);
-			} else if (type == null) {
-				throw new EOFException();
-			} else {
-				throw new AssertionFailedError("got type=" + type);
-			}
+			return new AppendTransaction(reader.readLine());
 		}
 
 	}

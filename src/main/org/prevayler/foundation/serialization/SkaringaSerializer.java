@@ -1,22 +1,19 @@
 package org.prevayler.foundation.serialization;
 
-import com.thoughtworks.xstream.XStream;
+import com.skaringa.javaxml.DeserializerException;
+import com.skaringa.javaxml.NoImplementationException;
 import com.skaringa.javaxml.ObjectTransformer;
 import com.skaringa.javaxml.ObjectTransformerFactory;
-import com.skaringa.javaxml.NoImplementationException;
-import com.skaringa.javaxml.DeserializerException;
 import com.skaringa.javaxml.SerializerException;
 
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 
 /**
- * Writes and reads objects using XML. This serializer works for snapshots <b>but not for journals</b>.
+ * Writes and reads objects using XML. This serializer can be used for snapshots, journals or both.
  *
  * <p>This implementation requires the <a href="http://www.skaringa.com/">Skaringa</a>
  * Java and XML language binding framework which provides for Java object XML serialization.</p>

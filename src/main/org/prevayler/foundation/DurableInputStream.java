@@ -10,6 +10,7 @@ import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.journal.Chunk;
 import org.prevayler.implementation.journal.Chunking;
 import org.prevayler.implementation.TransactionTimestamp;
+import org.prevayler.Transaction;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -18,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.UTFDataFormatException;
+import java.util.Date;
 
 
 public class DurableInputStream {
@@ -43,7 +45,8 @@ public class DurableInputStream {
 		try {
 			Chunk chunk = Chunking.readChunk(_fileStream);
 			if (chunk != null) {
-				return (TransactionTimestamp) _serializer.readObject(new ByteArrayInputStream(chunk.getBytes()));
+				Transaction transaction = (Transaction) _serializer.readObject(new ByteArrayInputStream(chunk.getBytes()));
+				return new TransactionTimestamp(transaction, new Date(Long.parseLong(chunk.getParameter("timestamp"))));
 			}
 		} catch (EOFException eofx) {
 			// Do nothing.
