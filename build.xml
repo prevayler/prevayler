@@ -8,42 +8,48 @@
 
     <property file="${user.home}/.${ant.project.name}-build.properties"/>
     <property file="${user.home}/.build.properties"/>
-    <property environment="env"/> <!-- provides access to system environment variables -->
+    <property environment="env"/> <!-- provides property file access to system environment variables -->
     <property file="build.properties"/>
     <property file="sample.build.properties"/>
 
 
 <!-- ==================== File and Directory Names ======================== -->
 
-    <property name="targetdir"              location="${basedir}/target" />
-    <property name="cachedir.demo"          location="${targetdir}/demo-cache" />
-    <property name="cachedir.test"          location="${targetdir}/test-cache" />
-    <property name="classesdir.main"        location="${targetdir}/main-classes" />
-    <property name="classesdir.test"        location="${targetdir}/test-classes" />
-    <property name="classesdir.contrib"     location="${targetdir}/contrib-classes" />
-    <property name="testreportdir"          location="${targetdir}/test-reports" />
-    <property name="libdir"                 location="${targetdir}/lib" />
-    <property name="dependenciesdir"        location="${dependencies.path}" />
-    <property name="contribdir"             location="${contrib.path}" />
-    <property name="rootdir"                location="${basedir}/root" />
-    <property name="docdir"                 location="${rootdir}/docs" />
-    <property name="srcdir"                 location="${basedir}/src" />
-    <property name="srcdir.main"            location="${srcdir}/main" />
-    <property name="srcdir.test"            location="${srcdir}/test" />
-    <property name="src.package.path"       value="org/prevayler" />
-    <property name="src.packages"           value="org.prevayler, org.prevayler.implementation.*" />
-    <property name="src.packages.excludes"  value="org.prevayler.demos.*, org.prevayler.test.*" />
+    <!-- source and other non-generated directories -->
+    <property name="rootdir"            location="${basedir}/root" />
+    <property name="docdir"             location="${rootdir}/docs" />
+    <property name="srcdir"             location="${basedir}/src" />
+    <property name="srcdir.main"        location="${srcdir}/main" />
+    <property name="srcdir.test"        location="${srcdir}/test" />
 
+    <!-- generated build directories -->
+    <property name="targetdir"          location="${basedir}/target" />
+    <property name="cachedir.demo"      location="${targetdir}/demo-cache" />
+    <property name="cachedir.test"      location="${targetdir}/test-cache" />
+    <property name="classesdir.main"    location="${targetdir}/main-classes" />
+    <property name="classesdir.test"    location="${targetdir}/test-classes" />
+    <property name="classesdir.contrib" location="${targetdir}/contrib-classes" />
+    <property name="testreportdir"      location="${targetdir}/test-reports" />
+    <property name="libdir"             location="${targetdir}/lib" />
+
+    <!-- Default values specified in sample.build.properties.  Override in build.properties -->
+    <property name="dependenciesdir"    location="${dependencies.path}" />
+
+    <!-- Log4j utility build and demo runtime properties -->
     <property name="log4j.system.variable.dynamic.name" value="$${${app.Name}.log.home}" />
     <property name="log4j.system.variable.name" value="${app.Name}.log.home" />
     <property name="log4j.log.path" location="${targetdir}/logs" />
 
-    <fileset dir="${srcdir.test}" id="unit.test.files"
-             includes="${unit.test.includes}"
-             excludes="${unit.test.excludes}" />
+    <!-- Fileset for unit tests.  Default values specified in sample.build.properties.  Override in build.properties -->
+    <fileset id="unit.test.files"
+        dir="${srcdir.test}"
+        includes="${unit.test.includes}"
+        excludes="${unit.test.excludes}" />
 
-<!--  ==================== Compilation Control Options ==================== -->
+<!-- === Compilation Control Option Defaults. Override in build.properties === -->
 
+    <property name="build.sysclasspath" value="last" />
+    <property name="build.compiler"     value="modern" />
     <property name="build.debug"        value="on" />
     <property name="build.deprecation"  value="off" />
     <property name="build.optimize"     value="on" />
@@ -82,17 +88,11 @@
 
     <target name="clean"
             description="Delete old build and dist directories" >
-        <delete dir="${classesdir.main}" />
-        <delete dir="${classesdir.test}" />
-        <delete dir="${classesdir.contrib}" />
-        <delete dir="${libdir}" />
-        <delete dir="${testreportdir}" />
-        <delete dir="${log4j.log.path}" />
         <delete includeEmptyDirs="true">
             <fileset dir="${docdir}/api" includes="**/**" excludes="**/Readme.txt" />
         </delete>
-        <delete>
-            <fileset dir="${targetdir}" includes="*.*" />
+        <delete includeEmptyDirs="true">
+            <fileset dir="${targetdir}" includes="**/**" excludes="*-cache/**" />
         </delete>
     </target>
 
@@ -140,44 +140,24 @@
     <target name="compile.core" depends="prepare"
             description="Compile core sources" >
         <antcall target="-compile.sub">
-            <param name="csrcdir"   value="${srcdir.main}" />
-            <param name="cdestdir"  value="${classesdir.main}" />
-            <param name="ccprefid"  value="build.classpath" />
+            <param name="compsrcdir"  value="${srcdir.main}" />
+            <param name="compdestdir" value="${classesdir.main}" />
+            <param name="compcprefid" value="build.classpath" />
         </antcall>
     </target>
     <target name="compile.test" depends="compile.core"
             description="Compile test case sources" >
         <antcall target="-compile.sub">
-            <param name="csrcdir"   value="${srcdir.test}" />
-            <param name="cdestdir"  value="${classesdir.test}" />
+            <param name="compsrcdir"  value="${srcdir.test}" />
+            <param name="compdestdir" value="${classesdir.test}" />
         </antcall>
     </target>
-    <target name="compile.contrib" depends="download.dependencies.contrib, compile.core"
+    <target name="compile.contrib" depends="compile.core, download.dependencies.contrib"
             description="Compile contrib sources" >
         <antcall target="-compile.sub">
-            <param name="csrcdir"   value="${src.contrib.projects}" />
-            <param name="cdestdir"  value="${classesdir.contrib}" />
+            <param name="compsrcdir"  value="${src.contrib.projects}" />
+            <param name="compdestdir" value="${classesdir.contrib}" />
         </antcall>
-    </target>
-
-<!-- ==================== Dist Target ===================================== -->
-
-    <target name="dist" depends="jar,javadoc"
-            description="Create binary distribution" >
-        <!-- Generate ZIP distribution -->
-        <zip destfile="${targetdir}/${file.name.dist}.zip">
-            <zipfileset dir="${rootdir}"      prefix="${app.name}"/>
-            <zipfileset dir="${libdir}"       prefix="${app.name}/lib"/>
-            <zipfileset dir="${srcdir.main}"  prefix="${app.name}/src"/>
-        </zip>
-        <!-- Generate GZIP distribution -->
-        <tar destfile="${targetdir}/${file.name.dist}.tar" longfile="gnu">
-            <tarfileset dir="${rootdir}"      prefix="${app.name}"/>
-            <tarfileset dir="${libdir}"       prefix="${app.name}/lib"/>
-            <tarfileset dir="${srcdir.main}"  prefix="${app.name}/src"/>
-        </tar>
-        <gzip src="${targetdir}/${file.name.dist}.tar" zipfile="${targetdir}/${file.name.dist}.tar.gz"/>
-        <delete file="${targetdir}/${file.name.dist}.tar" />
     </target>
 
 <!-- ==================== Javadoc Target ================================== -->
@@ -187,16 +167,15 @@
         <mkdir dir="${docdir}/api" />
         <!-- beginners -->
         <antcall target="-javadoc.sub">
-            <param name="jdpackagenames" value="org.prevayler" />
-            <param name="jdsourcepath"   value="${srcdir.main}" />
-            <param name="jddestdir"      value="${docdir}/api/beginners" />
+            <param name="jdocincludes"   value="org/prevayler" />
+            <param name="jdocsourcepath" value="${srcdir.main}" />
+            <param name="jdocdestdir"    value="${docdir}/api/beginners" />
         </antcall>
         <!-- advanced -->
         <antcall target="-javadoc.sub">
-            <param name="jdpackagenames"        value="${src.packages}" />
-            <param name="jdexcludepackagenames" value="${src.packages.excludes}" />
-            <param name="jdsourcepath"          value="${srcdir.main}" />
-            <param name="jddestdir"             value="${docdir}/api/advanced" />
+            <param name="jdocincludes"   value="org/prevayler, org/prevayler/implementation/**" />
+            <param name="jdocsourcepath" value="${srcdir.main}" />
+            <param name="jdocdestdir"    value="${docdir}/api/advanced" />
         </antcall>
     </target>
 
@@ -207,16 +186,36 @@
         <mkdir dir="${libdir}" />
         <!--Creates a JAR containing only essential Prevayler files -->
         <antcall target="-jar.sub">
-            <param name="jarfile"   value="${libdir}/${jar.name.core}" />
-            <param name="jbasedir"  value="${classesdir.main}" />
-            <param name="jexcludes" value="**/demo/**,**/demos/**,**/test/**,log4j.xml" />
+            <param name="jarfile"     value="${libdir}/${jar.name.core}.jar" />
+            <param name="jarbasedir"  value="${classesdir.main}" />
+            <param name="jarexcludes" value="**/demo/**,**/demos/**,**/test/**,log4j.xml" />
         </antcall>
         <!--Creates a JAR containing all compiled files -->
         <antcall target="-jar.sub">
-            <param name="jarfile"   value="${libdir}/${jar.name.full}" />
-            <param name="jbasedir"  value="${classesdir.main}" />
-            <param name="jexcludes" value="log4j.xml" />
+            <param name="jarfile"     value="${libdir}/${jar.name.all}.jar" />
+            <param name="jarbasedir"  value="${classesdir.main}" />
+            <param name="jarexcludes" value="log4j.xml" />
         </antcall>
+    </target>
+
+<!-- ==================== Dist Target ===================================== -->
+
+    <target name="dist" depends="jar,javadoc"
+            description="Create binary distribution" >
+        <!-- Generate ZIP distribution -->
+        <zip destfile="${targetdir}/${dist.name}.zip">
+            <zipfileset dir="${rootdir}"     prefix="${app.name}${app.version}"/>
+            <zipfileset dir="${libdir}"      prefix="${app.name}${app.version}"/>
+            <zipfileset dir="${srcdir.main}" prefix="${app.name}${app.version}/src"/>
+        </zip>
+        <!-- Generate GZIP distribution -->
+        <tar destfile="${targetdir}/${dist.name}.tar" longfile="gnu">
+            <tarfileset dir="${rootdir}"     prefix="${app.name}${app.version}"/>
+            <tarfileset dir="${libdir}"      prefix="${app.name}${app.version}"/>
+            <tarfileset dir="${srcdir.main}" prefix="${app.name}${app.version}/src"/>
+        </tar>
+        <gzip src="${targetdir}/${dist.name}.tar" zipfile="${targetdir}/${dist.name}.tar.gz"/>
+        <delete file="${targetdir}/${dist.name}.tar" />
     </target>
 
 <!-- ==================== Test Targets ================================== -->
@@ -243,7 +242,6 @@
         </junit>
         <antcall target="-test.report.html" />
     </target>
-
     <target name="-test.report.html" >
             <!--description="Convert the junit xml files to html" -->
         <junitreport todir="${testreportdir}" >
@@ -258,32 +256,42 @@
 
 <!-- ==================== Dependency Targets ================================== -->
 
-    <target name="download" depends="download.dependencies.core, download.dependencies.contrib, download.dependencies.build, download.dependencies.vizant"
+    <target name="download" depends="download.dependencies.core, download.dependencies.test, download.dependencies.contrib, download.dependencies.build, download.dependencies.vizant"
             description="Download all specified binary packages" />
-
     <target name="download.dependencies.core"
             description="Download binary packages needed by the core packages" >
         <!-- Download any sub package or tools needed. -->
     </target>
-
+    <target name="download.dependencies.test"
+            description="Download binary packages needed by the test packages" >
+        <!-- Download any sub package or tools needed. -->
+    </target>
     <target name="download.dependencies.contrib"
             description="Download binary packages needed by the contrib packages" >
         <!-- Download any sub package or tools needed. -->
         <antcall target="-downloadgz">
             <param name="sourcefile" value="${skaringa.loc}"/>
-            <param name="destfile" value="${skaringa.jar}"/>
+            <param name="destfile"   value="${skaringa.jar}"/>
         </antcall>
         <antcall target="-downloadgz">
             <param name="sourcefile" value="${log4j.loc}"/>
-            <param name="destfile" value="${log4j.jar}"/>
+            <param name="destfile"   value="${log4j.jar}"/>
         </antcall>
         <antcall target="-downloadgz">
             <param name="sourcefile" value="${commons-jxpath.loc}"/>
-            <param name="destfile" value="${commons-jxpath.jar}"/>
+            <param name="destfile"   value="${commons-jxpath.jar}"/>
         </antcall>
     </target>
 
-    <!-- ==================== Demo Targets ================================== -->
+<!-- ==================== XML Entity Included Targets ==================== -->
+
+    <!-- general utility targets which provide most of this build's functionality -->
+    &general-utility-targets;
+    <!-- an empty include file for adding one's own custom targets without requiring editing of build.xml -->
+    &self-customized-targets;
+
+
+<!-- ==================== Demo Targets ================================== -->
 
     <target name="-demo.init">
         <mkdir dir="${cachedir.demo}" />
@@ -369,8 +377,5 @@
         </java>
     </target>
 
-    <!-- custom XML entity include of general utility targets including download and vizAnt stuff -->
-    &general-utility-targets;
-    &self-customized-targets;
 
 </project>

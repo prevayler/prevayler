@@ -13,22 +13,26 @@
 <!-- ==================== Compile Targets ================================ -->
 
     <target name="-compile.sub" >
-        <!-- default values to use if not overridden.  "csrcdir" and "cdestdir" must be specified -->
-        <property name="cincludes" value="**/*.java" />
-        <property name="cexcludes" value="**/old**/**" />
-        <property name="ccprefid"  value="build.core.classpath" />
-        <echo>csrcdir  : ${csrcdir}${line.separator}cdestdir : ${cdestdir}${line.separator}cincludes: ${cincludes}${line.separator}cexcludes: ${cexcludes}${line.separator}ccprefid : ${ccprefid}</echo>
+        <!-- param defaults (may be overridden) -->
+        <property name="compincludes" value="**/*.java" />
+        <property name="compexcludes" value="**/old**/**" />
+        <property name="compcprefid"  value="build.core.classpath" />
+        <!-- param requirements...
+        <property name="compsrcdir"  value="..." />
+        <property name="compdestdir" value="..." />
+        -->
+        <echo>compsrcdir  : ${compsrcdir}${line.separator}compdestdir : ${compdestdir}${line.separator}compincludes: ${compincludes}${line.separator}compexcludes: ${compexcludes}${line.separator}compcprefid : ${compcprefid}</echo>
         <!-- Compile Java classes as necessary -->
         <javac
-            srcdir="${csrcdir}"
-            destdir="${cdestdir}"
-            includes="${cincludes}"
-            excludes="${cexcludes}"
+            srcdir="${compsrcdir}"
+            destdir="${compdestdir}"
+            includes="${compincludes}"
+            excludes="${compexcludes}"
             debug="${build.debug}"
             deprecation="${build.deprecation}"
             optimize="${build.optimize}"
             verbose="${build.verbose}">
-            <classpath refid="${ccprefid}" />
+            <classpath refid="${compcprefid}" />
         </javac>
 
         <!-- Loop through java source directories. Since the javac task can
@@ -63,27 +67,28 @@
             relative colon-separated paths using the pathconvert example above,
             but removing targetos="unix" and adding dirSep="/" and pathSep=":".
         -->
-        <!--<echo>[${srcdir}]</echo>-->
-        <pathconvert targetos="unix" property="csrcdir.unix">
-            <path><pathelement location="${csrcdir}"/></path>
+        <!--<echo>[${compsrcdir}]</echo>-->
+        <pathconvert targetos="unix" property="compsrcdir.unix">
+            <path><pathelement location="${compsrcdir}"/></path>
             <map from="${basedir}${file.separator}" to=""/>
         </pathconvert>
-        <!--<echo>[${srcdir.unix}]</echo>-->
-        <foreach list="${csrcdir.unix}" target="-post.compile" param="cresdir" delimiter=":" trim="true" >
-            <param name="cdestdir"  value="${cdestdir}" />
-            <param name="cincludes" value="${cincludes}" />
-            <param name="cexcludes" value="${cexcludes}" />
-        </foreach>
+        <!--<echo>[${compsrcdir.unix}]</echo>-->
+        <foreach
+            list="${compsrcdir.unix}"
+            target="-post.compile"
+            param="compresdir"
+            delimiter=":"
+            trim="true" />
     </target>
 
-    <target name="-post.compile" if="cresdir" >
-        <echo>copy resources from [${cresdir}]</echo>
+    <target name="-post.compile" if="compresdir" >
+        <echo>copy resources from [${compresdir}]</echo>
         <!-- Copy application resources -->
-        <copy todir="${cdestdir}" >
+        <copy todir="${compdestdir}" >
             <fileset
-                dir="${cresdir}"
-                excludes="${cexcludes}, **/*.java, **/project.xml, **/build.*, **/log4j.*"
-                includes="${cincludes},
+                dir="${compresdir}"
+                excludes="${compexcludes}, **/*.java, **/project.xml, **/build.*, **/log4j.*"
+                includes="${compincludes},
                           **/*.properties,
                           **/*.ini,
                           **/*.character-sets,
@@ -97,7 +102,14 @@
 <!-- ==================== Javadoc Targets ================================ -->
 
     <target name="-javadoc.sub" >
-        <property name="jdexcludepackagenames" value="" />
+        <!-- param defaults (may be overridden) -->
+        <property name="jdocincludes" value="" />
+        <property name="jdocexcludes" value="" />
+        <!-- param requirements...
+        <property name="jdocsourcepath" value="..." />
+        <property name="jdocdestdir"    value="..." />
+        -->
+
         <condition property="javadoc.breakiterator" value="-breakiterator" >
             <or>
                 <equals arg1="${ant.java.version}" arg2="1.4" />
@@ -124,22 +136,26 @@
         <property name="javadoc.jdk.packaglistLoc" value="" />
 
         <javadoc
-            sourcepath="${jdsourcepath}"
-            packagenames="${jdpackagenames}"
-            excludepackagenames="${jdexcludepackagenames}"
-            destdir="${jddestdir}"
+            destdir="${jdocdestdir}"
             author="true"
             version="true"
             use="true"
             additionalparam="${javadoc.breakiterator}"
             windowtitle="${javadoc.windowTitle}" >
-
+            <!--
+            sourcepath="${jdocsourcepath}"
+            packagenames="${jdocpackagenames}"
+            excludepackagenames="${jdocexcludepackagenames}"
+            -->
             <!-- <packageset...> below only works with Ant 1.5+.
-                 We can use <packageset...> and remove "packagenames", "excludepackagenames",
-                 and "sourcepath" attributes of the javadoc task -->
-            <!--<packageset dir="${jdsourcepath}" defaultexcludes="yes" >
-                <include name="${src.package.path}/**" />
-            </packageset>-->
+                 We can use <packageset...> and remove "sourcepath",
+                 "packagenames", and "excludepackagenames" attributes of the
+                 javadoc task -->
+            <packageset
+                dir="${jdocsourcepath}"
+                defaultexcludes="yes"
+                includes="${jdocincludes}"
+                excludes="${jdocexcludes}" />
 
             <doctitle><![CDATA[${javadoc.docTitle}]]></doctitle>
             <header><![CDATA[${javadoc.header}]]></header>
@@ -154,9 +170,17 @@
 <!-- ==================== Jar Targets ================================ -->
 
     <target name="-jar.sub" if="jarfile" >
+        <!-- param defaults (may be overridden) -->
+        <property name="jarincludes" value="" />
+        <property name="jarexcludes" value="" />
+        <!-- param requirements...
+        <property name="jarfile"   value="..." />
+        <property name="jarbasedir" value="..." />
+        -->
         <jar jarfile="${jarfile}"
-             basedir="${jbasedir}"
-             excludes="${jexcludes}" />
+             basedir="${jarbasedir}"
+             includes="${jarincludes}"
+             excludes="${jarexcludes}" />
     </target>
 
 
