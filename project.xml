@@ -3,7 +3,7 @@
     <pomVersion>3</pomVersion>
     <name>Prevayler</name>
     <id>prevayler</id>
-    <currentVersion>2.00.000dev2</currentVersion>
+    <currentVersion>2.00.000-SNAPSHOT</currentVersion>
     <package>org.prevayler</package>
     <logo>http://prevayler.org/imagens/logoprevayler.gif</logo>
     <organization>
