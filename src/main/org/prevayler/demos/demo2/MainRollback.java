@@ -4,16 +4,10 @@
 
 package org.prevayler.demos.demo2;
 
-import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.demos.demo2.business.RollbackBank;
 import org.prevayler.demos.demo2.gui.BankFrame;
-import org.prevayler.implementation.SnapshotPrevayler;
 import org.prevayler.implementation.RollbackPrevayler;
 import org.prevayler.util.clock.ClockActor;
-import org.prevayler.util.clock.ClockTick;
-
-import java.util.Date;
-
 
 public class MainRollback {
 	
