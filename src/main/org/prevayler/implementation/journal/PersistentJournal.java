@@ -173,11 +173,13 @@ public class PersistentJournal implements FileFilter, Journal {
 
 		while(true) {
 			try {
-				TransactionTimestamp entry = inputLog.read();
-		
-				if (recoveringTransaction >= initialTransaction)
+				if (recoveringTransaction >= initialTransaction) {
+					TransactionTimestamp entry = inputLog.read();
 					subscriber.receive(entry.transaction(), entry.timestamp());
-		
+				} else {
+					inputLog.skip();
+				}
+
 				recoveringTransaction++;
 		
 			} catch (EOFException eof) {

@@ -39,15 +39,22 @@ public class DurableInputStream {
 	}
 
 
+	public void skip() throws IOException {
+		readChunk();
+	}
+
 	public TransactionTimestamp read() throws IOException, ClassNotFoundException {
+		Chunk chunk = readChunk();
+		Transaction transaction = (Transaction) _serializer.readObject(new ByteArrayInputStream(chunk.getBytes()));
+		return new TransactionTimestamp(transaction, new Date(Long.parseLong(chunk.getParameter("timestamp"))));
+	}
+
+	private Chunk readChunk() throws IOException {
 		if (_EOF) throw new EOFException();
 
 		try {
 			Chunk chunk = Chunking.readChunk(_fileStream);
-			if (chunk != null) {
-				Transaction transaction = (Transaction) _serializer.readObject(new ByteArrayInputStream(chunk.getBytes()));
-				return new TransactionTimestamp(transaction, new Date(Long.parseLong(chunk.getParameter("timestamp"))));
-			}
+			if (chunk != null) return chunk;
 		} catch (EOFException eofx) {
 			// Do nothing.
 		} catch (ObjectStreamException scx) {
