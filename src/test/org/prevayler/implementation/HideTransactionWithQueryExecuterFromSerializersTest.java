@@ -27,7 +27,7 @@ public class HideTransactionWithQueryExecuterFromSerializersTest extends FileIOT
 				"7;timestamp=1000004\r\n" +
 				" second\r\n" +
 				"6;timestamp=1000006\r\n" +
-				" third\r\n", journalContents());
+				" third\r\n", journalContents("MyJournal"));
 
 		recover(strategy);
 	}
@@ -53,7 +53,7 @@ public class HideTransactionWithQueryExecuterFromSerializersTest extends FileIOT
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new StringBuffer("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);
-		factory.configureJournalSerializer(journalSerializer);
+		factory.configureJournalSerializer("MyJournal", journalSerializer);
 		factory.configureClock(new Clock() {
 			private long time = 1000000;
 

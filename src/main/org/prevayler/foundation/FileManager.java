@@ -5,7 +5,9 @@
 
 package org.prevayler.foundation;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.util.Arrays;
 
 public class FileManager {
@@ -13,8 +15,8 @@ public class FileManager {
 	private static final int DIGITS_IN_FILENAME = 19;
 	private static final String SNAPSHOT_SUFFIX_PATTERN = "[a-zA-Z0-9]*[Ss]napshot";
 	private static final String SNAPSHOT_FILENAME_PATTERN = "\\d{" + DIGITS_IN_FILENAME + "}\\." + SNAPSHOT_SUFFIX_PATTERN;
-	private static final String JOURNAL_SUFFIX = "journal";
-	private static final String JOURNAL_FILENAME_PATTERN = "\\d{" + DIGITS_IN_FILENAME + "}\\." + JOURNAL_SUFFIX;
+	private static final String JOURNAL_SUFFIX_PATTERN = "[a-zA-Z0-9]*[Jj]ournal";
+	private static final String JOURNAL_FILENAME_PATTERN = "\\d{" + DIGITS_IN_FILENAME + "}\\." + JOURNAL_SUFFIX_PATTERN;
 
 	private File _directory;
 
@@ -39,14 +41,22 @@ public class FileManager {
 		}
 	}
 
+	public static void checkValidJournalSuffix(String suffix) {
+		if (!suffix.matches(JOURNAL_SUFFIX_PATTERN)) {
+			throw new IllegalArgumentException(
+					"Journal filename suffix must match /" + JOURNAL_SUFFIX_PATTERN + "/, but '" + suffix + "' does not");
+		}
+	}
+
 
 	public File snapshotFile(long version, String suffix) {
 		checkValidSnapshotSuffix(suffix);
 		return file(version, suffix);
 	}
 
-	public File journalFile(long transaction) {
-		return file(transaction, JOURNAL_SUFFIX);
+	public File journalFile(long transaction, String suffix) {
+		checkValidJournalSuffix(suffix);
+		return file(transaction, suffix);
 	}
 
 	private File file(long version, String suffix) {

@@ -4,6 +4,7 @@ import junit.framework.AssertionFailedError;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
+import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
@@ -31,6 +32,16 @@ public class SnapshotSerializerTest extends FileIOTest {
 				"the system first second third\n", snapshotContents());
 
 		recover(serializer);
+	}
+
+	public void testBadSuffix() {
+		PrevaylerFactory factory = new PrevaylerFactory();
+		try {
+			factory.configureSnapshotSerializer("SNAPSHOT", new JavaSerializer());
+			fail();
+		} catch (IllegalArgumentException exception) {
+			assertEquals("Snapshot filename suffix must match /[a-zA-Z0-9]*[Ss]napshot/, but 'SNAPSHOT' does not", exception.getMessage());
+		}
 	}
 
 	public void testXStreamSnapshot() throws IOException, ClassNotFoundException {

@@ -5,13 +5,13 @@
 
 package org.prevayler;
 
+import org.prevayler.foundation.FileManager;
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.monitor.SimpleMonitor;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
-import org.prevayler.foundation.FileManager;
 import org.prevayler.implementation.PrevaylerImpl;
 import org.prevayler.implementation.clock.MachineClock;
 import org.prevayler.implementation.journal.Journal;
@@ -59,6 +59,7 @@ public class PrevaylerFactory {
 	private ClassLoader _classLoader;
 
 	private Serializer _journalSerializer;
+	private String _journalSuffix;
 	private Map _snapshotSerializers = new HashMap();
 	private String _primarySnapshotSuffix;
 
@@ -218,18 +219,38 @@ public class PrevaylerFactory {
 
 
 	/**
-	 * @deprecated Use {@link #configureSnapshotSerializer(String,Serializer)} and {@link #configureJournalSerializer(Serializer)} instead, giving a {@link JavaSerializer} with the desired classloader.
+	 * @deprecated Use {@link #configureSnapshotSerializer(String,Serializer)} and {@link #configureJournalSerializer(JavaSerializer)} instead, giving a {@link JavaSerializer} with the desired classloader.
 	 */
 	public void configureClassLoader(ClassLoader classLoader) {
 		_classLoader = classLoader;
 	}
 
 
-	public void configureJournalSerializer(Serializer serializer) {
-		_journalSerializer = serializer;
+	public void configureJournalSerializer(JavaSerializer serializer) {
+		configureJournalSerializer("journal", serializer);
 	}
 
-	
+	public void configureJournalSerializer(XStreamSerializer serializer) {
+		configureJournalSerializer("xstreamjournal", serializer);
+	}
+
+	public void configureJournalSerializer(SkaringaSerializer serializer) {
+		configureJournalSerializer("skaringajournal", serializer);
+	}
+
+	public void configureJournalSerializer(String suffix, Serializer serializer) {
+		FileManager.checkValidJournalSuffix(suffix);
+
+		if (_journalSerializer != null) {
+			throw new IllegalStateException("Trying to read multiple journal formats and make sure behavior " +
+					"is always the same is error-prone.  Instead, take a snapshot before upgrading.");
+		}
+
+		_journalSerializer = serializer;
+		_journalSuffix = suffix;
+	}
+
+
 	public void configureSnapshotSerializer(JavaSerializer serializer) {
 		configureSnapshotSerializer("snapshot", serializer);
 	}
@@ -249,6 +270,7 @@ public class PrevaylerFactory {
 	 * snapshots as well as for deep-copying the prevalent system whenever necessary.
 	 */
 	public void configureSnapshotSerializer(String suffix, Serializer serializer) {
+		FileManager.checkValidSnapshotSuffix(suffix);
 		_snapshotSerializers.put(suffix, serializer);
 		if (_primarySnapshotSuffix == null) {
 			_primarySnapshotSuffix = suffix;
@@ -297,7 +319,8 @@ public class PrevaylerFactory {
 			return (Journal) new TransientJournal();
 		} else {
 			FileManager fileManager = new FileManager(prevalenceDirectory());
-			return new PersistentJournal(fileManager, _journalSizeThreshold, _journalAgeThreshold, journalSerializer(), monitor());
+			return new PersistentJournal(fileManager, _journalSizeThreshold, _journalAgeThreshold,
+					journalSuffix(), journalSerializer(), monitor());
 		}
 	}
 
@@ -305,6 +328,11 @@ public class PrevaylerFactory {
 	private Serializer journalSerializer() {
 		if (_journalSerializer != null) return _journalSerializer;
 		return new JavaSerializer(_classLoader);
+	}
+
+	private String journalSuffix() {
+		if (_journalSuffix != null) return _journalSuffix;
+		return "journal";
 	}
 
 

@@ -23,42 +23,62 @@ public class JournalSerializerTest extends FileIOTest {
 	public void testConfigureJournalSerializationStrategy() throws IOException, ClassNotFoundException {
 		Serializer strategy = new MySerializer();
 
-		startAndCrash(strategy);
+		startAndCrash("MyJournal", strategy);
 
 		assertEquals("6;timestamp=1000002\r\n" +
 				" first\r\n" +
 				"7;timestamp=1000004\r\n" +
 				" second\r\n" +
 				"6;timestamp=1000006\r\n" +
-				" third\r\n", journalContents());
+				" third\r\n", journalContents("MyJournal"));
 
-		recover(strategy);
+		recover("MyJournal", strategy);
+	}
+
+	public void testBadSuffix() {
+		PrevaylerFactory factory = new PrevaylerFactory();
+		try {
+			factory.configureJournalSerializer("JOURNAL", new JavaSerializer());
+			fail();
+		} catch (IllegalArgumentException expected) {
+			assertEquals("Journal filename suffix must match /[a-zA-Z0-9]*[Jj]ournal/, but 'JOURNAL' does not", expected.getMessage());
+		}
+	}
+
+	public void testTryToConfigureTwo() {
+		PrevaylerFactory factory = new PrevaylerFactory();
+		factory.configureJournalSerializer("journal", new JavaSerializer());
+		try {
+			factory.configureJournalSerializer("newjournal", new JavaSerializer());
+			fail();
+		} catch (IllegalStateException expected) {
+		}
 	}
 
 	public void testJavaJournal() throws IOException, ClassNotFoundException {
 		Serializer strategy = new JavaSerializer();
 
-		startAndCrash(strategy);
-		recover(strategy);
+		startAndCrash("journal", strategy);
+		recover("journal", strategy);
 	}
 
 	public void testXStreamJournal() throws IOException, ClassNotFoundException {
 		Serializer strategy = new XStreamSerializer();
 
-		startAndCrash(strategy);
-		recover(strategy);
+		startAndCrash("journal", strategy);
+		recover("journal", strategy);
 	}
 
 	public void testSkaringaJournal() throws IOException, ClassNotFoundException {
 		Serializer strategy = new SkaringaSerializer();
 
-		startAndCrash(strategy);
-		recover(strategy);
+		startAndCrash("journal", strategy);
+		recover("journal", strategy);
 	}
 
-	private void startAndCrash(Serializer journalSerializer)
+	private void startAndCrash(String suffix, Serializer journalSerializer)
 			throws IOException, ClassNotFoundException {
-		Prevayler prevayler = createPrevayler(journalSerializer);
+		Prevayler prevayler = createPrevayler(suffix, journalSerializer);
 
 		prevayler.execute(new AppendTransaction(" first"));
 		prevayler.execute(new AppendTransaction(" second"));
@@ -67,18 +87,18 @@ public class JournalSerializerTest extends FileIOTest {
 		prevayler.close();
 	}
 
-	private void recover(Serializer journalSerializer)
+	private void recover(String suffix, Serializer journalSerializer)
 			throws IOException, ClassNotFoundException {
-		Prevayler prevayler = createPrevayler(journalSerializer);
+		Prevayler prevayler = createPrevayler(suffix, journalSerializer);
 		assertEquals("the system first second third", prevayler.prevalentSystem().toString());
 	}
 
-	private Prevayler createPrevayler(Serializer journalSerializer)
+	private Prevayler createPrevayler(String suffix, Serializer journalSerializer)
 			throws IOException, ClassNotFoundException {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new StringBuffer("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);
-		factory.configureJournalSerializer(journalSerializer);
+		factory.configureJournalSerializer(suffix, journalSerializer);
 		factory.configureClock(new Clock() {
 			private long time = 1000000;
 

@@ -4,13 +4,13 @@
 
 package org.prevayler.foundation;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.FilenameFilter;
-import java.io.FileReader;
-import java.io.StringWriter;
-
 import junit.framework.TestCase;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.StringWriter;
 
 
 public abstract class FileIOTest extends TestCase {
@@ -25,38 +25,40 @@ public abstract class FileIOTest extends TestCase {
 	}
 
 	protected void tearDown() throws Exception {
-	    delete(_testDirectory);
+		delete(_testDirectory);
 	}
 
 	protected void deleteFromTestDirectory(String fileName) {
-	    delete(new File(_testDirectory + File.separator + fileName));
+		delete(new File(_testDirectory + File.separator + fileName));
 	}
 
 	static public void delete(String fileName) {
-	    delete(new File(fileName));
+		delete(new File(fileName));
 	}
 
 	static public void delete(File file) {
-	    if (file.isDirectory()) deleteDirectoryContents(file);
-    	assertTrue("File does not exist: " + file, file.exists());
-	    if (!file.delete()) {
-	    	System.gc();
-	    	assertTrue("Unable to delete " + file, file.delete());
-	    }
+		if (file.isDirectory()) deleteDirectoryContents(file);
+		assertTrue("File does not exist: " + file, file.exists());
+		if (!file.delete()) {
+			System.gc();
+			assertTrue("Unable to delete " + file, file.delete());
+		}
 	}
 
 	static private void deleteDirectoryContents(File directory) {
 		File[] files = directory.listFiles();
 		if (files == null) return;
-	    for (int i = 0; i < files.length; i++) delete(files[i]);
+		for (int i = 0; i < files.length; i++) delete(files[i]);
 	}
 
-	protected String journalContents() throws IOException {
-		File journal = new File(_testDirectory).listFiles(new FilenameFilter() {
+	protected String journalContents(final String suffix) throws IOException {
+		File[] files = new File(_testDirectory).listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				return name.endsWith(".journal");
+				return name.endsWith("." + suffix);
 			}
-		})[0];
+		});
+		assertEquals(1, files.length);
+		File journal = files[0];
 
 		FileReader file = new FileReader(journal);
 		StringWriter string = new StringWriter();

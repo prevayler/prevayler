@@ -37,6 +37,7 @@ public class PersistentJournal implements Journal {
 	private boolean _nextTransactionInitialized = false;
 	private Monitor _monitor;
 
+	private final String _journalSuffix;
 	private final Serializer _journalSerializer;
 
 
@@ -47,12 +48,15 @@ public class PersistentJournal implements Journal {
 
 	 */
 	public PersistentJournal(FileManager fileManager, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis,
-							 Serializer journalSerializer, Monitor monitor) throws IOException {
+							 String journalSuffix, Serializer journalSerializer, Monitor monitor) throws IOException {
+		FileManager.checkValidJournalSuffix(journalSuffix);
+		
 	    _monitor = monitor;
 		_fileManager = fileManager;
 		_fileManager.produceDirectory();
 		_journalSizeThresholdInBytes = journalSizeThresholdInBytes;
 		_journalAgeThresholdInMillis = journalAgeThresholdInMillis;
+		_journalSuffix = journalSuffix;
 		_journalSerializer = journalSerializer;
 	}
 
@@ -116,7 +120,7 @@ public class PersistentJournal implements Journal {
 
 
 	private DurableOutputStream createOutputJournal(long transactionNumber) {
-		File file = _fileManager.journalFile(transactionNumber);
+		File file = _fileManager.journalFile(transactionNumber, _journalSuffix);
 		try {
 			return new DurableOutputStream(file, _journalSerializer);
 		} catch (IOException iox) {
@@ -159,7 +163,7 @@ public class PersistentJournal implements Journal {
 
 	private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, long initialLogFile)	throws IOException, ClassNotFoundException {
 		long recoveringTransaction = initialLogFile;
-		File logFile = _fileManager.journalFile(recoveringTransaction);
+		File logFile = _fileManager.journalFile(recoveringTransaction, _journalSuffix);
 		DurableInputStream inputLog = new DurableInputStream(logFile, _journalSerializer, _monitor);
 
 		while(true) {
@@ -174,7 +178,7 @@ public class PersistentJournal implements Journal {
 				recoveringTransaction++;
 		
 			} catch (EOFException eof) {
-				File nextFile = _fileManager.journalFile(recoveringTransaction);
+				File nextFile = _fileManager.journalFile(recoveringTransaction, _journalSuffix);
 				if (logFile.equals(nextFile)) FileManager.renameUnusedFile(logFile);  //The first transaction in this log file is incomplete. We need to reuse this file name.
 				logFile = nextFile;
 				if (!logFile.exists()) break;

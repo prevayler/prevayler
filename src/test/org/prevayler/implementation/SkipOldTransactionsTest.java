@@ -34,7 +34,7 @@ public class SkipOldTransactionsTest extends FileIOTest {
 				"7;timestamp=1000004\r\n" +
 				" second\r\n" +
 				"6;timestamp=1000006\r\n" +
-				" third\r\n", journalContents());
+				" third\r\n", journalContents("MyJournal"));
 
 		Prevayler recovered = createPrevayler(new MySerializer(true));
 		assertEquals("the system first second third", recovered.prevalentSystem().toString());
@@ -45,7 +45,7 @@ public class SkipOldTransactionsTest extends FileIOTest {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new StringBuffer("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);
-		factory.configureJournalSerializer(journalSerializer);
+		factory.configureJournalSerializer("MyJournal", journalSerializer);
 		factory.configureClock(new Clock() {
 			private long time = 1000000;
 
