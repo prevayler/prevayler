@@ -50,7 +50,7 @@ public class ClockTest extends TestCase {
     }
 
     protected void tearDown() throws Exception {
-        clockActor.doStop();
+        clockActor.interrupt();
         RollbackTest.delete(prevalenceBase);
     }
 
@@ -62,9 +62,9 @@ public class ClockTest extends TestCase {
         // assertEquals(2, transactionCount());
     }
 
-    private long transactionCount() {
-        return prevayler.transactionCount();
-    }
+//    private long transactionCount() {
+//        Use a special prevalent system and transaction combination that counts the number of transactions executed.
+//    }
 
     private void assertAboutSameDate(Date expected, Date observed) {
         assertEquals(expected.getTime() / TOLERANCE, observed.getTime() / TOLERANCE);
