@@ -14,7 +14,10 @@
     <property name="dist.home"              location="${basedir}/dist" />
     <property name="doc.home"               location="${basedir}/docs" />
     <property name="lib.home"               location="${basedir}/lib" />
+    <property name="dependencies.home"      location="${dependencies.path}" />
     <property name="src.home"               location="${basedir}/src" />
+    <property name="src.contrib.home"       location="${basedir}/contrib" />
+    <property name="src.contrib.projects"   value="${src.contrib.home}/rollbackWithMementoPattern${path.separator}${src.contrib.home}/jxpath" />
     <property name="src.core.home"          location="${src.home}/main" />
     <property name="src.test.home"          location="${src.home}/test" />
     <property name="src.package.path"       value="org/prevayler" />
@@ -29,48 +32,21 @@
     <property name="build.optimize"     value="on" />
     <property name="build.verbose"      value="off" />
 
-
-<!-- ==================== External Dependencies =========================== -->
-
-<!--
-
-  Use property values to define the locations of external JAR files on which
-  your application will depend.
-
--->
-
-    <!-- Dummy external dependency -->
-    <!--
-    <property name="foo.jar"
-              value="/path/to/foo.jar"/>
-    -->
-
-
 <!-- ==================== Compilation Classpath =========================== -->
 
     <path id="build.classpath" >
-
-        <!-- Include all JAR files that will be needed by your application -->
-        <!-- *** CUSTOMIZE HERE AS REQUIRED BY YOUR APPLICATION *** -->
-        <!--
-        <pathelement location="${foo.jar}"/>
-        -->
-
+        <pathelement location="${commons-jxpath.jar}"/>
     </path>
 
     <path id="build.test.classpath" >
-
         <pathelement location="${build.home}" />
         <path refid="build.classpath" />
-
     </path>
-
 
 <!-- ==================== Rebuild Target ====================================== -->
 
   <target name="rebuild" depends="clean, compile"
           description="Clean build and dist directories, then compile" />
-
 
 <!-- ==================== Clean Targets ==================================== -->
 
@@ -84,9 +60,9 @@
 
         <delete dir="${build.home}" />
         <delete dir="${dist.home}" />
+        <delete dir="${lib.home}" />
+        <delete dir="${dependencies.home}" />
         <delete dir="${doc.home}/api" />
-        <delete file="${lib.home}/${jar.name.core}" />
-        <delete file="${lib.home}/${jar.name.full}" />
 
     </target>
 
@@ -119,35 +95,48 @@
 
     </target>
 
-
 <!-- ==================== Prepare Target ================================== -->
 
     <target name="prepare" >
 
-        <!-- Create build directories as needed -->
         <mkdir  dir="${build.home}" />
-
-        <!-- Copy static files from external dependencies as needed -->
-        <!-- *** CUSTOMIZE HERE AS REQUIRED BY YOUR APPLICATION *** -->
-
         <tstamp/>
 
     </target>
 
+<!-- ==================== Compile Targets ================================== -->
 
-<!-- ==================== Compile Target ================================== -->
+    <target name="compile" depends="compile.core, compile.test, compile.contrib" description="Compile Java sources" />
+    <target name="compile.core" depends="prepare" description="Compile Java core sources" >
+        <antcall target="compile.sub">
+            <param name="srcdir" value="${src.core.home}" />
+            <param name="includes" value="**/*.java" />
+            <param name="excludes" value="**/old**/**,**/test/**" />
+        </antcall>
+    </target>
+    <target name="compile.test" depends="compile.core" description="Compile Java test case sources" >
+        <antcall target="compile.sub">
+            <param name="srcdir" value="${src.test.home}" />
+            <param name="includes" value="**/test/**/*.java" />
+            <param name="excludes" value="**/old**/**" />
+        </antcall>
+    </target>
+    <target name="compile.contrib" depends="download,compile.core" description="Compile Java contrib sources" >
+        <antcall target="compile.sub">
+            <param name="srcdir" value="${src.contrib.projects}" />
+            <param name="includes" value="**/*.java" />
+            <param name="excludes" value="**/old**/**" />
+        </antcall>
+    </target>
 
-    <target name="compile" depends="compile.core, compile.test" />
-
-    <target name="compile.core" depends="prepare"
-            description="Compile Java sources" >
+    <target name="compile.sub" depends="prepare" if="srcdir" >
 
         <!-- Compile Java classes as necessary -->
         <javac
-            srcdir="${src.core.home}"
+            srcdir="${srcdir}"
             destdir="${build.home}"
-            includes="**/*.java"
-            excludes="**/old**/**,**/test/**"
+            includes="${includes}"
+            excludes="${excludes}"
             debug="${build.debug}"
             deprecation="${build.deprecation}"
             optimize="${build.optimize}"
@@ -156,51 +145,24 @@
         </javac>
 
         <!-- Copy application resources -->
-        <copy todir="${build.home}" >
+        <!--<copy todir="${build.home}" >
             <fileset
-                dir="${src.core.home}"
-                excludes="**/test/**"
+                dir="${srcdir}"
+                excludes="${excludes}"
                 includes="**/*.properties,
                           **/*.character-sets,
                           **/*.dtd,
                           **/*.xml" />
-        </copy>
+        </copy>-->
 
     </target>
-
-    <target name="compile.test" depends="prepare, compile.core"
-            description="Compile Java test case sources" >
-
-        <!-- Compile Java classes as necessary -->
-        <javac
-            srcdir="${src.test.home}"
-            destdir="${build.home}"
-            includes="**/test/**/*.java"
-            excludes="**/old**/**"
-            debug="${build.debug}"
-            deprecation="${build.deprecation}"
-            optimize="${build.optimize}"
-            verbose="${build.verbose}">
-            <classpath refid="build.classpath" />
-        </javac>
-
-        <!-- Copy application resources -->
-        <copy todir="${build.home}" >
-            <fileset
-                dir="${src.test.home}"
-                includes="**/test/**/*.properties,
-                          **/test/**/*.character-sets,
-                          **/test/**/*.dtd,
-                          **/test/**/*.xml" />
-        </copy>
-
-    </target>
-
 
 <!-- ==================== Dist Target ===================================== -->
 
     <target name="dist" depends="jar,javadoc"
             description="Create binary distribution" >
+
+        <delete dir="${dependencies.home}" />
 
         <!-- Generate ZIP distribution -->
         <zip destfile="${dist.home}/${zip.name.dist}">
@@ -211,7 +173,6 @@
         </zip>
 
     </target>
-
 
 <!-- ==================== Javadoc Target ================================== -->
 
@@ -273,7 +234,6 @@
 
     </target>
 
-
 <!-- ==================== Jar Targets ================================== -->
 
     <target name="jar" depends="jar.core, jar.full"
@@ -307,7 +267,7 @@
 
 <!-- ==================== Test Targets ================================== -->
 
-    <target name="run.test.functional" depends="compile"
+    <target name="run.test.functional" depends="compile.test"
             description="Runs the functional tests used to test Prevayler during development" >
 
         <java fork="true" classname="org.prevayler.test.Main" >
@@ -316,7 +276,7 @@
 
     </target>
 
-    <target name="run.test.scalability" depends="compile"
+    <target name="run.test.scalability" depends="compile.test"
             description="Runs manipulation and query scalability tests against Prevayler and any JDBC database" >
 
         <java fork="true" classname="org.prevayler.test.scalability.Main" >
@@ -381,6 +341,52 @@
             </sequential>
         </parallel>
 
+    </target>
+
+    <target name="run.demo.bank.memento" depends="compile.contrib"
+            description="Runs memento bank demonstration" >
+
+        <java fork="true" classname="org.prevayler.demos.memento.TestErrorRecoveryWithMementos" >
+            <classpath refid="build.test.classpath" />
+        </java>
+
+    </target>
+    
+<!-- ==================== Dependency Targets ================================== -->
+    
+    <target name="download" depends="proxyflags" description="Download binary packages" >
+        <mkdir dir="${dependencies.home}" />
+        <!-- Downdown any sub package or tools needed. -->
+        <antcall target="downloadgz">
+            <param name="sourcefile" value="${commons-jxpath.loc}"/>
+            <param name="destfile" value="${commons-jxpath.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="proxyflags">
+        <!-- check proxy parameters. -->
+        <condition property="useproxy">
+            <equals arg1="${proxy.use}" arg2="on" />
+        </condition>
+    </target>
+
+    <target name="setproxy" if="useproxy">       
+        <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"/> 
+        <echo message="Using ${proxy.host}:${proxy.port} to download ${sourcefile}"/>
+    </target>
+
+    <target name="testexist">
+        <echo message="Testing  for ${destfile}"/>
+        <available file="${destfile}" property="exist"/>
+    </target>
+
+    <target name="downloadgz" unless="exist" depends="testexist">
+        <!-- Download and extract the package -->
+        <get src="${sourcefile}" dest="${dependencies.home}/file.tar.gz" />
+        <gunzip src="${dependencies.home}/file.tar.gz" dest="${dependencies.home}/file.tar"/>
+        <untar src="${dependencies.home}/file.tar" dest="${dependencies.home}"/>
+        <delete file="${dependencies.home}/file.tar"/>
+        <delete file="${dependencies.home}/file.tar.gz"/>
     </target>
 
 </project>
