@@ -17,9 +17,9 @@ public abstract class TransactionWithQuery implements Transaction {
 	private Exception _exception;
 
 
-	/** Makes the given Prevayler execute this transaction, which in turn calls the executeAndQuery(Object prevalentSystem) method implemented by the subclass.
-	 * @return The object returned by the executeAndQuery(Object prevalentSystem) method implemented by the subclass. E.g: The "Person" object created by a "PersonCreation" transaction.
-	 * @throws Exception if the executeAndQuery(Object prevalentSystem) method implemented by the subclass throws an Exception.
+	/** Makes the given Prevayler execute this transaction, which in turn calls the executeAndQuery(Object prevalentSystem, Date timestamp) method implemented by the subclass.
+	 * @return The object returned by the executeAndQuery(Object prevalentSystem, Date timestamp) method implemented by the subclass. E.g: The "Person" object created by a "PersonCreation" transaction.
+	 * @throws Exception if the executeAndQuery(Object prevalentSystem, Date timestamp) method implemented by the subclass throws an Exception.
 	 */
 	public Object executeUsing(Prevayler prevayler) throws Exception {
 		prevayler.execute(this);
