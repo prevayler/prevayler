@@ -7,7 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 
-public abstract class SerializationTestCase extends TestCase {
+public abstract class SerializationTest extends TestCase {
 
 	private SerializationStrategy strategy;
 	private ByteArrayOutputStream out;

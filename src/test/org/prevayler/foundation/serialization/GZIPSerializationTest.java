@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class GZIPSerializationTest extends SerializationTestCase {
+public class GZIPSerializationTest extends SerializationTest {
 
 	protected SerializationStrategy createStrategy() {
 		return new GZIPSerializationStrategy(new XStreamSerializationStrategy());

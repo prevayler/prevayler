@@ -2,7 +2,7 @@ package org.prevayler.foundation.serialization;
 
 import java.io.IOException;
 
-public class XStreamSerializationTest extends SerializationTestCase {
+public class XStreamSerializationTest extends SerializationTest {
 
 	protected SerializationStrategy createStrategy() {
 		return new XStreamSerializationStrategy();
