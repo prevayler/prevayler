@@ -13,7 +13,8 @@ public class FileManager {
 	private static final int DIGITS_IN_FILENAME = 19;
 	private static final String SNAPSHOT_SUFFIX_PATTERN = "[a-zA-Z0-9]*[Ss]napshot";
 	private static final String SNAPSHOT_FILENAME_PATTERN = "\\d{" + DIGITS_IN_FILENAME + "}\\." + SNAPSHOT_SUFFIX_PATTERN;
-	private static final String JOURNAL_FILENAME_PATTERN = "\\d{" + DIGITS_IN_FILENAME + "}\\.journal";
+	private static final String JOURNAL_SUFFIX = "journal";
+	private static final String JOURNAL_FILENAME_PATTERN = "\\d{" + DIGITS_IN_FILENAME + "}\\." + JOURNAL_SUFFIX;
 
 	private File _directory;
 
@@ -30,10 +31,6 @@ public class FileManager {
 		if (!_directory.isDirectory()) throw new IOException("Path exists but is not a directory: " + _directory);
 	}
 
-	public File snapshotFile(long version, String suffix) {
-		String fileName = "0000000000000000000" + version;
-		return new File(_directory, fileName.substring(fileName.length() - DIGITS_IN_FILENAME) + "." + suffix);
-	}
 
 	public static void checkValidSnapshotSuffix(String suffix) {
 		if (!suffix.matches(SNAPSHOT_SUFFIX_PATTERN)) {
@@ -42,14 +39,42 @@ public class FileManager {
 		}
 	}
 
+
+	public File snapshotFile(long version, String suffix) {
+		checkValidSnapshotSuffix(suffix);
+		return file(version, suffix);
+	}
+
+	public File journalFile(long transaction) {
+		return file(transaction, JOURNAL_SUFFIX);
+	}
+
+	private File file(long version, String suffix) {
+		String fileName = "0000000000000000000" + version;
+		return new File(_directory, fileName.substring(fileName.length() - DIGITS_IN_FILENAME) + "." + suffix);
+	}
+
+
 	/**
 	 * Returns -1 if fileName is not the name of a snapshot file.
 	 */
 	public static long snapshotVersion(File file) {
+		return version(file, SNAPSHOT_FILENAME_PATTERN);
+	}
+
+	/**
+	 * Returns -1 if fileName is not the name of a journal file.
+	 */
+	public static long journalVersion(File file) {
+		return version(file, JOURNAL_FILENAME_PATTERN);
+	}
+
+	private static long version(File file, String filenamePattern) {
 		String fileName = file.getName();
-		if (!fileName.matches(SNAPSHOT_FILENAME_PATTERN)) return -1;
+		if (!fileName.matches(filenamePattern)) return -1;
 		return Long.parseLong(fileName.substring(0, fileName.indexOf(".")));
 	}
+
 
 	/**
 	 * Find the latest snapshot file. Returns null if no snapshot file was found.
@@ -69,16 +94,6 @@ public class FileManager {
 			}
 		}
 		return latestSnapshot;
-	}
-
-	public File journalFile(long transaction) {
-		String fileName = "0000000000000000000" + transaction;
-		fileName = fileName.substring(fileName.length() - 19) + ".journal";
-		return new File(_directory, fileName);
-	}
-
-	public static void renameUnusedFile(File journalFile) {
-		journalFile.renameTo(new File(journalFile.getAbsolutePath() + ".unusedFile" + System.currentTimeMillis()));
 	}
 
 	public long findInitialJournalFile(long initialTransactionWanted) {
@@ -112,17 +127,13 @@ public class FileManager {
 		}
 	}
 
-	/**
-	 * Returns -1 if fileName is not the name of a journal file.
-	 */
-	public static long journalVersion(File file) {
-		String fileName = file.getName();
-		if (!fileName.matches(JOURNAL_FILENAME_PATTERN)) return -1;
-		return Long.parseLong(fileName.substring(0, fileName.indexOf(".")));
-	}
 
 	public File createTempFile(String prefix, String suffix) throws IOException {
 		return File.createTempFile(prefix, suffix, _directory);
+	}
+
+	public static void renameUnusedFile(File journalFile) {
+		journalFile.renameTo(new File(journalFile.getAbsolutePath() + ".unusedFile" + System.currentTimeMillis()));
 	}
 
 }
