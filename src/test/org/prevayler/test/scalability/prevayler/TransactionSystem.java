@@ -34,8 +34,4 @@ class TransactionSystem implements ScalabilitySystem {
 			put(newRecords.next());
 		}
 	}
-
-	private void verify(boolean condition) {
-		if (!condition) System.out.println("Assertion failed.");
-	}
 }
