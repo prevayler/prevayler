@@ -63,6 +63,10 @@ public class SnapshotPrevayler implements Prevayler {
 		return _prevalentSystem;
 	}
 
+    public long transactionCount() {
+        return _systemVersion;
+    }
+
 
 	/** Produces a complete serialized image of the underlying PrevalentSystem.
 	 * This will accelerate future system startups. Taking a snapshot once a day is enough for most applications.

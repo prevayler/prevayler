@@ -16,9 +16,10 @@ public class ClockActor extends Thread {
 	private final Prevayler _prevayler;
 
 	private Date _lastTime = null;
+    private boolean doStop = false;
 
 
-	/** Creates a ClockActor that uses a MachineClock as its "real" clock.
+    /** Creates a ClockActor that uses a MachineClock as its "real" clock.
 	 * @param prevayler prevayler.system() must be an instance of ClockedSystem.
 	 */
 	public ClockActor(Prevayler prevayler) {
@@ -39,7 +40,7 @@ public class ClockActor extends Thread {
 
 	public void run() {
 		try {
-			while (true) {
+			while (!doStop) {
 				tick();
 				Thread.sleep(1);
 			}
@@ -49,11 +50,21 @@ public class ClockActor extends Thread {
 	}
 
 
+
+
 	private void tick() {
 		Date newTime = _clock.time();
 		if (newTime == _lastTime) return;
 		_lastTime = newTime;
 		_prevayler.execute(new ClockTick(newTime));
 	}
+
+    public void doStop() {
+        doStop = true;
+        try {
+            join();
+        } catch (InterruptedException e) {
+        }
+    }
 
 }

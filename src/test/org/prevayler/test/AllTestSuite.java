@@ -9,6 +9,7 @@ public class AllTestSuite extends TestCase {
         TestSuite suite = new TestSuite();
         suite.addTestSuite(RollbackTest.class);
         suite.addTestSuite(PersistenceTest.class);
+        suite.addTestSuite(ClockTest.class);
         return suite;
     }
 }

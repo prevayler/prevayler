@@ -1,12 +1,13 @@
 package org.prevayler.test;
 
-import org.prevayler.implementation.RollbackPrevayler;
+import org.prevayler.implementation.*;
+import org.prevayler.implementation.log.TransactionLogger;
 import junit.framework.TestCase;
 
 import java.io.File;
 
 public class RollbackTest extends TestCase {
-    static private RollbackPrevayler prevayler;
+    static private SnapshotPrevayler prevayler;
     private static String prevaylerBase;
 
     protected void setUp() throws Exception {
@@ -25,7 +26,11 @@ public class RollbackTest extends TestCase {
 
     public void testRollback() throws Exception {
 
-        prevayler = new RollbackPrevayler(new AddingSystem(), prevaylerBase);
+        SnapshotManager snapshotManager = new SnapshotManager(prevaylerBase);
+        TransactionLogger logger = new TransactionLogger(prevaylerBase);
+        RollbackTransactionPublisher publisher = new RollbackTransactionPublisher(snapshotManager, logger);
+        prevayler = new SnapshotPrevayler(new AddingSystem(), snapshotManager, publisher);
+        publisher.initKing(prevayler.prevalentSystem());
         add(10, 10);
         add(20, 30);
         addRollback(30, 30);
