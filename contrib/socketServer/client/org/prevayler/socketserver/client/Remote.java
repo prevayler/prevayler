@@ -1,5 +1,28 @@
 package org.prevayler.socketserver.client;
 
+/*
+ * prevayler.socketServer, a socket-based server (and client library)
+ * to help create client-server Prevayler applications
+ * 
+ * Copyright (C) 2003 Advanced Systems Concepts, Inc.
+ * 
+ * Written by David Orme <daveo@swtworkbench.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -18,30 +41,13 @@ import org.prevayler.socketserver.util.Log;
  * Client connection class.  This class is the main interface between the
  * client and the PrevalentSystem running on the server.
  * 
- * The general philosophy of PrevalentStore is that the Transactions are really 
- * just another way to do remote procedure calls on remote objects.  They can
+ * The general philosophy of prevayler.socketServer is that the Transactions 
+ * are really just another way to do remote method calls.  They can
  * pass any (Serializable) parameters you want and they can return any 
  * (Serializable) results that you want.  Also, any Exceptions that are thrown
  * on the server are automatically propogated back to the client and re-thrown
  * there.  The only constraint is the Prevalent System one: Make sure that all
  * "Transactions" are deterministic relative to your business objects.
- * 
- * Dependency graph for a PrevalentStore app:
- * 
- *                ApplicationClient -------------------+
- *                       |      |                      |
- *                       |      v                      |
- *          +------------|    ModelObjects             |
- *          |            |                             |
- *          v            |                             v
- *   PrevaylerDBClient   |                  ApplicationTransactions
- *                       |                             |
- *   PrevaylerDBServer   |                             |
- *          |            |                             |
- *          +------------+---------+-------------------+
- *                                 |
- *                                 v
- *                       PrevaylerDBTransactions
  * 
  * @author DaveO
  */
