@@ -24,7 +24,7 @@ public class ServerListener extends Thread {
 		_serverSocket = network.openObjectServerSocket(port);
 		_publisher = publisher;
 		setDaemon(true);
-		start();
+		start(); //FIXME: Make sure this thread ends when Prevayler is closed.
 	} 
 
 	public void run() {

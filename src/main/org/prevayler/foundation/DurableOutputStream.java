@@ -1,7 +1,8 @@
 //Prevayler(TM) - The Free-Software Prevalence Layer.
-//Copyright (C) 2001-2004 Klaus Wuestefeld
+//Copyright (C) 2001-2005 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-//Contributions: Justin Sampson.
+//Contributions: Justin Sampson, Tobias Hill.
+
 package org.prevayler.foundation;
 
 import java.io.ByteArrayOutputStream;
@@ -145,22 +146,8 @@ public class DurableOutputStream {
 					_inactive.reset();
 					_fileOutputStream.flush();
 
-					// Dropping the priority around the sync seems to have a
-					// somewhat favorable effect on throughput, at least on
-					// some Windows machines. Whether the effect has survived
-					// the various rewrites of this class enough to justify
-					// the continuing maintanence of this bit of code needs
-					// to be investigated.
+					_fileDescriptor.sync();
 
-					Thread currentThread = Thread.currentThread();
-					int originalPriority = currentThread.getPriority();
-					currentThread.setPriority(Thread.MIN_PRIORITY);
-
-					try {
-						_fileDescriptor.sync();
-					} finally {
-						currentThread.setPriority(originalPriority);
-					}
 				} catch (IOException exception) {
 					internalClose();
 					throw exception;
