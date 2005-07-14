@@ -13,7 +13,7 @@
         <param name="Append" value="false" />
         <layout class="org.apache.log4j.PatternLayout">
             <!-- Output the elapsed time [thread,context] Priority Class::Method - Text LF -->
-            <param name="ConversionPattern" value="%-4r [%t] %-5p %c{1}::%M - %m%n"/>
+            <param name="ConversionPattern" value="%-4r [%t] %-5p %c{2}::%M - %m%n"/>
         </layout>
     </appender>
     <appender name="JUnitAppender" class="org.apache.log4j.FileAppender">

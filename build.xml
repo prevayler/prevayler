@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="./ant2html.xsl"?> 
 <!DOCTYPE project [
     <!ENTITY general-utility-targets SYSTEM "file:./utility-targets.incl">
     <!ENTITY self-customized-targets SYSTEM "file:./custom-targets.incl">

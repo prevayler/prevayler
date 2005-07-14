@@ -11,7 +11,7 @@ Second number - incremented when a functional or architectural goal is reached; 
 
 Third number - incremented when backward compatibility is maintained. This means all 1.02.XXX builds, for example, are backward compatible with 1.02.000.
 
-Builds are generated with the "alpha" suffix, renamed with the "beta" suffix and have the suffix removed as they reach production stage.
+Builds are generated with the "beta" suffix and have the suffix removed as they reach production stage.
 
 
 Directory Contents
@@ -42,7 +42,7 @@ Parameters:
 	-windowtitle "Prevayler(TM) vX.XX.XXX API Documentation"
 	-header "<b>Prevayler<sup><font size=-2>TM</font></sup><br>The Free Software<br>Prevalence Layer</b>"
 	-footer "<EM><a href=http://www.prevayler.org><font color="#BB0033"><b>Prevayler Online</b></font></a></EM>"
-	-bottom "<font size=-1>'Prevayler' is a trademark of Klaus Wuestefeld.<br>Prevayler Javadoc Copyleft 2001-2003 Klaus Wuestefeld.</font>"
+	-bottom "<font size=-1>'Prevayler' is a trademark of Klaus Wuestefeld.<br>Prevayler Javadoc Copyleft 2001-2004 Klaus Wuestefeld.</font>"
 
 
 <end>

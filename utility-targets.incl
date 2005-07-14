@@ -168,6 +168,7 @@
             <footer><![CDATA[${javadoc.footer}]]></footer>
             <bottom><![CDATA[${javadoc.bottom}]]></bottom>
             <link offline="${javadoc.jdk.offline}" href="${javadoc.jdk.href}" packagelistLoc="${javadoc.jdk.packagelistLoc}" />
+            <link href="http://xstream.codehaus.org/javadoc/" />
             <classpath refid="build.core.classpath" />
         </javadoc>
     </target>
