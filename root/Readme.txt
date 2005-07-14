@@ -28,11 +28,6 @@ These are typical results for the Prevayler query scalability test running again
 You can compile and run the test for yourself. Its source code is available for inspection in the "src" directory starting at: org.prevayler.demos.scalability.Main. It runs transaction-processing and query scalability tests against Prevayler and any JDBC database. Just follow the instructions displayed on the console.
 
 
-Known Bugs
-==============
-Hundreds of organizations use Prevayler worldwide. No bugs have ever been found in a Prevayler production release, though. Its robustness comes mainly from the fact that Prevayler's implementation is only a few hundred lines of code.
-
-
 Required Java Platform
 ==========================
 Prevayler is written and compiled against the APIs of the Java 2 Platform Standard Edition version 1.4.
