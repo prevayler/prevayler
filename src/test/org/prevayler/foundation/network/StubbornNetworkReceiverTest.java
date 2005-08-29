@@ -16,7 +16,6 @@ public class StubbornNetworkReceiverTest extends TestCase {
     private ObjectReceiverMock client;
     private SimpleNetworkMock network;
     private StubbornClientReceiverImpl scri;
-    private final NetworkSessionId id0 = new NetworkSessionId(0,0);
     private final String replacementProvider = "replaced provider";
 
     public void setUp () throws Exception {
@@ -236,10 +235,8 @@ public class StubbornNetworkReceiverTest extends TestCase {
         private Permit permitRead  = new Permit();
         private Permit permitWrite = new Permit();
         private Permit permitClose = new Permit();
-        
-        private boolean shutdown = false;
+
         private final String _name; 
-        
 
         MockObjectSocket(String name) {
             received = Collections.synchronizedList(new ArrayList());

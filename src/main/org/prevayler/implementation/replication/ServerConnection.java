@@ -26,8 +26,6 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 
 	private final ObjectSocket _remote;
 	private final Thread _clockTickSender = createClockTickSender();
-	private boolean _isClosing = false;
-
 
 	ServerConnection(TransactionPublisher publisher, ObjectSocket remoteSocket) throws IOException {
 		_publisher = publisher;
