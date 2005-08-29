@@ -7,6 +7,7 @@ import org.prevayler.demos.demo2.business.*;
 
 public class AccountCreation extends BankTransaction {
 
+	private static final long serialVersionUID = 476105268406333743L;
 	private String _holder;
 
     private AccountCreation() {} //Necessary for Skaringa XML serialization

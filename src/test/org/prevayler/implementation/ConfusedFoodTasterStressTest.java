@@ -84,10 +84,13 @@ public class ConfusedFoodTasterStressTest extends FileIOTest {
 	}
 
 	public static class CountingSystem implements Serializable {
+		private static final long serialVersionUID = -361279281565153469L;
 		int counter = 0;
 	}
 
 	public static class CountTransaction implements Transaction {
+		private static final long serialVersionUID = 5043457505878510633L;
+
 		public void executeOn(Object prevalentSystem, Date executionTime) {
 			CountingSystem countingSystem = (CountingSystem) prevalentSystem;
 			if (countingSystem.counter == WHEN_TO_START_THROWING) {
@@ -98,6 +101,7 @@ public class ConfusedFoodTasterStressTest extends FileIOTest {
 	}
 
 	public static class CountException extends RuntimeException {
+		private static final long serialVersionUID = -5965497237902430070L;
 	}
 
 }

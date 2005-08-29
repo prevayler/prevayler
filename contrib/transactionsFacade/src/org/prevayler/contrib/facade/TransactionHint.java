@@ -80,6 +80,8 @@ public interface TransactionHint extends Serializable {
      */
     public static final TransactionHint NOOP_TRANSACTION_HINT =
         new TransactionHint() {
+            private static final long serialVersionUID = -5478302343468894802L;
+
             public void preExecute(Object p_prevalentSystem, Method p_method, Object[] p_args, Date p_timestamp) throws Exception {} 
         };
         

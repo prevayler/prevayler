@@ -47,10 +47,12 @@ public class SmokeTest
 
     public static class RuntimeOops extends RuntimeException
     {
+        private static final long serialVersionUID = 6697889650105894039L;
     }
 
     public static class CheckedOops extends Exception
     {
+        private static final long serialVersionUID = -6402219678153693704L;
     }
 
     public static interface Repository {
@@ -63,6 +65,8 @@ public class SmokeTest
     public static class RepositoryImpl
         implements Repository, Serializable
     {
+        private static final long serialVersionUID = -4401226206133056516L;
+
         public void storeSomething(String p_data)
         {
             m_data = p_data;

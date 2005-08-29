@@ -43,6 +43,8 @@ public class QueryExecutionTest extends FileIOTest {
 
 	private static TransactionWithQuery transactionWithQuery() {
 		return new TransactionWithQuery() {
+			private static final long serialVersionUID = -2976662596936807721L;
+
 			public Object executeAndQuery(Object prevalentSystem, Date timestamp) {
 				((List)prevalentSystem).add("added element");
 				return "abc";

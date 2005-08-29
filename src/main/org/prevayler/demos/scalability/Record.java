@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 
 public class Record implements Serializable {
 
+	private static final long serialVersionUID = 7098880197177237832L;
+
 	private static final String largeString = generateLargeString();
 
 	private final long id;

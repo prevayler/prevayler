@@ -96,5 +96,4 @@ public abstract class AbstractProxy
         return m_methodInfo.getMethod();
     }
 
-    private final long serialVersionUID = 0L;
 }

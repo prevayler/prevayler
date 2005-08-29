@@ -49,6 +49,7 @@ public class ProxyQuery
     extends AbstractProxy
     implements Query
 {
+    private static final long serialVersionUID = 7773538966349888966L;
 
     /**
      * @since 0_2
@@ -64,5 +65,4 @@ public class ProxyQuery
         return execute(p_prevalentSystem, p_timestamp);
     }
 
-    private final long serialVersionUID = 0L;
 }

@@ -12,6 +12,7 @@ import org.prevayler.demos.scalability.RecordIterator;
 
 class QuerySystem implements ScalabilitySystem {
 
+	private static final long serialVersionUID = -8181198939095700706L;
 	private Map recordsByName = new HashMap();
 
 

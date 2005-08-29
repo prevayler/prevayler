@@ -7,6 +7,7 @@ import java.util.Random;
 */
 public class RecordIterator implements Serializable {
 
+	private static final long serialVersionUID = 4278565982042966467L;
 	private int nextRecordId = 0;
 	private final int numberOfRecords;
 	private final Random _random = new Random(0);

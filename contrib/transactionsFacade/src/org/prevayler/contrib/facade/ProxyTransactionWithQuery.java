@@ -49,6 +49,7 @@ public class ProxyTransactionWithQuery
     extends AbstractProxy
     implements TransactionWithQuery
 {
+    private static final long serialVersionUID = -5012126657533926785L;
 
     /**
      * @since 0_2
@@ -64,5 +65,4 @@ public class ProxyTransactionWithQuery
         return execute(p_prevalentSystem, p_timestamp);
     }
 
-    private final long serialVersionUID = 0L;
 }

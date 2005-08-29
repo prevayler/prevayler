@@ -8,6 +8,7 @@ import org.prevayler.demos.scalability.RecordIterator;
 
 class TransactionSystem implements ScalabilitySystem {
 
+	private static final long serialVersionUID = 461535927650714306L;
 	private final Map recordsById = new HashMap();
 
 	public void performTransaction(Record recordToInsert, Record recordToUpdate, long idToDelete) {

@@ -75,7 +75,8 @@ public class TransientPrevaylerTest extends FileIOTest {
 
 
 	static private class DirectReferenceTransaction implements Transaction {
-	
+
+		private static final long serialVersionUID = -7885669885494051746L;
 		private final AppendingSystem _illegalDirectReference;
 
 		DirectReferenceTransaction(AppendingSystem illegalDirectReference) {

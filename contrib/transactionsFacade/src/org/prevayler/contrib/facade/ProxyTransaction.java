@@ -49,6 +49,7 @@ public class ProxyTransaction
     extends AbstractProxy
     implements Transaction
 {
+    private static final long serialVersionUID = -3720257876251185011L;
 
     /**
      * @since 0_2
@@ -70,5 +71,4 @@ public class ProxyTransaction
         }
     }
 
-    private final long serialVersionUID = 0L;
 }

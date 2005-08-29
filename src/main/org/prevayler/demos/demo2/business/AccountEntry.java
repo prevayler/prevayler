@@ -5,7 +5,8 @@ import java.util.Date;
 
 public class AccountEntry implements Serializable {
 
-        private long amount;
+		private static final long serialVersionUID = 8394742481391868028L;
+		private long amount;
         private Date timestamp;
 
 		private AccountEntry() {

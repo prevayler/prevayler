@@ -9,6 +9,7 @@ import java.util.*;
  */
 class NumberKeeper implements java.io.Serializable {
 
+  private static final long serialVersionUID = 2253937139530882022L;
   private final List numbers = new ArrayList();
 
 

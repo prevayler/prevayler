@@ -7,6 +7,7 @@ import org.prevayler.demos.scalability.Record;
 
 class TestTransaction implements Transaction {
 
+	private static final long serialVersionUID = -2634307328586761351L;
 	private final Record recordToInsert;
 	private final Record recordToUpdate;
 	private final long idToDelete;

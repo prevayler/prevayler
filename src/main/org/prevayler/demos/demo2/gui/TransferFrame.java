@@ -12,7 +12,8 @@ import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.transactions.Transfer;
 
 class TransferFrame extends AccountFrame {
-	
+
+	private static final long serialVersionUID = -3037927508242313124L;
 	private final Account account;
     private JTextField sourceField;
     private JTextField destinationField;
@@ -49,8 +50,10 @@ class TransferFrame extends AccountFrame {
 	}
 	
     private class OKAction extends RobustAction {
-		
-        OKAction() {
+
+		private static final long serialVersionUID = 7431901563750307402L;
+
+		OKAction() {
             super("OK");
 		}
 

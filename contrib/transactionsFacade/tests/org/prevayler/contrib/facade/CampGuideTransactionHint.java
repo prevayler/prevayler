@@ -40,6 +40,8 @@ import java.util.Date;
  */
 public class CampGuideTransactionHint implements TransactionHint {
 
+    private static final long serialVersionUID = 1644083066884927855L;
+
     /**
      * @see org.prevayler.contrib.facade.TransactionHint#preExecute(java.lang.Object, java.lang.reflect.Method, java.lang.Object[], java.util.Date)
      */

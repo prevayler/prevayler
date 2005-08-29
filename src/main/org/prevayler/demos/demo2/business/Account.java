@@ -4,6 +4,7 @@ import java.util.*;
 
 public class Account implements java.io.Serializable {
 
+	private static final long serialVersionUID = 3998522662411373397L;
 	private long number;
 	private String holder;
 	private long balance = 0;
@@ -94,6 +95,8 @@ public class Account implements java.io.Serializable {
 	}
 
 	public class InvalidAmount extends Exception {
+		private static final long serialVersionUID = 3343517565045905857L;
+
 		InvalidAmount(String message) {
 			super(message);
 		}
@@ -104,6 +107,8 @@ public class Account implements java.io.Serializable {
 	}
 
 	public class InvalidHolder extends Exception {
+		private static final long serialVersionUID = -3234126892127577122L;
+
 		InvalidHolder() {
 			super("Invalid holder name.");
 		}

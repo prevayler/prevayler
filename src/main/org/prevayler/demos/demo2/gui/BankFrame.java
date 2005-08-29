@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 
 public class BankFrame extends JFrame {
 
+	private static final long serialVersionUID = 936051923275473259L;
 	private final Prevayler _prevayler;
 
 	public BankFrame(Prevayler prevayler) {
@@ -45,6 +46,9 @@ public class BankFrame extends JFrame {
 
 	
 	private static class RobustnessFrame extends JInternalFrame {
+
+		private static final long serialVersionUID = -3548833894524605027L;
+
 		RobustnessFrame() {
 			super("Robustness Reminder", false, false, false, true);
 			setContentPane(Box.createVerticalBox());

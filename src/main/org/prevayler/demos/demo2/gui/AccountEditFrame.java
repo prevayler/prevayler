@@ -20,7 +20,8 @@ import org.prevayler.demos.demo2.business.transactions.HolderChange;
 import org.prevayler.demos.demo2.business.transactions.Withdrawal;
 
 class AccountEditFrame extends AccountFrame implements AccountListener {
-	
+
+	private static final long serialVersionUID = -1881757771183108518L;
 	private final Account account;
 	private JTextField balanceField;
 	private JList historyList;
@@ -60,7 +61,9 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
 	}
 	
 	private class DepositAction extends RobustAction {
-		
+
+		private static final long serialVersionUID = 405949418924180386L;
+
 		DepositAction() {
 			super("Deposit...");
 		}
@@ -73,7 +76,9 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
 	}
 
 	private class WithdrawAction extends RobustAction {
-		
+
+		private static final long serialVersionUID = -3457941349394635348L;
+
 		WithdrawAction() {
 			super("Withdraw...");
 		}
@@ -92,7 +97,9 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
     }
 
 	private class TransferAction extends RobustAction {
-		
+
+		private static final long serialVersionUID = -5062849913422257492L;
+
 		TransferAction() {
 			super("Transfer...");
 		}

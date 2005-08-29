@@ -6,6 +6,7 @@ import org.prevayler.demos.demo2.business.Bank;
 
 public class Transfer extends BankTransaction {
 
+	private static final long serialVersionUID = -8656365915179217238L;
 	private long _originAccountNumber;
 	private long _destinationAccountNumber;
 	private long _amount;

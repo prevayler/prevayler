@@ -34,7 +34,6 @@ package org.prevayler.contrib.facade;
 
 import java.util.Calendar;
 import java.util.Iterator;
-import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -83,7 +82,6 @@ public class AnotherTest extends TestCase {
         assertEquals("Should have been 16 camp sites", new Integer(16), new Integer(guide.getCampSites().size()));
         
         int i = 16;
-        Set sites = guide.getCampSites();
         for (Iterator iter = guide.getCampSites().iterator(); iter.hasNext();) {
             CampSite site = (CampSite) iter.next();
             //System.out.println(site);
@@ -97,7 +95,6 @@ public class AnotherTest extends TestCase {
             guide.removeCampSite(site);
             assertNull("camp site removed, so should have been null", guide.getCampSite(site.objectCode()));
             assertEquals("Should have been "+ --i +" camp sites", new Integer(i), new Integer(guide.getCampSites().size()));
-            //System.out.println("size: "+ sites.size());
         }
         assertEquals("Should have been 0", new Integer(0), new Integer(guide.getCampSites().size()));
         

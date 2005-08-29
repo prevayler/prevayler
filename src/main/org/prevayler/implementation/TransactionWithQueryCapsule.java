@@ -7,6 +7,7 @@ import java.util.Date;
 
 class TransactionWithQueryCapsule extends Capsule {
 
+	private static final long serialVersionUID = 78811627002206298L;
 	private transient Object _queryResult;
 	private transient Exception _queryException;
 

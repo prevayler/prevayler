@@ -21,7 +21,9 @@ import org.prevayler.demos.demo2.business.*;
  * @author Jacob Kjome
  */
 class MatchFrame extends JInternalFrame {
-    private Prevayler prevayler;
+
+	private static final long serialVersionUID = 2988308712345594693L;
+	private Prevayler prevayler;
     private JButton refreshButton;
     private JTable matchTable;
     private DefaultTableModel matchTableModel;

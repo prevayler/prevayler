@@ -6,6 +6,7 @@ import org.prevayler.demos.demo2.business.Account;
 
 public class HolderChange extends AccountTransaction {
 
+	private static final long serialVersionUID = -5846094202312934631L;
 	private String _newHolder;
 
     private HolderChange() {} //Necessary for Skaringa XML serialization

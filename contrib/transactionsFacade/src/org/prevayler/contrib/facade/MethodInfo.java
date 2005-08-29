@@ -45,6 +45,8 @@ import java.lang.reflect.Method;
  */
 public class MethodInfo implements Serializable
 {
+    private static final long serialVersionUID = -7565901432660010880L;
+
     /**
      * Construct a <code>MethodInfo</code> from the specified
      * <code>Method</code>.
@@ -90,5 +92,4 @@ public class MethodInfo implements Serializable
     private final String m_className;
     private final String[] m_argTypes;
 
-    private final long serialVersionUID = 0L;
 }

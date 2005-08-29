@@ -14,6 +14,7 @@ import java.io.Serializable;
  *
  */
 public class NetworkSessionId implements Serializable {
+    private static final long serialVersionUID = -1158241173764280952L;
     private final long timeStamp;
     private final int id;
     

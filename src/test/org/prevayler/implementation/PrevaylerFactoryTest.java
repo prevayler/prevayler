@@ -14,7 +14,9 @@ import org.prevayler.foundation.*;
 
 public class PrevaylerFactoryTest extends FileIOTest {
 
-	private static final Serializable POJO = new Serializable() {}; 
+	private static final Serializable POJO = new Serializable() {
+			private static final long serialVersionUID = -8661727552300291738L;
+		};
 
 	public void testTransientPrevaylerCreation() {
 		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler(POJO);

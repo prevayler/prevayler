@@ -282,14 +282,6 @@ public class CampSite implements Serializable {
         return (this.updated != 0) ? new Date(this.updated) : null;
     }
     
-	private String getDistanceString(int distance) {
-		if (distance == NOT_AVAILABLE) {
-			return "-";
-		} else {
-			return Integer.toString(distance);
-		}
-	}
-
     /**
      * @param someDate The someDate to set.
      */

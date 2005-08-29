@@ -4,6 +4,7 @@ import java.util.*;
 
 public class Bank implements java.io.Serializable {
 
+	private static final long serialVersionUID = 9202866398345361997L;
 	private long nextAccountNumber = 1;
 	private Map accountsByNumber = new HashMap();
 	private transient BankListener bankListener;
@@ -58,6 +59,8 @@ public class Bank implements java.io.Serializable {
 	}
 
 	public class AccountNotFound extends Exception {
+		private static final long serialVersionUID = 5107181766636463559L;
+
 		AccountNotFound(long number) {
 			super("Account not found: " + Account.numberString(number) + ".\nMight have been deleted.");
 		}

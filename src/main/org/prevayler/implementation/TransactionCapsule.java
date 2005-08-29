@@ -7,6 +7,8 @@ import java.util.Date;
 
 class TransactionCapsule extends Capsule {
 
+	private static final long serialVersionUID = 3283271592697928351L;
+
 	public TransactionCapsule(Transaction transaction, Serializer journalSerializer) {
 		super(transaction, journalSerializer);
 	}

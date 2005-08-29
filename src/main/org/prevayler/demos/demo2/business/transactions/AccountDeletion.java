@@ -7,6 +7,7 @@ import org.prevayler.demos.demo2.business.*;
 
 public class AccountDeletion extends BankTransaction {
 
+	private static final long serialVersionUID = -3401288850388764433L;
 	private long _accountNumber;
 
     private AccountDeletion() {} //Necessary for Skaringa XML serialization

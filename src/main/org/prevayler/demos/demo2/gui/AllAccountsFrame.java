@@ -10,6 +10,7 @@ import java.awt.event.*;
 
 class AllAccountsFrame extends JInternalFrame implements BankListener, AccountListener {
 
+	private static final long serialVersionUID = -9182376858708585231L;
 	private final Prevayler _prevayler;
 	private final JList accountList;
 
@@ -75,7 +76,9 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
 	}
 
 	class AccountCreation extends AbstractAction {
-		
+
+		private static final long serialVersionUID = 9182061237235826622L;
+
 		AccountCreation() {
 			super("Create");
 		}
@@ -110,7 +113,9 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
 	}
 
 	class AccountEditAction extends SelectedAccountAction {
-  	
+
+		private static final long serialVersionUID = 5901968097767524191L;
+
 		AccountEditAction() {
 			super("Edit");
 		}
@@ -121,7 +126,9 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
 	}
 
 	class AccountDeleteAction extends SelectedAccountAction {
-  	
+
+		private static final long serialVersionUID = -1320330350155595965L;
+
 		AccountDeleteAction() {
 			super("Delete");
 		}
