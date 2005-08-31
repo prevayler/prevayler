@@ -62,7 +62,7 @@ public class StubbornServerReceiverImpl implements ObjectReceiver, StubbornNetwo
 
     public synchronized void close() throws IOException {
         _isOpen = false;
-        _proxy.disconnect();
+        if (_proxy != null) _proxy.disconnect();
     }
 
     

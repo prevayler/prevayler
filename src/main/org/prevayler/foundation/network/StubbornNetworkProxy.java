@@ -101,8 +101,8 @@ public class StubbornNetworkProxy implements ObjectReceiver {
 
     private void closeClientChannel() {
         try {
-            _inboundChannel.disconnect();
-            _network.close();
+            if (_inboundChannel != null) _inboundChannel.disconnect();
+            if (_network != null) _network.close();
         } catch (IOException ignorable) {
         } finally {
             _network = null;
