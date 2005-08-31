@@ -62,8 +62,6 @@ public class PrevaylerFactory {
 	public static final int DEFAULT_REPLICATION_PORT = 8756;
 
 	private Monitor _monitor;
-	
-	private ClassLoader _classLoader;
 
 	private Serializer _journalSerializer;
 	private String _journalSuffix;
@@ -222,15 +220,6 @@ public class PrevaylerFactory {
 		_journalAgeThreshold = ageInMilliseconds;
 	}
 
-
-	/**
-	 * @deprecated Use {@link #configureSnapshotSerializer(String,Serializer)} and {@link #configureJournalSerializer(JavaSerializer)} instead, giving a {@link JavaSerializer} with the desired classloader.
-	 */
-	public void configureClassLoader(ClassLoader classLoader) {
-		_classLoader = classLoader;
-	}
-
-
 	public void configureJournalSerializer(JavaSerializer serializer) {
 		configureJournalSerializer("journal", serializer);
 	}
@@ -337,7 +326,7 @@ public class PrevaylerFactory {
 	
 	private Serializer journalSerializer() {
 		if (_journalSerializer != null) return _journalSerializer;
-		return new JavaSerializer(_classLoader);
+		return new JavaSerializer();
 	}
 
 	private String journalSuffix() {
@@ -357,7 +346,7 @@ public class PrevaylerFactory {
 			return new GenericSnapshotManager(_snapshotSerializers, _primarySnapshotSuffix, prevalentSystem(), directory, journalSerializer());
 
 		String snapshotSuffix = "snapshot";
-		JavaSerializer snapshotSerializer = new JavaSerializer(_classLoader);
+		JavaSerializer snapshotSerializer = new JavaSerializer();
 		return new GenericSnapshotManager(Collections.singletonMap(snapshotSuffix, snapshotSerializer), snapshotSuffix, prevalentSystem(), directory, journalSerializer());
 	}
 
