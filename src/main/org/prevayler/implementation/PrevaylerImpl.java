@@ -10,7 +10,6 @@ import org.prevayler.Query;
 import org.prevayler.SureTransactionWithQuery;
 import org.prevayler.Transaction;
 import org.prevayler.TransactionWithQuery;
-import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
@@ -25,7 +24,6 @@ public class PrevaylerImpl implements Prevayler {
 	private final GenericSnapshotManager _snapshotManager;
 
 	private final TransactionPublisher _publisher;
-    private Monitor _monitor;
 
 	private final Serializer _journalSerializer;
 
@@ -38,8 +36,7 @@ public class PrevaylerImpl implements Prevayler {
 	 * @param journalSerializer
 	 */
 	public PrevaylerImpl(GenericSnapshotManager snapshotManager, TransactionPublisher transactionPublisher,
-						 Monitor prevaylerMonitor, Serializer journalSerializer) throws IOException, ClassNotFoundException {
-	    _monitor = prevaylerMonitor;
+						 Serializer journalSerializer) throws IOException, ClassNotFoundException {
 		_snapshotManager = snapshotManager;
 
 		_guard = _snapshotManager.recoveredPrevalentSystem();

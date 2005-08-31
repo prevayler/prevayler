@@ -14,13 +14,11 @@ public class StrictTransactionCensor implements TransactionCensor {
 
 	private final PrevalentSystemGuard _king;
 	private PrevalentSystemGuard _royalFoodTaster;
-	private final Serializer _journalSerializer;
 	private final Serializer _snapshotSerializer;
 
-	public StrictTransactionCensor(GenericSnapshotManager snapshotManager, Serializer journalSerializer) {
+	public StrictTransactionCensor(GenericSnapshotManager snapshotManager) {
 		_king = snapshotManager.recoveredPrevalentSystem();
 		// The _royalFoodTaster cannot be initialized here, or else the pending transactions will not be applied to it.
-		_journalSerializer = journalSerializer;
 		_snapshotSerializer = snapshotManager.primarySerializer();
 	}
 

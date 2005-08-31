@@ -297,7 +297,7 @@ public class PrevaylerFactory {
 		GenericSnapshotManager snapshotManager = snapshotManager();
 		TransactionPublisher publisher = publisher(snapshotManager);
 		if (_serverPort != -1) new ServerListener(publisher, network(), _serverPort);
-		return new PrevaylerImpl(snapshotManager, publisher, monitor(), journalSerializer());
+		return new PrevaylerImpl(snapshotManager, publisher, journalSerializer());
 	}
 
 
@@ -320,7 +320,7 @@ public class PrevaylerFactory {
 
 	private TransactionCensor censor(GenericSnapshotManager snapshotManager) {
 		return _transactionFiltering
-			? (TransactionCensor) new StrictTransactionCensor(snapshotManager, journalSerializer())
+			? (TransactionCensor) new StrictTransactionCensor(snapshotManager)
 			: new LiberalTransactionCensor(); 
 	}
 
