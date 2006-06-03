@@ -107,9 +107,13 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 
 	public PrevalentSystemGuard deepCopy(long systemVersion, Serializer snapshotSerializer) throws IOException, ClassNotFoundException {
 		synchronized (this) {
-			while (_systemVersion < systemVersion) {
+			while (_systemVersion < systemVersion && _prevalentSystem != null) {
 				Cool.wait(this);
 			}
+
+            if (_prevalentSystem == null) {
+                throw new Error("Prevayler is no longer processing transactions due to an Error thrown from an earlier transaction.");
+            }
 
 			if (_systemVersion > systemVersion) {
 				throw new IllegalStateException("Already at " + _systemVersion + "; can't go back to " + systemVersion);
