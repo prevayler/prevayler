@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class PrevalentSystemGuard implements TransactionSubscriber {
 
-	private final Object _prevalentSystem; // All access is synchronized on itself
+	private Object _prevalentSystem; // All access to field is synchronized on "this", and all access to object is synchronized on itself; "this" is always locked before the object
 	private long _systemVersion; // All access is synchronized on "this"
 	private boolean _ignoreRuntimeExceptions; // All access is synchronized on "this"
 	private final Serializer _journalSerializer;
@@ -27,7 +27,12 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 	}
 
 	public Object prevalentSystem() {
-		return _prevalentSystem;
+        synchronized (this) {
+            if (_prevalentSystem == null) {
+                throw new Error("Prevayler is no longer allowing access to the prevalent system due to an Error thrown from an earlier transaction.");
+            }
+            return _prevalentSystem;
+        }
 	}
 
 	public void subscribeTo(TransactionPublisher publisher) throws IOException, ClassNotFoundException {
@@ -50,7 +55,11 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 		Date executionTime = transactionTimestamp.executionTime();
 
 		synchronized (this) {
-			if (systemVersion != _systemVersion + 1) {
+            if (_prevalentSystem == null) {
+                throw new Error("Prevayler is no longer processing transactions due to an Error thrown from an earlier transaction.");
+            }
+
+            if (systemVersion != _systemVersion + 1) {
 				throw new IllegalStateException(
 						"Attempted to apply transaction " + systemVersion + " when prevalent system was only at " + _systemVersion);
 			}
@@ -63,20 +72,33 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 				capsule.executeOn(_prevalentSystem, executionTime, _journalSerializer);
 			} catch (RuntimeException rx) {
 				if (!_ignoreRuntimeExceptions) throw rx;  //TODO Guarantee that transactions received from pending transaction recovery don't ever throw RuntimeExceptions. Maybe use a wrapper for that.
-			} finally {
+            } catch (Error error) {
+                _prevalentSystem = null;
+                throw error;
+            } finally {
 				notifyAll();
 			}
 		}
 	}
 
 	public Object executeQuery(Query sensitiveQuery, Clock clock) throws Exception {
-		synchronized (_prevalentSystem) {
-			return sensitiveQuery.query(_prevalentSystem, clock.time());
-		}
+        synchronized (this) {
+            if (_prevalentSystem == null) {
+                throw new Error("Prevayler is no longer processing queries due to an Error thrown from an earlier transaction.");
+            }
+
+    		synchronized (_prevalentSystem) {
+    			return sensitiveQuery.query(_prevalentSystem, clock.time());
+    		}
+        }
 	}
 
 	public void takeSnapshot(GenericSnapshotManager snapshotManager) throws IOException {
 		synchronized (this) {
+            if (_prevalentSystem == null) {
+                throw new Error("Prevayler is no longer allowing snapshots due to an Error thrown from an earlier transaction.");
+            }
+
 			synchronized (_prevalentSystem) {
 				snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
 			}

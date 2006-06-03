@@ -6,15 +6,23 @@ package org.prevayler.implementation;
 
 import java.io.File;
 import java.io.IOException;
-
+import junit.framework.AssertionFailedError;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.foundation.*;
+import org.prevayler.foundation.FileIOTest;
+import org.prevayler.foundation.FileManager;
 
 public class PersistenceTest extends FileIOTest {
 
 	private Prevayler _prevayler;
 	private String _prevalenceBase;
+    
+    public void tearDown() throws Exception {
+        if (_prevayler != null) {
+            _prevayler.close();
+        }
+        super.tearDown();
+    }
 
 	public void testPersistence() throws Exception {
 
@@ -69,11 +77,84 @@ public class PersistenceTest extends FileIOTest {
 		verify("abcdefghijklmn");
 	}
 
-	private void crashRecover() throws Exception {
-		out("CrashRecovery.");
-		if (_prevayler != null) _prevayler.close();
-		_prevayler = PrevaylerFactory.createPrevayler(new AppendingSystem(), prevalenceBase());
-	}
+    public void testNondeterminsticError() throws Exception {
+        newPrevalenceBase();
+        crashRecover(); //There is nothing to recover at first. A new system will be created.
+
+        append("a", "a");
+        append("b", "ab");
+        verify("ab");
+
+        NondeterministicErrorTransaction.armBomb();
+        try {
+            _prevayler.execute(new NondeterministicErrorTransaction("c"));
+            fail();
+        } catch (AssertionFailedError failed) {
+            throw failed;
+        } catch (Error expected) {
+            assertEquals(Error.class, expected.getClass());
+            assertEquals("BOOM!", expected.getMessage());
+        }
+
+        try {
+            _prevayler.execute(new Appendix("x"));
+            fail();
+        } catch (AssertionFailedError failed) {
+            throw failed;
+        } catch (Error expected) {
+            assertEquals(Error.class, expected.getClass());
+            assertEquals("Prevayler is no longer processing transactions due to an Error thrown from an earlier transaction.", expected.getMessage());
+        }
+
+        try {
+            _prevayler.execute(new NullQuery());
+            fail();
+        } catch (AssertionFailedError failed) {
+            throw failed;
+        } catch (Error expected) {
+            assertEquals(Error.class, expected.getClass());
+            assertEquals("Prevayler is no longer processing queries due to an Error thrown from an earlier transaction.", expected.getMessage());
+        }
+
+        try {
+            _prevayler.prevalentSystem();
+            fail();
+        } catch (AssertionFailedError failed) {
+            throw failed;
+        } catch (Error expected) {
+            assertEquals(Error.class, expected.getClass());
+            assertEquals("Prevayler is no longer allowing access to the prevalent system due to an Error thrown from an earlier transaction.", expected.getMessage());
+        }
+
+        try {
+            _prevayler.takeSnapshot();
+            fail();
+        } catch (AssertionFailedError failed) {
+            throw failed;
+        } catch (Error expected) {
+            assertEquals(Error.class, expected.getClass());
+            assertEquals("Prevayler is no longer allowing snapshots due to an Error thrown from an earlier transaction.", expected.getMessage());
+        }
+
+        crashRecover();
+        
+        // Note that both the transaction that threw the Error and the
+        // subsequent transaction *were* journaled, so they get applied
+        // successfully on recovery.
+        verify("abcx");
+    }
+
+    private void crashRecover() throws Exception {
+        out("CrashRecovery.");
+
+        if (_prevayler != null) _prevayler.close();
+
+        PrevaylerFactory factory = new PrevaylerFactory();
+        factory.configurePrevalentSystem(new AppendingSystem());
+        factory.configurePrevalenceDirectory(prevalenceBase());
+        factory.configureTransactionFiltering(false);
+        _prevayler = factory.create();
+    }
 
 	private void snapshot() throws IOException {
 		out("Snapshot.");
