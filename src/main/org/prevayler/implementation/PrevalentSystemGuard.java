@@ -112,7 +112,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 			}
 
             if (_prevalentSystem == null) {
-                throw new Error("Prevayler is no longer processing transactions due to an Error thrown from an earlier transaction.");
+                throw new Error("Prevayler is no longer accepting transactions due to an Error thrown from an earlier transaction.");
             }
 
 			if (_systemVersion > systemVersion) {

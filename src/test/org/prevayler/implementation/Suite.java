@@ -26,6 +26,7 @@ public class Suite extends TestCase {
 		suite.addTestSuite(JournalSerializerTest.class);
 		suite.addTestSuite(SnapshotSerializerTest.class);
 		suite.addTestSuite(ConfusedFoodTasterStressTest.class);
+		suite.addTestSuite(DeadKingDeepCopyTest.class);
 		return suite;
 	}
 }

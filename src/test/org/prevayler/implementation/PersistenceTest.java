@@ -85,7 +85,7 @@ public class PersistenceTest extends FileIOTest {
         append("b", "ab");
         verify("ab");
 
-        NondeterministicErrorTransaction.armBomb();
+        NondeterministicErrorTransaction.armBomb(1);
         try {
             _prevayler.execute(new NondeterministicErrorTransaction("c"));
             fail();

@@ -6,15 +6,14 @@ public class NondeterministicErrorTransaction extends Appendix {
 
 	private static final long serialVersionUID = 1L;
 
-	private static boolean bombArmed = false;
+    private static int _timeToDetonation = 0;
 
-	public static synchronized void armBomb() {
-		bombArmed = true;
+	public static synchronized void armBomb(int timeToDetonation) {
+		_timeToDetonation = timeToDetonation;
 	}
 
 	private static synchronized void triggerBomb() {
-		if (bombArmed) {
-			bombArmed = false;
+		if (_timeToDetonation > 0 && --_timeToDetonation == 0) {
 			throw new Error("BOOM!");
 		}
 	}
