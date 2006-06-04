@@ -29,7 +29,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 	public Object prevalentSystem() {
         synchronized (this) {
             if (_prevalentSystem == null) {
-                throw new Error("Prevayler is no longer allowing access to the prevalent system due to an Error thrown from an earlier transaction.");
+                throw new ErrorInEarlierTransactionError("Prevayler is no longer allowing access to the prevalent system due to an Error thrown from an earlier transaction.");
             }
             return _prevalentSystem;
         }
@@ -56,7 +56,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 
 		synchronized (this) {
             if (_prevalentSystem == null) {
-                throw new Error("Prevayler is no longer processing transactions due to an Error thrown from an earlier transaction.");
+                throw new ErrorInEarlierTransactionError("Prevayler is no longer processing transactions due to an Error thrown from an earlier transaction.");
             }
 
             if (systemVersion != _systemVersion + 1) {
@@ -84,7 +84,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 	public Object executeQuery(Query sensitiveQuery, Clock clock) throws Exception {
         synchronized (this) {
             if (_prevalentSystem == null) {
-                throw new Error("Prevayler is no longer processing queries due to an Error thrown from an earlier transaction.");
+                throw new ErrorInEarlierTransactionError("Prevayler is no longer processing queries due to an Error thrown from an earlier transaction.");
             }
 
     		synchronized (_prevalentSystem) {
@@ -96,7 +96,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 	public void takeSnapshot(GenericSnapshotManager snapshotManager) throws IOException {
 		synchronized (this) {
             if (_prevalentSystem == null) {
-                throw new Error("Prevayler is no longer allowing snapshots due to an Error thrown from an earlier transaction.");
+                throw new ErrorInEarlierTransactionError("Prevayler is no longer allowing snapshots due to an Error thrown from an earlier transaction.");
             }
 
 			synchronized (_prevalentSystem) {
@@ -112,7 +112,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 			}
 
             if (_prevalentSystem == null) {
-                throw new Error("Prevayler is no longer accepting transactions due to an Error thrown from an earlier transaction.");
+                throw new ErrorInEarlierTransactionError("Prevayler is no longer accepting transactions due to an Error thrown from an earlier transaction.");
             }
 
 			if (_systemVersion > systemVersion) {

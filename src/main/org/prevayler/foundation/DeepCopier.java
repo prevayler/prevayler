@@ -103,7 +103,7 @@ public class DeepCopier {
 			try {
 				join();
 			} catch (InterruptedException e) {
-				throw new RuntimeException("Unexpected InterruptedException", e);
+				Cool.unexpected(e);
 			}
 
 			// join() guarantees that all shared memory is synchronized between the two threads

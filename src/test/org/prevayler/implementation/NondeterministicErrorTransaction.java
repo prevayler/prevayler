@@ -14,7 +14,7 @@ public class NondeterministicErrorTransaction extends Appendix {
 
 	private static synchronized void triggerBomb() {
 		if (_timeToDetonation > 0 && --_timeToDetonation == 0) {
-			throw new Error("BOOM!");
+			throw new Bomb("BOOM!");
 		}
 	}
 

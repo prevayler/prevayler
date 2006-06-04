@@ -18,7 +18,7 @@ public abstract class Capsule implements Serializable {
 			journalSerializer.writeObject(bytes, transaction);
 			_serialized = bytes.toByteArray();
 		} catch (Exception exception) {
-			throw new Error("Unable to serialize transaction", exception);
+			throw new TransactionNotSerializableError("Unable to serialize transaction", exception);
 		}
 	}
 
@@ -40,7 +40,7 @@ public abstract class Capsule implements Serializable {
 		try {
 			return journalSerializer.readObject(new ByteArrayInputStream(_serialized));
 		} catch (Exception exception) {
-			throw new Error("Unable to deserialize transaction", exception);
+			throw new TransactionNotDeserializableError("Unable to deserialize transaction", exception);
 		}
 	}
 

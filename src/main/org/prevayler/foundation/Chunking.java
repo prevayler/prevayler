@@ -33,10 +33,10 @@ public class Chunking {
 			String name = (String) entry.getKey();
 			String value = (String) entry.getValue();
 			if (!validToken(name)) {
-				throw new IOException("Invalid parameter name '" + name + "'");
+				throw new InvalidChunkParameterNameException("Invalid parameter name '" + name + "'");
 			}
 			if (!validToken(value)) {
-				throw new IOException("Invalid parameter value '" + value + "'");
+				throw new InvalidChunkParameterValueException("Invalid parameter value '" + value + "'");
 			}
 			stream.write(';');
 			stream.write(name.getBytes(ASCII));
@@ -56,7 +56,7 @@ public class Chunking {
 		}
 
 		if (!HEADER_PATTERN.matcher(header).matches()) {
-			throw new IOException("Chunk header corrupted");
+			throw new ChunkHeaderCorruptedException("Chunk header corrupted");
 		}
 
 		StringTokenizer tokenizer = new StringTokenizer(header, ";=\r\n");
@@ -85,7 +85,7 @@ public class Chunking {
 		if (cr == -1 || cr == '\r' && lf == -1) {
 			throw new EOFException("Unexpected end of stream in chunk trailer");
 		} else if (cr != '\r' || lf != '\n') {
-			throw new IOException("Chunk trailer corrupted");
+			throw new ChunkTrailerCorruptedException("Chunk trailer corrupted");
 		}
 
 		return new Chunk(bytes, parameters);

@@ -22,7 +22,7 @@ public class Cool {
 	}
 
     public static void unexpected(Exception e) {
-        throw new RuntimeException("Unexpected Exception was thrown.", e);
+        throw new UnexpectedException("Unexpected Exception was thrown.", e);
     }
 
     public static void startDaemon(Runnable runnable) {
