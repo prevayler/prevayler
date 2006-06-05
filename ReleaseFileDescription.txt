@@ -1,36 +1,30 @@
 Name
 ========
 
-prevaylerX.XX.XXXalpha.zip
+prevaylerX.Y.zip or prevaylerX.Y.Z.zip
 
-Example: prevayler1.00.003alpha.zip
+Example: prevayler2.1.zip, prevayler2.3.1.zip, prevayler3.0.zip
 
-First number - incremented when a major functional or architectural goal is reached.
-
-Second number - incremented when a functional or architectural goal is reached; or when backward compatibility is broken.
-
-Third number - incremented when backward compatibility is maintained. This means all 1.02.XXX builds, for example, are backward compatible with 1.02.000.
-
-Builds are generated with the "beta" suffix and have the suffix removed as they reach production stage.
-
+The first and second numbers are determined by progress through a feature roadmap.
+The third number, when present, indicates a bugfix patch release.
 
 Directory Contents
 ======================
 
-/prevaylerX.XX.XXX - All files in the project directory named "root" and its subdirectories.
+/prevaylerX.Y - All files in the project directory named "root" and its subdirectories.
 
-/prevaylerX.XX.XXX/prevaylerX.XX.XXX.jar - .class files compiled from "src/main" except the demos. Demos are available in source code only.
+/prevaylerX.Y/prevaylerX.Y.jar - .class files compiled from "src/main" except the demos. Demos are available in source code only.
 
-/prevaylerX.XX.XXX/src - All files from "src/main" and its subdirectories.
+/prevaylerX.Y/src - All files from "src/main" and its subdirectories.
 
-/prevaylerX.XX.XXX/docs/api/beginners - Javadoc generated for package org.prevayler in "src/main" only.
+/prevaylerX.Y/docs/api/beginners - Javadoc generated for package org.prevayler in "src/main" only.
 
-/prevaylerX.XX.XXX/docs/api/advanced - Javadoc generated for the following packages in "src/main":
+/prevaylerX.Y/docs/api/advanced - Javadoc generated for the following packages in "src/main":
 	org.prevayler
 	org.prevayler.implementation
 	org.prevayler.implementation.(all subpackages)
 
-/prevaylerX.XX.XXX/lib - Required jars. Ex: The Skaringa jar.
+/prevaylerX.Y/lib - Required jars. Ex: The Skaringa jar.
 
 
 Javadoc
@@ -39,10 +33,10 @@ Javadoc
 Only public and protected elements are generated (javadoc default).
 
 Parameters:
-	-windowtitle "Prevayler(TM) vX.XX.XXX API Documentation"
+	-windowtitle "Prevayler(TM) vX.Y API Documentation"
 	-header "<b>Prevayler<sup><font size=-2>TM</font></sup><br>The Free Software<br>Prevalence Layer</b>"
 	-footer "<EM><a href=http://www.prevayler.org><font color="#BB0033"><b>Prevayler Online</b></font></a></EM>"
-	-bottom "<font size=-1>'Prevayler' is a trademark of Klaus Wuestefeld.<br>Prevayler Javadoc Copyleft 2001-2004 Klaus Wuestefeld.</font>"
+	-bottom "<font size=-1>'Prevayler' is a trademark of Klaus Wuestefeld.<br>Prevayler Javadoc Copyleft 2001-2006 Klaus Wuestefeld.</font>"
 
 
 <end>
