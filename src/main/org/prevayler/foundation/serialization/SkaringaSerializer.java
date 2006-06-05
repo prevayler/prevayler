@@ -36,15 +36,15 @@ public class SkaringaSerializer implements Serializer {
 		try {
 			createTransformer().serialize(object, new StreamResult(stream));
 		} catch (SerializerException se) {
-			throw new IOException("Unable to serialize with Skaringa: " + se.getMessage());
+			throw new SkaringaException("Unable to serialize with Skaringa: " + se.getMessage());
 		}
 	}
 
-	public Object readObject(InputStream stream) throws IOException, ClassNotFoundException {
+	public Object readObject(InputStream stream) throws IOException {
 		try {
 			return createTransformer().deserialize(new StreamSource(stream));
 		} catch (DeserializerException de) {
-			throw new IOException("Unable to deserialize with Skaringa: " + de.getMessage());
+			throw new SkaringaException("Unable to deserialize with Skaringa: " + de.getMessage());
 		}
 	}
 
@@ -57,7 +57,7 @@ public class SkaringaSerializer implements Serializer {
 //			trans.setProperty(com.skaringa.javaxml.PropertyKeys.OMIT_XSI_TYPE, "true");
 		}
 		catch (NoImplementationException nie) {
-			throw new IOException("Unable to start Skaringa: " + nie.getMessage());
+			throw new SkaringaException("Unable to start Skaringa: " + nie.getMessage());
 		}
 	}
 

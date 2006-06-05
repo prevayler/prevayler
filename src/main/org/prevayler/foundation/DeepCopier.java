@@ -108,11 +108,11 @@ public class DeepCopier {
 
 			// join() guarantees that all shared memory is synchronized between the two threads
 
-			if (_error != null) throw new RuntimeException("Error during deserialization", _error);
+			if (_error != null) throw new DeepCopyFailedException("Error during deserialization", _error);
 			if (_runtimeException != null) throw _runtimeException;
 			if (_classNotFoundException != null) throw _classNotFoundException;
 			if (_ioException != null) throw _ioException;
-			if (_result == null) throw new RuntimeException("Deep copy failed in an unknown way");
+			if (_result == null) throw new DeepCopyFailedException("Deep copy failed in an unknown way");
 
 			return _result;
 		}

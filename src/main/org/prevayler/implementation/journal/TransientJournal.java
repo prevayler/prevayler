@@ -37,16 +37,16 @@ public class TransientJournal implements Journal {
 			_initialTransaction = initialTransaction;
 			return;
 		}
-		if (initialTransaction < _initialTransaction) throw new IOException("Unable to recover transaction " + initialTransaction + ". The oldest recoverable transaction is " + _initialTransaction + ".");
+		if (initialTransaction < _initialTransaction) throw new JournalException("Unable to recover transaction " + initialTransaction + ". The oldest recoverable transaction is " + _initialTransaction + ".");
 
 		int i = (int)(initialTransaction - _initialTransaction);
-		if (i > journal.size()) throw new IOException("The transaction journal has not yet reached transaction " + initialTransaction + ". The last logged transaction was " + (_initialTransaction + journal.size() - 1) + ".");
+		if (i > journal.size()) throw new JournalException("The transaction journal has not yet reached transaction " + initialTransaction + ". The last logged transaction was " + (_initialTransaction + journal.size() - 1) + ".");
 
 		while (i != journal.size()) {
 			TransactionTimestamp entry = (TransactionTimestamp)journal.get(i);
 			long recoveringTransaction = _initialTransaction + i;
 			if (entry.systemVersion() != recoveringTransaction) {
-				throw new IOException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
+				throw new JournalException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
 			}
 			subscriber.receive(entry);
 			i++;

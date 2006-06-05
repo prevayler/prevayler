@@ -147,8 +147,8 @@ public class PersistentJournal implements Journal {
 
 	private void initializeNextTransaction(long initialTransactionWanted, long nextTransaction) throws IOException {
 		if (_nextTransactionInitialized) {
-			if (_nextTransaction < initialTransactionWanted) throw new IOException("The transaction log has not yet reached transaction " + initialTransactionWanted + ". The last logged transaction was " + (_nextTransaction - 1) + ".");
-			if (nextTransaction < _nextTransaction) throw new IOException("Unable to find journal file containing transaction " + nextTransaction + ". Might have been manually deleted.");
+			if (_nextTransaction < initialTransactionWanted) throw new JournalException("The transaction log has not yet reached transaction " + initialTransactionWanted + ". The last logged transaction was " + (_nextTransaction - 1) + ".");
+			if (nextTransaction < _nextTransaction) throw new JournalException("Unable to find journal file containing transaction " + nextTransaction + ". Might have been manually deleted.");
 			if (nextTransaction > _nextTransaction) throw new IllegalStateException();
 			return;
 		}
@@ -170,14 +170,14 @@ public class PersistentJournal implements Journal {
 
 				if (recoveringTransaction >= initialTransaction) {
 					if (!journal.getName().endsWith(_journalSuffix)) {
-						throw new IOException("There are transactions needing to be recovered from " +
+						throw new JournalException("There are transactions needing to be recovered from " +
 								journal + ", but only " + _journalSuffix + " files are supported");
 					}
 
 					TransactionTimestamp entry = TransactionTimestamp.fromChunk(chunk);
 
 					if (entry.systemVersion() != recoveringTransaction) {
-						throw new IOException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
+						throw new JournalException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
 					}
 
 					subscriber.receive(entry);

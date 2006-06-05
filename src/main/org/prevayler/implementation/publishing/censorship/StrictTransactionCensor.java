@@ -22,7 +22,7 @@ public class StrictTransactionCensor implements TransactionCensor {
 		_snapshotSerializer = snapshotManager.primarySerializer();
 	}
 
-	public void approve(TransactionTimestamp transactionTimestamp) throws RuntimeException, Error {
+	public void approve(TransactionTimestamp transactionTimestamp) {
 		try {
 			TransactionTimestamp timestampCopy = transactionTimestamp.cleanCopy();
 			PrevalentSystemGuard royalFoodTaster = royalFoodTaster(transactionTimestamp.systemVersion() - 1);
@@ -49,11 +49,8 @@ public class StrictTransactionCensor implements TransactionCensor {
 		try {
 			_royalFoodTaster = _king.deepCopy(systemVersion, _snapshotSerializer);
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException("Unable to produce a copy of the prevalent system for trying out transactions before applying them to the real system.");
+			throw new FoodTasterException("Unable to produce a copy of the prevalent system for trying out transactions before applying them to the real system.", ex);
 		}
 	}
 
 }
-
-

@@ -4,17 +4,18 @@
 
 package org.prevayler.implementation;
 
+import java.io.IOException;
+
 import org.prevayler.Clock;
 import org.prevayler.Prevayler;
 import org.prevayler.Query;
 import org.prevayler.SureTransactionWithQuery;
 import org.prevayler.Transaction;
 import org.prevayler.TransactionWithQuery;
+import org.prevayler.foundation.UnexpectedException;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
-
-import java.io.IOException;
 
 public class PrevaylerImpl implements Prevayler {
 
@@ -79,11 +80,11 @@ public class PrevaylerImpl implements Prevayler {
 
 	public Object execute(SureTransactionWithQuery sureTransactionWithQuery) {
 		try {
-			return execute((TransactionWithQuery)sureTransactionWithQuery);
+			return execute((TransactionWithQuery) sureTransactionWithQuery);
 		} catch (RuntimeException runtime) {
 			throw runtime;
 		} catch (Exception checked) {
-			throw new RuntimeException("Unexpected Exception thrown.", checked);
+			throw new UnexpectedException("Unexpected Exception thrown.", checked);
 		}
 	}
 

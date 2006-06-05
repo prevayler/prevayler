@@ -32,7 +32,7 @@ public class FileLocker {
 
 		// Test-and-set JVM-global property; setProperty is atomic.
 		if ("locked".equals(System.setProperty(propertyName(), "locked"))) {
-			throw new IOException("Already locked internally");
+			throw new AlreadyLockedException("Already locked internally");
 		}
 
 		_file.getParentFile().mkdirs();
@@ -50,7 +50,7 @@ public class FileLocker {
 		if (_lock == null) {
 			_stream.close();
 			System.setProperty(propertyName(), "");
-			throw new IOException("Already locked externally");
+			throw new AlreadyLockedException("Already locked externally");
 		}
 	}
 

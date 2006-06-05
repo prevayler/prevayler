@@ -78,7 +78,7 @@ public class DurableOutputStream {
 	private int writeObject(Guided guide) throws IOException {
 		synchronized (_writeLock) {
 			if (_closed) {
-				throw new IOException("already closed");
+				throw new AlreadyClosedException("already closed");
 			}
 
 			try {
@@ -126,7 +126,7 @@ public class DurableOutputStream {
 				int objectsWritten;
 				synchronized (_writeLock) {
 					if (_closed) {
-						throw new IOException("already closed");
+						throw new AlreadyClosedException("already closed");
 					}
 
 					ByteArrayOutputStream swap = _active;
