@@ -1,9 +1,9 @@
 Name
 ========
 
-prevaylerX.Y.zip or prevaylerX.Y.Z.zip
+prevayler-X.Y.zip or prevayler-X.Y.Z.zip
 
-Example: prevayler2.1.zip, prevayler2.3.1.zip, prevayler3.0.zip
+Example: prevayler-2.1.zip, prevayler-2.3.1.zip, prevayler-3.0.zip
 
 The first and second numbers are determined by progress through a feature roadmap.
 The third number, when present, indicates a bugfix patch release.
@@ -11,20 +11,20 @@ The third number, when present, indicates a bugfix patch release.
 Directory Contents
 ======================
 
-/prevaylerX.Y - All files in the project directory named "root" and its subdirectories.
+/prevayler-X.Y - All files in the project directory named "root" and its subdirectories.
 
-/prevaylerX.Y/prevaylerX.Y.jar - .class files compiled from "src/main" except the demos. Demos are available in source code only.
+/prevayler-X.Y/prevayler-X.Y.jar - .class files compiled from "src/main" except the demos. Demos are available in source code only.
 
-/prevaylerX.Y/src - All files from "src/main" and its subdirectories.
+/prevayler-X.Y/src - All files from "src/main" and its subdirectories.
 
-/prevaylerX.Y/docs/api/beginners - Javadoc generated for package org.prevayler in "src/main" only.
+/prevayler-X.Y/docs/api/beginners - Javadoc generated for package org.prevayler in "src/main" only.
 
-/prevaylerX.Y/docs/api/advanced - Javadoc generated for the following packages in "src/main":
+/prevayler-X.Y/docs/api/advanced - Javadoc generated for the following packages in "src/main":
 	org.prevayler
 	org.prevayler.implementation
 	org.prevayler.implementation.(all subpackages)
 
-/prevaylerX.Y/lib - Required jars. Ex: The Skaringa jar.
+/prevayler-X.Y/lib - Required jars. Ex: The Skaringa jar.
 
 
 Javadoc
@@ -37,6 +37,3 @@ Parameters:
 	-header "<b>Prevayler<sup><font size=-2>TM</font></sup><br>The Free Software<br>Prevalence Layer</b>"
 	-footer "<EM><a href=http://www.prevayler.org><font color="#BB0033"><b>Prevayler Online</b></font></a></EM>"
 	-bottom "<font size=-1>'Prevayler' is a trademark of Klaus Wuestefeld.<br>Prevayler Javadoc Copyleft 2001-2006 Klaus Wuestefeld.</font>"
-
-
-<end>
