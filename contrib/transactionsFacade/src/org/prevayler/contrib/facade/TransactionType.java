@@ -40,7 +40,8 @@ import org.prevayler.Prevayler;
 /**
  * A "smart" enumerated type enumerating the three kinds of
  * transactions that Prevayler supports plus one that is,
- * effectively, "no transaction"
+ * effectively, "no transaction".  Also includes the transaction type
+ * <code>Determiner</code> interface and two of the most basic implementations.
  *
  * @since 0_1
  * @author Jay Sachs [jay@contravariant.org]
@@ -69,6 +70,31 @@ public abstract class TransactionType
          */
         TransactionType determineTransactionType(Method p_method);
     }
+
+    /**
+     * A minimal transaction type determiner which uses no heuristics. It
+     * always returns a transaction type of {@link #TRANSACTION_WITH_QUERY}.
+     */
+    public static final Determiner SIMPLE_DETERMINER = new Determiner() {
+    	public TransactionType determineTransactionType(Method p_method)
+        {
+            return TRANSACTION_WITH_QUERY;
+        }
+    };
+
+    /**
+     * A basic transaction type determiner which bases the transaction type on
+     * the return type of methods: {@link #TRANSACTION} for void methods and
+     * {@link #QUERY} otherwise.
+     */
+    public static final Determiner RETURN_TYPE_DETERMINER = new Determiner() {
+    	public TransactionType determineTransactionType(Method p_method)
+        {
+            return (p_method.getReturnType() != Void.TYPE)
+                ? QUERY
+                : TRANSACTION;
+        }
+    };
 
     /**
      * @since 0_2

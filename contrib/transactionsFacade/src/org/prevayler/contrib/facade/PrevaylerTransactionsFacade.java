@@ -56,7 +56,7 @@ public class PrevaylerTransactionsFacade
     {
         return create(p_intf,
                       p_prevayler,
-                      new SimpleTransactionTypeDeterminer(),
+                      TransactionType.SIMPLE_DETERMINER,
                       TransactionHint.NOOP_TRANSACTION_HINT);
     }
 

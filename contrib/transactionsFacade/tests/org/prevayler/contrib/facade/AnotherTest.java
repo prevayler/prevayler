@@ -59,7 +59,7 @@ public class AnotherTest extends TestCase {
         PrevaylerTransactionsFacade.create
             (CampGuide.class,
              PrevaylerFactory.createTransientPrevayler(new CampGuideImpl()),
-             new SimpleTransactionTypeDeterminer(),
+             TransactionType.SIMPLE_DETERMINER,
              new CampGuideTransactionHint());
         
         addSite(guide, "Hikers'delight", CampSite.ON_SITE, 300, 100, CampSite.NOT_AVAILABLE, 2, 3, 15, 7);
@@ -115,7 +115,7 @@ public class AnotherTest extends TestCase {
         PrevaylerTransactionsFacade.create
             (CampGuide.class,
              prevayler,
-             new SimpleTransactionTypeDeterminer(),
+             TransactionType.SIMPLE_DETERMINER,
              new CampGuideTransactionHint());
         
         if (guide.getCampSites().size() == 0) {
