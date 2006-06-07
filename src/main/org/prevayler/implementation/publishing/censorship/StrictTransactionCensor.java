@@ -8,7 +8,7 @@ package org.prevayler.implementation.publishing.censorship;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.PrevalentSystemGuard;
 import org.prevayler.implementation.TransactionTimestamp;
-import org.prevayler.implementation.snapshot.GenericSnapshotManager;
+import org.prevayler.implementation.snapshot.SnapshotManager;
 
 public class StrictTransactionCensor implements TransactionCensor {
 
@@ -18,7 +18,7 @@ public class StrictTransactionCensor implements TransactionCensor {
 
     private final Serializer _snapshotSerializer;
 
-    public StrictTransactionCensor(GenericSnapshotManager snapshotManager) {
+    public StrictTransactionCensor(SnapshotManager snapshotManager) {
         _king = snapshotManager.recoveredPrevalentSystem();
         // The _royalFoodTaster cannot be initialized here, or else the pending
         // transactions will not be applied to it.
@@ -41,13 +41,13 @@ public class StrictTransactionCensor implements TransactionCensor {
 
     private void letTheFoodTasterDie() {
         _royalFoodTaster = null; // At this moment there might be
-                                    // transactions that have already been
-                                    // approved by this censor but have not yet
-                                    // been applied to the _king. It is a
-                                    // requirement, therefore, that the
-                                    // _royalFoodTaster must not be initialized
-                                    // now, but only when the next transaction
-                                    // arrives to be approved.
+        // transactions that have already been
+        // approved by this censor but have not yet
+        // been applied to the _king. It is a
+        // requirement, therefore, that the
+        // _royalFoodTaster must not be initialized
+        // now, but only when the next transaction
+        // arrives to be approved.
     }
 
     private PrevalentSystemGuard royalFoodTaster(long systemVersion) {

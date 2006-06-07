@@ -13,7 +13,8 @@ import org.prevayler.TransactionWithQuery;
 import org.prevayler.foundation.UnexpectedException;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
-import org.prevayler.implementation.snapshot.GenericSnapshotManager;
+import org.prevayler.implementation.snapshot.RealSnapshotManager;
+import org.prevayler.implementation.snapshot.SnapshotManager;
 
 import java.io.IOException;
 
@@ -23,7 +24,7 @@ public class PrevaylerImpl implements Prevayler {
 
     private final Clock _clock;
 
-    private final GenericSnapshotManager _snapshotManager;
+    private final SnapshotManager _snapshotManager;
 
     private final TransactionPublisher _publisher;
 
@@ -43,7 +44,7 @@ public class PrevaylerImpl implements Prevayler {
      *            this PrevaylerImpl.
      * @param journalSerializer
      */
-    public PrevaylerImpl(GenericSnapshotManager snapshotManager, TransactionPublisher transactionPublisher, Serializer journalSerializer) throws IOException, ClassNotFoundException {
+    public PrevaylerImpl(SnapshotManager snapshotManager, TransactionPublisher transactionPublisher, Serializer journalSerializer) throws IOException, ClassNotFoundException {
         _snapshotManager = snapshotManager;
 
         _guard = _snapshotManager.recoveredPrevalentSystem();

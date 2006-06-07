@@ -26,8 +26,9 @@ import org.prevayler.implementation.publishing.censorship.StrictTransactionCenso
 import org.prevayler.implementation.publishing.censorship.TransactionCensor;
 import org.prevayler.implementation.replication.ClientPublisher;
 import org.prevayler.implementation.replication.ServerListener;
-import org.prevayler.implementation.snapshot.GenericSnapshotManager;
+import org.prevayler.implementation.snapshot.RealSnapshotManager;
 import org.prevayler.implementation.snapshot.NullSnapshotManager;
+import org.prevayler.implementation.snapshot.SnapshotManager;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -149,14 +150,6 @@ public class PrevaylerFactory {
                                     // fail.
             return null;
         }
-    }
-
-    /**
-     * @deprecated Use createCheckpointPrevayler() instead of this method.
-     *             Deprecated since Prevayler2.00.001.
-     */
-    public static Prevayler createTransientPrevayler(Serializable newPrevalentSystem, String snapshotDirectory) {
-        return createCheckpointPrevayler(newPrevalentSystem, snapshotDirectory);
     }
 
     /**
@@ -373,7 +366,7 @@ public class PrevaylerFactory {
      *             .journal or .snapshot file.
      */
     public Prevayler create() throws IOException, ClassNotFoundException {
-        GenericSnapshotManager snapshotManager = snapshotManager();
+        SnapshotManager snapshotManager = snapshotManager();
         TransactionPublisher publisher = publisher(snapshotManager);
         if (_serverPort != -1)
             new ServerListener(publisher, network(), _serverPort);
@@ -390,13 +383,13 @@ public class PrevaylerFactory {
         return _prevalentSystem;
     }
 
-    private TransactionPublisher publisher(GenericSnapshotManager snapshotManager) throws IOException {
+    private TransactionPublisher publisher(SnapshotManager snapshotManager) throws IOException {
         if (_remoteServerIpAddress != null)
             return new ClientPublisher(network(), _remoteServerIpAddress, _remoteServerPort);
         return new CentralPublisher(clock(), censor(snapshotManager), journal());
     }
 
-    private TransactionCensor censor(GenericSnapshotManager snapshotManager) {
+    private TransactionCensor censor(SnapshotManager snapshotManager) {
         return _transactionFiltering ? (TransactionCensor) new StrictTransactionCensor(snapshotManager) : new LiberalTransactionCensor();
     }
 
@@ -423,17 +416,17 @@ public class PrevaylerFactory {
         return _network != null ? _network : new OldNetworkImpl();
     }
 
-    private GenericSnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
+    private SnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
         if (_nullSnapshotManager != null)
             return _nullSnapshotManager;
 
         PrevaylerDirectory directory = new PrevaylerDirectory(prevalenceDirectory());
         if (!_snapshotSerializers.isEmpty())
-            return new GenericSnapshotManager(_snapshotSerializers, _primarySnapshotSuffix, prevalentSystem(), directory, journalSerializer());
+            return new RealSnapshotManager(_snapshotSerializers, _primarySnapshotSuffix, prevalentSystem(), directory, journalSerializer());
 
         String snapshotSuffix = "snapshot";
         JavaSerializer snapshotSerializer = new JavaSerializer();
-        return new GenericSnapshotManager(Collections.singletonMap(snapshotSuffix, snapshotSerializer), snapshotSuffix, prevalentSystem(), directory, journalSerializer());
+        return new RealSnapshotManager(Collections.singletonMap(snapshotSuffix, snapshotSerializer), snapshotSuffix, prevalentSystem(), directory, journalSerializer());
     }
 
     private Monitor monitor() {

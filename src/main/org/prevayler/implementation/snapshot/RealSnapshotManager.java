@@ -1,6 +1,5 @@
 package org.prevayler.implementation.snapshot;
 
-import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.PrevalentSystemGuard;
 import org.prevayler.implementation.PrevaylerDirectory;
@@ -10,11 +9,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
-public class GenericSnapshotManager {
+public class RealSnapshotManager implements SnapshotManager {
 
     private Map _strategies;
 
@@ -24,7 +22,7 @@ public class GenericSnapshotManager {
 
     private PrevalentSystemGuard _recoveredPrevalentSystem;
 
-    public GenericSnapshotManager(Map snapshotSerializers, String primarySnapshotSuffix, Object newPrevalentSystem, PrevaylerDirectory directory, Serializer journalSerializer) throws IOException, ClassNotFoundException {
+    public RealSnapshotManager(Map snapshotSerializers, String primarySnapshotSuffix, Object newPrevalentSystem, PrevaylerDirectory directory, Serializer journalSerializer) throws IOException, ClassNotFoundException {
         for (Iterator iterator = snapshotSerializers.keySet().iterator(); iterator.hasNext();) {
             String suffix = (String) iterator.next();
             PrevaylerDirectory.checkValidSnapshotSuffix(suffix);
@@ -44,13 +42,6 @@ public class GenericSnapshotManager {
         long recoveredVersion = latestSnapshot == null ? 0 : PrevaylerDirectory.snapshotVersion(latestSnapshot);
         Object recoveredPrevalentSystem = latestSnapshot == null ? newPrevalentSystem : readSnapshot(latestSnapshot);
         _recoveredPrevalentSystem = new PrevalentSystemGuard(recoveredPrevalentSystem, recoveredVersion, journalSerializer);
-    }
-
-    GenericSnapshotManager(Object newPrevalentSystem) {
-        _strategies = Collections.singletonMap("snapshot", new JavaSerializer());
-        _primarySuffix = "snapshot";
-        _directory = null;
-        _recoveredPrevalentSystem = new PrevalentSystemGuard(newPrevalentSystem, 0, new JavaSerializer());
     }
 
     public Serializer primarySerializer() {

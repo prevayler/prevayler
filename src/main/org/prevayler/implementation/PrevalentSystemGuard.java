@@ -7,7 +7,7 @@ import org.prevayler.foundation.DeepCopier;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
-import org.prevayler.implementation.snapshot.GenericSnapshotManager;
+import org.prevayler.implementation.snapshot.SnapshotManager;
 
 import java.io.IOException;
 import java.util.Date;
@@ -15,14 +15,16 @@ import java.util.Date;
 public class PrevalentSystemGuard implements TransactionSubscriber {
 
     private Object _prevalentSystem; // All access to field is synchronized
-                                        // on "this", and all access to object
-                                        // is synchronized on itself; "this" is
-                                        // always locked before the object
+
+    // on "this", and all access to object
+    // is synchronized on itself; "this" is
+    // always locked before the object
 
     private long _systemVersion; // All access is synchronized on "this"
 
     private boolean _ignoreRuntimeExceptions; // All access is synchronized on
-                                                // "this"
+
+    // "this"
 
     private final Serializer _journalSerializer;
 
@@ -46,11 +48,11 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
         long initialTransaction;
         synchronized (this) {
             _ignoreRuntimeExceptions = true; // During pending transaction
-                                                // recovery (rolling forward),
-                                                // RuntimeExceptions are ignored
-                                                // because they were already
-                                                // thrown and handled during the
-                                                // first transaction execution.
+            // recovery (rolling forward),
+            // RuntimeExceptions are ignored
+            // because they were already
+            // thrown and handled during the
+            // first transaction execution.
             initialTransaction = _systemVersion + 1;
         }
 
@@ -85,9 +87,9 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
             } catch (RuntimeException rx) {
                 if (!_ignoreRuntimeExceptions)
                     throw rx; // TODO Guarantee that transactions received
-                                // from pending transaction recovery don't ever
-                                // throw RuntimeExceptions. Maybe use a wrapper
-                                // for that.
+                // from pending transaction recovery don't ever
+                // throw RuntimeExceptions. Maybe use a wrapper
+                // for that.
             } catch (Error error) {
                 _prevalentSystem = null;
                 throw error;
@@ -109,7 +111,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
         }
     }
 
-    public void takeSnapshot(GenericSnapshotManager snapshotManager) throws IOException {
+    public void takeSnapshot(SnapshotManager snapshotManager) throws IOException {
         synchronized (this) {
             if (_prevalentSystem == null) {
                 throw new ErrorInEarlierTransactionError("Prevayler is no longer allowing snapshots due to an Error thrown from an earlier transaction.");
