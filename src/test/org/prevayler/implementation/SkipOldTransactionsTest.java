@@ -123,7 +123,7 @@ public class SkipOldTransactionsTest extends FileIOTest {
 			writer.flush();
 		}
 
-		public Object readObject(InputStream stream) throws IOException, ClassNotFoundException {
+		public Object readObject(InputStream stream) throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
 			String toAdd = reader.readLine();
 			if (afterSnapshot) {

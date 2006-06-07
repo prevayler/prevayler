@@ -10,7 +10,7 @@ import java.io.OutputStream;
 
 public class DeepCopierTest extends TestCase {
 
-	public void testNormal() throws IOException, ClassNotFoundException {
+	public void testNormal() {
 		Object original = "foo";
 		Object copy = DeepCopier.deepCopy(original, new JavaSerializer());
 
@@ -45,7 +45,7 @@ public class DeepCopierTest extends TestCase {
 				stream.write(99);
 			}
 
-			public Object readObject(InputStream stream) throws IOException, ClassNotFoundException {
+			public Object readObject(InputStream stream) throws IOException {
 				return new Byte((byte) stream.read());
 			}
 

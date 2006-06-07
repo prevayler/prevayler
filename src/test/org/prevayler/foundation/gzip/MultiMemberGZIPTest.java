@@ -35,7 +35,7 @@ public class MultiMemberGZIPTest extends TestCase {
 		for (int i = 0; i < beforeClose.length; i++) {
 			byte b = beforeClose[i];
 			if (i > 0) buf.append(",");
-			buf.append(Integer.toHexString(((int) b) & 0xFF));
+			buf.append(Integer.toHexString(b & 0xFF));
 		}
 		return buf.toString();
 	}

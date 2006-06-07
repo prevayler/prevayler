@@ -118,7 +118,7 @@ public class SnapshotSerializerTest extends FileIOTest {
 			writer.flush();
 		}
 
-		public Object readObject(InputStream stream) throws IOException, ClassNotFoundException {
+		public Object readObject(InputStream stream) throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
 			String prolog = reader.readLine();
 			if ("Yes, this is MySerializationStrategy!".equals(prolog)) {

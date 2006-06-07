@@ -131,7 +131,7 @@ public class PersistentJournal implements Journal {
 	/** IMPORTANT: This method cannot be called while the log() method is being called in another thread.
 	 * If there are no journal files in the directory (when a snapshot is taken and all journal files are manually deleted, for example), the initialTransaction parameter in the first call to this method will define what the next transaction number will be. We have to find clearer/simpler semantics.
 	 */
-	public void update(TransactionSubscriber subscriber, long initialTransactionWanted) throws IOException, ClassNotFoundException {
+	public void update(TransactionSubscriber subscriber, long initialTransactionWanted) throws IOException {
 		File initialJournal = _directory.findInitialJournalFile(initialTransactionWanted);
 
 		if (initialJournal == null) {

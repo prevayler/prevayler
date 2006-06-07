@@ -28,7 +28,7 @@ public class PrevaylerFactoryTest extends FileIOTest {
 		assertEquals(POJO, prevayler.prevalentSystem());
 	}
 
-	public void testCheckpointPrevaylerCreation() throws IOException, ClassNotFoundException {
+	public void testCheckpointPrevaylerCreation() {
 		Prevayler prevayler = PrevaylerFactory.createCheckpointPrevayler(POJO, _testDirectory);
 		assertEquals(POJO, prevayler.prevalentSystem());
 	}
