@@ -1,0 +1,66 @@
+Changes from Prevayler 2.0 to Prevayler 2.1
+
+------------------------
+SureTransactionWithQuery
+
+The Prevayler interface now supports an additional variation on execute(), for
+transactions that return a result but don't throw Exception. A new interface
+has been introduced, SureTransactionWithQuery, and a new execute() method has
+been added to Prevayler taking an instance of this interface.
+
+----------------------
+Journal file extension
+
+The default filename extension for transaction journals has been changed from
+'.transactionLog' to '.journal'. We always recommend taking a snapshot before
+upgrading either Prevayler or your own Prevayler-based code, so there shouldn't
+be any need to migrate old journal files. (The format of journal files has also
+changed, so migrating old journals would require more than just renaming the
+files anyway.)
+
+-------------------
+Journal file format
+
+Transaction journals now have an internal structure of their own, rather than
+relying on ObjectOutputStream, in order to support configurable journal
+serializers. We always recommend taking a snapshot before upgrading either
+Prevayler or your own Prevayler-based code, so there shouldn't be any need to
+migrate old journal files.
+
+------------------
+Optimized rollback
+
+When using the StrictTransactionCensor, the deep-copy of the prevalent system
+to perform a rollback is now implemented in a pipelined manner so as to use
+significantly less memory.
+
+------------------------
+Configurable serializers
+
+A new Serializer interface has been introduced to support configuring
+serialization strategies for journals and snapshots. (The existing
+SnapshotManager abstract class, which had allowed limited customization of
+snapshot serialization, has been eliminated.)
+
+For snapshots, multiple Serializers may be configured, each with a different
+filename extension (though the extension must always end with "snapshot" or
+"Snapshot"). Only one will be used for writing snapshots, but others may be
+configured to support migration from earlier versions of your own code. For
+example, you might configure .v7snapshot with a Serializer including some
+schema migration code, while .v8snapshot is optimized for the current version
+of your business object model. The default is just .snapshot, using the
+JavaSerializer.
+
+For transaction journals, only a single Serializer may be configured, since we
+recommend always taking a snapshot before upgrading Prevayler or your own
+Prevayler-based code, so you will never need to migrate an old journal file.
+The filename extension may still be configured if desired, however (which must
+end with "journal" or "Journal"). The default is .journal, using the
+JavaSerializer.
+
+------------------
+Other enhancements
+
+Prevayler 2.1 includes some other behind-the-scenes improvements, including
+further increased transaction throughput and fewer threads created internally.
+Work on replication and an improved monitoring interface are still in progress.

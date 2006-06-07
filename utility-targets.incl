@@ -36,6 +36,8 @@
             debug="${build.debug}"
             deprecation="${build.deprecation}"
             optimize="${build.optimize}"
+            source="${build.source}"
+            target="${build.target}"
             verbose="${build.verbose}"
             includeAntRuntime="false">
             <classpath refid="${compcprefid}" />
