@@ -316,7 +316,7 @@ public class PrevaylerFactory {
 
 	private Journal journal() throws IOException {
 		if (_transientMode) {
-			return (Journal) new TransientJournal();
+			return new TransientJournal();
 		} else {
 			PrevaylerDirectory directory = new PrevaylerDirectory(prevalenceDirectory());
 			return new PersistentJournal(directory, _journalSizeThreshold, _journalAgeThreshold, journalSuffix(), monitor());
