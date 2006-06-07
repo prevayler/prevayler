@@ -6,18 +6,15 @@ package org.prevayler.foundation.network;
 
 import java.io.IOException;
 
+public class NetworkMock extends BaseNetworkMock implements OldNetwork {
 
-public class NetworkMock extends BaseNetworkMock 
-                         implements OldNetwork {
-
-	
-	public synchronized ObjectSocket openSocket(String serverIpAddress, int serverPort) throws IOException {
-	    crashIfNotLocal(serverIpAddress);
+    public synchronized ObjectSocket openSocket(String serverIpAddress, int serverPort) throws IOException {
+        crashIfNotLocal(serverIpAddress);
         return startClient(serverPort);
-		
-	}
 
-	public synchronized ObjectServerSocket openObjectServerSocket(int serverPort) throws IOException {
-	    return startServer(serverPort);
-	}
+    }
+
+    public synchronized ObjectServerSocket openObjectServerSocket(int serverPort) throws IOException {
+        return startServer(serverPort);
+    }
 }

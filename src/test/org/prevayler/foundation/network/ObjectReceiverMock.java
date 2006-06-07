@@ -6,26 +6,26 @@
 //Contributions: anon.
 package org.prevayler.foundation.network;
 
+import org.prevayler.foundation.Cool;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.prevayler.foundation.Cool;
-
-
 public class ObjectReceiverMock implements ObjectReceiver {
 
     private List received;
-    
+
     private boolean closed = false;
 
     private boolean permit = true;
-    
+
     public ObjectReceiverMock() {
         List receiveList = new ArrayList();
         received = Collections.synchronizedList(receiveList);
     }
+
     public void receive(Object object) throws IOException {
         if (!permit) {
             permit = true;
@@ -45,14 +45,14 @@ public class ObjectReceiverMock implements ObjectReceiver {
     public boolean isClosed() {
         return closed;
     }
-    
+
     public boolean check(Object expected) {
         while (this.received.isEmpty()) {
             Cool.sleep(2);
         }
         return (expected.equals(this.received.remove(0)));
     }
-    
+
     public Object selfCheck() {
         while (this.received.isEmpty()) {
             Thread.yield();

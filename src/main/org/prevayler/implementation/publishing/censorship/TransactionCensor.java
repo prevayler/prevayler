@@ -8,8 +8,8 @@ import org.prevayler.implementation.TransactionTimestamp;
 
 // START SNIPPET: censor
 public interface TransactionCensor {
-	
-	public void approve(TransactionTimestamp transactionTimestamp) throws RuntimeException, Error;
+
+    public void approve(TransactionTimestamp transactionTimestamp) throws RuntimeException, Error;
 
 }
-//END SNIPPET: censor
+// END SNIPPET: censor

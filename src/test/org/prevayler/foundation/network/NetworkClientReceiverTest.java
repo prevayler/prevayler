@@ -13,28 +13,28 @@ import java.util.ArrayList;
 
 import junit.framework.TestCase;
 
-
 /**
  * Useful class comments should go here
- *
- * $Revision: 1.2 $
- * $Date: 2005/03/02 06:04:08 $
- * $Author: peter_mxgroup $
+ * 
+ * $Revision: 1.2 $ $Date: 2005/03/02 06:04:08 $ $Author: peter_mxgroup $
  */
 public class NetworkClientReceiverTest extends TestCase {
 
     MockObjectSocket provider;
+
     ObjectReceiverMock client;
+
     NetworkClientObjectReceiverImpl ncor;
+
     private static final String threadName = "Prevayler Network Client Receiver";
-    
+
     public void setUp() throws Exception {
         provider = new MockObjectSocket();
-        client   = new ObjectReceiverMock();
-        ncor     = new NetworkClientObjectReceiverImpl(provider, client);
+        client = new ObjectReceiverMock();
+        ncor = new NetworkClientObjectReceiverImpl(provider, client);
         Thread.yield();
     }
-    
+
     public void testGoodReceiving() throws Exception {
         String object1 = "A";
         provider.addToReceiveQueue(object1);
@@ -43,7 +43,7 @@ public class NetworkClientReceiverTest extends TestCase {
         Thread.yield();
         provider.printRules();
     }
-    
+
     public void testReceiveIOException() throws Exception {
         provider.crash();
         Thread.yield();
@@ -54,7 +54,6 @@ public class NetworkClientReceiverTest extends TestCase {
         Thread.yield();
         provider.printRules();
     }
-    
 
     public void testSending() throws Exception {
         String object1 = "A";
@@ -64,20 +63,21 @@ public class NetworkClientReceiverTest extends TestCase {
         Thread.yield();
         provider.printRules();
     }
-    
+
     public void testSendIOException() throws Exception {
         provider.sendCrash();
         String object1 = "A";
         try {
             ncor.receive(object1);
             fail("Should've thrown IO Exception");
-        } catch (IOException expected) {}
+        } catch (IOException expected) {
+        }
         Thread.yield();
         ncor.close();
         Thread.yield();
         provider.printRules();
     }
-    
+
     public void testClosing() throws Exception {
         ncor.close();
         provider.checkClosed();
@@ -85,11 +85,11 @@ public class NetworkClientReceiverTest extends TestCase {
         provider.printRules();
         checkThreadGone();
     }
- 
+
     private void checkThreadGone() {
-        Thread [] threads = new Thread[Thread.activeCount()];
+        Thread[] threads = new Thread[Thread.activeCount()];
         int threadCt = Thread.enumerate(threads);
-        for (int i=0; i<threadCt; i++) {
+        for (int i = 0; i < threadCt; i++) {
             if (threads[i].getName().equals(threadName)) {
                 assertFalse(threads[i].isAlive());
             }
@@ -97,26 +97,30 @@ public class NetworkClientReceiverTest extends TestCase {
     }
 
     private class MockObjectSocket implements ObjectSocket {
-        
+
         private ArrayList receiveQueue = new ArrayList();
-        
+
         private ArrayList sentQueue = new ArrayList();
 
         private boolean closed = false;
+
         private boolean permit = true;
+
         private boolean print;
-        
+
         private String monitoringRules = "";
-        
+
         public MockObjectSocket() {
             this(false);
         }
-        
+
         public MockObjectSocket(boolean print) {
             this.print = print;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see org.prevayler.foundation.network.ObjectSocket#writeObject(java.lang.Object)
          */
         public void writeObject(Object object) throws IOException {
@@ -126,7 +130,9 @@ public class NetworkClientReceiverTest extends TestCase {
             sentQueue.add(object);
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see org.prevayler.foundation.network.ObjectSocket#readObject()
          */
         public synchronized Object readObject() throws IOException, ClassNotFoundException {
@@ -147,8 +153,9 @@ public class NetworkClientReceiverTest extends TestCase {
             return receiveQueue.remove(0);
         }
 
-        
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see org.prevayler.foundation.network.ObjectSocket#close()
          */
         public synchronized void close() throws IOException {
@@ -156,38 +163,40 @@ public class NetworkClientReceiverTest extends TestCase {
             monitoringRules = monitoringRules + ";close notify";
             notify();
         }
-        
+
         public synchronized void addToReceiveQueue(Object o) {
             receiveQueue.add(o);
             monitoringRules = monitoringRules + ";read notify";
             notify();
         }
-        
+
         public synchronized void check(Object o) {
             while (sentQueue.isEmpty()) {
                 try {
                     monitoringRules = monitoringRules + ";check waiting";
                     wait();
                     monitoringRules = monitoringRules + ";check interrupted";
-                } catch (InterruptedException expected) {}
-             }
-            assertSame(o,sentQueue.remove(0));
+                } catch (InterruptedException expected) {
+                }
+            }
+            assertSame(o, sentQueue.remove(0));
         }
-        
+
         public void checkClosed() {
             assertTrue(closed);
         }
+
         public void printRules() {
             if (print) {
                 System.out.println(monitoringRules);
             }
         }
-        
+
         public synchronized void crash() {
             permit = false;
             notify();
         }
-        
+
         public synchronized void sendCrash() {
             permit = false;
         }

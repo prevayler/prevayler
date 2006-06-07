@@ -12,14 +12,14 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 public class Suite extends TestCase {
-	public static Test suite() {
-		TestSuite suite = new TestSuite();
-		suite.addTestSuite(DeepCopierTest.class);
-		suite.addTestSuite(ChunkingTest.class);
-		suite.addTestSuite(DurableOutputStreamTest.class);
-		suite.addTestSuite(MultiMemberGZIPTest.class);
-		suite.addTestSuite(FileLockerTest.class);
-		suite.addTestSuite(NetworkTest.class);
-		return suite;
-	}
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
+        suite.addTestSuite(DeepCopierTest.class);
+        suite.addTestSuite(ChunkingTest.class);
+        suite.addTestSuite(DurableOutputStreamTest.class);
+        suite.addTestSuite(MultiMemberGZIPTest.class);
+        suite.addTestSuite(FileLockerTest.class);
+        suite.addTestSuite(NetworkTest.class);
+        return suite;
+    }
 }

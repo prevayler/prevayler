@@ -12,16 +12,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * Useful class comments should go here
- *
+ * 
  */
 public abstract class BaseNetworkImpl implements Network, NetworkReceiverFactory {
     private final Map _servicesInUse;
-    
+
     public BaseNetworkImpl() {
-        _servicesInUse       = Collections.synchronizedMap(new HashMap());
+        _servicesInUse = Collections.synchronizedMap(new HashMap());
     }
 
     public void startService(Service service, int port) throws IOException {
@@ -39,14 +38,12 @@ public abstract class BaseNetworkImpl implements Network, NetworkReceiverFactory
         }
     }
 
-
     public ObjectReceiver findServer(String ipAddress, int port, ObjectReceiver client) throws IOException {
         return newReceiver(ipAddress, port, client);
     }
 
-    
     private void markPortAsUsed(int port, NetworkServerObjectReceiver sessionService) {
-        _servicesInUse.put(new Integer(port),sessionService);
+        _servicesInUse.put(new Integer(port), sessionService);
     }
 
     private void checkPortNotUsed(int port) throws IOException {
@@ -67,7 +64,7 @@ public abstract class BaseNetworkImpl implements Network, NetworkReceiverFactory
         stubbornService.shutdown();
     }
 
-    private NetworkServerObjectReceiver locateService(int port) throws IOException{
+    private NetworkServerObjectReceiver locateService(int port) throws IOException {
         NetworkServerObjectReceiver service = (NetworkServerObjectReceiver) _servicesInUse.get(new Integer(port));
         if (service == null) {
             throw new PortNotInServiceException("Port Not in Service");

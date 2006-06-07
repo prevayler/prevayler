@@ -1,6 +1,5 @@
 package org.prevayler.implementation;
 
-import junit.framework.AssertionFailedError;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
@@ -21,114 +20,112 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import junit.framework.AssertionFailedError;
+
 public class SnapshotSerializerTest extends FileIOTest {
 
-	public void testConfigureSnapshotSerializer() throws IOException, ClassNotFoundException {
-		Serializer serializer = new MySerializer();
+    public void testConfigureSnapshotSerializer() throws IOException, ClassNotFoundException {
+        Serializer serializer = new MySerializer();
 
-		takeSnapshot(serializer);
+        takeSnapshot(serializer);
 
-		assertEquals("Yes, this is MySerializationStrategy!\n" +
-				"the system first second third\n", snapshotContents());
+        assertEquals("Yes, this is MySerializationStrategy!\n" + "the system first second third\n", snapshotContents());
 
-		recover(serializer);
-	}
+        recover(serializer);
+    }
 
-	public void testBadSuffix() {
-		PrevaylerFactory factory = new PrevaylerFactory();
-		try {
-			factory.configureSnapshotSerializer("SNAPSHOT", new JavaSerializer());
-			fail();
-		} catch (IllegalArgumentException exception) {
-			assertEquals("Snapshot filename suffix must match /[a-zA-Z0-9]*[Ss]napshot/, but 'SNAPSHOT' does not", exception.getMessage());
-		}
-	}
+    public void testBadSuffix() {
+        PrevaylerFactory factory = new PrevaylerFactory();
+        try {
+            factory.configureSnapshotSerializer("SNAPSHOT", new JavaSerializer());
+            fail();
+        } catch (IllegalArgumentException exception) {
+            assertEquals("Snapshot filename suffix must match /[a-zA-Z0-9]*[Ss]napshot/, but 'SNAPSHOT' does not", exception.getMessage());
+        }
+    }
 
-	public void testXStreamSnapshot() throws IOException, ClassNotFoundException {
-		Serializer serializer = new XStreamSerializer();
+    public void testXStreamSnapshot() throws IOException, ClassNotFoundException {
+        Serializer serializer = new XStreamSerializer();
 
-		takeSnapshot(serializer);
-		recover(serializer);
-	}
+        takeSnapshot(serializer);
+        recover(serializer);
+    }
 
-	public void testSkaringaSnapshot() throws IOException, ClassNotFoundException {
-		Serializer serializer = new SkaringaSerializer();
+    public void testSkaringaSnapshot() throws IOException, ClassNotFoundException {
+        Serializer serializer = new SkaringaSerializer();
 
-		takeSnapshot(serializer);
-		recover(serializer);
-	}
+        takeSnapshot(serializer);
+        recover(serializer);
+    }
 
-	private void takeSnapshot(Serializer snapshotSerializer)
-			throws IOException, ClassNotFoundException {
-		Prevayler prevayler = createPrevayler(snapshotSerializer);
+    private void takeSnapshot(Serializer snapshotSerializer) throws IOException, ClassNotFoundException {
+        Prevayler prevayler = createPrevayler(snapshotSerializer);
 
-		prevayler.execute(new AppendTransaction(" first"));
-		prevayler.execute(new AppendTransaction(" second"));
-		prevayler.execute(new AppendTransaction(" third"));
-		assertEquals("the system first second third", prevayler.prevalentSystem().toString());
+        prevayler.execute(new AppendTransaction(" first"));
+        prevayler.execute(new AppendTransaction(" second"));
+        prevayler.execute(new AppendTransaction(" third"));
+        assertEquals("the system first second third", prevayler.prevalentSystem().toString());
 
-		prevayler.takeSnapshot();
-		prevayler.close();
-	}
+        prevayler.takeSnapshot();
+        prevayler.close();
+    }
 
-	private void recover(Serializer snapshotSerializer)
-			throws IOException, ClassNotFoundException {
-		Prevayler prevayler = createPrevayler(snapshotSerializer);
-		assertEquals("the system first second third", prevayler.prevalentSystem().toString());
-	}
+    private void recover(Serializer snapshotSerializer) throws IOException, ClassNotFoundException {
+        Prevayler prevayler = createPrevayler(snapshotSerializer);
+        assertEquals("the system first second third", prevayler.prevalentSystem().toString());
+    }
 
-	private Prevayler createPrevayler(Serializer snapshotSerializer)
-			throws IOException, ClassNotFoundException {
-		PrevaylerFactory factory = new PrevaylerFactory();
-		factory.configurePrevalentSystem(new StringBuffer("the system"));
-		factory.configurePrevalenceDirectory(_testDirectory);
-		factory.configureSnapshotSerializer("snapshot", snapshotSerializer);
-		return factory.create();
-	}
+    private Prevayler createPrevayler(Serializer snapshotSerializer) throws IOException, ClassNotFoundException {
+        PrevaylerFactory factory = new PrevaylerFactory();
+        factory.configurePrevalentSystem(new StringBuffer("the system"));
+        factory.configurePrevalenceDirectory(_testDirectory);
+        factory.configureSnapshotSerializer("snapshot", snapshotSerializer);
+        return factory.create();
+    }
 
-	private String snapshotContents() throws IOException {
-		File snapshot = new File(_testDirectory).listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".snapshot");
-			}
-		})[0];
+    private String snapshotContents() throws IOException {
+        File snapshot = new File(_testDirectory).listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".snapshot");
+            }
+        })[0];
 
-		FileReader file = new FileReader(snapshot);
-		StringWriter string = new StringWriter();
+        FileReader file = new FileReader(snapshot);
+        StringWriter string = new StringWriter();
 
-		int n;
-		char[] c = new char[1024];
-		while ((n = file.read(c)) != -1) {
-			string.write(c, 0, n);
-		}
+        int n;
+        char[] c = new char[1024];
+        while ((n = file.read(c)) != -1) {
+            string.write(c, 0, n);
+        }
 
-		file.close();
+        file.close();
 
-		return string.toString();
-	}
+        return string.toString();
+    }
 
-	private static class MySerializer implements Serializer {
+    private static class MySerializer implements Serializer {
 
-		public void writeObject(OutputStream stream, Object object) throws IOException {
-			StringBuffer system = (StringBuffer) object;
-			Writer writer = new OutputStreamWriter(stream, "UTF-8");
-			writer.write("Yes, this is MySerializationStrategy!\n");
-			writer.write(system.toString());
-			writer.write('\n');
-			writer.flush();
-		}
+        public void writeObject(OutputStream stream, Object object) throws IOException {
+            StringBuffer system = (StringBuffer) object;
+            Writer writer = new OutputStreamWriter(stream, "UTF-8");
+            writer.write("Yes, this is MySerializationStrategy!\n");
+            writer.write(system.toString());
+            writer.write('\n');
+            writer.flush();
+        }
 
-		public Object readObject(InputStream stream) throws IOException {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
-			String prolog = reader.readLine();
-			if ("Yes, this is MySerializationStrategy!".equals(prolog)) {
-				String contents = reader.readLine();
-				return new StringBuffer(contents);
-			} else {
-				throw new AssertionFailedError("got prolog=" + prolog);
-			}
-		}
+        public Object readObject(InputStream stream) throws IOException {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+            String prolog = reader.readLine();
+            if ("Yes, this is MySerializationStrategy!".equals(prolog)) {
+                String contents = reader.readLine();
+                return new StringBuffer(contents);
+            } else {
+                throw new AssertionFailedError("got prolog=" + prolog);
+            }
+        }
 
-	}
+    }
 
 }

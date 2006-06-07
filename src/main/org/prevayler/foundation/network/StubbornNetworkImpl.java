@@ -11,31 +11,31 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * Stubborn Network keeps reconnecting sockets should they fail.
  * 
- * Lets UnknownHostException pass back to caller (not much can do if the 
+ * Lets UnknownHostException pass back to caller (not much can do if the
  * hostname / IP Address is wrong).
- *
+ * 
  */
 public class StubbornNetworkImpl extends BaseNetworkImpl implements StubbornNetwork {
     private final Map _sessionsInService;
 
-    public StubbornNetworkImpl () {
+    public StubbornNetworkImpl() {
         super();
-        _sessionsInService       = Collections.synchronizedMap(new HashMap());
+        _sessionsInService = Collections.synchronizedMap(new HashMap());
     }
 
     public ObjectReceiver newReceiver(String ipAddress, int port, ObjectReceiver client) throws IOException {
         return new StubbornClientReceiverImpl(this, ipAddress, port, client);
     }
+
     public ObjectReceiver newReceiver(Service service, ObjectSocket socket) throws IOException {
         SessionsManager sessionsManager = getSessionManager(service);
-        
+
         return new StubbornServerReceiverImpl(service, socket, sessionsManager);
     }
-    
+
     private SessionsManager getSessionManager(Service service) {
         SessionsManager sessionsManager;
         sessionsManager = (SessionsManager) _sessionsInService.get(service);

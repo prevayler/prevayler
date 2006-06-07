@@ -18,96 +18,109 @@ import java.io.IOException;
 
 public class CentralPublisher extends AbstractPublisher {
 
-	private final PausableClock _pausableClock;
-	private final TransactionCensor _censor;
-	private final Journal _journal;
+    private final PausableClock _pausableClock;
 
-	private volatile int _pendingPublications = 0;
-	private final Object _pendingPublicationsMonitor = new Object();
+    private final TransactionCensor _censor;
 
-	private Turn _nextTurn = Turn.first();
-	private long _nextTransaction;
-	private final Object _nextTurnMonitor = new Object();
+    private final Journal _journal;
 
+    private volatile int _pendingPublications = 0;
 
-	public CentralPublisher(Clock clock, TransactionCensor censor, Journal journal) {
-		super(new PausableClock(clock));
-		_pausableClock = (PausableClock) _clock; //This is just to avoid casting the inherited _clock every time.
+    private final Object _pendingPublicationsMonitor = new Object();
 
-		_censor = censor;
-		_journal = journal;
-	}
+    private Turn _nextTurn = Turn.first();
 
+    private long _nextTransaction;
 
-	public void publish(Capsule capsule) {
-		synchronized (_pendingPublicationsMonitor) {  //Blocks all new subscriptions until the publication is over.
-			if (_pendingPublications == 0) _pausableClock.pause();
-			_pendingPublications++;
-		}
+    private final Object _nextTurnMonitor = new Object();
 
-		try {
-			publishWithoutWorryingAboutNewSubscriptions(capsule);  // Suggestions for a better method name are welcome.  :)
-		} finally {
-			synchronized (_pendingPublicationsMonitor) {
-				_pendingPublications--;
-				if (_pendingPublications == 0) {
-					_pausableClock.resume();
-					_pendingPublicationsMonitor.notifyAll();
-				}
-			}
-		}
-	}
+    public CentralPublisher(Clock clock, TransactionCensor censor, Journal journal) {
+        super(new PausableClock(clock));
+        _pausableClock = (PausableClock) _clock; // This is just to avoid
+                                                    // casting the inherited
+                                                    // _clock every time.
 
+        _censor = censor;
+        _journal = journal;
+    }
 
-	private void publishWithoutWorryingAboutNewSubscriptions(Capsule capsule) {
-		TransactionGuide guide = approve(capsule);
-		_journal.append(guide);
-		notifySubscribers(guide);
-	}
+    public void publish(Capsule capsule) {
+        synchronized (_pendingPublicationsMonitor) { // Blocks all new
+                                                        // subscriptions until
+                                                        // the publication is
+                                                        // over.
+            if (_pendingPublications == 0)
+                _pausableClock.pause();
+            _pendingPublications++;
+        }
 
-	private TransactionGuide approve(Capsule capsule) {
-		synchronized (_nextTurnMonitor) {
-			TransactionTimestamp timestamp = new TransactionTimestamp(capsule, _nextTransaction, _pausableClock.realTime());
+        try {
+            publishWithoutWorryingAboutNewSubscriptions(capsule); // Suggestions
+                                                                    // for a
+                                                                    // better
+                                                                    // method
+                                                                    // name are
+                                                                    // welcome.
+                                                                    // :)
+        } finally {
+            synchronized (_pendingPublicationsMonitor) {
+                _pendingPublications--;
+                if (_pendingPublications == 0) {
+                    _pausableClock.resume();
+                    _pendingPublicationsMonitor.notifyAll();
+                }
+            }
+        }
+    }
 
-			_censor.approve(timestamp);
+    private void publishWithoutWorryingAboutNewSubscriptions(Capsule capsule) {
+        TransactionGuide guide = approve(capsule);
+        _journal.append(guide);
+        notifySubscribers(guide);
+    }
 
-			// Only count this transaction once approved.
-			Turn turn = _nextTurn;
-			_nextTurn = _nextTurn.next();
-			_nextTransaction++;
+    private TransactionGuide approve(Capsule capsule) {
+        synchronized (_nextTurnMonitor) {
+            TransactionTimestamp timestamp = new TransactionTimestamp(capsule, _nextTransaction, _pausableClock.realTime());
 
-			return new TransactionGuide(timestamp, turn);
-		}
-	}
+            _censor.approve(timestamp);
 
-	private void notifySubscribers(TransactionGuide guide) {
-		guide.startTurn();
-		try {
-			_pausableClock.advanceTo(guide.executionTime());
-			notifySubscribers(guide.timestamp());
-		} finally {
-			guide.endTurn();
-		}
-	}
+            // Only count this transaction once approved.
+            Turn turn = _nextTurn;
+            _nextTurn = _nextTurn.next();
+            _nextTransaction++;
 
+            return new TransactionGuide(timestamp, turn);
+        }
+    }
 
-	public void subscribe(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
-		synchronized (_pendingPublicationsMonitor) {
-			while (_pendingPublications != 0) Cool.wait(_pendingPublicationsMonitor);
+    private void notifySubscribers(TransactionGuide guide) {
+        guide.startTurn();
+        try {
+            _pausableClock.advanceTo(guide.executionTime());
+            notifySubscribers(guide.timestamp());
+        } finally {
+            guide.endTurn();
+        }
+    }
 
-			_journal.update(subscriber, initialTransaction);
+    public void subscribe(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
+        synchronized (_pendingPublicationsMonitor) {
+            while (_pendingPublications != 0)
+                Cool.wait(_pendingPublicationsMonitor);
 
-			synchronized (_nextTurnMonitor) {
-				_nextTransaction = _journal.nextTransaction();
-			}
+            _journal.update(subscriber, initialTransaction);
 
-			super.addSubscriber(subscriber);
-		}
-	}
+            synchronized (_nextTurnMonitor) {
+                _nextTransaction = _journal.nextTransaction();
+            }
 
+            super.addSubscriber(subscriber);
+        }
+    }
 
-	public void close() throws IOException {
-		_journal.close();
-	}
+    public void close() throws IOException {
+        _journal.close();
+    }
 
 }

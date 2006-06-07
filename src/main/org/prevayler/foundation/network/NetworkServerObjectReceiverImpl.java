@@ -12,23 +12,24 @@ import java.net.SocketException;
 /**
  * Provides a server connection service.
  * 
- * Uses a thread to wait for connections. It then creates a new instance of
- * a Receiver. 
+ * Uses a thread to wait for connections. It then creates a new instance of a
+ * Receiver.
  */
 
-
-public class NetworkServerObjectReceiverImpl extends Thread implements NetworkServerObjectReceiver  {
-
+public class NetworkServerObjectReceiverImpl extends Thread implements NetworkServerObjectReceiver {
 
     private Service _service;
+
     private ObjectServerSocket _provider;
+
     private boolean _wantedOpen;
+
     private NetworkReceiverFactory _factory;
 
-    public NetworkServerObjectReceiverImpl (NetworkReceiverFactory factory, Service service, int port) throws IOException{
+    public NetworkServerObjectReceiverImpl(NetworkReceiverFactory factory, Service service, int port) throws IOException {
         this(factory, service, new ObjectServerSocketImpl(port));
     }
-    
+
     protected NetworkServerObjectReceiverImpl(NetworkReceiverFactory factory, Service service, ObjectServerSocket server) {
         _factory = factory;
         _service = service;
@@ -38,8 +39,8 @@ public class NetworkServerObjectReceiverImpl extends Thread implements NetworkSe
         setDaemon(true);
         start();
     }
-    
-    public void run () {
+
+    public void run() {
         while (_wantedOpen) {
             try {
                 _factory.newReceiver(_service, _provider.accept());
@@ -51,7 +52,7 @@ public class NetworkServerObjectReceiverImpl extends Thread implements NetworkSe
             }
         }
     }
-    
+
     public void shutdown() {
         try {
             _wantedOpen = false;
@@ -60,5 +61,5 @@ public class NetworkServerObjectReceiverImpl extends Thread implements NetworkSe
             // can't do much, so ignore
         }
     }
-    
+
 }

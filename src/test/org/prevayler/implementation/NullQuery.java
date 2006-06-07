@@ -1,13 +1,13 @@
 package org.prevayler.implementation;
 
-import java.util.Date;
-
 import org.prevayler.Query;
+
+import java.util.Date;
 
 public class NullQuery implements Query {
 
-	public Object query(Object prevalentSystem, Date executionTime) throws Exception {
-		return null;
-	}
+    public Object query(Object prevalentSystem, Date executionTime) throws Exception {
+        return null;
+    }
 
 }

@@ -4,34 +4,38 @@
 
 package org.prevayler.implementation.replication;
 
-import org.prevayler.foundation.network.OldNetwork;
 import org.prevayler.foundation.network.ObjectServerSocket;
+import org.prevayler.foundation.network.OldNetwork;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 
 import java.io.IOException;
 
-
-/** Reserved for future implementation.
+/**
+ * Reserved for future implementation.
  */
 public class ServerListener extends Thread {
 
-	private final TransactionPublisher _publisher;
-	private final ObjectServerSocket _serverSocket;
+    private final TransactionPublisher _publisher;
 
-	//TODO Close the socket when the publisher is closed (listen for it or have the Dashboard (new idea) close this when it closes the publisher).
-	
-	public ServerListener(TransactionPublisher publisher, OldNetwork network, int port) throws IOException {
-		_serverSocket = network.openObjectServerSocket(port);
-		_publisher = publisher;
-		setDaemon(true);
-		start(); //FIXME: Make sure this thread ends when Prevayler is closed.
-	} 
+    private final ObjectServerSocket _serverSocket;
 
-	public void run() {
-		try {
-			while (true) new ServerConnection(_publisher, _serverSocket.accept());
-		} catch (IOException iox) {
-			iox.printStackTrace();
-		}
-	}	
+    // TODO Close the socket when the publisher is closed (listen for it or have
+    // the Dashboard (new idea) close this when it closes the publisher).
+
+    public ServerListener(TransactionPublisher publisher, OldNetwork network, int port) throws IOException {
+        _serverSocket = network.openObjectServerSocket(port);
+        _publisher = publisher;
+        setDaemon(true);
+        start(); // FIXME: Make sure this thread ends when Prevayler is
+                    // closed.
+    }
+
+    public void run() {
+        try {
+            while (true)
+                new ServerConnection(_publisher, _serverSocket.accept());
+        } catch (IOException iox) {
+            iox.printStackTrace();
+        }
+    }
 }

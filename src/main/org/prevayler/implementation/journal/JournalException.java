@@ -4,22 +4,22 @@ import org.prevayler.PrevaylerIOException;
 
 public class JournalException extends PrevaylerIOException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public JournalException() {
-		super();
-	}
+    public JournalException() {
+        super();
+    }
 
-	public JournalException(String message) {
-		super(message);
-	}
+    public JournalException(String message) {
+        super(message);
+    }
 
-	public JournalException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public JournalException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public JournalException(Throwable cause) {
-		super(cause);
-	}
+    public JournalException(Throwable cause) {
+        super(cause);
+    }
 
 }

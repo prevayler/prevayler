@@ -12,52 +12,58 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class TransientJournal implements Journal {
 
-	private final List journal = new ArrayList();
-	private long _initialTransaction;
-	private boolean _initialTransactionInitialized = false;
+    private final List journal = new ArrayList();
 
-	public void append(TransactionGuide guide) {
-		if (!_initialTransactionInitialized) throw new IllegalStateException("Journal.update() has to be called at least once before Journal.journal().");
+    private long _initialTransaction;
 
-		guide.startTurn();
-		try {
-			guide.checkSystemVersion(_initialTransaction + journal.size());
-			journal.add(guide.timestamp().cleanCopy());
-		} finally {
-			guide.endTurn();
-		}
-	}
+    private boolean _initialTransactionInitialized = false;
 
-	public synchronized void update(TransactionSubscriber subscriber, long initialTransaction) throws IOException {
-		if (!_initialTransactionInitialized) {
-			_initialTransactionInitialized = true;
-			_initialTransaction = initialTransaction;
-			return;
-		}
-		if (initialTransaction < _initialTransaction) throw new JournalException("Unable to recover transaction " + initialTransaction + ". The oldest recoverable transaction is " + _initialTransaction + ".");
+    public void append(TransactionGuide guide) {
+        if (!_initialTransactionInitialized)
+            throw new IllegalStateException("Journal.update() has to be called at least once before Journal.journal().");
 
-		int i = (int)(initialTransaction - _initialTransaction);
-		if (i > journal.size()) throw new JournalException("The transaction journal has not yet reached transaction " + initialTransaction + ". The last logged transaction was " + (_initialTransaction + journal.size() - 1) + ".");
+        guide.startTurn();
+        try {
+            guide.checkSystemVersion(_initialTransaction + journal.size());
+            journal.add(guide.timestamp().cleanCopy());
+        } finally {
+            guide.endTurn();
+        }
+    }
 
-		while (i != journal.size()) {
-			TransactionTimestamp entry = (TransactionTimestamp)journal.get(i);
-			long recoveringTransaction = _initialTransaction + i;
-			if (entry.systemVersion() != recoveringTransaction) {
-				throw new JournalException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
-			}
-			subscriber.receive(entry);
-			i++;
-		}
-	}
+    public synchronized void update(TransactionSubscriber subscriber, long initialTransaction) throws IOException {
+        if (!_initialTransactionInitialized) {
+            _initialTransactionInitialized = true;
+            _initialTransaction = initialTransaction;
+            return;
+        }
+        if (initialTransaction < _initialTransaction)
+            throw new JournalException("Unable to recover transaction " + initialTransaction + ". The oldest recoverable transaction is " + _initialTransaction + ".");
 
-	public void close() {}
+        int i = (int) (initialTransaction - _initialTransaction);
+        if (i > journal.size())
+            throw new JournalException("The transaction journal has not yet reached transaction " + initialTransaction + ". The last logged transaction was " + (_initialTransaction + journal.size() - 1) + ".");
 
-	public synchronized long nextTransaction() {
-		if (!_initialTransactionInitialized) throw new IllegalStateException("update() must be called at least once");
-		return _initialTransaction + journal.size();
-	}
+        while (i != journal.size()) {
+            TransactionTimestamp entry = (TransactionTimestamp) journal.get(i);
+            long recoveringTransaction = _initialTransaction + i;
+            if (entry.systemVersion() != recoveringTransaction) {
+                throw new JournalException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
+            }
+            subscriber.receive(entry);
+            i++;
+        }
+    }
+
+    public void close() {
+    }
+
+    public synchronized long nextTransaction() {
+        if (!_initialTransactionInitialized)
+            throw new IllegalStateException("update() must be called at least once");
+        return _initialTransaction + journal.size();
+    }
 
 }

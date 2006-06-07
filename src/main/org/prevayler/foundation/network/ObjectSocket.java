@@ -6,13 +6,12 @@ package org.prevayler.foundation.network;
 
 import java.io.IOException;
 
-
 public interface ObjectSocket {
 
-	void writeObject(Object object) throws IOException;
+    void writeObject(Object object) throws IOException;
 
-	Object readObject() throws IOException, ClassNotFoundException;
+    Object readObject() throws IOException, ClassNotFoundException;
 
-	void close() throws IOException;
-	
+    void close() throws IOException;
+
 }

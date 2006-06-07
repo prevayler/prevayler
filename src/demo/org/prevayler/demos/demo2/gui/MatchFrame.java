@@ -1,45 +1,58 @@
 package org.prevayler.demos.demo2.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.table.*;
-
-import net.sourceforge.javamatch.engine.*;
-import net.sourceforge.javamatch.query.*;
+import net.sourceforge.javamatch.engine.MatchEngine;
+import net.sourceforge.javamatch.engine.MatchException;
+import net.sourceforge.javamatch.engine.MatchResult;
+import net.sourceforge.javamatch.engine.ResultItem;
+import net.sourceforge.javamatch.query.Maximum;
+import net.sourceforge.javamatch.query.QuerySet;
 
 import org.prevayler.Prevayler;
-import org.prevayler.demos.demo2.business.*;
+import org.prevayler.demos.demo2.business.Account;
+import org.prevayler.demos.demo2.business.Bank;
+
+import javax.swing.JButton;
+import javax.swing.JInternalFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Iterator;
 
 /**
- * Class MatchFrame shows the results of matching the data in the bank demo 
+ * Class MatchFrame shows the results of matching the data in the bank demo
  * application
- *
+ * 
  * @see http://javamatch.sourceforge.net/integration.html#prevayler
  * @author Walter van Iterson
  * @author Jacob Kjome
  */
 class MatchFrame extends JInternalFrame {
 
-	private static final long serialVersionUID = 2988308712345594693L;
-	private Prevayler prevayler;
+    private static final long serialVersionUID = 2988308712345594693L;
+
+    private Prevayler prevayler;
+
     private JButton refreshButton;
+
     private JTable matchTable;
+
     private DefaultTableModel matchTableModel;
 
     /**
-     * Creates a new MatchFrame, that uses the given Prevayler persistent storage
-     * mechanism, and puts itself in the given parent container.
+     * Creates a new MatchFrame, that uses the given Prevayler persistent
+     * storage mechanism, and puts itself in the given parent container.
      */
-    /*MatchFrame(Prevayler prevayler, Container container) {
-        super("Interesting accounts");
-        this.prevayler = prevayler;
-        initUI();
-        refreshTable();
-        container.add(this);
-        setVisible(true);
-    }*/
+    /*
+     * MatchFrame(Prevayler prevayler, Container container) { super("Interesting
+     * accounts"); this.prevayler = prevayler; initUI(); refreshTable();
+     * container.add(this); setVisible(true); }
+     */
 
     MatchFrame(Prevayler prevayler) {
         super("Interesting accounts");
@@ -53,7 +66,7 @@ class MatchFrame extends JInternalFrame {
      * Initializes the user interface
      */
     private void initUI() {
-        setBounds(100,70,400,250);
+        setBounds(100, 70, 400, 250);
         getContentPane().setLayout(new BorderLayout(0, 0));
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
@@ -66,8 +79,8 @@ class MatchFrame extends JInternalFrame {
         buttonPanel.add(refreshButton);
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
-        matchTableModel= new DefaultTableModel();
-        matchTableModel.setColumnIdentifiers(new String[] {"Match", "Account", "Balance", "#Entries"});
+        matchTableModel = new DefaultTableModel();
+        matchTableModel.setColumnIdentifiers(new String[] { "Match", "Account", "Balance", "#Entries" });
         matchTable = new JTable(matchTableModel);
         getContentPane().add(new JScrollPane(matchTable), BorderLayout.CENTER);
     }
@@ -77,7 +90,7 @@ class MatchFrame extends JInternalFrame {
      */
     private void refreshTable() {
         matchTableModel.setRowCount(0);
-        Bank bank = (Bank)prevayler.prevalentSystem();
+        Bank bank = (Bank) prevayler.prevalentSystem();
         java.util.List accounts = bank.accounts();
 
         try {
@@ -94,8 +107,8 @@ class MatchFrame extends JInternalFrame {
 
             // retrieve matching results
             for (Iterator resultIterator = matchResult.getResultIterator(); resultIterator.hasNext();) {
-                ResultItem curResultItem = (ResultItem)resultIterator.next();
-                Account matchedAccount = (Account)curResultItem.getMatchedObject();
+                ResultItem curResultItem = (ResultItem) resultIterator.next();
+                Account matchedAccount = (Account) curResultItem.getMatchedObject();
                 // create a row in the table that displays the matching results
                 Object[] rowData = new Object[4];
                 rowData[0] = new Float(curResultItem.getMatchValue());

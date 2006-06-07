@@ -4,9 +4,8 @@
 
 package org.prevayler.foundation.network;
 
-
 public interface Service {
-	
-	ObjectReceiver serverFor(ObjectReceiver client);
-	
+
+    ObjectReceiver serverFor(ObjectReceiver client);
+
 }

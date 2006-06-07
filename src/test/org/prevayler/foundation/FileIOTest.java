@@ -4,73 +4,76 @@
 
 package org.prevayler.foundation;
 
-import junit.framework.TestCase;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.StringWriter;
 
+import junit.framework.TestCase;
 
 public abstract class FileIOTest extends TestCase {
 
-	protected String _testDirectory;
-	static private long counter = 0;
+    protected String _testDirectory;
 
-	protected void setUp() throws Exception {
-		File tempFile = new File("Test" + System.currentTimeMillis() + counter++);
-		assertTrue("Unable to create directory " + tempFile, tempFile.mkdirs());
-		_testDirectory = tempFile.getAbsolutePath();
-	}
+    static private long counter = 0;
 
-	protected void tearDown() throws Exception {
-		delete(_testDirectory);
-	}
+    protected void setUp() throws Exception {
+        File tempFile = new File("Test" + System.currentTimeMillis() + counter++);
+        assertTrue("Unable to create directory " + tempFile, tempFile.mkdirs());
+        _testDirectory = tempFile.getAbsolutePath();
+    }
 
-	protected void deleteFromTestDirectory(String fileName) {
-		delete(new File(_testDirectory + File.separator + fileName));
-	}
+    protected void tearDown() throws Exception {
+        delete(_testDirectory);
+    }
 
-	static public void delete(String fileName) {
-		delete(new File(fileName));
-	}
+    protected void deleteFromTestDirectory(String fileName) {
+        delete(new File(_testDirectory + File.separator + fileName));
+    }
 
-	static public void delete(File file) {
-		if (file.isDirectory()) deleteDirectoryContents(file);
-		assertTrue("File does not exist: " + file, file.exists());
-		if (!file.delete()) {
-			System.gc();
-			assertTrue("Unable to delete " + file, file.delete());
-		}
-	}
+    static public void delete(String fileName) {
+        delete(new File(fileName));
+    }
 
-	static private void deleteDirectoryContents(File directory) {
-		File[] files = directory.listFiles();
-		if (files == null) return;
-		for (int i = 0; i < files.length; i++) delete(files[i]);
-	}
+    static public void delete(File file) {
+        if (file.isDirectory())
+            deleteDirectoryContents(file);
+        assertTrue("File does not exist: " + file, file.exists());
+        if (!file.delete()) {
+            System.gc();
+            assertTrue("Unable to delete " + file, file.delete());
+        }
+    }
 
-	protected String journalContents(final String suffix) throws IOException {
-		File[] files = new File(_testDirectory).listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.endsWith("." + suffix);
-			}
-		});
-		assertEquals(1, files.length);
-		File journal = files[0];
+    static private void deleteDirectoryContents(File directory) {
+        File[] files = directory.listFiles();
+        if (files == null)
+            return;
+        for (int i = 0; i < files.length; i++)
+            delete(files[i]);
+    }
 
-		FileReader file = new FileReader(journal);
-		StringWriter string = new StringWriter();
+    protected String journalContents(final String suffix) throws IOException {
+        File[] files = new File(_testDirectory).listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith("." + suffix);
+            }
+        });
+        assertEquals(1, files.length);
+        File journal = files[0];
 
-		int n;
-		char[] c = new char[1024];
-		while ((n = file.read(c)) != -1) {
-			string.write(c, 0, n);
-		}
+        FileReader file = new FileReader(journal);
+        StringWriter string = new StringWriter();
 
-		file.close();
+        int n;
+        char[] c = new char[1024];
+        while ((n = file.read(c)) != -1) {
+            string.write(c, 0, n);
+        }
 
-		return string.toString();
-	}
+        file.close();
+
+        return string.toString();
+    }
 }

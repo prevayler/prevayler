@@ -9,13 +9,13 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 public class NetworkSuite extends TestCase {
-	public static Test suite() {
-		TestSuite suite = new TestSuite();
-		suite.addTestSuite(NetworkClientReceiverTest.class);
-		suite.addTestSuite(NetworkProxyTest.class);
-		suite.addTestSuite(StubbornNetworkReceiverTest.class);
-		suite.addTestSuite(StubbornNetworkServerTest.class);
-		suite.addTestSuite(NetworkTest.class);
-		return suite;
-	}
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
+        suite.addTestSuite(NetworkClientReceiverTest.class);
+        suite.addTestSuite(NetworkProxyTest.class);
+        suite.addTestSuite(StubbornNetworkReceiverTest.class);
+        suite.addTestSuite(StubbornNetworkServerTest.class);
+        suite.addTestSuite(NetworkTest.class);
+        return suite;
+    }
 }

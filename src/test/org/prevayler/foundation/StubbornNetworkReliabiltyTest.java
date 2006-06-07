@@ -5,46 +5,49 @@
  */
 package org.prevayler.foundation;
 
-import java.io.IOException;
-
-import junit.framework.TestCase;
-
 import org.prevayler.foundation.network.Network;
 import org.prevayler.foundation.network.NetworkImpl;
 import org.prevayler.foundation.network.ObjectReceiver;
 import org.prevayler.foundation.network.Service;
 import org.prevayler.foundation.network.StubbornNetworkImpl;
 
+import java.io.IOException;
+
+import junit.framework.TestCase;
 
 /**
- * Test the reliabilty of the Stubborn Network. 
+ * Test the reliabilty of the Stubborn Network.
  * 
- * This test creates 2 "mock instances of prevayler". 1 acting
- * as a primary prevayler, and the other acting as a slave 
- * (replicator).
+ * This test creates 2 "mock instances of prevayler". 1 acting as a primary
+ * prevayler, and the other acting as a slave (replicator).
  * 
- * It sits on top of a Network Proxy Implementation that can break 
- * and recover.
+ * It sits on top of a Network Proxy Implementation that can break and recover.
  */
 public class StubbornNetworkReliabiltyTest extends TestCase {
 
     private MockService serverService;
-    
+
     private Network serverNetwork;
+
     private Network clientNetwork1;
+
     private Network clientNetwork2;
+
     private ClientReceiver client1Receiver;
+
     private ClientReceiver client2Receiver;
+
     private NetworkProxy networkProxy;
-    private final boolean printing = true; 
-    
+
+    private final boolean printing = true;
+
     public void setUp() {
-        serverService    = new MockService();
-//        NewNetworkMock mockNetwork = new NewNetworkMock();
-        serverNetwork  = new StubbornNetworkImpl();
+        serverService = new MockService();
+        // NewNetworkMock mockNetwork = new NewNetworkMock();
+        serverNetwork = new StubbornNetworkImpl();
         clientNetwork1 = new StubbornNetworkImpl();
         clientNetwork2 = new StubbornNetworkImpl();
-        networkProxy   = new NetworkProxy();
+        networkProxy = new NetworkProxy();
         client1Receiver = new ClientReceiver("client1");
         client2Receiver = new ClientReceiver("client2");
     }
@@ -66,17 +69,20 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
         client2Receiver.checkReceived(testSequence);
         serverService.closeDown();
     }
+
     public class MockService implements Service {
         private String objectsToSend;
+
         private int frequency;
+
         private Network network;
+
         private int port;
-        
-        
-        public void setObjectsToSend (String objectsToSend) {
+
+        public void setObjectsToSend(String objectsToSend) {
             this.objectsToSend = objectsToSend;
         }
-        
+
         public void setFrequency(int millisecs) {
             this.frequency = millisecs;
         }
@@ -90,29 +96,34 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
         public ObjectReceiver serverFor(ObjectReceiver client) {
             return new MockObjectReceiver(objectsToSend, frequency, client);
         }
-        
+
         public void closeDown() throws Exception {
             network.stopService(port);
         }
-        
+
     }
-    
+
     public class MockObjectReceiver extends Thread implements ObjectReceiver {
 
         private final String objectsToSend;
+
         private final int frequency;
+
         private final ObjectReceiver networkClient;
+
         private int sent = 0;
+
         private boolean openForBusiness;
-        MockObjectReceiver (String objectsToSend, int frequency, ObjectReceiver networkClient) {
+
+        MockObjectReceiver(String objectsToSend, int frequency, ObjectReceiver networkClient) {
             this.objectsToSend = objectsToSend;
             this.frequency = frequency;
             this.networkClient = networkClient;
             this.setName("Server Service Thread");
             start();
         }
-        
-        public void run () {
+
+        public void run() {
             openForBusiness = true;
             for (sent = 0; sent < objectsToSend.length(); sent++) {
                 rest();
@@ -120,24 +131,30 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
             }
             openForBusiness = false;
         }
-        
+
         private void rest() {
-            try {sleep(frequency);}
-            catch (InterruptedException unEx) {};
+            try {
+                sleep(frequency);
+            } catch (InterruptedException unEx) {
+            }
+            ;
         }
-        
+
         private void send() {
             try {
-                networkClient.receive(objectsToSend.substring(sent, sent+1));
+                networkClient.receive(objectsToSend.substring(sent, sent + 1));
             } catch (IOException unex) {
                 fail("Server received an IOException");
             }
         }
+
         public void receive(Object object) throws IOException {
             fail("receive called on server");
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see org.prevayler.foundation.network.ObjectReceiver#close()
          */
         public void close() throws IOException {
@@ -145,32 +162,34 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
                 fail("close called unexpectedly");
             }
         }
-        
+
     }
 
     public class ClientReceiver extends Thread implements ObjectReceiver {
         private StringBuffer received;
-        
+
         private int expectedLth;
+
         private Network network;
+
         private int port;
+
         private ObjectReceiver networkProvider;
+
         private String threadName;
-        
-        ClientReceiver (String threadName) {
+
+        ClientReceiver(String threadName) {
             received = new StringBuffer();
             this.threadName = threadName;
         }
-        
-        public void checkReceived (String sent) {
-            assertEquals("Received " + received + " Expected " + sent,
-                          sent.length(), received.length());
+
+        public void checkReceived(String sent) {
+            assertEquals("Received " + received + " Expected " + sent, sent.length(), received.length());
             for (int i = 0; i < sent.length(); i++) {
-                assertEquals("Received " + received + " Expected " + sent,
-                        sent.charAt(i),received.charAt(i));
+                assertEquals("Received " + received + " Expected " + sent, sent.charAt(i), received.charAt(i));
             }
         }
-        
+
         public void commenceReceiving(Network network, int port, int expectedLth) {
             this.expectedLth = expectedLth;
             this.port = port;
@@ -185,7 +204,7 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
             sleepTillFinished();
             shutdown();
         }
-        
+
         private void connect() {
             try {
                 networkProvider = network.findServer("localhost", port, this);
@@ -193,7 +212,7 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
                 fail("Client received an IO Exception " + unex);
             }
         }
- 
+
         private void shutdown() {
             try {
                 networkProvider.close();
@@ -201,12 +220,14 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
                 fail("Client received an Exception on close " + unex);
             }
         }
+
         private synchronized void sleepTillFinished() {
             try {
                 wait();
             } catch (InterruptedException expected) {
             }
         }
+
         public void receive(Object object) throws IOException {
             if (object instanceof String) {
                 String s = (String) object;
@@ -225,23 +246,23 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
         private synchronized void finished() {
             notify();
         }
-        
+
         public void close() throws IOException {
-            
+
         }
     }
 
     public class NetworkProxy implements Service {
-        
+
         private Network network;
-        
+
         private int targetPort;
-        
+
         NetworkProxy() {
             network = new NetworkImpl();
         }
-        
-        public void startProxy (int listeningPort, int targetPort) throws IOException {
+
+        public void startProxy(int listeningPort, int targetPort) throws IOException {
             this.targetPort = targetPort;
             network.startService(this, listeningPort);
         }
@@ -254,18 +275,21 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
     public class ProxyReceiver extends Thread implements ObjectReceiver {
 
         private Network network;
+
         private ObjectReceiver proxyServer;
+
         private int port;
+
         private ObjectReceiver proxyClient;
-        
-        ProxyReceiver (Network network, int port, ObjectReceiver client) {
+
+        ProxyReceiver(Network network, int port, ObjectReceiver client) {
             this.network = network;
             this.port = port;
             this.proxyServer = client;
             start();
             waitConnected();
         }
-        
+
         private synchronized void waitConnected() {
             try {
                 wait();
@@ -273,12 +297,13 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
                 throw new RuntimeException(unex);
             }
         }
+
         public void run() {
             connect();
             finishConnect();
             monitorMessages();
         }
-        
+
         private synchronized void finishConnect() {
             notify();
         }
@@ -287,57 +312,60 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
             while (true) {
                 try {
                     wait();
-                } catch (InterruptedException ex) {}
+                } catch (InterruptedException ex) {
+                }
             }
         }
-        
+
         public void connect() {
             try {
-                proxyClient = network.findServer("localhost",port,new MockClient(this));
+                proxyClient = network.findServer("localhost", port, new MockClient(this));
             } catch (IOException unex) {
                 throw new RuntimeException(unex);
             }
         }
+
         public void receive(Object object) throws IOException {
             messageFromClientForServer(object);
-            
+
         }
 
         public void close() throws IOException {
             // TODO Auto-generated method stub
-            
+
         }
-        
+
         public void messageFromServerForClient(Object object) {
             try {
                 proxyServer.receive(object);
             } catch (IOException ioex) {
-                
+
             }
         }
-        
+
         public void messageFromClientForServer(Object object) {
             try {
                 proxyClient.receive(object);
             } catch (IOException ioex) {
-                
+
             }
         }
     }
 
     public class MockClient implements ObjectReceiver {
-        
+
         private ProxyReceiver proxy;
 
         MockClient(ProxyReceiver proxy) {
             this.proxy = proxy;
         }
-        
+
         public void receive(Object object) throws IOException {
             proxy.messageFromServerForClient(object);
         }
+
         public void close() throws IOException {
         }
-        
+
     }
 }

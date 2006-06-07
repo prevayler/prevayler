@@ -12,45 +12,56 @@ import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
 public class StrictTransactionCensor implements TransactionCensor {
 
-	private final PrevalentSystemGuard _king;
-	private PrevalentSystemGuard _royalFoodTaster;
-	private final Serializer _snapshotSerializer;
+    private final PrevalentSystemGuard _king;
 
-	public StrictTransactionCensor(GenericSnapshotManager snapshotManager) {
-		_king = snapshotManager.recoveredPrevalentSystem();
-		// The _royalFoodTaster cannot be initialized here, or else the pending transactions will not be applied to it.
-		_snapshotSerializer = snapshotManager.primarySerializer();
-	}
+    private PrevalentSystemGuard _royalFoodTaster;
 
-	public void approve(TransactionTimestamp transactionTimestamp) {
-		try {
-			TransactionTimestamp timestampCopy = transactionTimestamp.cleanCopy();
-			PrevalentSystemGuard royalFoodTaster = royalFoodTaster(transactionTimestamp.systemVersion() - 1);
-			royalFoodTaster.receive(timestampCopy);
-		} catch (RuntimeException rx) {
-			letTheFoodTasterDie();
-			throw rx;
-		} catch (Error error) {
-			letTheFoodTasterDie();
-			throw error;
-		}
-	}
+    private final Serializer _snapshotSerializer;
 
-	private void letTheFoodTasterDie() {
-		_royalFoodTaster = null;  // At this moment there might be transactions that have already been approved by this censor but have not yet been applied to the _king. It is a requirement, therefore, that the _royalFoodTaster must not be initialized now, but only when the next transaction arrives to be approved.
-	}
+    public StrictTransactionCensor(GenericSnapshotManager snapshotManager) {
+        _king = snapshotManager.recoveredPrevalentSystem();
+        // The _royalFoodTaster cannot be initialized here, or else the pending
+        // transactions will not be applied to it.
+        _snapshotSerializer = snapshotManager.primarySerializer();
+    }
 
-	private PrevalentSystemGuard royalFoodTaster(long systemVersion) {
-		if (_royalFoodTaster == null) produceNewFoodTaster(systemVersion);
-		return _royalFoodTaster;
-	}
+    public void approve(TransactionTimestamp transactionTimestamp) {
+        try {
+            TransactionTimestamp timestampCopy = transactionTimestamp.cleanCopy();
+            PrevalentSystemGuard royalFoodTaster = royalFoodTaster(transactionTimestamp.systemVersion() - 1);
+            royalFoodTaster.receive(timestampCopy);
+        } catch (RuntimeException rx) {
+            letTheFoodTasterDie();
+            throw rx;
+        } catch (Error error) {
+            letTheFoodTasterDie();
+            throw error;
+        }
+    }
 
-	private void produceNewFoodTaster(long systemVersion) {
-		try {
-			_royalFoodTaster = _king.deepCopy(systemVersion, _snapshotSerializer);
-		} catch (Exception ex) {
-			throw new FoodTasterException("Unable to produce a copy of the prevalent system for trying out transactions before applying them to the real system.", ex);
-		}
-	}
+    private void letTheFoodTasterDie() {
+        _royalFoodTaster = null; // At this moment there might be
+                                    // transactions that have already been
+                                    // approved by this censor but have not yet
+                                    // been applied to the _king. It is a
+                                    // requirement, therefore, that the
+                                    // _royalFoodTaster must not be initialized
+                                    // now, but only when the next transaction
+                                    // arrives to be approved.
+    }
+
+    private PrevalentSystemGuard royalFoodTaster(long systemVersion) {
+        if (_royalFoodTaster == null)
+            produceNewFoodTaster(systemVersion);
+        return _royalFoodTaster;
+    }
+
+    private void produceNewFoodTaster(long systemVersion) {
+        try {
+            _royalFoodTaster = _king.deepCopy(systemVersion, _snapshotSerializer);
+        } catch (Exception ex) {
+            throw new FoodTasterException("Unable to produce a copy of the prevalent system for trying out transactions before applying them to the real system.", ex);
+        }
+    }
 
 }

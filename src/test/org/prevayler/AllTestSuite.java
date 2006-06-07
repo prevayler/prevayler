@@ -6,15 +6,15 @@
 
 package org.prevayler;
 
+import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.framework.Test;
 
 public class AllTestSuite extends TestCase {
-	public static Test suite() {
-		TestSuite suite = new TestSuite();
-		suite.addTest(org.prevayler.implementation.Suite.suite());
-		suite.addTest(org.prevayler.foundation.Suite.suite());
-		return suite;
-	}
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
+        suite.addTest(org.prevayler.implementation.Suite.suite());
+        suite.addTest(org.prevayler.foundation.Suite.suite());
+        return suite;
+    }
 }

@@ -4,21 +4,21 @@
 
 package org.prevayler.implementation;
 
-import java.util.Date;
-
 import org.prevayler.Transaction;
 
+import java.util.Date;
 
 class Appendix implements Transaction {
 
-	private static final long serialVersionUID = 7925676108189989759L;
-	private final String appendix;
-	
-	public void executeOn(Object prevalentSystem, Date ignored) {
-		((AppendingSystem)prevalentSystem).append(appendix);
-	}
+    private static final long serialVersionUID = 7925676108189989759L;
 
-	Appendix(String appendix) {
-		this.appendix = appendix;
-	}
+    private final String appendix;
+
+    public void executeOn(Object prevalentSystem, Date ignored) {
+        ((AppendingSystem) prevalentSystem).append(appendix);
+    }
+
+    Appendix(String appendix) {
+        this.appendix = appendix;
+    }
 }

@@ -5,32 +5,33 @@ import java.util.Map;
 
 public class Chunk {
 
-	private byte[] _bytes;
-	private Map _parameters;
+    private byte[] _bytes;
 
-	public Chunk(byte[] bytes) {
-		this(bytes, new LinkedHashMap());
-	}
+    private Map _parameters;
 
-	public Chunk(byte[] bytes, Map parameters) {
-		_bytes = bytes;
-		_parameters = parameters;
-	}
+    public Chunk(byte[] bytes) {
+        this(bytes, new LinkedHashMap());
+    }
 
-	public byte[] getBytes() {
-		return _bytes;
-	}
+    public Chunk(byte[] bytes, Map parameters) {
+        _bytes = bytes;
+        _parameters = parameters;
+    }
 
-	public void setParameter(String name, String value) {
-		_parameters.put(name, value);
-	}
+    public byte[] getBytes() {
+        return _bytes;
+    }
 
-	public String getParameter(String name) {
-		return (String) _parameters.get(name);
-	}
+    public void setParameter(String name, String value) {
+        _parameters.put(name, value);
+    }
 
-	public Map getParameters() {
-		return _parameters;
-	}
+    public String getParameter(String name) {
+        return (String) _parameters.get(name);
+    }
+
+    public Map getParameters() {
+        return _parameters;
+    }
 
 }

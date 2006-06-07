@@ -8,50 +8,49 @@ package org.prevayler.foundation.network;
 
 import java.io.IOException;
 
-
 public class NetworkClientObjectReceiverImpl implements ObjectReceiver {
 
     /** our connection to the network */
     private ObjectSocket _provider;
+
     /** the upper layer who we give what we receive to */
     private ObjectReceiver _client;
 
     private volatile boolean _closing;
-    
-    public NetworkClientObjectReceiverImpl (String ipAddress, int port,
-            ObjectReceiver client) throws IOException {
+
+    public NetworkClientObjectReceiverImpl(String ipAddress, int port, ObjectReceiver client) throws IOException {
         this(new ObjectSocketImpl(ipAddress, port), client);
     }
-    public NetworkClientObjectReceiverImpl(ObjectSocket objectSocket,
-                                           Service service) throws IOException {
+
+    public NetworkClientObjectReceiverImpl(ObjectSocket objectSocket, Service service) throws IOException {
         _provider = objectSocket;
         _client = service.serverFor(this);
         startReading();
     }
-    
-    public NetworkClientObjectReceiverImpl (ObjectSocket objectSocket,
-                                            ObjectReceiver client) {
+
+    public NetworkClientObjectReceiverImpl(ObjectSocket objectSocket, ObjectReceiver client) {
         _provider = objectSocket;
         _client = client;
         startReading();
-        
+
     }
-    
+
     /**
      * Create a reader thread
-     *
+     * 
      */
-    private void startReading()  {
+    private void startReading() {
         Thread reader = new Thread() {
             public void run() {
-                while (!_closing) receiveFromNetwork();
+                while (!_closing)
+                    receiveFromNetwork();
             }
         };
         reader.setName("Prevayler Network Client Receiver");
         reader.setDaemon(true);
         reader.start();
     }
-    
+
     /**
      * When something is read give it to our client, also give it the exception
      */
@@ -65,16 +64,18 @@ public class NetworkClientObjectReceiverImpl implements ObjectReceiver {
                 return;
             }
             passToClient(ex);
-        } 
+        }
     }
-    
+
     private void closeDown() {
         try {
             close();
-        } catch (IOException ignorable) {}
+        } catch (IOException ignorable) {
+        }
         try {
             _client.close();
-        } catch (IOException neverThrown) {}
+        } catch (IOException neverThrown) {
+        }
     }
 
     private void passToClient(Object object) {
@@ -84,6 +85,7 @@ public class NetworkClientObjectReceiverImpl implements ObjectReceiver {
             unExpected.printStackTrace();
         }
     }
+
     /**
      * Receive an object from prevayler client to be sent to the network
      */
@@ -91,7 +93,9 @@ public class NetworkClientObjectReceiverImpl implements ObjectReceiver {
         _provider.writeObject(object);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.prevayler.foundation.network.ObjectReceiver#close()
      */
     public void close() throws IOException {

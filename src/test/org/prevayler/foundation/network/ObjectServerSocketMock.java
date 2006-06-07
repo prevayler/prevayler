@@ -4,49 +4,51 @@
 
 package org.prevayler.foundation.network;
 
-import java.io.IOException;
-
 import org.prevayler.foundation.Cool;
 
+import java.io.IOException;
 
 public class ObjectServerSocketMock implements ObjectServerSocket {
 
-	private ObjectSocket _clientSide;
-	private final Permit _permit;
+    private ObjectSocket _clientSide;
 
+    private final Permit _permit;
 
-	public ObjectServerSocketMock(Permit permit) {
-		_permit = permit;
-		_permit.addObjectToNotify(this);
-	}
+    public ObjectServerSocketMock(Permit permit) {
+        _permit = permit;
+        _permit.addObjectToNotify(this);
+    }
 
-	public synchronized ObjectSocket accept() throws IOException {
-		_permit.check();
-		
-		if (_clientSide != null) throw new IOException("Port already in use.");
-		ObjectSocketMock result = new ObjectSocketMock(_permit);
-		_clientSide = result.counterpart();
-		
-		notifyAll(); //Notifies all client threads.
-		Cool.wait(this);
+    public synchronized ObjectSocket accept() throws IOException {
+        _permit.check();
 
-		_permit.check();
-		return result;
-	}
+        if (_clientSide != null)
+            throw new IOException("Port already in use.");
+        ObjectSocketMock result = new ObjectSocketMock(_permit);
+        _clientSide = result.counterpart();
 
-	synchronized ObjectSocket openClientSocket() throws IOException {
-		_permit.check();
-		while (_clientSide == null) Cool.wait(this);
-		_permit.check();
+        notifyAll(); // Notifies all client threads.
+        Cool.wait(this);
+
+        _permit.check();
+        return result;
+    }
+
+    synchronized ObjectSocket openClientSocket() throws IOException {
+        _permit.check();
+        while (_clientSide == null)
+            Cool.wait(this);
+        _permit.check();
 
         ObjectSocket result = _clientSide;
         _clientSide = null;
-        notifyAll(); //Notifies the server thread (necessary) and eventual client threads (harmless).
+        notifyAll(); // Notifies the server thread (necessary) and eventual
+                        // client threads (harmless).
         return result;
-	}
+    }
 
-	public void close() throws IOException {
-		// TODO Auto-generated method stub
-	}
+    public void close() throws IOException {
+        // TODO Auto-generated method stub
+    }
 
 }

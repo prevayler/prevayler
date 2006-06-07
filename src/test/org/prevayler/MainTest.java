@@ -6,13 +6,13 @@ package org.prevayler;
 
 import junit.textui.TestRunner;
 
-
-/** The main class for testing Prevayler.
-*/
+/**
+ * The main class for testing Prevayler.
+ */
 public class MainTest {
 
-	static public void main(String[] args) throws Exception {
-		TestRunner.run(AllTestSuite.suite()); 
-	}
+    static public void main(String[] args) throws Exception {
+        TestRunner.run(AllTestSuite.suite());
+    }
 
 }

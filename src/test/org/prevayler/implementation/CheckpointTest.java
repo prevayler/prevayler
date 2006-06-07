@@ -4,78 +4,77 @@
 
 package org.prevayler.implementation;
 
-import java.io.IOException;
-
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.foundation.*;
+import org.prevayler.foundation.FileIOTest;
 
+import java.io.IOException;
 
 public class CheckpointTest extends FileIOTest {
 
-	private Prevayler _prevayler;
+    private Prevayler _prevayler;
 
-	public void testCheckpoint() throws Exception {
+    public void testCheckpoint() throws Exception {
 
-		crashRecover(); //There is nothing to recover at first. A new system will be created.
-		crashRecover();
-		append("a","a");
-		append("b","ab");
-		verify("ab");
+        crashRecover(); // There is nothing to recover at first. A new system
+                        // will be created.
+        crashRecover();
+        append("a", "a");
+        append("b", "ab");
+        verify("ab");
 
-		crashRecover();
-		verify("");
+        crashRecover();
+        verify("");
 
-		append("a","a");
-		append("b","ab");
-		snapshot();
-		snapshot();
-		verify("ab");
+        append("a", "a");
+        append("b", "ab");
+        snapshot();
+        snapshot();
+        verify("ab");
 
-		crashRecover();
-		snapshot();
-		append("c","abc");
-		snapshot();
-		append("d","abcd");
-		append("e","abcde");
-		verify("abcde");
+        crashRecover();
+        snapshot();
+        append("c", "abc");
+        snapshot();
+        append("d", "abcd");
+        append("e", "abcde");
+        verify("abcde");
 
-		crashRecover();
-		append("d","abcd");
-		verify("abcd");
+        crashRecover();
+        append("d", "abcd");
+        verify("abcd");
 
-	}
+    }
 
-	private void crashRecover() throws Exception {
-		out("CrashRecovery.");
-		_prevayler = PrevaylerFactory.createCheckpointPrevayler(new AppendingSystem(), _testDirectory);
-	}
+    private void crashRecover() throws Exception {
+        out("CrashRecovery.");
+        _prevayler = PrevaylerFactory.createCheckpointPrevayler(new AppendingSystem(), _testDirectory);
+    }
 
-	private void snapshot() throws IOException {
-		out("Snapshot.");
-		_prevayler.takeSnapshot();
-	}
+    private void snapshot() throws IOException {
+        out("Snapshot.");
+        _prevayler.takeSnapshot();
+    }
 
+    private void append(String appendix, String expectedResult) throws Exception {
+        out("Appending " + appendix);
+        _prevayler.execute(new Appendix(appendix));
+        verify(expectedResult);
+    }
 
-	private void append(String appendix, String expectedResult) throws Exception {
-		out("Appending " + appendix);
-		_prevayler.execute(new Appendix(appendix));
-		verify(expectedResult);
-	}
+    private void verify(String expectedResult) {
+        out("Expecting result: " + expectedResult);
+        assertEquals(expectedResult, system().value());
+    }
 
+    private AppendingSystem system() {
+        return (AppendingSystem) _prevayler.prevalentSystem();
+    }
 
-	private void verify(String expectedResult) {
-		out("Expecting result: " + expectedResult);
-		assertEquals(expectedResult, system().value());
-	}
-
-
-	private AppendingSystem system() {
-		return (AppendingSystem)_prevayler.prevalentSystem();
-	}
-
-	private static void out(Object obj) {
-		if (false) System.out.println(obj);   //Change this line to see what the test is doing.
-	}
+    private static void out(Object obj) {
+        if (false)
+            System.out.println(obj); // Change this line to see what the test
+                                        // is doing.
+    }
 
 }

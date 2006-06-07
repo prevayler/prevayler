@@ -9,29 +9,29 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-
 public class Permit {
-	
-	boolean _isValid = true;
-	private final Set _objectsToNotify = new HashSet();
-	
-	public void check () throws IOException {
-		if (! _isValid)
-			throw new IOException("Network crash simulated.");
-	}
-	
-	public void expire() {
-		_isValid = false;
-		Iterator it = _objectsToNotify.iterator();
-		while (it.hasNext()) {
-			Object toNotify = it.next();
-			synchronized (toNotify) {
-				toNotify.notify();
-			}
-		}
-	}
 
-	public void addObjectToNotify(Object object) {
-		_objectsToNotify.add(object);
-	}
+    boolean _isValid = true;
+
+    private final Set _objectsToNotify = new HashSet();
+
+    public void check() throws IOException {
+        if (!_isValid)
+            throw new IOException("Network crash simulated.");
+    }
+
+    public void expire() {
+        _isValid = false;
+        Iterator it = _objectsToNotify.iterator();
+        while (it.hasNext()) {
+            Object toNotify = it.next();
+            synchronized (toNotify) {
+                toNotify.notify();
+            }
+        }
+    }
+
+    public void addObjectToNotify(Object object) {
+        _objectsToNotify.add(object);
+    }
 }

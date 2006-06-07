@@ -8,7 +8,6 @@ package org.prevayler.foundation.monitor;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-
 /**
  * A Monitor that logs output using Log4j. Loggers are named by fully qualified
  * class name for easy configuration and control over logging output.

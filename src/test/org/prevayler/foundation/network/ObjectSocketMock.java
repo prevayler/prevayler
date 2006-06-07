@@ -4,57 +4,59 @@
 
 package org.prevayler.foundation.network;
 
+import org.prevayler.foundation.Cool;
+import org.prevayler.foundation.DeepCopier;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.prevayler.foundation.Cool;
-import org.prevayler.foundation.DeepCopier;
-
-
 public class ObjectSocketMock implements ObjectSocket {
 
-	private ObjectSocketMock _counterpart;
-	private List _receivedObjects = new LinkedList();
-	private Permit _permit;
+    private ObjectSocketMock _counterpart;
 
-	ObjectSocketMock(Permit permit) {
-		initialize(permit, new ObjectSocketMock(this, permit));
-	}
+    private List _receivedObjects = new LinkedList();
 
-	private ObjectSocketMock(ObjectSocketMock counterpart, Permit permit) {
-		initialize(permit, counterpart);
-	}
+    private Permit _permit;
 
-	private void initialize(Permit permit, ObjectSocketMock counterpart) {
-		_permit = permit;
-		_permit.addObjectToNotify(this);
-		_counterpart = counterpart;
-	}
+    ObjectSocketMock(Permit permit) {
+        initialize(permit, new ObjectSocketMock(this, permit));
+    }
 
-	public void writeObject(Object object) throws IOException {
-		_permit.check();
-		_counterpart.receive(DeepCopier.deepCopy(object));
-	}
+    private ObjectSocketMock(ObjectSocketMock counterpart, Permit permit) {
+        initialize(permit, counterpart);
+    }
 
-	private synchronized void receive(Object object) {
-		_receivedObjects.add(object);
-		notify();
-	}
+    private void initialize(Permit permit, ObjectSocketMock counterpart) {
+        _permit = permit;
+        _permit.addObjectToNotify(this);
+        _counterpart = counterpart;
+    }
 
-	public synchronized Object readObject() throws IOException, ClassNotFoundException {
-		_permit.check();
-		if (_receivedObjects.isEmpty()) Cool.wait(this);
-		_permit.check();
-		return _receivedObjects.remove(0);
-	}
+    public void writeObject(Object object) throws IOException {
+        _permit.check();
+        _counterpart.receive(DeepCopier.deepCopy(object));
+    }
 
-	public void close() throws IOException {
-		//TODO Implement this close.
-	}
+    private synchronized void receive(Object object) {
+        _receivedObjects.add(object);
+        notify();
+    }
 
-	public ObjectSocket counterpart() {
-		return _counterpart;
-	}
-	
+    public synchronized Object readObject() throws IOException, ClassNotFoundException {
+        _permit.check();
+        if (_receivedObjects.isEmpty())
+            Cool.wait(this);
+        _permit.check();
+        return _receivedObjects.remove(0);
+    }
+
+    public void close() throws IOException {
+        // TODO Implement this close.
+    }
+
+    public ObjectSocket counterpart() {
+        return _counterpart;
+    }
+
 }

@@ -4,34 +4,41 @@
 
 package org.prevayler.implementation.clock;
 
-import java.util.Date;
-
 import org.prevayler.Clock;
+
+import java.util.Date;
 
 public class PausableClock implements Clock {
 
-	private final Clock _realClock;
-	private final BrokenClock _brokenClock = new BrokenClock();
-	private Clock _activeClock;
+    private final Clock _realClock;
 
+    private final BrokenClock _brokenClock = new BrokenClock();
 
-	public PausableClock(Clock realClock) {
-		_realClock = realClock;
-		resume();
-	}
+    private Clock _activeClock;
 
-	public synchronized Date time() { return _activeClock.time(); }
+    public PausableClock(Clock realClock) {
+        _realClock = realClock;
+        resume();
+    }
 
-	public synchronized void pause() {
-		advanceTo(_realClock.time());
-		_activeClock = _brokenClock;
-	}
+    public synchronized Date time() {
+        return _activeClock.time();
+    }
 
-	public void advanceTo(Date time) {
-		_brokenClock.advanceTo(time);
-	}
+    public synchronized void pause() {
+        advanceTo(_realClock.time());
+        _activeClock = _brokenClock;
+    }
 
-	public synchronized void resume() { _activeClock = _realClock; }
+    public void advanceTo(Date time) {
+        _brokenClock.advanceTo(time);
+    }
 
-	public Date realTime() { return _realClock.time(); }
+    public synchronized void resume() {
+        _activeClock = _realClock;
+    }
+
+    public Date realTime() {
+        return _realClock.time();
+    }
 }
