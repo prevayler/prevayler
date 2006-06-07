@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="lib/skaringa-r3p7.jar"/>
 	<classpathentry kind="lib" path="lib/xpp3_min-1.1.3_8.jar"/>
 	<classpathentry kind="lib" path="lib/xstream-1.1.3.jar"/>
+	<classpathentry kind="src" path="src/demo"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
