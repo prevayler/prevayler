@@ -22,7 +22,7 @@ public class NetworkClientObjectReceiverImpl implements ObjectReceiver {
         this(new ObjectSocketImpl(ipAddress, port), client);
     }
 
-    public NetworkClientObjectReceiverImpl(ObjectSocket objectSocket, Service service) throws IOException {
+    public NetworkClientObjectReceiverImpl(ObjectSocket objectSocket, Service service) {
         _provider = objectSocket;
         _client = service.serverFor(this);
         startReading();

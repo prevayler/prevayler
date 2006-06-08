@@ -20,7 +20,7 @@ public class NetworkImpl extends BaseNetworkImpl {
         return new NetworkClientObjectReceiverImpl(ipAddress, port, client);
     }
 
-    public ObjectReceiver newReceiver(Service service, ObjectSocket socket) throws IOException {
+    public ObjectReceiver newReceiver(Service service, ObjectSocket socket) {
         return new NetworkClientObjectReceiverImpl(socket, service);
     }
 

@@ -13,7 +13,6 @@ import org.prevayler.TransactionWithQuery;
 import org.prevayler.foundation.UnexpectedException;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
-import org.prevayler.implementation.snapshot.RealSnapshotManager;
 import org.prevayler.implementation.snapshot.SnapshotManager;
 
 import java.io.IOException;

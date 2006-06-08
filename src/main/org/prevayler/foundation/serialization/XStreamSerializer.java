@@ -74,7 +74,7 @@ public class XStreamSerializer implements Serializer {
         writer.flush();
     }
 
-    public Object readObject(InputStream stream) throws IOException, ClassNotFoundException {
+    public Object readObject(InputStream stream) throws IOException {
         return getXStream().fromXML(_encoding == null ? new InputStreamReader(stream) : new InputStreamReader(stream, _encoding));
     }
 

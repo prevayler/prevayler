@@ -98,7 +98,7 @@ public class StubbornClientReceiverImpl extends Thread implements ObjectReceiver
         }
     }
 
-    public void receive(Object object) throws IOException {
+    public void receive(Object object) {
         waitIfNotOpen();
         forwardToProvider(object);
     }
@@ -131,7 +131,7 @@ public class StubbornClientReceiverImpl extends Thread implements ObjectReceiver
         }
     }
 
-    public void close() throws IOException {
+    public void close() {
         _wantedOpen = false;
         shutdown();
     }

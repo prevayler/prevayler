@@ -30,7 +30,7 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 
     private final Thread _clockTickSender = createClockTickSender();
 
-    ServerConnection(TransactionPublisher publisher, ObjectSocket remoteSocket) throws IOException {
+    ServerConnection(TransactionPublisher publisher, ObjectSocket remoteSocket) {
         _publisher = publisher;
         _remote = remoteSocket;
         setDaemon(true);

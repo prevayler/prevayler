@@ -39,11 +39,11 @@ public class MultiMemberGZIPInputStream extends InputStream {
         return n;
     }
 
-    public void close() throws IOException {
+    public void close() {
         throw new UnsupportedOperationException();
     }
 
-    public void reset() throws IOException {
+    public void reset() {
         throw new UnsupportedOperationException();
     }
 
@@ -55,7 +55,7 @@ public class MultiMemberGZIPInputStream extends InputStream {
         throw new UnsupportedOperationException();
     }
 
-    public long skip(long n) throws IOException {
+    public long skip(long n) {
         throw new UnsupportedOperationException();
     }
 

@@ -137,7 +137,6 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
                 sleep(frequency);
             } catch (InterruptedException unEx) {
             }
-            ;
         }
 
         private void send() {
@@ -148,7 +147,7 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
             }
         }
 
-        public void receive(Object object) throws IOException {
+        public void receive(Object object) {
             fail("receive called on server");
         }
 
@@ -157,7 +156,7 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
          * 
          * @see org.prevayler.foundation.network.ObjectReceiver#close()
          */
-        public void close() throws IOException {
+        public void close() {
             if (openForBusiness) {
                 fail("close called unexpectedly");
             }
@@ -228,7 +227,7 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
             }
         }
 
-        public void receive(Object object) throws IOException {
+        public void receive(Object object) {
             if (object instanceof String) {
                 String s = (String) object;
                 received.append(s);
@@ -247,7 +246,7 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
             notify();
         }
 
-        public void close() throws IOException {
+        public void close() {
 
         }
     }
@@ -325,12 +324,12 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
             }
         }
 
-        public void receive(Object object) throws IOException {
+        public void receive(Object object) {
             messageFromClientForServer(object);
 
         }
 
-        public void close() throws IOException {
+        public void close() {
             // TODO Auto-generated method stub
 
         }
@@ -360,11 +359,11 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
             this.proxy = proxy;
         }
 
-        public void receive(Object object) throws IOException {
+        public void receive(Object object) {
             proxy.messageFromServerForClient(object);
         }
 
-        public void close() throws IOException {
+        public void close() {
         }
 
     }

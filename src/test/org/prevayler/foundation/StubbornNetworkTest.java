@@ -133,7 +133,6 @@ public class StubbornNetworkTest extends TestCase {
             fail("IOException for unused port not thrown");
         } catch (IOException expected) {
         }
-        ;
     }
 
     public void test2Services() throws Exception {

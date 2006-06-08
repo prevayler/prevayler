@@ -38,7 +38,7 @@ public class MultiMemberGZIPOutputStream extends OutputStream {
         _stream.flush();
     }
 
-    public void close() throws IOException {
+    public void close() {
         throw new UnsupportedOperationException();
     }
 

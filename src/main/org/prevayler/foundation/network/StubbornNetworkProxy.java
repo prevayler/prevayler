@@ -89,7 +89,7 @@ public class StubbornNetworkProxy implements ObjectReceiver {
         return (_network != null);
     }
 
-    public void close() throws IOException {
+    public void close() {
         closeClientChannel();
         _client = null;
     }

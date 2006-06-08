@@ -26,11 +26,11 @@ public class StubbornNetworkImpl extends BaseNetworkImpl implements StubbornNetw
         _sessionsInService = Collections.synchronizedMap(new HashMap());
     }
 
-    public ObjectReceiver newReceiver(String ipAddress, int port, ObjectReceiver client) throws IOException {
+    public ObjectReceiver newReceiver(String ipAddress, int port, ObjectReceiver client) {
         return new StubbornClientReceiverImpl(this, ipAddress, port, client);
     }
 
-    public ObjectReceiver newReceiver(Service service, ObjectSocket socket) throws IOException {
+    public ObjectReceiver newReceiver(Service service, ObjectSocket socket) {
         SessionsManager sessionsManager = getSessionManager(service);
 
         return new StubbornServerReceiverImpl(service, socket, sessionsManager);

@@ -11,7 +11,7 @@ public class NonCloseableOutputStream extends OutputStream {
         _stream = stream;
     }
 
-    public void close() throws IOException {
+    public void close() {
     }
 
     public void flush() throws IOException {
