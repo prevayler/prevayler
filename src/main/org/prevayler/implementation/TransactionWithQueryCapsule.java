@@ -21,7 +21,7 @@ class TransactionWithQueryCapsule extends Capsule {
         super(serialized);
     }
 
-    protected void justExecute(Object transaction, Object prevalentSystem, Date executionTime) {
+    protected void execute(Object transaction, Object prevalentSystem, Date executionTime) {
         try {
             _queryResult = ((TransactionWithQuery) transaction).executeAndQuery(prevalentSystem, executionTime);
         } catch (RuntimeException rx) {

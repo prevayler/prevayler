@@ -17,7 +17,7 @@ class TransactionCapsule extends Capsule {
         super(serialized);
     }
 
-    protected void justExecute(Object transaction, Object prevalentSystem, Date executionTime) {
+    protected void execute(Object transaction, Object prevalentSystem, Date executionTime) {
         ((Transaction) transaction).executeOn(prevalentSystem, executionTime);
     }
 
