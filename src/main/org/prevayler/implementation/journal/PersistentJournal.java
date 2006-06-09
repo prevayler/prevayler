@@ -211,13 +211,13 @@ public class PersistentJournal implements Journal {
         return recoveringTransaction;
     }
 
-    protected void handle(IOException iox, File journal, String action) {
+    private void handle(IOException iox, File journal, String action) {
         String message = "All transaction processing is now blocked. An IOException was thrown while " + action + " a .journal file.";
         _monitor.notify(this.getClass(), message, journal, iox);
         hang();
     }
 
-    static private void hang() {
+    private static void hang() {
         while (true) {
             try {
                 Thread.sleep(5000);

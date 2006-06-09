@@ -15,7 +15,7 @@ public class Chunking {
 
     private static final String ASCII = "US-ASCII";
 
-    private static final byte[] CRLF = new byte[] { '\r', '\n' };
+    private static final byte[] CRLF = { '\r', '\n' };
 
     private static final String SIZE = "0|[1-9A-F][0-9A-F]{0,6}|[1-7][0-9A-F]{7}";
 
