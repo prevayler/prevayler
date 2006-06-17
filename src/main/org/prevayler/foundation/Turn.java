@@ -1,54 +1,93 @@
 package org.prevayler.foundation;
 
 /**
- * Used to sequence operations that have to be performed in order by several
- * concurrent threads.
+ * Used to control progression of threads through the stages of a processing
+ * pipeline.
  */
 public class Turn {
 
-    private Turn _next;
-
-    private int _tickets = 0;
-
-    private boolean _isAlwaysSkipped;
-
+    /**
+     * The first turn through a pipeline, allowed to flow freely through all
+     * stages.
+     */
     public static Turn first() {
-        return new Turn(1000000);
-    } // Arbitrarily large number.
-
-    private Turn(int tickets) {
-        _tickets = tickets;
+        return new Turn(true);
     }
 
-    public Turn next() {
-        if (_next == null)
-            _next = new Turn(0);
+    private Turn _next;
+
+    private int _allowed;
+
+    private Turn(boolean first) {
+        _next = null;
+        _allowed = first ? Integer.MAX_VALUE : 0;
+    }
+
+    /**
+     * The next turn through the pipeline, allowed to flow only as far as this
+     * turn has already gone.
+     * 
+     * @throw TurnAbortedException if this or any preceding turn has been
+     *        aborted.
+     */
+    public synchronized Turn next() {
+        if (_allowed < 0) {
+            throw new TurnAbortedException();
+        }
+        if (_next == null) {
+            _next = new Turn(false);
+        }
         return _next;
     }
 
+    /**
+     * Start a stage in the pipeline. Will block until the preceding turn has
+     * ended the same stage.
+     * 
+     * @throw TurnAbortedException if this or any preceding turn has been
+     *        aborted.
+     */
     public synchronized void start() {
-        if (_tickets == 0)
+        while (_allowed == 0) {
             Cool.wait(this);
-        _tickets--;
-    }
-
-    public void end() {
-        next().haveSomeTickets(1);
-    }
-
-    private synchronized void haveSomeTickets(int tickets) {
-        if (_isAlwaysSkipped) {
-            next().haveSomeTickets(tickets);
-            return;
         }
-        _tickets += tickets;
-        notify();
+        if (_allowed < 0) {
+            throw new TurnAbortedException();
+        }
+        _allowed--;
     }
 
-    public synchronized void alwaysSkip() {
-        end();
-        _isAlwaysSkipped = true;
-        next().haveSomeTickets(_tickets);
+    /**
+     * End a stage in the pipeline. Allows the next turn to start the same
+     * stage.
+     */
+    public void end() {
+        next().allow();
+    }
+
+    private synchronized void allow() {
+        _allowed++;
+        notifyAll();
+    }
+
+    /**
+     * Abort the pipeline. Prevents this or any following turn from continuing,
+     * but doesn't affect preceding turns already further along in the pipeline.
+     * 
+     * @throw TurnAbortedException always, with the given message and cause.
+     */
+    public void abort(String message, Throwable cause) {
+        Turn turn = this;
+        while (turn != null) {
+            turn = turn.die();
+        }
+        throw new TurnAbortedException(message, cause);
+    }
+
+    private synchronized Turn die() {
+        _allowed = Integer.MIN_VALUE;
+        notifyAll();
+        return _next;
     }
 
 }

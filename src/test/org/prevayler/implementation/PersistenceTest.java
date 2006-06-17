@@ -8,8 +8,10 @@ import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.foundation.FileManager;
+import org.prevayler.foundation.TurnAbortedException;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class PersistenceTest extends FileIOTest {
@@ -29,7 +31,7 @@ public class PersistenceTest extends FileIOTest {
         newPrevalenceBase();
 
         crashRecover(); // There is nothing to recover at first. A new system
-                        // will be created.
+        // will be created.
         crashRecover();
         append("a", "a");
         append("b", "ab");
@@ -63,8 +65,8 @@ public class PersistenceTest extends FileIOTest {
         newPrevalenceBase();
         FileManager.produceDirectory(_prevalenceBase);
         lastSnapshot.renameTo(new File(_prevalenceBase, "0000000000000000008.snapshot")); // Moving
-                                                                                            // the
-                                                                                            // file.
+        // the
+        // file.
         lastTransactionLog.renameTo(new File(_prevalenceBase, "0000000000000000008.journal"));
 
         crashRecover();
@@ -83,7 +85,7 @@ public class PersistenceTest extends FileIOTest {
     public void testNondeterminsticError() throws Exception {
         newPrevalenceBase();
         crashRecover(); // There is nothing to recover at first. A new system
-                        // will be created.
+        // will be created.
 
         append("a", "a");
         append("b", "ab");
@@ -133,6 +135,41 @@ public class PersistenceTest extends FileIOTest {
         verify("abcx");
     }
 
+    public void testJournalPanic() throws Exception {
+        newPrevalenceBase();
+
+        crashRecover();
+        append("a", "a");
+        append("b", "ab");
+
+        sneakilyCloseUnderlyingJournalStream();
+
+        try {
+            _prevayler.execute(new Appendix("x"));
+            fail();
+        } catch (TurnAbortedException aborted) {
+            assertEquals("All transaction processing is now aborted. An IOException was thrown while writing to a .journal file.", aborted.getMessage());
+            assertNotNull(aborted.getCause());
+        }
+
+        try {
+            _prevayler.execute(new Appendix("y"));
+            fail();
+        } catch (TurnAbortedException aborted) {
+            assertNull(aborted.getMessage());
+            assertNull(aborted.getCause());
+        }
+
+        crashRecover();
+        verify("ab");
+        append("c", "abc");
+    }
+
+    private void sneakilyCloseUnderlyingJournalStream() throws Exception {
+        FileOutputStream journalStream = (FileOutputStream) Sneaky.get(_prevayler, "_publisher._journal._outputJournal._fileOutputStream");
+        journalStream.close();
+    }
+
     private void crashRecover() throws Exception {
         out("CrashRecovery.");
 
@@ -177,7 +214,7 @@ public class PersistenceTest extends FileIOTest {
     private static void out(Object obj) {
         if (false)
             System.out.println(obj); // Change this line to see what the test
-                                        // is doing.
+        // is doing.
     }
 
 }

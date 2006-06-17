@@ -8,6 +8,7 @@ package org.prevayler.implementation.journal;
 import org.prevayler.foundation.Chunk;
 import org.prevayler.foundation.DurableInputStream;
 import org.prevayler.foundation.DurableOutputStream;
+import org.prevayler.foundation.Guided;
 import org.prevayler.foundation.StopWatch;
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.implementation.PrevaylerDirectory;
@@ -77,7 +78,7 @@ public class PersistentJournal implements Journal {
 
             if (!isOutputJournalStillValid()) {
                 outputJournalToClose = _outputJournal;
-                _outputJournal = createOutputJournal(_nextTransaction);
+                _outputJournal = createOutputJournal(_nextTransaction, guide);
                 _journalAgeTimer = StopWatch.start();
             }
 
@@ -90,8 +91,8 @@ public class PersistentJournal implements Journal {
 
         try {
             myOutputJournal.sync(guide);
-        } catch (IOException iox) {
-            handle(iox, _outputJournal.file(), "writing to");
+        } catch (Exception exception) {
+            abort(exception, _outputJournal.file(), "writing to", guide);
         }
 
         guide.startTurn();
@@ -99,8 +100,8 @@ public class PersistentJournal implements Journal {
             try {
                 if (outputJournalToClose != null)
                     outputJournalToClose.close();
-            } catch (IOException iox) {
-                handle(iox, outputJournalToClose.file(), "closing");
+            } catch (Exception exception) {
+                abort(exception, outputJournalToClose.file(), "closing", guide);
             }
         } finally {
             guide.endTurn();
@@ -119,12 +120,12 @@ public class PersistentJournal implements Journal {
         return _journalSizeThresholdInBytes != 0 && _outputJournal.file().length() >= _journalSizeThresholdInBytes;
     }
 
-    private DurableOutputStream createOutputJournal(long transactionNumber) {
+    private DurableOutputStream createOutputJournal(long transactionNumber, Guided guide) {
         File file = _directory.journalFile(transactionNumber, _journalSuffix);
         try {
             return new DurableOutputStream(file);
-        } catch (IOException iox) {
-            handle(iox, file, "creating");
+        } catch (Exception exception) {
+            abort(exception, file, "creating", guide);
             return null;
         }
     }
@@ -191,17 +192,11 @@ public class PersistentJournal implements Journal {
 
             } catch (EOFException eof) {
                 File nextFile = _directory.journalFile(recoveringTransaction, _journalSuffix);
-                if (journal.equals(nextFile))
-                    PrevaylerDirectory.renameUnusedFile(journal); // The first
-                                                                    // transaction
-                                                                    // in this
-                                                                    // log file
-                                                                    // is
-                                                                    // incomplete.
-                                                                    // We need
-                                                                    // to reuse
-                                                                    // this file
-                                                                    // name.
+                if (journal.equals(nextFile)) {
+                    // The first transaction in this log file is incomplete. We
+                    // need to reuse this file name.
+                    PrevaylerDirectory.renameUnusedFile(journal);
+                }
                 journal = nextFile;
                 if (!journal.exists())
                     break;
@@ -211,19 +206,8 @@ public class PersistentJournal implements Journal {
         return recoveringTransaction;
     }
 
-    private void handle(IOException iox, File journal, String action) {
-        String message = "All transaction processing is now blocked. An IOException was thrown while " + action + " a .journal file.";
-        _monitor.notify(this.getClass(), message, journal, iox);
-        hang();
-    }
-
-    private static void hang() {
-        while (true) {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException ignored) {
-            }
-        }
+    private void abort(Exception exception, File journal, String action, Guided guide) {
+        guide.abortTurn("All transaction processing is now aborted. An IOException was thrown while " + action + " a .journal file.", exception);
     }
 
     public void close() throws IOException {
