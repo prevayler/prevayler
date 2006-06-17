@@ -35,8 +35,7 @@ public class DeepCopier {
             ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
             return serializer.readObject(byteIn);
         } catch (Exception e) {
-            Cool.unexpected(e);
-            return null;
+            throw new UnexpectedException(e);
         }
     }
 
@@ -113,11 +112,7 @@ public class DeepCopier {
         }
 
         public Object getResult() throws ClassNotFoundException, IOException {
-            try {
-                join();
-            } catch (InterruptedException e) {
-                Cool.unexpected(e);
-            }
+            Cool.join(this);
 
             // join() guarantees that all shared memory is synchronized between
             // the two threads
