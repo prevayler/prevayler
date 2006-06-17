@@ -5,6 +5,7 @@
 package org.prevayler.implementation.replication;
 
 import org.prevayler.Clock;
+import org.prevayler.PrevalenceError;
 import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.network.ObjectSocket;
 import org.prevayler.foundation.network.OldNetwork;
@@ -59,12 +60,17 @@ public class ClientPublisher implements TransactionPublisher {
         listener.start();
     }
 
-    public synchronized void subscribe(TransactionSubscriber subscriber, long initialTransaction) throws IOException {
-        if (_subscriber != null)
+    public synchronized void subscribe(TransactionSubscriber subscriber, long initialTransaction) {
+        if (_subscriber != null) {
             throw new UnsupportedOperationException("The current implementation can only support one subscriber. Future implementations will support more.");
+        }
         _subscriber = subscriber;
         synchronized (_upToDateMonitor) {
-            _server.writeObject(new Long(initialTransaction));
+            try {
+                _server.writeObject(new Long(initialTransaction));
+            } catch (Exception e) {
+                throw new PrevalenceError(e);
+            }
             Cool.wait(_upToDateMonitor);
         }
     }
@@ -87,7 +93,7 @@ public class ClientPublisher implements TransactionPublisher {
                 iox.printStackTrace();
                 while (true)
                     Thread.yield(); // Remove all exceptions when using
-                                    // StubbornNetwork.
+                // StubbornNetwork.
             }
             Cool.wait(_myCapsuleMonitor);
 
@@ -159,8 +165,12 @@ public class ClientPublisher implements TransactionPublisher {
         return _clock;
     }
 
-    public void close() throws IOException {
-        _server.close();
+    public void close() {
+        try {
+            _server.close();
+        } catch (Exception e) {
+            throw new PrevalenceError(e);
+        }
     }
 
 }

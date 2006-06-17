@@ -35,7 +35,7 @@ public class DeepCopier {
             ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
             return serializer.readObject(byteIn);
         } catch (Exception e) {
-            throw new UnexpectedException(e);
+            throw new DeepCopyError(e);
         }
     }
 
@@ -46,19 +46,23 @@ public class DeepCopier {
      * original object in order to respect any synchronization the caller may
      * have around it, and a new thread is used for deserializing the copy.
      */
-    public static Object deepCopyParallel(Object original, Serializer serializer) throws IOException, ClassNotFoundException {
-        PipedOutputStream outputStream = new PipedOutputStream();
-        PipedInputStream inputStream = new PipedInputStream(outputStream);
-
-        Receiver receiver = new Receiver(inputStream, serializer);
-
+    public static Object deepCopyParallel(Object original, Serializer serializer) {
         try {
-            serializer.writeObject(outputStream, original);
-        } finally {
-            outputStream.close();
-        }
+            PipedOutputStream outputStream = new PipedOutputStream();
+            PipedInputStream inputStream = new PipedInputStream(outputStream);
 
-        return receiver.getResult();
+            Receiver receiver = new Receiver(inputStream, serializer);
+
+            try {
+                serializer.writeObject(outputStream, original);
+            } finally {
+                outputStream.close();
+            }
+
+            return receiver.getResult();
+        } catch (Exception e) {
+            throw new DeepCopyError(e);
+        }
     }
 
     private static class Receiver extends Thread {
@@ -69,13 +73,7 @@ public class DeepCopier {
 
         private Object _result;
 
-        private IOException _ioException;
-
-        private ClassNotFoundException _classNotFoundException;
-
-        private RuntimeException _runtimeException;
-
-        private Error _error;
+        private Throwable _thrown;
 
         public Receiver(InputStream inputStream, Serializer serializer) {
             _inputStream = inputStream;
@@ -86,15 +84,11 @@ public class DeepCopier {
         public void run() {
             try {
                 _result = _serializer.readObject(_inputStream);
-            } catch (IOException e) {
-                _ioException = e;
-            } catch (ClassNotFoundException e) {
-                _classNotFoundException = e;
-            } catch (RuntimeException e) {
-                _runtimeException = e;
             } catch (Error e) {
-                _error = e;
+                _thrown = e;
                 throw e;
+            } catch (Exception e) {
+                _thrown = e;
             }
 
             try {
@@ -111,24 +105,19 @@ public class DeepCopier {
             }
         }
 
-        public Object getResult() throws ClassNotFoundException, IOException {
+        public Object getResult() {
             Cool.join(this);
 
             // join() guarantees that all shared memory is synchronized between
             // the two threads
 
-            if (_error != null)
-                throw new DeepCopyFailedException("Error during deserialization", _error);
-            if (_runtimeException != null)
-                throw _runtimeException;
-            if (_classNotFoundException != null)
-                throw _classNotFoundException;
-            if (_ioException != null)
-                throw _ioException;
-            if (_result == null)
-                throw new DeepCopyFailedException("Deep copy failed in an unknown way");
-
-            return _result;
+            if (_thrown != null) {
+                throw new DeepCopyError(_thrown);
+            } else if (_result == null) {
+                throw new DeepCopyError();
+            } else {
+                return _result;
+            }
         }
 
     }

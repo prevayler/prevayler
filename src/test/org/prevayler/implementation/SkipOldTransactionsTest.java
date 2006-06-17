@@ -5,6 +5,7 @@ import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.implementation.journal.JournalError;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -53,9 +54,9 @@ public class SkipOldTransactionsTest extends FileIOTest {
         try {
             createPrevayler("NewJournal", new MySerializer(true));
             fail();
-        } catch (IOException exception) {
+        } catch (JournalError expected) {
             File journal = new PrevaylerDirectory(_testDirectory).journalFile(1, "OldJournal");
-            assertEquals("There are transactions needing to be recovered from " + journal + ", but only NewJournal files are supported", exception.getMessage());
+            assertEquals("There are transactions needing to be recovered from " + journal + ", but only NewJournal files are supported", expected.getMessage());
         }
     }
 
@@ -99,14 +100,14 @@ public class SkipOldTransactionsTest extends FileIOTest {
             this.afterSnapshot = afterSnapshot;
         }
 
-        public void writeObject(OutputStream stream, Object object) throws IOException {
+        public void writeObject(OutputStream stream, Object object) throws Exception {
             Writer writer = new OutputStreamWriter(stream, "UTF-8");
             AppendTransaction transaction = (AppendTransaction) object;
             writer.write(transaction.toAdd);
             writer.flush();
         }
 
-        public Object readObject(InputStream stream) throws IOException {
+        public Object readObject(InputStream stream) throws Exception {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
             String toAdd = reader.readLine();
             if (afterSnapshot) {

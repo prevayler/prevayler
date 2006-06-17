@@ -1,6 +1,5 @@
 package org.prevayler.foundation.serialization;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -23,7 +22,7 @@ public interface Serializer {
      * do either. An implementation can expect that the stream is already
      * buffered, so additional buffering is not required for performance.
      */
-    public void writeObject(OutputStream stream, Object object) throws IOException;
+    public void writeObject(OutputStream stream, Object object) throws Exception;
 
     /**
      * Read an object from a stream. An implementation is free to close the
@@ -31,6 +30,6 @@ public interface Serializer {
      * implementation can expect that the stream is already buffered, so
      * additional buffering is not required for performance.
      */
-    public Object readObject(InputStream stream) throws IOException, ClassNotFoundException;
+    public Object readObject(InputStream stream) throws Exception;
 
 }

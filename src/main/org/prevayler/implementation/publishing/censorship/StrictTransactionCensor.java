@@ -40,7 +40,7 @@ public class StrictTransactionCensor implements TransactionCensor {
     }
 
     private void letTheFoodTasterDie() {
-        _royalFoodTaster = null; // At this moment there might be
+        // At this moment there might be
         // transactions that have already been
         // approved by this censor but have not yet
         // been applied to the _king. It is a
@@ -48,11 +48,13 @@ public class StrictTransactionCensor implements TransactionCensor {
         // _royalFoodTaster must not be initialized
         // now, but only when the next transaction
         // arrives to be approved.
+        _royalFoodTaster = null;
     }
 
     private PrevalentSystemGuard royalFoodTaster(long systemVersion) {
-        if (_royalFoodTaster == null)
+        if (_royalFoodTaster == null) {
             produceNewFoodTaster(systemVersion);
+        }
         return _royalFoodTaster;
     }
 
@@ -60,7 +62,7 @@ public class StrictTransactionCensor implements TransactionCensor {
         try {
             _royalFoodTaster = _king.deepCopy(systemVersion, _snapshotSerializer);
         } catch (Exception ex) {
-            throw new FoodTasterException("Unable to produce a copy of the prevalent system for trying out transactions before applying them to the real system.", ex);
+            throw new FoodTasterError("Unable to produce a copy of the prevalent system for trying out transactions before applying them to the real system.", ex);
         }
     }
 

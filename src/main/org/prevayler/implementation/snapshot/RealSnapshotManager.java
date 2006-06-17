@@ -7,7 +7,6 @@ import org.prevayler.implementation.PrevaylerDirectory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Map;
@@ -22,7 +21,7 @@ public class RealSnapshotManager implements SnapshotManager {
 
     private PrevalentSystemGuard _recoveredPrevalentSystem;
 
-    public RealSnapshotManager(Map snapshotSerializers, String primarySnapshotSuffix, Object newPrevalentSystem, PrevaylerDirectory directory, Serializer journalSerializer) throws IOException, ClassNotFoundException {
+    public RealSnapshotManager(Map snapshotSerializers, String primarySnapshotSuffix, Object newPrevalentSystem, PrevaylerDirectory directory, Serializer journalSerializer) {
         for (Iterator iterator = snapshotSerializers.keySet().iterator(); iterator.hasNext();) {
             String suffix = (String) iterator.next();
             PrevaylerDirectory.checkValidSnapshotSuffix(suffix);
@@ -32,16 +31,35 @@ public class RealSnapshotManager implements SnapshotManager {
             throw new IllegalArgumentException("Primary suffix '" + primarySnapshotSuffix + "' does not appear in strategies map");
         }
 
-        _strategies = snapshotSerializers;
-        _primarySuffix = primarySnapshotSuffix;
+        try {
+            _strategies = snapshotSerializers;
+            _primarySuffix = primarySnapshotSuffix;
 
-        _directory = directory;
-        _directory.produceDirectory();
+            _directory = directory;
+            _directory.produceDirectory();
 
-        File latestSnapshot = _directory.latestSnapshot();
-        long recoveredVersion = latestSnapshot == null ? 0 : PrevaylerDirectory.snapshotVersion(latestSnapshot);
-        Object recoveredPrevalentSystem = latestSnapshot == null ? newPrevalentSystem : readSnapshot(latestSnapshot);
-        _recoveredPrevalentSystem = new PrevalentSystemGuard(recoveredPrevalentSystem, recoveredVersion, journalSerializer);
+            File latestSnapshot = _directory.latestSnapshot();
+            long recoveredVersion = latestSnapshot == null ? 0 : PrevaylerDirectory.snapshotVersion(latestSnapshot);
+            Object recoveredPrevalentSystem = latestSnapshot == null ? newPrevalentSystem : readSnapshot(latestSnapshot);
+            _recoveredPrevalentSystem = new PrevalentSystemGuard(recoveredPrevalentSystem, recoveredVersion, journalSerializer);
+        } catch (Exception e) {
+            throw new SnapshotError(e);
+        }
+    }
+
+    private Object readSnapshot(File snapshotFile) throws Exception {
+        String suffix = snapshotFile.getName().substring(snapshotFile.getName().indexOf('.') + 1);
+        if (!_strategies.containsKey(suffix)) {
+            throw new SnapshotError(snapshotFile.toString() + " cannot be read; only " + _strategies.keySet().toString() + " supported");
+        }
+
+        Serializer serializer = (Serializer) _strategies.get(suffix);
+        FileInputStream in = new FileInputStream(snapshotFile);
+        try {
+            return serializer.readObject(in);
+        } finally {
+            in.close();
+        }
     }
 
     public Serializer primarySerializer() {
@@ -52,42 +70,29 @@ public class RealSnapshotManager implements SnapshotManager {
         return _recoveredPrevalentSystem;
     }
 
-    public void writeSnapshot(Object prevalentSystem, long version) throws IOException {
-        File tempFile = _directory.createTempFile("snapshot" + version + "temp", "generatingSnapshot");
-
-        writeSnapshot(prevalentSystem, tempFile);
-
-        File permanent = snapshotFile(version);
-        permanent.delete();
-        if (!tempFile.renameTo(permanent))
-            throw new SnapshotException("Temporary snapshot file generated: " + tempFile + "\nUnable to rename it permanently to: " + permanent);
-    }
-
-    private void writeSnapshot(Object prevalentSystem, File snapshotFile) throws IOException {
-        OutputStream out = new FileOutputStream(snapshotFile);
+    public void writeSnapshot(Object prevalentSystem, long version) {
         try {
-            primarySerializer().writeObject(out, prevalentSystem);
-        } finally {
-            out.close();
+            File tempFile = _directory.createTempFile("snapshot" + version + "temp", "generatingSnapshot");
+
+            OutputStream out = new FileOutputStream(tempFile);
+            try {
+                primarySerializer().writeObject(out, prevalentSystem);
+            } finally {
+                out.close();
+            }
+
+            File permanent = snapshotFile(version);
+            permanent.delete();
+            if (!tempFile.renameTo(permanent)) {
+                throw new SnapshotError("Temporary snapshot file generated: " + tempFile + "\nUnable to rename it permanently to: " + permanent);
+            }
+        } catch (Exception e) {
+            throw new SnapshotError(e);
         }
     }
 
     private File snapshotFile(long version) {
         return _directory.snapshotFile(version, _primarySuffix);
-    }
-
-    private Object readSnapshot(File snapshotFile) throws ClassNotFoundException, IOException {
-        String suffix = snapshotFile.getName().substring(snapshotFile.getName().indexOf('.') + 1);
-        if (!_strategies.containsKey(suffix))
-            throw new SnapshotException(snapshotFile.toString() + " cannot be read; only " + _strategies.keySet().toString() + " supported");
-
-        Serializer serializer = (Serializer) _strategies.get(suffix);
-        FileInputStream in = new FileInputStream(snapshotFile);
-        try {
-            return serializer.readObject(in);
-        } finally {
-            in.close();
-        }
     }
 
 }

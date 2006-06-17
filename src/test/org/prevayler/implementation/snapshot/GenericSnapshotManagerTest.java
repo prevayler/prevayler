@@ -49,10 +49,10 @@ public class GenericSnapshotManagerTest extends FileIOTest {
         try {
             createPrevayler("snapshot", new JavaSerializer());
             fail();
-        } catch (IOException e) {
+        } catch (SnapshotError e) {
             // This is good because if we only looked for .snapshot files we
             // could silently ignore an existing snapshot.
-            assertTrue("Actual message was <" + e.getMessage() + ">", e.getMessage().endsWith("0000000000000000002.xstreamsnapshot cannot be read; only [snapshot] supported"));
+            assertTrue(e.getMessage().endsWith("0000000000000000002.xstreamsnapshot cannot be read; only [snapshot] supported"));
         }
     }
 

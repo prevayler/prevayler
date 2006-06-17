@@ -43,7 +43,7 @@ public class ObjectSocketMock implements ObjectSocket {
         notify();
     }
 
-    public synchronized Object readObject() throws IOException, ClassNotFoundException {
+    public synchronized Object readObject() throws IOException {
         _permit.check();
         if (_receivedObjects.isEmpty())
             Cool.wait(this);
@@ -51,7 +51,7 @@ public class ObjectSocketMock implements ObjectSocket {
         return _receivedObjects.remove(0);
     }
 
-    public void close() throws IOException {
+    public void close() {
         // TODO Implement this close.
     }
 

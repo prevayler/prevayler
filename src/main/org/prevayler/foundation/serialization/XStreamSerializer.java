@@ -2,7 +2,6 @@ package org.prevayler.foundation.serialization;
 
 import com.thoughtworks.xstream.XStream;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -68,13 +67,13 @@ public class XStreamSerializer implements Serializer {
         return (XStream) _xstreams.get();
     }
 
-    public void writeObject(OutputStream stream, Object object) throws IOException {
+    public void writeObject(OutputStream stream, Object object) throws Exception {
         OutputStreamWriter writer = _encoding == null ? new OutputStreamWriter(stream) : new OutputStreamWriter(stream, _encoding);
         getXStream().toXML(object, writer);
         writer.flush();
     }
 
-    public Object readObject(InputStream stream) throws IOException {
+    public Object readObject(InputStream stream) throws Exception {
         return getXStream().fromXML(_encoding == null ? new InputStreamReader(stream) : new InputStreamReader(stream, _encoding));
     }
 

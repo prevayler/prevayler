@@ -8,7 +8,7 @@ import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.foundation.FileManager;
-import org.prevayler.foundation.TurnAbortedException;
+import org.prevayler.foundation.TurnAbortedError;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -147,15 +147,15 @@ public class PersistenceTest extends FileIOTest {
         try {
             _prevayler.execute(new Appendix("x"));
             fail();
-        } catch (TurnAbortedException aborted) {
-            assertEquals("All transaction processing is now aborted. An IOException was thrown while writing to a .journal file.", aborted.getMessage());
+        } catch (TurnAbortedError aborted) {
+            assertEquals("All transaction processing is now aborted. An exception was thrown while writing to a journal file.", aborted.getMessage());
             assertNotNull(aborted.getCause());
         }
 
         try {
             _prevayler.execute(new Appendix("y"));
             fail();
-        } catch (TurnAbortedException aborted) {
+        } catch (TurnAbortedError aborted) {
             assertNull(aborted.getMessage());
             assertNull(aborted.getCause());
         }

@@ -14,8 +14,6 @@ import org.prevayler.implementation.clock.PausableClock;
 import org.prevayler.implementation.journal.Journal;
 import org.prevayler.implementation.publishing.censorship.TransactionCensor;
 
-import java.io.IOException;
-
 public class CentralPublisher extends AbstractPublisher {
 
     private final PausableClock _pausableClock;
@@ -37,8 +35,8 @@ public class CentralPublisher extends AbstractPublisher {
     public CentralPublisher(Clock clock, TransactionCensor censor, Journal journal) {
         super(new PausableClock(clock));
         _pausableClock = (PausableClock) _clock; // This is just to avoid
-                                                    // casting the inherited
-                                                    // _clock every time.
+        // casting the inherited
+        // _clock every time.
 
         _censor = censor;
         _journal = journal;
@@ -46,9 +44,9 @@ public class CentralPublisher extends AbstractPublisher {
 
     public void publish(Capsule capsule) {
         synchronized (_pendingPublicationsMonitor) { // Blocks all new
-                                                        // subscriptions until
-                                                        // the publication is
-                                                        // over.
+            // subscriptions until
+            // the publication is
+            // over.
             if (_pendingPublications == 0)
                 _pausableClock.pause();
             _pendingPublications++;
@@ -56,12 +54,12 @@ public class CentralPublisher extends AbstractPublisher {
 
         try {
             publishWithoutWorryingAboutNewSubscriptions(capsule); // Suggestions
-                                                                    // for a
-                                                                    // better
-                                                                    // method
-                                                                    // name are
-                                                                    // welcome.
-                                                                    // :)
+            // for a
+            // better
+            // method
+            // name are
+            // welcome.
+            // :)
         } finally {
             synchronized (_pendingPublicationsMonitor) {
                 _pendingPublications--;
@@ -104,10 +102,11 @@ public class CentralPublisher extends AbstractPublisher {
         }
     }
 
-    public void subscribe(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
+    public void subscribe(TransactionSubscriber subscriber, long initialTransaction) {
         synchronized (_pendingPublicationsMonitor) {
-            while (_pendingPublications != 0)
+            while (_pendingPublications != 0) {
                 Cool.wait(_pendingPublicationsMonitor);
+            }
 
             _journal.update(subscriber, initialTransaction);
 
@@ -119,7 +118,7 @@ public class CentralPublisher extends AbstractPublisher {
         }
     }
 
-    public void close() throws IOException {
+    public void close() {
         _journal.close();
     }
 

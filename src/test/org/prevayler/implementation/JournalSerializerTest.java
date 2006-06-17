@@ -103,14 +103,14 @@ public class JournalSerializerTest extends FileIOTest {
 
     private static class MySerializer implements Serializer {
 
-        public void writeObject(OutputStream stream, Object object) throws IOException {
+        public void writeObject(OutputStream stream, Object object) throws Exception {
             Writer writer = new OutputStreamWriter(stream, "UTF-8");
             AppendTransaction transaction = (AppendTransaction) object;
             writer.write(transaction.toAdd);
             writer.flush();
         }
 
-        public Object readObject(InputStream stream) throws IOException {
+        public Object readObject(InputStream stream) throws Exception {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
             return new AppendTransaction(reader.readLine());
         }

@@ -32,7 +32,7 @@ public class Turn {
      */
     public synchronized Turn next() {
         if (_allowed < 0) {
-            throw new TurnAbortedException();
+            throw new TurnAbortedError();
         }
         if (_next == null) {
             _next = new Turn(false);
@@ -52,7 +52,7 @@ public class Turn {
             Cool.wait(this);
         }
         if (_allowed < 0) {
-            throw new TurnAbortedException();
+            throw new TurnAbortedError();
         }
         _allowed--;
     }
@@ -81,7 +81,7 @@ public class Turn {
         while (turn != null) {
             turn = turn.die();
         }
-        throw new TurnAbortedException(message, cause);
+        throw new TurnAbortedError(message, cause);
     }
 
     private synchronized Turn die() {

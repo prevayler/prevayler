@@ -106,7 +106,7 @@ public class SnapshotSerializerTest extends FileIOTest {
 
     private static class MySerializer implements Serializer {
 
-        public void writeObject(OutputStream stream, Object object) throws IOException {
+        public void writeObject(OutputStream stream, Object object) throws Exception {
             StringBuffer system = (StringBuffer) object;
             Writer writer = new OutputStreamWriter(stream, "UTF-8");
             writer.write("Yes, this is MySerializationStrategy!\n");
@@ -115,7 +115,7 @@ public class SnapshotSerializerTest extends FileIOTest {
             writer.flush();
         }
 
-        public Object readObject(InputStream stream) throws IOException {
+        public Object readObject(InputStream stream) throws Exception {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
             String prolog = reader.readLine();
             if ("Yes, this is MySerializationStrategy!".equals(prolog)) {

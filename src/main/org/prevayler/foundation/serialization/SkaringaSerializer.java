@@ -1,15 +1,11 @@
 package org.prevayler.foundation.serialization;
 
-import com.skaringa.javaxml.DeserializerException;
-import com.skaringa.javaxml.NoImplementationException;
 import com.skaringa.javaxml.ObjectTransformer;
 import com.skaringa.javaxml.ObjectTransformerFactory;
-import com.skaringa.javaxml.SerializerException;
 
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -47,34 +43,22 @@ import java.io.OutputStream;
  */
 public class SkaringaSerializer implements Serializer {
 
-    public void writeObject(OutputStream stream, Object object) throws IOException {
-        try {
-            createTransformer().serialize(object, new StreamResult(stream));
-        } catch (SerializerException se) {
-            throw new SkaringaException("Unable to serialize with Skaringa: " + se.getMessage());
-        }
+    public void writeObject(OutputStream stream, Object object) throws Exception {
+        createTransformer().serialize(object, new StreamResult(stream));
     }
 
-    public Object readObject(InputStream stream) throws IOException {
-        try {
-            return createTransformer().deserialize(new StreamSource(stream));
-        } catch (DeserializerException de) {
-            throw new SkaringaException("Unable to deserialize with Skaringa: " + de.getMessage());
-        }
+    public Object readObject(InputStream stream) throws Exception {
+        return createTransformer().deserialize(new StreamSource(stream));
     }
 
-    protected ObjectTransformer createTransformer() throws IOException {
-        try {
-            return ObjectTransformerFactory.getInstance().getImplementation();
-            // Other options you can try:
-            // trans.setProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
-            // trans.setProperty(javax.xml.transform.OutputKeys.ENCODING,
-            // "ISO-8859-1");
-            // trans.setProperty(com.skaringa.javaxml.PropertyKeys.OMIT_XSI_TYPE,
-            // "true");
-        } catch (NoImplementationException nie) {
-            throw new SkaringaException("Unable to start Skaringa: " + nie.getMessage());
-        }
+    protected ObjectTransformer createTransformer() throws Exception {
+        return ObjectTransformerFactory.getInstance().getImplementation();
+        // Other options you can try:
+        // trans.setProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
+        // trans.setProperty(javax.xml.transform.OutputKeys.ENCODING,
+        // "ISO-8859-1");
+        // trans.setProperty(com.skaringa.javaxml.PropertyKeys.OMIT_XSI_TYPE,
+        // "true");
     }
 
 }

@@ -138,25 +138,29 @@ public class PersistentJournal implements Journal {
      * method will define what the next transaction number will be. We have to
      * find clearer/simpler semantics.
      */
-    public void update(TransactionSubscriber subscriber, long initialTransactionWanted) throws IOException {
-        File initialJournal = _directory.findInitialJournalFile(initialTransactionWanted);
+    public void update(TransactionSubscriber subscriber, long initialTransactionWanted) {
+        try {
+            File initialJournal = _directory.findInitialJournalFile(initialTransactionWanted);
 
-        if (initialJournal == null) {
-            initializeNextTransaction(initialTransactionWanted, 1);
-            return;
+            if (initialJournal == null) {
+                initializeNextTransaction(initialTransactionWanted, 1);
+                return;
+            }
+
+            long nextTransaction = recoverPendingTransactions(subscriber, initialTransactionWanted, initialJournal);
+
+            initializeNextTransaction(initialTransactionWanted, nextTransaction);
+        } catch (Exception e) {
+            throw new JournalError(e);
         }
-
-        long nextTransaction = recoverPendingTransactions(subscriber, initialTransactionWanted, initialJournal);
-
-        initializeNextTransaction(initialTransactionWanted, nextTransaction);
     }
 
-    private void initializeNextTransaction(long initialTransactionWanted, long nextTransaction) throws IOException {
+    private void initializeNextTransaction(long initialTransactionWanted, long nextTransaction) {
         if (_nextTransactionInitialized) {
             if (_nextTransaction < initialTransactionWanted)
-                throw new JournalException("The transaction log has not yet reached transaction " + initialTransactionWanted + ". The last logged transaction was " + (_nextTransaction - 1) + ".");
+                throw new JournalError("The transaction log has not yet reached transaction " + initialTransactionWanted + ". The last logged transaction was " + (_nextTransaction - 1) + ".");
             if (nextTransaction < _nextTransaction)
-                throw new JournalException("Unable to find journal file containing transaction " + nextTransaction + ". Might have been manually deleted.");
+                throw new JournalError("Unable to find journal file containing transaction " + nextTransaction + ". Might have been manually deleted.");
             if (nextTransaction > _nextTransaction)
                 throw new IllegalStateException();
             return;
@@ -165,7 +169,7 @@ public class PersistentJournal implements Journal {
         _nextTransaction = initialTransactionWanted > nextTransaction ? initialTransactionWanted : nextTransaction;
     }
 
-    private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, File initialJournal) throws IOException {
+    private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, File initialJournal) throws Exception {
         long recoveringTransaction = PrevaylerDirectory.journalVersion(initialJournal);
         File journal = initialJournal;
         DurableInputStream input = new DurableInputStream(journal, _monitor);
@@ -176,13 +180,13 @@ public class PersistentJournal implements Journal {
 
                 if (recoveringTransaction >= initialTransaction) {
                     if (!journal.getName().endsWith(_journalSuffix)) {
-                        throw new JournalException("There are transactions needing to be recovered from " + journal + ", but only " + _journalSuffix + " files are supported");
+                        throw new JournalError("There are transactions needing to be recovered from " + journal + ", but only " + _journalSuffix + " files are supported");
                     }
 
                     TransactionTimestamp entry = TransactionTimestamp.fromChunk(chunk);
 
                     if (entry.systemVersion() != recoveringTransaction) {
-                        throw new JournalException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
+                        throw new JournalError("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
                     }
 
                     subscriber.receive(entry);
@@ -207,17 +211,23 @@ public class PersistentJournal implements Journal {
     }
 
     private void abort(Exception exception, File journal, String action, Guided guide) {
-        guide.abortTurn("All transaction processing is now aborted. An IOException was thrown while " + action + " a .journal file.", exception);
+        guide.abortTurn("All transaction processing is now aborted. An exception was thrown while " + action + " a journal file.", exception);
     }
 
-    public void close() throws IOException {
-        if (_outputJournal != null)
-            _outputJournal.close();
+    public void close() {
+        if (_outputJournal != null) {
+            try {
+                _outputJournal.close();
+            } catch (Exception e) {
+                throw new JournalError(e);
+            }
+        }
     }
 
     public long nextTransaction() {
-        if (!_nextTransactionInitialized)
+        if (!_nextTransactionInitialized) {
             throw new IllegalStateException("update() must be called at least once");
+        }
         return _nextTransaction;
     }
 

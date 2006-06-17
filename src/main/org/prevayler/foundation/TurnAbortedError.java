@@ -1,29 +1,29 @@
 package org.prevayler.foundation;
 
-import org.prevayler.PrevaylerException;
+import org.prevayler.PrevalenceError;
 
 /**
  * Thrown by a {@link Turn} when its pipeline has been
  * {@link Turn#abort(String,Throwable) aborted} due to an unrecoverable error
  * condition.
  */
-public class TurnAbortedException extends PrevaylerException {
+public class TurnAbortedError extends PrevalenceError {
 
     private static final long serialVersionUID = 1L;
 
-    public TurnAbortedException() {
+    public TurnAbortedError() {
         super();
     }
 
-    public TurnAbortedException(String message) {
+    public TurnAbortedError(String message) {
         super(message);
     }
 
-    public TurnAbortedException(String message, Throwable cause) {
+    public TurnAbortedError(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public TurnAbortedException(Throwable cause) {
+    public TurnAbortedError(Throwable cause) {
         super(cause);
     }
 

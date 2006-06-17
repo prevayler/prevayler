@@ -9,7 +9,6 @@ import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 import org.prevayler.implementation.snapshot.SnapshotManager;
 
-import java.io.IOException;
 import java.util.Date;
 
 public class PrevalentSystemGuard implements TransactionSubscriber {
@@ -44,7 +43,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
         }
     }
 
-    public void subscribeTo(TransactionPublisher publisher) throws IOException, ClassNotFoundException {
+    public void subscribeTo(TransactionPublisher publisher) {
         long initialTransaction;
         synchronized (this) {
             _ignoreRuntimeExceptions = true; // During pending transaction
@@ -109,7 +108,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
         }
     }
 
-    public void takeSnapshot(SnapshotManager snapshotManager) throws IOException {
+    public void takeSnapshot(SnapshotManager snapshotManager) {
         synchronized (this) {
             if (_prevalentSystem == null) {
                 throw new ErrorInEarlierTransactionError("Prevayler is no longer allowing snapshots due to an Error thrown from an earlier transaction.");
@@ -121,7 +120,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
         }
     }
 
-    public PrevalentSystemGuard deepCopy(long systemVersion, Serializer snapshotSerializer) throws IOException, ClassNotFoundException {
+    public PrevalentSystemGuard deepCopy(long systemVersion, Serializer snapshotSerializer) {
         synchronized (this) {
             while (_systemVersion < systemVersion && _prevalentSystem != null) {
                 Cool.wait(this);

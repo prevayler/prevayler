@@ -6,10 +6,8 @@ package org.prevayler.implementation.publishing.censorship;
 
 import org.prevayler.implementation.TransactionTimestamp;
 
-// START SNIPPET: censor
 public interface TransactionCensor {
 
-    public void approve(TransactionTimestamp transactionTimestamp) throws RuntimeException, Error;
+    public void approve(TransactionTimestamp transactionTimestamp);
 
 }
-// END SNIPPET: censor

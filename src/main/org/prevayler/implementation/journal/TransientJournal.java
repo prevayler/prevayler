@@ -8,7 +8,6 @@ import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,24 +32,27 @@ public class TransientJournal implements Journal {
         }
     }
 
-    public synchronized void update(TransactionSubscriber subscriber, long initialTransaction) throws IOException {
+    public synchronized void update(TransactionSubscriber subscriber, long initialTransaction) {
         if (!_initialTransactionInitialized) {
             _initialTransactionInitialized = true;
             _initialTransaction = initialTransaction;
             return;
         }
-        if (initialTransaction < _initialTransaction)
-            throw new JournalException("Unable to recover transaction " + initialTransaction + ". The oldest recoverable transaction is " + _initialTransaction + ".");
+
+        if (initialTransaction < _initialTransaction) {
+            throw new JournalError("Unable to recover transaction " + initialTransaction + ". The oldest recoverable transaction is " + _initialTransaction + ".");
+        }
 
         int i = (int) (initialTransaction - _initialTransaction);
-        if (i > journal.size())
-            throw new JournalException("The transaction journal has not yet reached transaction " + initialTransaction + ". The last logged transaction was " + (_initialTransaction + journal.size() - 1) + ".");
+        if (i > journal.size()) {
+            throw new JournalError("The transaction journal has not yet reached transaction " + initialTransaction + ". The last logged transaction was " + (_initialTransaction + journal.size() - 1) + ".");
+        }
 
         while (i != journal.size()) {
             TransactionTimestamp entry = (TransactionTimestamp) journal.get(i);
             long recoveringTransaction = _initialTransaction + i;
             if (entry.systemVersion() != recoveringTransaction) {
-                throw new JournalException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
+                throw new JournalError("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
             }
             subscriber.receive(entry);
             i++;

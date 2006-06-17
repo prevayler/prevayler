@@ -7,8 +7,6 @@ package org.prevayler.implementation.publishing;
 import org.prevayler.Clock;
 import org.prevayler.implementation.Capsule;
 
-import java.io.IOException;
-
 public interface TransactionPublisher {
 
     /**
@@ -16,7 +14,7 @@ public interface TransactionPublisher {
      * initialTransaction, returns and continues publishing all future
      * transactions to him.
      */
-    public void subscribe(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException;
+    public void subscribe(TransactionSubscriber subscriber, long initialTransaction);
 
     /**
      * Stops publishing future transactions to the given subscriber.
@@ -40,6 +38,6 @@ public interface TransactionPublisher {
      * Closes any files or other system resources opened by this
      * TransactionPublisher.
      */
-    public void close() throws IOException;
+    public void close();
 
 }

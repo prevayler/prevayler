@@ -9,8 +9,6 @@ import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.PrevalentSystemGuard;
 
-import java.io.IOException;
-
 public class NullSnapshotManager implements SnapshotManager {
 
     private final String _snapshotAttemptErrorMessage;
@@ -25,8 +23,8 @@ public class NullSnapshotManager implements SnapshotManager {
         _recoveredPrevalentSystem = new PrevalentSystemGuard(newPrevalentSystem, 0, _primarySerializer);
     }
 
-    public void writeSnapshot(Object prevalentSystem, long version) throws IOException {
-        throw new SnapshotException(_snapshotAttemptErrorMessage);
+    public void writeSnapshot(Object prevalentSystem, long version) {
+        throw new SnapshotError(_snapshotAttemptErrorMessage);
     }
 
     public PrevalentSystemGuard recoveredPrevalentSystem() {

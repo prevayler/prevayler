@@ -2,7 +2,6 @@ package org.prevayler.foundation.serialization;
 
 import org.prevayler.foundation.ObjectInputStreamWithClassLoader;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -24,13 +23,13 @@ public class JavaSerializer implements Serializer {
         _loader = loader;
     }
 
-    public void writeObject(OutputStream stream, Object object) throws IOException {
+    public void writeObject(OutputStream stream, Object object) throws Exception {
         ObjectOutputStream objects = new ObjectOutputStream(stream);
         objects.writeObject(object);
         objects.close();
     }
 
-    public Object readObject(InputStream stream) throws IOException, ClassNotFoundException {
+    public Object readObject(InputStream stream) throws Exception {
         ObjectInputStream objects = new ObjectInputStreamWithClassLoader(stream, _loader);
         Object object = objects.readObject();
         objects.close();

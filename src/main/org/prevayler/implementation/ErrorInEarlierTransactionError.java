@@ -1,8 +1,8 @@
 package org.prevayler.implementation;
 
-import org.prevayler.PrevaylerError;
+import org.prevayler.PrevalenceError;
 
-public class ErrorInEarlierTransactionError extends PrevaylerError {
+public class ErrorInEarlierTransactionError extends PrevalenceError {
 
     private static final long serialVersionUID = 1L;
 

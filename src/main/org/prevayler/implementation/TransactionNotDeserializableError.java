@@ -1,8 +1,8 @@
 package org.prevayler.implementation;
 
-import org.prevayler.PrevaylerError;
+import org.prevayler.PrevalenceError;
 
-public class TransactionNotDeserializableError extends PrevaylerError {
+public class TransactionNotDeserializableError extends PrevalenceError {
 
     private static final long serialVersionUID = 1L;
 

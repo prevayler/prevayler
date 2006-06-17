@@ -10,7 +10,6 @@ import org.prevayler.Query;
 import org.prevayler.SureTransactionWithQuery;
 import org.prevayler.Transaction;
 import org.prevayler.TransactionWithQuery;
-import org.prevayler.foundation.UnexpectedException;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.snapshot.SnapshotManager;
@@ -43,7 +42,7 @@ public class PrevaylerImpl implements Prevayler {
      *            this PrevaylerImpl.
      * @param journalSerializer
      */
-    public PrevaylerImpl(SnapshotManager snapshotManager, TransactionPublisher transactionPublisher, Serializer journalSerializer) throws IOException, ClassNotFoundException {
+    public PrevaylerImpl(SnapshotManager snapshotManager, TransactionPublisher transactionPublisher, Serializer journalSerializer) {
         _snapshotManager = snapshotManager;
 
         _guard = _snapshotManager.recoveredPrevalentSystem();
@@ -88,11 +87,11 @@ public class PrevaylerImpl implements Prevayler {
         } catch (RuntimeException runtime) {
             throw runtime;
         } catch (Exception checked) {
-            throw new UnexpectedException("Unexpected Exception thrown.", checked);
+            throw new ImpossibleError("SureTransactionWithQuery cannot throw checked exceptions", checked);
         }
     }
 
-    public void takeSnapshot() throws IOException {
+    public void takeSnapshot() {
         _guard.takeSnapshot(_snapshotManager);
     }
 
