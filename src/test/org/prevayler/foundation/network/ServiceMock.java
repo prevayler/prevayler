@@ -1,11 +1,13 @@
-/*
- * ServiceMock.java
- *
- * Copyright (c) 2004 MoneySwitch Ltd.
- * Level 5, 55 Lavender St, Milsons Point 2061.
- * All rights reserved.
- *
- */
+// Prevayler, The Free-Software Prevalence Layer
+// Copyright 2001-2006 by Klaus Wuestefeld
+//
+// This library is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Prevayler is a trademark of Klaus Wuestefeld.
+// See the LICENSE file for license details.
+
 package org.prevayler.foundation.network;
 
 import org.prevayler.foundation.Cool;
@@ -14,11 +16,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Useful class comments should go here
- * 
- * $Revision: 1.2 $ $Date: 2005/02/16 04:28:34 $ $Author: peter_mxgroup $
- */
 public class ServiceMock implements Service {
 
     private Map clients = new HashMap(); // the network receiver

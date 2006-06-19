@@ -1,9 +1,13 @@
-//Prevayler(TM) - The Free-Software Prevalence Layer.
-//Copyright (C) 2004 Klaus Wuestefeld
-//This is free software. It is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of 
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-//See the license distributed along with this file for more details.
+// Prevayler, The Free-Software Prevalence Layer
+// Copyright 2001-2006 by Klaus Wuestefeld
+//
+// This library is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Prevayler is a trademark of Klaus Wuestefeld.
+// See the LICENSE file for license details.
+
 package org.prevayler.foundation.network;
 
 import java.io.IOException;

@@ -1,21 +1,19 @@
-/*
- * StubbornNetwork.java
- *
- * Copyright (c) 2005 MoneySwitch Ltd.
- * Level 5, 55 Lavender St, Milsons Point 2061.
- * All rights reserved.
- *
- */
+// Prevayler, The Free-Software Prevalence Layer
+// Copyright 2001-2006 by Klaus Wuestefeld
+//
+// This library is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Prevayler is a trademark of Klaus Wuestefeld.
+// See the LICENSE file for license details.
+
 package org.prevayler.foundation.network;
 
 import java.io.IOException;
 
-/**
- * Useful class comments should go here
- * 
- * $Revision: 1.2 $ $Date: 2005/03/02 06:04:18 $ $Author: peter_mxgroup $
- */
 public interface StubbornNetwork {
 
     ObjectSocket newInstance(String ipAddress, int port) throws IOException;
+
 }

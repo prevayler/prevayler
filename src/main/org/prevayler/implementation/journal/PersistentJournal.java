@@ -1,7 +1,12 @@
-//Prevayler(TM) - The Free-Software Prevalence Layer.
-//Copyright (C) 2001-2004 Klaus Wuestefeld
-//This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-//Contributions: Carlos Villela.
+// Prevayler, The Free-Software Prevalence Layer
+// Copyright 2001-2006 by Klaus Wuestefeld
+//
+// This library is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Prevayler is a trademark of Klaus Wuestefeld.
+// See the LICENSE file for license details.
 
 package org.prevayler.implementation.journal;
 
