@@ -27,9 +27,7 @@ public class Capsule<T, R, E extends Exception> implements Serializable {
 
     private transient R _result;
 
-    private transient E _exception;
-
-    private transient RuntimeException _runtimeException;
+    private transient Exception _exception;
 
     public Capsule(Transaction<? super T, R, E> transaction, Serializer<Transaction> journalSerializer) {
         try {
@@ -72,22 +70,24 @@ public class Capsule<T, R, E extends Exception> implements Serializable {
         return new Capsule(chunk.getBytes());
     }
 
-    @SuppressWarnings("unchecked") protected void execute(Transaction<? super T, R, E> transaction, T prevalentSystem, Date executionTime) {
+    protected void execute(Transaction<? super T, R, E> transaction, T prevalentSystem, Date executionTime) {
         try {
             _result = transaction.executeOn(prevalentSystem, executionTime);
-        } catch (RuntimeException rx) {
-            _runtimeException = rx;
-            throw rx; // This is necessary because of the rollback feature.
-        } catch (Exception ex) {
-            _exception = (E) ex;
+        } catch (RuntimeException e) {
+            _exception = e;
+            throw e; // This is necessary because of the rollback feature.
+        } catch (Exception e) {
+            _exception = e;
         }
     }
 
-    public R result() throws E {
+    @SuppressWarnings("unchecked") public R result() throws E {
         if (_exception != null) {
-            throw _exception;
-        } else if (_runtimeException != null) {
-            throw _runtimeException;
+            if (_exception instanceof RuntimeException) {
+                throw (RuntimeException) _exception;
+            } else {
+                throw (E) _exception;
+            }
         } else {
             return _result;
         }
