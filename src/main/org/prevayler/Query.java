@@ -17,7 +17,7 @@ import java.util.Date;
  * 
  * @see org.prevayler.Prevayler#execute(Query)
  */
-public interface Query {
+public interface Query<T, R, E extends Exception> {
 
     /**
      * @param prevalentSystem
@@ -28,6 +28,6 @@ public interface Query {
      * @throws Exception
      *             Any Exception encountered by this Query.
      */
-    public Object query(Object prevalentSystem, Date executionTime) throws Exception;
+    public R query(T prevalentSystem, Date executionTime) throws E;
 
 }

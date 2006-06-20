@@ -22,13 +22,13 @@ import java.io.IOException;
  * 
  * @see PrevaylerFactory
  */
-public interface Prevayler {
+public interface Prevayler<T> {
 
     /**
      * Returns the Object which holds direct or indirect references to all other
      * Business Objects in the system.
      */
-    public Object prevalentSystem();
+    public T prevalentSystem();
 
     /**
      * Returns the Clock used to determine the execution time of all Transaction
@@ -56,7 +56,7 @@ public interface Prevayler {
      * 
      * @see PrevaylerFactory
      */
-    public void execute(Transaction transaction);
+    public void execute(Transaction<T> transaction);
 
     /**
      * Executes the given sensitiveQuery on the prevalentSystem(). A
@@ -78,7 +78,7 @@ public interface Prevayler {
      *             The Exception thrown by the execution of the sensitiveQuery
      *             on the prevalentSystem().
      */
-    public Object execute(Query sensitiveQuery) throws Exception;
+    public <R, E extends Exception> R execute(Query<T, R, E> sensitiveQuery) throws E;
 
     /**
      * Executes the given transactionWithQuery on the prevalentSystem().
@@ -94,7 +94,7 @@ public interface Prevayler {
      *             on the prevalentSystem().
      * @see PrevaylerFactory
      */
-    public Object execute(TransactionWithQuery transactionWithQuery) throws Exception;
+    public <R, E extends Exception> R execute(TransactionWithQuery<T, R, E> transactionWithQuery) throws E;
 
     /**
      * The same as execute(TransactionWithQuery) except no Exception is thrown.
@@ -102,7 +102,7 @@ public interface Prevayler {
      * @return The result returned by the execution of the
      *         sureTransactionWithQuery on the prevalentSystem().
      */
-    public Object execute(SureTransactionWithQuery sureTransactionWithQuery);
+    public <R> R execute(SureTransactionWithQuery<T, R> sureTransactionWithQuery);
 
     /**
      * Produces a complete serialized image of the underlying PrevalentSystem.

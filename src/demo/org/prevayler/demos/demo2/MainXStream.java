@@ -24,23 +24,22 @@ public class MainXStream {
     public static void main(String[] args) throws Exception {
         out("A snapshot using XStream's XML serialization will be taken every 20 seconds...");
 
-        PrevaylerFactory factory = new PrevaylerFactory();
+        PrevaylerFactory<Bank> factory = new PrevaylerFactory<Bank>();
         factory.configurePrevalenceDirectory("demo2XStream");
 
         factory.configureSnapshotSerializer(new XStreamSerializer() {
-            protected XStream createXStream() {
+            @Override protected XStream createXStream() {
                 XStream xstream = new XStream();
-                xstream.alias("bank", Bank.class); // This mapping is optional.
-                                                    // It just makes the XML in
-                                                    // the snapshot file look
-                                                    // prettier.
+                // This mapping is optional. It just makes the XML in the
+                // snapshot file look prettier.
+                xstream.alias("bank", Bank.class);
                 xstream.alias("account", Account.class);
                 xstream.alias("accountEntry", AccountEntry.class);
                 return xstream;
             }
         });
         factory.configurePrevalentSystem(new Bank());
-        Prevayler prevayler = factory.create();
+        Prevayler<Bank> prevayler = factory.create();
 
         Main.startSnapshots(prevayler);
     }

@@ -20,11 +20,11 @@ public class MainSkaringa {
     public static void main(String[] args) throws Exception {
         out("A snapshot using Skaringa's XML serialization will be taken every 20 seconds...");
 
-        PrevaylerFactory factory = new PrevaylerFactory();
+        PrevaylerFactory<Bank> factory = new PrevaylerFactory<Bank>();
         factory.configurePrevalenceDirectory("demo2Skaringa");
         factory.configurePrevalentSystem(new Bank());
         factory.configureSnapshotSerializer(new SkaringaSerializer());
-        Prevayler prevayler = factory.create();
+        Prevayler<Bank> prevayler = factory.create();
 
         Main.startSnapshots(prevayler);
     }

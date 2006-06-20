@@ -36,11 +36,11 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
 
     private static final long serialVersionUID = -9182376858708585231L;
 
-    private final Prevayler _prevayler;
+    private final Prevayler<Bank> _prevayler;
 
     private final JList accountList;
 
-    AllAccountsFrame(Prevayler prevayler, Container container) {
+    AllAccountsFrame(Prevayler<Bank> prevayler, Container container) {
         super("All Accounts", true); // true means resizable.
         _prevayler = prevayler;
 
@@ -74,7 +74,7 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
     }
 
     private Bank bank() {
-        return (Bank) _prevayler.prevalentSystem();
+        return _prevayler.prevalentSystem();
     }
 
     public void accountCreated(Account a) { // Implements BankListener.
@@ -131,7 +131,7 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
             refreshEnabled();
         }
 
-        protected void action() throws Exception {
+        @Override protected void action() throws Exception {
             action((Account) accountList.getSelectedValue());
         }
 
@@ -146,7 +146,7 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
             super("Edit");
         }
 
-        void action(Account account) {
+        @Override void action(Account account) {
             new AccountEditFrame(account, _prevayler, getDesktopPane());
         }
     }
@@ -159,7 +159,7 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
             super("Delete");
         }
 
-        void action(Account account) throws Exception {
+        @Override void action(Account account) throws Exception {
             int option = JOptionPane.showConfirmDialog(null, "Delete selected account?", "Account Deletion", JOptionPane.YES_NO_OPTION);
             if (option != JOptionPane.YES_OPTION)
                 return;

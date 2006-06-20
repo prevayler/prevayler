@@ -79,7 +79,7 @@ public class Chunking {
 
         int size = Integer.parseInt(tokenizer.nextToken(), 16);
 
-        Map parameters = new LinkedHashMap();
+        Map<String, String> parameters = new LinkedHashMap<String, String>();
         while (tokenizer.hasMoreTokens()) {
             String name = tokenizer.nextToken();
             String value = tokenizer.nextToken();

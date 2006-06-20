@@ -10,11 +10,12 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
+import org.prevayler.TransactionWithQuery;
 import org.prevayler.demos.demo2.business.Bank;
 
 import java.util.Date;
 
-public class Transfer extends BankTransaction {
+public class Transfer implements TransactionWithQuery<Bank, Void, Exception> {
 
     private static final long serialVersionUID = -8656365915179217238L;
 
@@ -24,8 +25,9 @@ public class Transfer extends BankTransaction {
 
     private long _amount;
 
+    // Necessary for Skaringa XML serialization
     private Transfer() {
-    } // Necessary for Skaringa XML serialization
+    }
 
     public Transfer(long originAccountNumber, long destinationAccountNumber, long amount) {
         _originAccountNumber = originAccountNumber;
@@ -33,7 +35,7 @@ public class Transfer extends BankTransaction {
         _amount = amount;
     }
 
-    public Object executeAndQuery(Bank bank, Date timestamp) throws Exception {
+    public Void executeAndQuery(Bank bank, Date timestamp) throws Exception {
         bank.transfer(_originAccountNumber, _destinationAccountNumber, _amount, timestamp);
         return null;
     }

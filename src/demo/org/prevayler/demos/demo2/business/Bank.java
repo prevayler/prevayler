@@ -24,13 +24,13 @@ public class Bank implements java.io.Serializable {
 
     private long nextAccountNumber = 1;
 
-    private Map accountsByNumber = new HashMap();
+    private Map<Long, Account> accountsByNumber = new HashMap<Long, Account>();
 
     private transient BankListener bankListener;
 
     public Account createAccount(String holder) throws Account.InvalidHolder {
         Account account = new Account(nextAccountNumber, holder);
-        accountsByNumber.put(new Long(nextAccountNumber++), account);
+        accountsByNumber.put(nextAccountNumber++, account);
 
         if (bankListener != null)
             bankListener.accountCreated(account);
@@ -45,11 +45,11 @@ public class Bank implements java.io.Serializable {
     }
 
     public List accounts() {
-        List accounts = new ArrayList(accountsByNumber.values());
+        List<Account> accounts = new ArrayList<Account>(accountsByNumber.values());
 
-        Collections.sort(accounts, new Comparator() {
-            public int compare(Object acc1, Object acc2) {
-                return ((Account) acc1).number() < ((Account) acc2).number() ? -1 : 1;
+        Collections.sort(accounts, new Comparator<Account>() {
+            public int compare(Account acc1, Account acc2) {
+                return acc1.number() < acc2.number() ? -1 : 1;
             }
         });
 
@@ -78,7 +78,7 @@ public class Bank implements java.io.Serializable {
     }
 
     private Account searchAccount(long number) {
-        return (Account) accountsByNumber.get(new Long(number));
+        return accountsByNumber.get(new Long(number));
     }
 
     public class AccountNotFound extends Exception {

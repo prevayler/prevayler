@@ -11,6 +11,7 @@
 package org.prevayler.demos.demo2.gui;
 
 import org.prevayler.Prevayler;
+import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.foundation.Cool;
 
 import javax.swing.Box;
@@ -26,9 +27,9 @@ public class BankFrame extends JFrame {
 
     private static final long serialVersionUID = 936051923275473259L;
 
-    private final Prevayler _prevayler;
+    private final Prevayler<Bank> _prevayler;
 
-    public BankFrame(Prevayler prevayler) {
+    public BankFrame(Prevayler<Bank> prevayler) {
         super("Bank");
         _prevayler = prevayler;
 
@@ -47,7 +48,7 @@ public class BankFrame extends JFrame {
 
     private void refreshClock() {
         Thread clockRefresher = new Thread() {
-            public void run() {
+            @Override public void run() {
                 while (true) {
                     DateFormat format = new SimpleDateFormat("hh:mm:ss");
                     setTitle("Bank - " + format.format(_prevayler.clock().time()));

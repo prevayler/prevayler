@@ -22,9 +22,9 @@ import org.prevayler.implementation.snapshot.SnapshotManager;
 
 import java.io.IOException;
 
-public class PrevaylerImpl implements Prevayler {
+public class PrevaylerImpl<T> implements Prevayler<T> {
 
-    private final PrevalentSystemGuard _guard;
+    private final PrevalentSystemGuard<T> _guard;
 
     private final Clock _clock;
 
@@ -61,7 +61,7 @@ public class PrevaylerImpl implements Prevayler {
         _journalSerializer = journalSerializer;
     }
 
-    public Object prevalentSystem() {
+    public T prevalentSystem() {
         return _guard.prevalentSystem();
     }
 
@@ -77,12 +77,12 @@ public class PrevaylerImpl implements Prevayler {
         _publisher.publish(capsule);
     }
 
-    public Object execute(Query sensitiveQuery) throws Exception {
+    public <R, E extends Exception> R execute(Query<T, R, E> sensitiveQuery) throws E {
         return _guard.executeQuery(sensitiveQuery, clock());
     }
 
-    public Object execute(TransactionWithQuery transactionWithQuery) throws Exception {
-        TransactionWithQueryCapsule capsule = new TransactionWithQueryCapsule(transactionWithQuery, _journalSerializer);
+    public <R, E extends Exception> R execute(TransactionWithQuery<T, R, E> transactionWithQuery) throws E {
+        TransactionWithQueryCapsule<T, R, E> capsule = new TransactionWithQueryCapsule<T, R, E>(transactionWithQuery, _journalSerializer);
         publish(capsule);
         return capsule.result();
     }

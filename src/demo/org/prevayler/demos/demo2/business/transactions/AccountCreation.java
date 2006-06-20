@@ -10,25 +10,27 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
+import org.prevayler.TransactionWithQuery;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.Bank;
 
 import java.util.Date;
 
-public class AccountCreation extends BankTransaction {
+public class AccountCreation implements TransactionWithQuery<Bank, Account, Account.InvalidHolder> {
 
     private static final long serialVersionUID = 476105268406333743L;
 
     private String _holder;
 
+    // Necessary for Skaringa XML serialization
     private AccountCreation() {
-    } // Necessary for Skaringa XML serialization
+    }
 
     public AccountCreation(String holder) {
         _holder = holder;
     }
 
-    protected Object executeAndQuery(Bank bank, Date ignored) throws Account.InvalidHolder {
+    public Account executeAndQuery(Bank bank, Date ignored) throws Account.InvalidHolder {
         return bank.createAccount(_holder);
     }
 

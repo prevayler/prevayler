@@ -29,7 +29,7 @@ import java.util.Date;
  * is known as the prevalence baptism problem because everyone comes across it,
  * despite of this warning.
  */
-public interface Transaction extends Serializable {
+public interface Transaction<T> extends Serializable {
 
     /**
      * This method is called by Prevayler.execute(Transaction) to execute this
@@ -44,6 +44,6 @@ public interface Transaction extends Serializable {
      *            time. Logically, a Prevalent System's time does not pass
      *            during the execution of a Transaction.
      */
-    public void executeOn(Object prevalentSystem, Date executionTime);
+    public void executeOn(T prevalentSystem, Date executionTime);
 
 }

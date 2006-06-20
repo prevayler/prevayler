@@ -18,7 +18,7 @@ import java.util.Date;
  * 
  * @see TransactionWithQuery
  */
-public interface SureTransactionWithQuery extends TransactionWithQuery {
+public interface SureTransactionWithQuery<T, R> extends TransactionWithQuery<T, R, RuntimeException> {
 
     /**
      * The same as TransactionWithQuery.execute(Object, Date) except it does not
@@ -26,6 +26,6 @@ public interface SureTransactionWithQuery extends TransactionWithQuery {
      * 
      * @see TransactionWithQuery#executeAndQuery(Object, Date)
      */
-    public Object executeAndQuery(Object prevalentSystem, Date executionTime);
+    public R executeAndQuery(T prevalentSystem, Date executionTime);
 
 }

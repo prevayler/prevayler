@@ -11,6 +11,7 @@
 package org.prevayler.demos.demo2.gui;
 
 import org.prevayler.Prevayler;
+import org.prevayler.demos.demo2.business.Bank;
 
 import javax.swing.Box;
 import javax.swing.JInternalFrame;
@@ -27,7 +28,7 @@ import java.text.ParseException;
 
 abstract class AccountFrame extends JInternalFrame {
 
-    protected final Prevayler _prevayler;
+    protected final Prevayler<Bank> _prevayler;
 
     protected final JTextField holderField = new JTextField();
 
@@ -35,7 +36,7 @@ abstract class AccountFrame extends JInternalFrame {
         return holderField.getText();
     }
 
-    AccountFrame(String title, Prevayler prevayler, Container container) {
+    AccountFrame(String title, Prevayler<Bank> prevayler, Container container) {
         super(title, false, true); // Not resizable. Closable.
         _prevayler = prevayler;
 

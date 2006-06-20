@@ -29,7 +29,7 @@ public class AccountEntry implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public String toString() {
+    @Override public String toString() {
         return timestampString() + "      Amount: " + amount;
     }
 

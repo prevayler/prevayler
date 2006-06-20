@@ -15,15 +15,17 @@ import org.prevayler.foundation.serialization.Serializer;
 
 import java.util.Date;
 
-class TransactionWithQueryCapsule extends Capsule {
+class TransactionWithQueryCapsule<T, R, E extends Exception> extends Capsule<TransactionWithQuery<T, R, E>, T> {
 
     private static final long serialVersionUID = 78811627002206298L;
 
-    private transient Object _queryResult;
+    private transient R _queryResult;
 
-    private transient Exception _queryException;
+    private transient RuntimeException _queryRuntimeException;
 
-    public TransactionWithQueryCapsule(TransactionWithQuery transactionWithQuery, Serializer journalSerializer) {
+    private transient E _queryException;
+
+    public TransactionWithQueryCapsule(TransactionWithQuery<T, R, E> transactionWithQuery, Serializer journalSerializer) {
         super(transactionWithQuery, journalSerializer);
     }
 
@@ -31,25 +33,29 @@ class TransactionWithQueryCapsule extends Capsule {
         super(serialized);
     }
 
-    protected void execute(Object transaction, Object prevalentSystem, Date executionTime) {
+    @SuppressWarnings("unchecked") @Override protected void execute(TransactionWithQuery<T, R, E> transaction, T prevalentSystem, Date executionTime) {
         try {
-            _queryResult = ((TransactionWithQuery) transaction).executeAndQuery(prevalentSystem, executionTime);
+            _queryResult = transaction.executeAndQuery(prevalentSystem, executionTime);
         } catch (RuntimeException rx) {
-            _queryException = rx;
+            _queryRuntimeException = rx;
             throw rx; // This is necessary because of the rollback feature.
         } catch (Exception ex) {
-            _queryException = ex;
+            _queryException = (E) ex;
         }
     }
 
-    public Object result() throws Exception {
-        if (_queryException != null)
+    public R result() throws E {
+        if (_queryException != null) {
             throw _queryException;
-        return _queryResult;
+        } else if (_queryRuntimeException != null) {
+            throw _queryRuntimeException;
+        } else {
+            return _queryResult;
+        }
     }
 
-    public Capsule cleanCopy() {
-        return new TransactionWithQueryCapsule(serialized());
+    @Override public TransactionWithQueryCapsule<T, R, E> cleanCopy() {
+        return new TransactionWithQueryCapsule<T, R, E>(serialized());
     }
 
 }

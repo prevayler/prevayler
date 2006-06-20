@@ -17,13 +17,13 @@ public class Chunk {
 
     private byte[] _bytes;
 
-    private Map _parameters;
+    private Map<String, String> _parameters;
 
     public Chunk(byte[] bytes) {
-        this(bytes, new LinkedHashMap());
+        this(bytes, new LinkedHashMap<String, String>());
     }
 
-    public Chunk(byte[] bytes, Map parameters) {
+    public Chunk(byte[] bytes, Map<String, String> parameters) {
         _bytes = bytes;
         _parameters = parameters;
     }
@@ -37,7 +37,7 @@ public class Chunk {
     }
 
     public String getParameter(String name) {
-        return (String) _parameters.get(name);
+        return _parameters.get(name);
     }
 
     public Map getParameters() {

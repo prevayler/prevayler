@@ -20,8 +20,8 @@ public class MainTransient {
         out("This demo shows how persistence can be turned off" + "\nwithout changing ONE SINGLE LINE OF CODE in the" + "\nbusiness classes or GUI. This is useful for" + "\nrunning automated test scripts orders of magnitude" + "\nfaster than with persistence turned on." + "\n(Pay no attention to the 'Robustness Reminder' this time ;)");
 
         // Below is the single line that was changed from Main.java to disable
-        // transaction journalling. Notice the use of the AbstractPublisher:
-        Prevayler prevayler = PrevaylerFactory.createTransientPrevayler(new Bank());
+        // transaction journalling.
+        Prevayler<Bank> prevayler = PrevaylerFactory.createTransientPrevayler(new Bank());
 
         Main.startGui(prevayler);
     }

@@ -27,23 +27,24 @@ public class Account implements java.io.Serializable {
 
     private long balance = 0;
 
-    private List transactionHistory = new ArrayList();
+    private List<AccountEntry> transactionHistory = new ArrayList<AccountEntry>();
 
-    private transient Set listeners;
+    private transient Set<AccountListener> listeners;
 
     private Account() {
     }
 
     Account(long number, String holder) throws InvalidHolder {
         this.number = number;
-        holder(holder);
+        setHolder(holder);
     }
 
     public long number() {
         return number;
     }
 
-    public String toString() { // Returns something like "00123 - John Smith"
+    @Override public String toString() {
+        // Returns something like "00123 - John Smith"
         return numberString() + " - " + holder;
     }
 
@@ -59,7 +60,7 @@ public class Account implements java.io.Serializable {
         return holder;
     }
 
-    public void holder(String holder) throws InvalidHolder {
+    public void setHolder(String holder) throws InvalidHolder {
         verify(holder);
         this.holder = holder;
         notifyListeners();
@@ -104,9 +105,9 @@ public class Account implements java.io.Serializable {
         listeners().remove(listener);
     }
 
-    private Set listeners() {
+    private Set<AccountListener> listeners() {
         if (listeners == null)
-            listeners = new HashSet();
+            listeners = new HashSet<AccountListener>();
         return listeners;
     }
 
@@ -125,12 +126,13 @@ public class Account implements java.io.Serializable {
         }
     }
 
-    private void verify(String holder) throws InvalidHolder {
-        if (holder == null || holder.equals(""))
+    private static void verify(String newHolder) throws InvalidHolder {
+        if (newHolder == null || newHolder.equals("")) {
             throw new InvalidHolder();
+        }
     }
 
-    public class InvalidHolder extends Exception {
+    public static class InvalidHolder extends Exception {
         private static final long serialVersionUID = -3234126892127577122L;
 
         InvalidHolder() {

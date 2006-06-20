@@ -13,6 +13,7 @@ package org.prevayler.demos.demo2.gui;
 import org.prevayler.Prevayler;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.AccountListener;
+import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.demos.demo2.business.transactions.Deposit;
 import org.prevayler.demos.demo2.business.transactions.HolderChange;
 import org.prevayler.demos.demo2.business.transactions.Withdrawal;
@@ -39,7 +40,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
 
     private JList historyList;
 
-    AccountEditFrame(Account account, Prevayler prevayler, Container container) {
+    AccountEditFrame(Account account, Prevayler<Bank> prevayler, Container container) {
         super("Account " + account.numberString(), prevayler, container);
 
         this.account = account;
@@ -51,7 +52,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
         setBounds(50, 50, 306, 300);
     }
 
-    protected void addFields(Box fieldBox) {
+    @Override protected void addFields(Box fieldBox) {
         super.addFields(fieldBox);
 
         fieldBox.add(gap());
@@ -67,7 +68,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
         fieldBox.add(balanceField);
     }
 
-    protected void addButtons(JPanel buttonPanel) {
+    @Override protected void addButtons(JPanel buttonPanel) {
         buttonPanel.add(new JButton(new DepositAction()));
         buttonPanel.add(new JButton(new WithdrawAction()));
         buttonPanel.add(new JButton(new TransferAction()));
@@ -81,7 +82,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
             super("Deposit...");
         }
 
-        public void action() throws Exception {
+        @Override public void action() throws Exception {
             Number amount = enterAmount("Deposit");
             if (amount == null)
                 return;
@@ -97,7 +98,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
             super("Withdraw...");
         }
 
-        public void action() throws Exception {
+        @Override public void action() throws Exception {
             Number amount = enterAmount("Withdrawal");
             if (amount == null)
                 return;
@@ -120,7 +121,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
             super("Transfer...");
         }
 
-        public void action() {
+        @Override public void action() {
             new TransferFrame(account, _prevayler, getDesktopPane());
         }
     }
@@ -132,7 +133,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
     }
 
     private class HolderListener extends FocusAdapter {
-        public void focusLost(FocusEvent e) {
+        @Override public void focusLost(FocusEvent e) {
             if (holderText().equals(account.holder()))
                 return;
             try {

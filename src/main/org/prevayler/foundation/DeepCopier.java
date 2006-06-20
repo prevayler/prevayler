@@ -56,7 +56,7 @@ public class DeepCopier {
      * original object in order to respect any synchronization the caller may
      * have around it, and a new thread is used for deserializing the copy.
      */
-    public static Object deepCopyParallel(Object original, Serializer serializer) {
+    @SuppressWarnings("unchecked") public static <T> T deepCopyParallel(T original, Serializer serializer) {
         try {
             PipedOutputStream outputStream = new PipedOutputStream();
             PipedInputStream inputStream = new PipedInputStream(outputStream);
@@ -69,7 +69,7 @@ public class DeepCopier {
                 outputStream.close();
             }
 
-            return receiver.getResult();
+            return (T) receiver.getResult();
         } catch (Exception e) {
             throw new DeepCopyError(e);
         }
@@ -91,7 +91,7 @@ public class DeepCopier {
             start();
         }
 
-        public void run() {
+        @Override public void run() {
             try {
                 _result = _serializer.readObject(_inputStream);
             } catch (Error e) {

@@ -21,9 +21,9 @@ import org.prevayler.implementation.snapshot.SnapshotManager;
 
 import java.util.Date;
 
-public class PrevalentSystemGuard implements TransactionSubscriber {
+public class PrevalentSystemGuard<T> implements TransactionSubscriber {
 
-    private Object _prevalentSystem; // All access to field is synchronized
+    private T _prevalentSystem; // All access to field is synchronized
 
     // on "this", and all access to object
     // is synchronized on itself; "this" is
@@ -37,14 +37,14 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 
     private final Serializer _journalSerializer;
 
-    public PrevalentSystemGuard(Object prevalentSystem, long systemVersion, Serializer journalSerializer) {
+    public PrevalentSystemGuard(T prevalentSystem, long systemVersion, Serializer journalSerializer) {
         _prevalentSystem = prevalentSystem;
         _systemVersion = systemVersion;
         _ignoreRuntimeExceptions = false;
         _journalSerializer = journalSerializer;
     }
 
-    public Object prevalentSystem() {
+    public T prevalentSystem() {
         synchronized (this) {
             if (_prevalentSystem == null) {
                 throw new ErrorInEarlierTransactionError("Prevayler is no longer allowing access to the prevalent system due to an Error thrown from an earlier transaction.");
@@ -106,7 +106,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
         }
     }
 
-    public Object executeQuery(Query sensitiveQuery, Clock clock) throws Exception {
+    public <R, E extends Exception> R executeQuery(Query<T, R, E> sensitiveQuery, Clock clock) throws E {
         synchronized (this) {
             if (_prevalentSystem == null) {
                 throw new ErrorInEarlierTransactionError("Prevayler is no longer processing queries due to an Error thrown from an earlier transaction.");
@@ -130,7 +130,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
         }
     }
 
-    public PrevalentSystemGuard deepCopy(long systemVersion, Serializer snapshotSerializer) {
+    public PrevalentSystemGuard<T> deepCopy(long systemVersion, Serializer snapshotSerializer) {
         synchronized (this) {
             while (_systemVersion < systemVersion && _prevalentSystem != null) {
                 Cool.wait(this);
@@ -145,7 +145,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
             }
 
             synchronized (_prevalentSystem) {
-                return new PrevalentSystemGuard(DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer);
+                return new PrevalentSystemGuard<T>(DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer);
             }
         }
     }

@@ -31,8 +31,8 @@ import org.prevayler.implementation.publishing.censorship.StrictTransactionCenso
 import org.prevayler.implementation.publishing.censorship.TransactionCensor;
 import org.prevayler.implementation.replication.ClientPublisher;
 import org.prevayler.implementation.replication.ServerListener;
-import org.prevayler.implementation.snapshot.RealSnapshotManager;
 import org.prevayler.implementation.snapshot.NullSnapshotManager;
+import org.prevayler.implementation.snapshot.RealSnapshotManager;
 import org.prevayler.implementation.snapshot.SnapshotManager;
 
 import java.io.IOException;
@@ -59,9 +59,9 @@ import java.util.Map;
  * 
  * @see Prevayler
  */
-public class PrevaylerFactory {
+public class PrevaylerFactory<T> {
 
-    private Object _prevalentSystem;
+    private T _prevalentSystem;
 
     private Clock _clock;
 
@@ -93,7 +93,7 @@ public class PrevaylerFactory {
 
     private String _journalSuffix;
 
-    private Map _snapshotSerializers = new HashMap();
+    private Map<String, Serializer> _snapshotSerializers = new HashMap<String, Serializer>();
 
     private String _primarySnapshotSuffix;
 
@@ -107,7 +107,7 @@ public class PrevaylerFactory {
      *            as a starting point for every system startup, until the first
      *            snapshot is taken.
      */
-    public static Prevayler createPrevayler(Serializable newPrevalentSystem) throws IOException, ClassNotFoundException {
+    public static Prevayler createPrevayler(Serializable newPrevalentSystem) throws IOException {
         return createPrevayler(newPrevalentSystem, "PrevalenceBase");
     }
 
@@ -123,8 +123,8 @@ public class PrevaylerFactory {
      *            The directory where the .snapshot files and .journal files
      *            will be read and written.
      */
-    public static Prevayler createPrevayler(Serializable newPrevalentSystem, String prevalenceBase) throws IOException, ClassNotFoundException {
-        PrevaylerFactory factory = new PrevaylerFactory();
+    public static <T> Prevayler<T> createPrevayler(T newPrevalentSystem, String prevalenceBase) throws IOException {
+        PrevaylerFactory<T> factory = new PrevaylerFactory<T>();
         factory.configurePrevalentSystem(newPrevalentSystem);
         factory.configurePrevalenceDirectory(prevalenceBase);
         return factory.create();
@@ -143,8 +143,8 @@ public class PrevaylerFactory {
      * @see #createCheckpointPrevayler(Serializable newPrevalentSystem, String
      *      snapshotDirectory)
      */
-    public static Prevayler createTransientPrevayler(Serializable newPrevalentSystem) {
-        PrevaylerFactory factory = new PrevaylerFactory();
+    public static <T> Prevayler<T> createTransientPrevayler(T newPrevalentSystem) {
+        PrevaylerFactory<T> factory = new PrevaylerFactory<T>();
         factory.configurePrevalentSystem(newPrevalentSystem);
         factory.configureNullSnapshotManager(new NullSnapshotManager(newPrevalentSystem, "Transient Prevaylers are unable to take snapshots."));
         factory.configureTransientMode(true);
@@ -152,7 +152,7 @@ public class PrevaylerFactory {
             return factory.create();
         } catch (Exception e) {
             e.printStackTrace(); // Transient Prevayler creation should not
-                                    // fail.
+            // fail.
             return null;
         }
     }
@@ -171,8 +171,8 @@ public class PrevaylerFactory {
      *            The directory where the .snapshot files will be read and
      *            written.
      */
-    public static Prevayler createCheckpointPrevayler(Serializable newPrevalentSystem, String snapshotDirectory) {
-        PrevaylerFactory factory = new PrevaylerFactory();
+    public static <T> Prevayler<T> createCheckpointPrevayler(T newPrevalentSystem, String snapshotDirectory) {
+        PrevaylerFactory<T> factory = new PrevaylerFactory<T>();
         factory.configurePrevalentSystem(newPrevalentSystem);
         factory.configurePrevalenceDirectory(snapshotDirectory);
         factory.configureTransientMode(true);
@@ -180,7 +180,7 @@ public class PrevaylerFactory {
             return factory.create();
         } catch (Exception e) {
             e.printStackTrace(); // Transient Prevayler creation should not
-                                    // fail.
+            // fail.
             return null;
         }
     }
@@ -249,7 +249,7 @@ public class PrevaylerFactory {
      *            prevalentSystem must be compatible with it.
      * @see #configureSnapshotSerializer(String,Serializer)
      */
-    public void configurePrevalentSystem(Object newPrevalentSystem) {
+    public void configurePrevalentSystem(T newPrevalentSystem) {
         _prevalentSystem = newPrevalentSystem;
     }
 
@@ -370,12 +370,12 @@ public class PrevaylerFactory {
      *             If a class of a serialized Object is not found when reading a
      *             .journal or .snapshot file.
      */
-    public Prevayler create() throws IOException, ClassNotFoundException {
+    public Prevayler<T> create() throws IOException {
         SnapshotManager snapshotManager = snapshotManager();
         TransactionPublisher publisher = publisher(snapshotManager);
         if (_serverPort != -1)
             new ServerListener(publisher, network(), _serverPort);
-        return new PrevaylerImpl(snapshotManager, publisher, journalSerializer());
+        return new PrevaylerImpl<T>(snapshotManager, publisher, journalSerializer());
     }
 
     private String prevalenceDirectory() {
@@ -421,7 +421,7 @@ public class PrevaylerFactory {
         return _network != null ? _network : new OldNetworkImpl();
     }
 
-    private SnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
+    private SnapshotManager snapshotManager() {
         if (_nullSnapshotManager != null)
             return _nullSnapshotManager;
 

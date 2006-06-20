@@ -20,15 +20,16 @@ public class HolderChange extends AccountTransaction {
 
     private String _newHolder;
 
+    // Necessary for Skaringa XML serialization
     private HolderChange() {
-    } // Necessary for Skaringa XML serialization
+    }
 
     public HolderChange(Account account, String newHolder) {
         super(account);
         _newHolder = newHolder;
     }
 
-    public void executeAndQuery(Account account, Date ignored) throws Account.InvalidHolder {
-        account.holder(_newHolder);
+    @Override public void executeAndQuery(Account account, Date ignored) throws Account.InvalidHolder {
+        account.setHolder(_newHolder);
     }
 }

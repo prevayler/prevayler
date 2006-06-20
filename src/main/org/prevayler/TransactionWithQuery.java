@@ -26,7 +26,7 @@ import java.util.Date;
  * 
  * @see Transaction
  */
-public interface TransactionWithQuery extends Serializable {
+public interface TransactionWithQuery<T, R, E extends Exception> extends Serializable {
 
     /**
      * Performs the necessary modifications on the given prevalentSystem and
@@ -43,6 +43,6 @@ public interface TransactionWithQuery extends Serializable {
      *            in time. Logically, a Prevalent System's time does not pass
      *            during the execution of a Transaction.
      */
-    public Object executeAndQuery(Object prevalentSystem, Date executionTime) throws Exception;
+    public R executeAndQuery(T prevalentSystem, Date executionTime) throws E;
 
 }

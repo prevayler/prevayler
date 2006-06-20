@@ -20,15 +20,17 @@ public class Deposit extends AccountTransaction {
 
     private long _amount;
 
+    // Necessary for Skaringa XML serialization
     private Deposit() {
-    } // Necessary for Skaringa XML serialization
+    }
 
     public Deposit(Account account, long amount) {
         super(account);
         _amount = amount;
     }
 
-    public void executeAndQuery(Account account, Date timestamp) throws Account.InvalidAmount {
+    @Override public void executeAndQuery(Account account, Date timestamp) throws Account.InvalidAmount {
         account.deposit(_amount, timestamp);
     }
+
 }

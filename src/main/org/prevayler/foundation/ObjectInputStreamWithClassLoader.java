@@ -24,7 +24,7 @@ public class ObjectInputStreamWithClassLoader extends ObjectInputStream {
         _loader = loader;
     }
 
-    protected Class resolveClass(ObjectStreamClass v) throws IOException, ClassNotFoundException {
+    @Override protected Class<?> resolveClass(ObjectStreamClass v) throws IOException, ClassNotFoundException {
         return (_loader != null ? _loader.loadClass(v.getName()) : super.resolveClass(v));
     }
 }

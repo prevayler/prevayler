@@ -28,11 +28,11 @@ public class MainReplica {
             serverURI = "localhost";
         }
 
-        PrevaylerFactory factory = new PrevaylerFactory();
+        PrevaylerFactory<Bank> factory = new PrevaylerFactory<Bank>();
         factory.configurePrevalentSystem(new Bank());
         factory.configurePrevalenceDirectory("demo2Replica");
         factory.configureReplicationClient(serverURI, PrevaylerFactory.DEFAULT_REPLICATION_PORT);
-        Prevayler prevayler = factory.create();
+        Prevayler<Bank> prevayler = factory.create();
 
         Main.startSnapshots(prevayler);
     }

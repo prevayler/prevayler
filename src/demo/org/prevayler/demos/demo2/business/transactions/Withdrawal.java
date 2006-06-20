@@ -20,15 +20,17 @@ public class Withdrawal extends AccountTransaction {
 
     protected long _amount;
 
+    // Necessary for Skaringa XML serialization
     private Withdrawal() {
-    } // Necessary for Skaringa XML serialization
+    }
 
     public Withdrawal(Account account, long amount) {
         super(account);
         _amount = amount;
     }
 
-    public void executeAndQuery(Account account, Date timestamp) throws Account.InvalidAmount {
+    @Override public void executeAndQuery(Account account, Date timestamp) throws Account.InvalidAmount {
         account.withdraw(_amount, timestamp);
     }
+
 }

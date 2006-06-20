@@ -18,11 +18,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 
-public abstract class Capsule implements Serializable {
+public abstract class Capsule<X, T> implements Serializable {
 
     private final byte[] _serialized;
 
-    protected Capsule(Object transaction, Serializer journalSerializer) {
+    protected Capsule(X transaction, Serializer journalSerializer) {
         try {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             journalSerializer.writeObject(bytes, transaction);
@@ -47,9 +47,9 @@ public abstract class Capsule implements Serializable {
     /**
      * Deserialize the contained Transaction or TransactionWithQuery.
      */
-    public final Object deserialize(Serializer journalSerializer) {
+    @SuppressWarnings("unchecked") public final X deserialize(Serializer journalSerializer) {
         try {
-            return journalSerializer.readObject(new ByteArrayInputStream(_serialized));
+            return (X) journalSerializer.readObject(new ByteArrayInputStream(_serialized));
         } catch (Exception exception) {
             throw new TransactionNotDeserializableError("Unable to deserialize transaction", exception);
         }
@@ -59,7 +59,7 @@ public abstract class Capsule implements Serializable {
      * Actually execute the Transaction or TransactionWithQuery. The caller is
      * responsible for synchronizing on the prevalentSystem.
      */
-    protected abstract void execute(Object transaction, Object prevalentSystem, Date executionTime);
+    protected abstract void execute(X transaction, T prevalentSystem, Date executionTime);
 
     /**
      * Make a clean copy of this capsule that will have its own query result

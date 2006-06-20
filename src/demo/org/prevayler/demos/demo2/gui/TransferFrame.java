@@ -12,6 +12,7 @@ package org.prevayler.demos.demo2.gui;
 
 import org.prevayler.Prevayler;
 import org.prevayler.demos.demo2.business.Account;
+import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.demos.demo2.business.transactions.Transfer;
 
 import javax.swing.Box;
@@ -33,7 +34,7 @@ class TransferFrame extends AccountFrame {
 
     private JTextField amountField;
 
-    TransferFrame(Account account, Prevayler prevayler, Container container) {
+    TransferFrame(Account account, Prevayler<Bank> prevayler, Container container) {
         super("Transfer", prevayler, container);
 
         this.account = account;
@@ -42,7 +43,7 @@ class TransferFrame extends AccountFrame {
         setBounds(50, 50, 200, 194);
     }
 
-    protected void addFields(Box fieldBox) {
+    @Override protected void addFields(Box fieldBox) {
         fieldBox.add(labelContainer("From Account"));
         sourceField = new JTextField();
         sourceField.setEnabled(false);
@@ -59,7 +60,7 @@ class TransferFrame extends AccountFrame {
         fieldBox.add(amountField);
     }
 
-    protected void addButtons(JPanel buttonPanel) {
+    @Override protected void addButtons(JPanel buttonPanel) {
         buttonPanel.add(new JButton(new OKAction()));
     }
 
@@ -71,7 +72,7 @@ class TransferFrame extends AccountFrame {
             super("OK");
         }
 
-        public void action() throws Exception {
+        @Override public void action() throws Exception {
             long destinationNumber = parse(destinationField.getText());
             long amount = parse(amountField.getText());
             _prevayler.execute(new Transfer(account.number(), destinationNumber, amount));
