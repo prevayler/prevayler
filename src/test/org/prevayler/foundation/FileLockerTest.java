@@ -83,7 +83,7 @@ public class FileLockerTest extends FileIOTest {
         // We can acquire and release in different threads in this JVM and then
         // acquire in another JVM...
         Thread acquire = new Thread() {
-            public void run() {
+            @Override public void run() {
                 try {
                     shareLocker(new FileLocker(lockFile));
                     waitForDone();
@@ -93,7 +93,7 @@ public class FileLockerTest extends FileIOTest {
             }
         };
         Thread release = new Thread() {
-            public void run() {
+            @Override public void run() {
                 try {
                     FileLocker locker = waitForLocker();
                     locker.release();

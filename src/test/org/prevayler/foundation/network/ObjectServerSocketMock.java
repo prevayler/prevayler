@@ -49,12 +49,11 @@ public class ObjectServerSocketMock implements ObjectServerSocket {
         ObjectSocket result = _clientSide;
         _clientSide = null;
         notifyAll(); // Notifies the server thread (necessary) and eventual
-                        // client threads (harmless).
+        // client threads (harmless).
         return result;
     }
 
-    public void close() throws IOException {
-        // TODO Auto-generated method stub
+    public void close() {
     }
 
 }

@@ -11,7 +11,6 @@
 package org.prevayler.foundation;
 
 import org.prevayler.foundation.network.Network;
-import org.prevayler.foundation.network.NetworkImpl;
 import org.prevayler.foundation.network.NewNetworkMock;
 import org.prevayler.foundation.network.ObjectReceiver;
 import org.prevayler.foundation.network.ObjectReceiverMock;
@@ -52,7 +51,7 @@ public class StubbornNetworkTest extends TestCase {
 
     private String testObject2 = "test Object 2";
 
-    public void setUp() {
+    @Override public void setUp() {
         // Network oldNetwork = setNetworkToTest();
         network = new StubbornNetworkImpl();
         mockService = new ServiceMock();
@@ -60,17 +59,9 @@ public class StubbornNetworkTest extends TestCase {
         client2 = new Client();
     }
 
-    public void tearDown() throws Exception {
+    @Override public void tearDown() throws Exception {
         Thread.sleep(NETWORK_SOCKET_CLOSE_MSEC_DELAY);
 
-    }
-
-    private Network setNetworkToTest() {
-        if (mockTest) {
-            networkMock = new NewNetworkMock();
-            return networkMock;
-        }
-        return new NetworkImpl();
     }
 
     public void donttestFailure() throws Exception {
@@ -192,9 +183,9 @@ public class StubbornNetworkTest extends TestCase {
 
     class Client extends Messenger {
 
-        public void connect(int port) throws Exception {
+        public void connect(int clientPort) throws Exception {
             mock = new ObjectReceiverMock();
-            networkReceiver = network.findServer("localhost", port, mock);
+            networkReceiver = network.findServer("localhost", clientPort, mock);
             Thread.sleep(NETWORK_CONNECT_SETUP_MSEC_TIME);
         }
 
@@ -205,19 +196,19 @@ public class StubbornNetworkTest extends TestCase {
     }
 
     class Server extends Messenger {
-        private ServiceMock mockService;
+        private ServiceMock myMockService;
 
         private int service;
 
         public Server(int service, ServiceMock mockService) {
             this.service = service;
-            this.mockService = mockService;
-            networkReceiver = this.mockService.getServerNetwork(service);
-            mock = this.mockService.getServerMock(service);
+            this.myMockService = mockService;
+            networkReceiver = this.myMockService.getServerNetwork(service);
+            mock = this.myMockService.getServerMock(service);
         }
 
         public void close() throws Exception {
-            this.mockService.close(service);
+            this.myMockService.close(service);
         }
 
     }

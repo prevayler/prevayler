@@ -19,7 +19,7 @@ public class Permit {
 
     boolean _isValid = true;
 
-    private final Set _objectsToNotify = new HashSet();
+    private final Set<Object> _objectsToNotify = new HashSet<Object>();
 
     public void check() throws IOException {
         if (!_isValid)

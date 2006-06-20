@@ -16,14 +16,8 @@ import java.util.Map;
 
 public class NewNetworkMock extends BaseNetworkMock implements Network, NetworkReceiverFactory {
 
-    private final Map _providerByPort = new Hashtable();
+    private final Map<Integer, NetworkServerObjectReceiver> _providerByPort = new Hashtable<Integer, NetworkServerObjectReceiver>();
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.prevayler.foundation.network.Network#startService(org.prevayler.foundation.network.Service,
-     *      int)
-     */
     public void startService(Service service, int port) throws IOException {
         checkNotInUse(port);
         ObjectServerSocket server = startServer(port);
@@ -31,11 +25,6 @@ public class NewNetworkMock extends BaseNetworkMock implements Network, NetworkR
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.prevayler.foundation.network.Network#stopService(int)
-     */
     public void stopService(int port) throws IOException {
         NetworkServerObjectReceiverImpl provider = removeServer(port);
         if (provider == null) {
@@ -44,12 +33,6 @@ public class NewNetworkMock extends BaseNetworkMock implements Network, NetworkR
         provider.shutdown();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.prevayler.foundation.network.Network#findServer(java.lang.String,
-     *      int, org.prevayler.foundation.network.ObjectReceiver)
-     */
     public ObjectReceiver findServer(String ipAddress, int port, ObjectReceiver client) throws IOException {
         crashIfNotLocal(ipAddress);
         ObjectSocket provider = startClient(port);
@@ -68,7 +51,7 @@ public class NewNetworkMock extends BaseNetworkMock implements Network, NetworkR
 
     }
 
-    public ObjectReceiver newReceiver(Service service, ObjectSocket socket) throws IOException {
+    public ObjectReceiver newReceiver(Service service, ObjectSocket socket) {
         return new NetworkClientObjectReceiverImpl(socket, service);
     }
 

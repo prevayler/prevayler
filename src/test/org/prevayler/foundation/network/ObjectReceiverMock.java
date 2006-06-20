@@ -19,14 +19,14 @@ import java.util.List;
 
 public class ObjectReceiverMock implements ObjectReceiver {
 
-    private List received;
+    private List<Object> received;
 
     private boolean closed = false;
 
     private boolean permit = true;
 
     public ObjectReceiverMock() {
-        List receiveList = new ArrayList();
+        List<Object> receiveList = new ArrayList<Object>();
         received = Collections.synchronizedList(receiveList);
     }
 

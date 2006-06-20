@@ -23,22 +23,17 @@ import java.util.Date;
 public class ConfusedFoodTasterStressTest extends FileIOTest {
 
     // Try increasing these numbers to test with more stress:
-    private static final int NUMBER_OF_THREADS = 10; // affects how many
-                                                        // concurrent
-                                                        // transactions are
-                                                        // attempted
 
-    private static final int TRANSACTIONS_PER_THREAD = 100; // just affects how
-                                                            // long the test
-                                                            // runs before
-                                                            // declaring success
+    // affects how many concurrent transactions are attempted
+    private static final int NUMBER_OF_THREADS = 10;
 
-    private static final int WHEN_TO_START_THROWING = 5; // affects how many
-                                                            // transactions have
-                                                            // a chance to get
-                                                            // into the pipeline
+    // just affects how long the test runs before declaring success
+    private static final int TRANSACTIONS_PER_THREAD = 100;
 
-    private Prevayler _prevayler;
+    // affects how many transactions have a chance to get into the pipeline
+    private static final int WHEN_TO_START_THROWING = 5;
+
+    private Prevayler<CountingSystem> _prevayler;
 
     private volatile boolean _failed;
 
@@ -66,7 +61,7 @@ public class ConfusedFoodTasterStressTest extends FileIOTest {
     }
 
     public class CountThread extends Thread {
-        public void run() {
+        @Override public void run() {
             for (int i = 0; !_failed && i < TRANSACTIONS_PER_THREAD; i++) {
                 try {
                     _prevayler.execute(new CountTransaction());
@@ -107,11 +102,10 @@ public class ConfusedFoodTasterStressTest extends FileIOTest {
         int counter = 0;
     }
 
-    public static class CountTransaction implements Transaction {
+    public static class CountTransaction implements Transaction<CountingSystem> {
         private static final long serialVersionUID = 5043457505878510633L;
 
-        public void executeOn(Object prevalentSystem, Date executionTime) {
-            CountingSystem countingSystem = (CountingSystem) prevalentSystem;
+        public void executeOn(CountingSystem countingSystem, Date executionTime) {
             if (countingSystem.counter == WHEN_TO_START_THROWING) {
                 throw new CountException();
             }

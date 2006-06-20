@@ -14,9 +14,9 @@ import org.prevayler.Query;
 
 import java.util.Date;
 
-public class NullQuery implements Query {
+public class NullQuery implements Query<Object, Void, RuntimeException> {
 
-    public Object query(Object prevalentSystem, Date executionTime) throws Exception {
+    public Void query(Object prevalentSystem, Date executionTime) {
         return null;
     }
 

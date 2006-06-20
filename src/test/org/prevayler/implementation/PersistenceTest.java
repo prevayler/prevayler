@@ -22,11 +22,11 @@ import java.io.IOException;
 
 public class PersistenceTest extends FileIOTest {
 
-    private Prevayler _prevayler;
+    private Prevayler<AppendingSystem> _prevayler;
 
     private String _prevalenceBase;
 
-    public void tearDown() throws Exception {
+    @Override public void tearDown() throws Exception {
         if (_prevayler != null) {
             _prevayler.close();
         }
@@ -177,12 +177,10 @@ public class PersistenceTest extends FileIOTest {
     }
 
     private void crashRecover() throws Exception {
-        out("CrashRecovery.");
-
         if (_prevayler != null)
             _prevayler.close();
 
-        PrevaylerFactory factory = new PrevaylerFactory();
+        PrevaylerFactory<AppendingSystem> factory = new PrevaylerFactory<AppendingSystem>();
         factory.configurePrevalentSystem(new AppendingSystem());
         factory.configurePrevalenceDirectory(prevalenceBase());
         factory.configureTransactionFiltering(false);
@@ -190,23 +188,20 @@ public class PersistenceTest extends FileIOTest {
     }
 
     private void snapshot() throws IOException {
-        out("Snapshot.");
         _prevayler.takeSnapshot();
     }
 
     private void append(String appendix, String expectedResult) throws Exception {
-        out("Appending " + appendix);
         _prevayler.execute(new Appendix(appendix));
         verify(expectedResult);
     }
 
     private void verify(String expectedResult) {
-        out("Expecting result: " + expectedResult);
         assertEquals(expectedResult, system().value());
     }
 
     private AppendingSystem system() {
-        return (AppendingSystem) _prevayler.prevalentSystem();
+        return _prevayler.prevalentSystem();
     }
 
     private String prevalenceBase() {
@@ -215,12 +210,6 @@ public class PersistenceTest extends FileIOTest {
 
     private void newPrevalenceBase() throws Exception {
         _prevalenceBase = _testDirectory + File.separator + System.currentTimeMillis();
-    }
-
-    private static void out(Object obj) {
-        if (false)
-            System.out.println(obj); // Change this line to see what the test
-        // is doing.
     }
 
 }

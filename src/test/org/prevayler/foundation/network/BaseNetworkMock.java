@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BaseNetworkMock {
-    protected final Map _serverSocketByPort = new HashMap();
+    protected final Map<Integer, ObjectServerSocketMock> _serverSocketByPort = new HashMap<Integer, ObjectServerSocketMock>();
 
     protected Permit _permit = new Permit();
 
@@ -35,7 +35,7 @@ public class BaseNetworkMock {
     }
 
     protected ObjectServerSocketMock findServer(int serverPort) {
-        return (ObjectServerSocketMock) _serverSocketByPort.get(new Integer(serverPort));
+        return _serverSocketByPort.get(serverPort);
     }
 
     protected ObjectSocket startClient(int serverPort) throws IOException {
@@ -47,8 +47,8 @@ public class BaseNetworkMock {
         } catch (IOException e) {
             Cool.sleep(5);
             return server.openClientSocket(); // TODO Eliminate this retry
-                                                // because client must try and
-                                                // reconnect anyway.
+            // because client must try and
+            // reconnect anyway.
         }
     }
 
@@ -58,9 +58,10 @@ public class BaseNetworkMock {
             throw new IOException("Port already in use.");
 
         ObjectServerSocketMock result = new ObjectServerSocketMock(_permit);
-        _serverSocketByPort.put(new Integer(serverPort), result);
+        _serverSocketByPort.put(serverPort, result);
 
         return result;
 
     }
+
 }

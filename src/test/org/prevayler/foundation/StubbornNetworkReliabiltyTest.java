@@ -46,7 +46,7 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
 
     private final boolean printing = true;
 
-    public void setUp() {
+    @Override public void setUp() {
         serverService = new MockService();
         // NewNetworkMock mockNetwork = new NewNetworkMock();
         serverNetwork = new StubbornNetworkImpl();
@@ -92,10 +92,10 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
             this.frequency = millisecs;
         }
 
-        public void commenceService(Network network, int port) throws Exception {
-            this.network = network;
-            this.port = port;
-            network.startService(this, port);
+        public void commenceService(Network newNetwork, int newPort) throws Exception {
+            this.network = newNetwork;
+            this.port = newPort;
+            newNetwork.startService(this, newPort);
         }
 
         public ObjectReceiver serverFor(ObjectReceiver client) {
@@ -128,7 +128,7 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
             start();
         }
 
-        public void run() {
+        @Override public void run() {
             openForBusiness = true;
             for (sent = 0; sent < objectsToSend.length(); sent++) {
                 rest();
@@ -194,16 +194,16 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
             }
         }
 
-        public void commenceReceiving(Network network, int port, int expectedLth) {
-            this.expectedLth = expectedLth;
-            this.port = port;
-            this.network = network;
+        public void commenceReceiving(Network newNetwork, int newPort, int newExpectedLth) {
+            this.expectedLth = newExpectedLth;
+            this.port = newPort;
+            this.network = newNetwork;
             this.setName(threadName);
             this.setDaemon(true);
             start();
         }
 
-        public void run() {
+        @Override public void run() {
             connect();
             sleepTillFinished();
             shutdown();
@@ -266,8 +266,8 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
             network = new NetworkImpl();
         }
 
-        public void startProxy(int listeningPort, int targetPort) throws IOException {
-            this.targetPort = targetPort;
+        public void startProxy(int listeningPort, int newTargetPort) throws IOException {
+            this.targetPort = newTargetPort;
             network.startService(this, listeningPort);
         }
 
@@ -302,7 +302,7 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
             }
         }
 
-        public void run() {
+        @Override public void run() {
             connect();
             finishConnect();
             monitorMessages();
@@ -335,8 +335,6 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
         }
 
         public void close() {
-            // TODO Auto-generated method stub
-
         }
 
         public void messageFromServerForClient(Object object) {

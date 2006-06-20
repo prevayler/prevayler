@@ -31,8 +31,7 @@ public class StubbornNetworkReceiverTest extends TestCase {
 
     private final String replacementProvider = "replaced provider";
 
-    public void setUp() throws Exception {
-        // System.out.println("Starting " + this.getName());
+    @Override public void setUp() throws Exception {
         client = new ObjectReceiverMock();
         network = new SimpleNetworkMock();
         provider = prepareNetwork("Initial Provider");
@@ -171,7 +170,7 @@ public class StubbornNetworkReceiverTest extends TestCase {
 
         private MockObjectSocket mockProvider;
 
-        public ObjectSocket newInstance(String ipAddress, int port) throws IOException {
+        public ObjectSocket newInstance(String ipAddress, int port) {
             return mockProvider;
         }
 
@@ -184,20 +183,20 @@ public class StubbornNetworkReceiverTest extends TestCase {
     private class MockClientSender extends Thread {
         private boolean shutdownRequested = false;
 
-        private List sendQ;
+        private List<Object> sendQ;
 
-        private ObjectReceiver scri;
+        private ObjectReceiver myScri;
 
         public MockClientSender(ObjectReceiver scri) {
-            this.scri = scri;
-            List sendList = new ArrayList();
+            this.myScri = scri;
+            List<Object> sendList = new ArrayList<Object>();
             sendQ = Collections.synchronizedList(sendList);
             this.setName("MockClientSender");
             this.setDaemon(true);
             start();
         }
 
-        public void run() {
+        @Override public void run() {
             while (!shutdownRequested) {
                 sendAnObject();
             }
@@ -211,7 +210,7 @@ public class StubbornNetworkReceiverTest extends TestCase {
                         return;
                     }
                     Object o = sendQ.remove(0);
-                    this.scri.receive(o);
+                    this.myScri.receive(o);
                 } catch (InterruptedException uhOh) {
                 } catch (IOException cantHappen) {
                     throw new RuntimeException("Stubborn Client threw Exeption");
@@ -232,9 +231,9 @@ public class StubbornNetworkReceiverTest extends TestCase {
     }
 
     private class MockObjectSocket implements ObjectSocket {
-        private List received;
+        private List<Object> received;
 
-        private List readQ;
+        private List<Object> readQ;
 
         private volatile boolean closed = false;
 
@@ -247,8 +246,8 @@ public class StubbornNetworkReceiverTest extends TestCase {
         private final String _name;
 
         MockObjectSocket(String name) {
-            received = Collections.synchronizedList(new ArrayList());
-            readQ = Collections.synchronizedList(new ArrayList());
+            received = Collections.synchronizedList(new ArrayList<Object>());
+            readQ = Collections.synchronizedList(new ArrayList<Object>());
             _name = name;
         }
 
@@ -275,22 +274,12 @@ public class StubbornNetworkReceiverTest extends TestCase {
             }
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.prevayler.foundation.network.ObjectSocket#writeObject(java.lang.Object)
-         */
         public void writeObject(Object object) throws IOException {
             checkPermission(permitWrite);
             received.add(object);
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.prevayler.foundation.network.ObjectSocket#readObject()
-         */
-        public Object readObject() throws IOException, ClassNotFoundException {
+        public Object readObject() throws IOException {
             checkPermission(permitRead);
             return readAnObject();
         }

@@ -21,9 +21,9 @@ import java.util.Date;
 
 public class TransientPrevaylerTest extends FileIOTest {
 
-    private Prevayler prevayler;
+    private Prevayler<AppendingSystem> prevayler;
 
-    protected void setUp() throws Exception {
+    @Override protected void setUp() throws Exception {
         super.setUp();
         prevayler = PrevaylerFactory.createTransientPrevayler(new AppendingSystem());
     }
@@ -55,19 +55,19 @@ public class TransientPrevaylerTest extends FileIOTest {
     public void testFailFastBaptismProblem() {
         append("a");
 
-        AppendingSystem directReference = (AppendingSystem) prevayler.prevalentSystem();
+        AppendingSystem directReference = prevayler.prevalentSystem();
         prevayler.execute(new DirectReferenceTransaction(directReference));
 
         assertState("a");
     }
 
-    protected void tearDown() throws Exception {
+    @Override protected void tearDown() throws Exception {
         prevayler = null;
         super.tearDown();
     }
 
     private void assertState(String expected) {
-        String result = ((AppendingSystem) prevayler.prevalentSystem()).value();
+        String result = prevayler.prevalentSystem().value();
         assertEquals(expected, result);
     }
 
@@ -75,7 +75,7 @@ public class TransientPrevaylerTest extends FileIOTest {
         prevayler.execute(new Appendix(appendix));
     }
 
-    static private class DirectReferenceTransaction implements Transaction {
+    static private class DirectReferenceTransaction implements Transaction<AppendingSystem> {
 
         private static final long serialVersionUID = -7885669885494051746L;
 
@@ -85,7 +85,7 @@ public class TransientPrevaylerTest extends FileIOTest {
             _illegalDirectReference = illegalDirectReference;
         }
 
-        public void executeOn(Object ignored, Date ignoredToo) {
+        public void executeOn(AppendingSystem ignored, Date ignoredToo) {
             _illegalDirectReference.append("anything");
         }
 

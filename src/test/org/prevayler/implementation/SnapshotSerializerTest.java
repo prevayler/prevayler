@@ -34,7 +34,7 @@ import junit.framework.AssertionFailedError;
 
 public class SnapshotSerializerTest extends FileIOTest {
 
-    public void testConfigureSnapshotSerializer() throws IOException, ClassNotFoundException {
+    public void testConfigureSnapshotSerializer() throws IOException {
         Serializer serializer = new MySerializer();
 
         takeSnapshot(serializer);
@@ -54,22 +54,22 @@ public class SnapshotSerializerTest extends FileIOTest {
         }
     }
 
-    public void testXStreamSnapshot() throws IOException, ClassNotFoundException {
+    public void testXStreamSnapshot() throws IOException {
         Serializer serializer = new XStreamSerializer();
 
         takeSnapshot(serializer);
         recover(serializer);
     }
 
-    public void testSkaringaSnapshot() throws IOException, ClassNotFoundException {
+    public void testSkaringaSnapshot() throws IOException {
         Serializer serializer = new SkaringaSerializer();
 
         takeSnapshot(serializer);
         recover(serializer);
     }
 
-    private void takeSnapshot(Serializer snapshotSerializer) throws IOException, ClassNotFoundException {
-        Prevayler prevayler = createPrevayler(snapshotSerializer);
+    private void takeSnapshot(Serializer snapshotSerializer) throws IOException {
+        Prevayler<StringBuffer> prevayler = createPrevayler(snapshotSerializer);
 
         prevayler.execute(new AppendTransaction(" first"));
         prevayler.execute(new AppendTransaction(" second"));
@@ -80,13 +80,13 @@ public class SnapshotSerializerTest extends FileIOTest {
         prevayler.close();
     }
 
-    private void recover(Serializer snapshotSerializer) throws IOException, ClassNotFoundException {
-        Prevayler prevayler = createPrevayler(snapshotSerializer);
+    private void recover(Serializer snapshotSerializer) throws IOException {
+        Prevayler<StringBuffer> prevayler = createPrevayler(snapshotSerializer);
         assertEquals("the system first second third", prevayler.prevalentSystem().toString());
     }
 
-    private Prevayler createPrevayler(Serializer snapshotSerializer) throws IOException, ClassNotFoundException {
-        PrevaylerFactory factory = new PrevaylerFactory();
+    private Prevayler<StringBuffer> createPrevayler(Serializer snapshotSerializer) throws IOException {
+        PrevaylerFactory<StringBuffer> factory = new PrevaylerFactory<StringBuffer>();
         factory.configurePrevalentSystem(new StringBuffer("the system"));
         factory.configurePrevalenceDirectory(_testDirectory);
         factory.configureSnapshotSerializer("snapshot", snapshotSerializer);

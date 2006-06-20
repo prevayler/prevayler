@@ -13,7 +13,6 @@ package org.prevayler.foundation;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -29,7 +28,7 @@ public class DeepCopierTest extends TestCase {
         assertNotSame(original, copy);
     }
 
-    public void testParallel() throws IOException {
+    public void testParallel() {
         Object original = "foo";
         Object copy = DeepCopier.deepCopyParallel(original, new JavaSerializer());
 
@@ -37,7 +36,7 @@ public class DeepCopierTest extends TestCase {
         assertNotSame(original, copy);
     }
 
-    public void testParallelPathological() throws IOException {
+    public void testParallelPathological() {
         Object original = new Byte((byte) 17);
 
         Object copy = DeepCopier.deepCopyParallel(original, new Serializer() {

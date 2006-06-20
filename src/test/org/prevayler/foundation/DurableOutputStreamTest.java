@@ -99,7 +99,7 @@ public class DurableOutputStreamTest extends FileIOTest {
             _value = value;
         }
 
-        public void writeTo(OutputStream stream) throws IOException {
+        @Override public void writeTo(OutputStream stream) throws IOException {
             stream.write(_value.getBytes());
             stream.write('\n');
         }

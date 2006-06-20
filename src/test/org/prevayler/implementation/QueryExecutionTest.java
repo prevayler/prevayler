@@ -16,7 +16,6 @@ import org.prevayler.Query;
 import org.prevayler.TransactionWithQuery;
 import org.prevayler.foundation.FileIOTest;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,34 +23,32 @@ import java.util.List;
 public class QueryExecutionTest extends FileIOTest {
 
     public void testQuery() throws Exception {
-        List prevalentSystem = new LinkedList();
-        Prevayler prevayler = PrevaylerFactory.createTransientPrevayler((Serializable) prevalentSystem);
-        Object result = prevayler.execute(query());
-        assertEquals(0, ((Integer) result).intValue());
+        List<String> prevalentSystem = new LinkedList<String>();
+        Prevayler<List<String>> prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem);
+        assertEquals(0, (int) prevayler.execute(query()));
     }
 
-    private static Query query() {
-        return new Query() {
-            public Object query(Object prevalentSystem, Date ignored) throws Exception {
-                return new Integer(((List) prevalentSystem).size());
+    private static Query<List<String>, Integer, RuntimeException> query() {
+        return new Query<List<String>, Integer, RuntimeException>() {
+            public Integer query(List<String> prevalentSystem, Date ignored) {
+                return prevalentSystem.size();
             }
         };
     }
 
     public void testTransactionWithQuery() throws Exception {
         List prevalentSystem = new LinkedList();
-        Prevayler prevayler = PrevaylerFactory.createTransientPrevayler((Serializable) prevalentSystem);
-        Object result = prevayler.execute(transactionWithQuery());
-        assertEquals("abc", result);
+        Prevayler<List> prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem);
+        assertEquals("abc", prevayler.execute(transactionWithQuery()));
         assertEquals("added element", prevalentSystem.get(0));
     }
 
-    private static TransactionWithQuery transactionWithQuery() {
-        return new TransactionWithQuery() {
+    private static TransactionWithQuery<List<String>, String, RuntimeException> transactionWithQuery() {
+        return new TransactionWithQuery<List<String>, String, RuntimeException>() {
             private static final long serialVersionUID = -2976662596936807721L;
 
-            public Object executeAndQuery(Object prevalentSystem, Date timestamp) {
-                ((List) prevalentSystem).add("added element");
+            public String executeAndQuery(List<String> prevalentSystem, Date timestamp) {
+                prevalentSystem.add("added element");
                 return "abc";
             }
         };

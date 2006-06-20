@@ -25,7 +25,7 @@ public class NetworkClientReceiverTest extends TestCase {
 
     private static final String threadName = "Prevayler Network Client Receiver";
 
-    public void setUp() throws Exception {
+    @Override public void setUp() throws Exception {
         provider = new MockObjectSocket();
         client = new ObjectReceiverMock();
         ncor = new NetworkClientObjectReceiverImpl(provider, client);
@@ -95,9 +95,9 @@ public class NetworkClientReceiverTest extends TestCase {
 
     private class MockObjectSocket implements ObjectSocket {
 
-        private ArrayList receiveQueue = new ArrayList();
+        private ArrayList<Object> receiveQueue = new ArrayList<Object>();
 
-        private ArrayList sentQueue = new ArrayList();
+        private ArrayList<Object> sentQueue = new ArrayList<Object>();
 
         private boolean closed = false;
 
@@ -115,11 +115,6 @@ public class NetworkClientReceiverTest extends TestCase {
             this.print = print;
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.prevayler.foundation.network.ObjectSocket#writeObject(java.lang.Object)
-         */
         public void writeObject(Object object) throws IOException {
             if (!permit) {
                 throw new IOException("Send Crash");
@@ -127,12 +122,7 @@ public class NetworkClientReceiverTest extends TestCase {
             sentQueue.add(object);
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.prevayler.foundation.network.ObjectSocket#readObject()
-         */
-        public synchronized Object readObject() throws IOException, ClassNotFoundException {
+        public synchronized Object readObject() throws IOException {
             while (receiveQueue.isEmpty()) {
                 try {
                     monitoringRules = monitoringRules + ";Read Waiting";
@@ -150,12 +140,7 @@ public class NetworkClientReceiverTest extends TestCase {
             return receiveQueue.remove(0);
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.prevayler.foundation.network.ObjectSocket#close()
-         */
-        public synchronized void close() throws IOException {
+        public synchronized void close() {
             closed = true;
             monitoringRules = monitoringRules + ";close notify";
             notify();

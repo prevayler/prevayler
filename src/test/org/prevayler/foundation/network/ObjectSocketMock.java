@@ -21,7 +21,7 @@ public class ObjectSocketMock implements ObjectSocket {
 
     private ObjectSocketMock _counterpart;
 
-    private List _receivedObjects = new LinkedList();
+    private List<Object> _receivedObjects = new LinkedList<Object>();
 
     private Permit _permit;
 
@@ -58,7 +58,6 @@ public class ObjectSocketMock implements ObjectSocket {
     }
 
     public void close() {
-        // TODO Implement this close.
     }
 
     public ObjectSocket counterpart() {

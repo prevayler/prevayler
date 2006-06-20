@@ -16,14 +16,14 @@ import org.prevayler.foundation.FileIOTest;
 
 public class RollbackTest extends FileIOTest {
 
-    private Prevayler _prevayler;
+    private Prevayler<AppendingSystem> _prevayler;
 
     public void testRollback() throws Exception {
         testRollback(PrevaylerFactory.createPrevayler(new AppendingSystem(), _testDirectory));
         testRollback(PrevaylerFactory.createTransientPrevayler(new AppendingSystem()));
     }
 
-    private void testRollback(Prevayler prevayler) throws Exception {
+    private void testRollback(Prevayler<AppendingSystem> prevayler) throws Exception {
         _prevayler = prevayler;
 
         append("a", "a");
@@ -45,6 +45,7 @@ public class RollbackTest extends FileIOTest {
     }
 
     private AppendingSystem system() {
-        return (AppendingSystem) _prevayler.prevalentSystem();
+        return _prevayler.prevalentSystem();
     }
+
 }

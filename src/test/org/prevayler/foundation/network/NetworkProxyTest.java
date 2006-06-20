@@ -37,7 +37,7 @@ public class NetworkProxyTest extends TestCase {
 
     private static final String b = "B";
 
-    public void setUp() {
+    @Override public void setUp() {
         proxy = new StubbornNetworkProxy();
         client = new ObjectReceiverMock();
         proxy.setClient(client);
@@ -103,19 +103,19 @@ public class NetworkProxyTest extends TestCase {
     private class MockClientSender extends Thread {
         private boolean shutdownRequested = false;
 
-        private List sendQ;
+        private List<Object> sendQ;
 
         private ObjectReceiver targetReceiver;
 
         public MockClientSender(ObjectReceiver or) {
             this.targetReceiver = or;
-            sendQ = Collections.synchronizedList(new ArrayList());
+            sendQ = Collections.synchronizedList(new ArrayList<Object>());
             this.setName("MockClientSender");
             this.setDaemon(true);
             start();
         }
 
-        public void run() {
+        @Override public void run() {
             while (!shutdownRequested) {
                 sendAnObject();
             }

@@ -18,40 +18,39 @@ import java.util.Map;
 
 public class ServiceMock implements Service {
 
-    private Map clients = new HashMap(); // the network receiver
+    private Map<Integer, ObjectReceiver> clients = new HashMap<Integer, ObjectReceiver>();
 
-    private Map serverMock = new HashMap(); // the testcode receiver
+    private Map<Integer, ObjectReceiver> serverMock = new HashMap<Integer, ObjectReceiver>();
 
     private int index = 1;
 
     public synchronized ObjectReceiver serverFor(ObjectReceiver client) {
-        Integer key = new Integer(index);
         ObjectReceiver mock = new ObjectReceiverMock();
-        serverMock.put(key, mock);
-        clients.put(key, client);
+        serverMock.put(index, mock);
+        clients.put(index, client);
         index++;
         return mock;
     }
 
     public void close(int service) throws IOException {
-        ((ObjectReceiver) clients.remove(new Integer(service))).close();
+        clients.remove(service).close();
     }
 
     public ObjectReceiver getServerNetwork(int key) {
-        Integer theKey = new Integer(key);
-        Object receiver = clients.get(theKey);
+        ObjectReceiver receiver = clients.get(key);
         while (receiver == null) {
             Cool.sleep(1);
-            receiver = clients.get(theKey);
+            receiver = clients.get(key);
         }
-        return (ObjectReceiver) receiver;
+        return receiver;
     }
 
     public ObjectReceiverMock getServerMock(int key) {
-        return (ObjectReceiverMock) serverMock.get(new Integer(key));
+        return (ObjectReceiverMock) serverMock.get(key);
     }
 
     public void reset() {
         index = 1;
     }
+
 }

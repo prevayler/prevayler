@@ -27,7 +27,7 @@ public class StubbornNetworkServerTest extends TestCase {
 
     private static final NetworkSessionId id100 = new NetworkSessionId(timeStamp, 100);
 
-    public void setUp() throws Exception {
+    @Override public void setUp() throws Exception {
         provider = new ObjectReceiverMock();
         sessionsManager = new SessionsManagerImpl(timeStamp);
         service = new ServiceMock();

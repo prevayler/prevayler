@@ -24,13 +24,13 @@ public abstract class FileIOTest extends TestCase {
 
     static private long counter = 0;
 
-    protected void setUp() throws Exception {
+    @Override protected void setUp() throws Exception {
         File tempFile = new File("Test" + System.currentTimeMillis() + counter++);
         assertTrue("Unable to create directory " + tempFile, tempFile.mkdirs());
         _testDirectory = tempFile.getAbsolutePath();
     }
 
-    protected void tearDown() throws Exception {
+    @Override protected void tearDown() throws Exception {
         delete(_testDirectory);
     }
 
