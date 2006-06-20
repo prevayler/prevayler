@@ -11,28 +11,29 @@
 package org.prevayler.demos.scalability.prevayler;
 
 import org.prevayler.PrevaylerFactory;
+import org.prevayler.demos.scalability.QueryConnection;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 
-//import org.prevayler.implementation.PrevalenceTest;
-
-public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject {
+public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject<QuerySystem, QueryConnection> {
 
     static final String PREVALENCE_BASE = "QueryTest";
 
-    public PrevaylerQuerySubject() throws java.io.IOException, ClassNotFoundException {
-        if (new File(PREVALENCE_BASE).exists())
+    public PrevaylerQuerySubject() throws IOException {
+        if (new File(PREVALENCE_BASE).exists()) {
             PrevalenceTest.delete(PREVALENCE_BASE);
-        PrevaylerFactory factory = new PrevaylerFactory();
+        }
+        PrevaylerFactory<QuerySystem> factory = new PrevaylerFactory<QuerySystem>();
         factory.configurePrevalentSystem(new QuerySystem());
         factory.configurePrevalenceDirectory(PREVALENCE_BASE);
         factory.configureTransactionFiltering(false);
         prevayler = factory.create();
     }
 
-    public Object createTestConnection() {
-        return new PrevaylerQueryConnection((QuerySystem) prevayler.prevalentSystem());
+    public QueryConnection createTestConnection() {
+        return new PrevaylerQueryConnection(prevayler.prevalentSystem());
     }
 
     public void reportResourcesUsed(PrintStream out) {

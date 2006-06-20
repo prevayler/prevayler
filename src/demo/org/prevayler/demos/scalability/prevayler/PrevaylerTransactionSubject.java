@@ -11,13 +11,14 @@
 package org.prevayler.demos.scalability.prevayler;
 
 import org.prevayler.PrevaylerFactory;
+import org.prevayler.demos.scalability.TransactionConnection;
 import org.prevayler.foundation.serialization.Serializer;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public class PrevaylerTransactionSubject extends PrevaylerScalabilitySubject {
+public class PrevaylerTransactionSubject extends PrevaylerScalabilitySubject<TransactionSystem, TransactionConnection> {
 
     private final String _journalDirectory;
 
@@ -31,7 +32,7 @@ public class PrevaylerTransactionSubject extends PrevaylerScalabilitySubject {
         initializePrevayler();
     }
 
-    public Object createTestConnection() {
+    public TransactionConnection createTestConnection() {
         return new PrevaylerTransactionConnection(prevayler);
     }
 
@@ -47,12 +48,12 @@ public class PrevaylerTransactionSubject extends PrevaylerScalabilitySubject {
     public boolean isConsistent() throws Exception {
         int expectedResult = prevayler.prevalentSystem().hashCode();
         initializePrevayler(); // Will reload all transactions from the log
-                                // files.
+        // files.
         return prevayler.prevalentSystem().hashCode() == expectedResult;
     }
 
     private void initializePrevayler() throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-        PrevaylerFactory factory = new PrevaylerFactory();
+        PrevaylerFactory<TransactionSystem> factory = new PrevaylerFactory<TransactionSystem>();
         factory.configurePrevalentSystem(new TransactionSystem());
         factory.configurePrevalenceDirectory(_journalDirectory);
         factory.configureJournalSerializer("journal", (Serializer) Class.forName(_journalSerializer).newInstance());

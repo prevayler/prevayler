@@ -24,10 +24,10 @@ class QuerySystem implements ScalabilitySystem {
 
     private static final long serialVersionUID = -8181198939095700706L;
 
-    private Map recordsByName = new HashMap();
+    private Map<String, List<Record>> recordsByName = new HashMap<String, List<Record>>();
 
-    public List queryByName(String name) {
-        return (List) recordsByName.get(name);
+    public List<Record> queryByName(String name) {
+        return recordsByName.get(name);
     }
 
     public void replaceAllRecords(RecordIterator newRecords) {
@@ -41,9 +41,9 @@ class QuerySystem implements ScalabilitySystem {
     }
 
     private void put(Record newRecord) {
-        List records = queryByName(newRecord.getName());
+        List<Record> records = queryByName(newRecord.getName());
         if (records == null) {
-            records = new ArrayList();
+            records = new ArrayList<Record>();
             recordsByName.put(newRecord.getName(), records);
         }
 
@@ -55,10 +55,11 @@ class QuerySystem implements ScalabilitySystem {
      * as query results.
      */
     private void makeReadOnly() {
-        Iterator entries = recordsByName.entrySet().iterator();
+        Iterator<Map.Entry<String, List<Record>>> entries = recordsByName.entrySet().iterator();
         while (entries.hasNext()) {
-            Map.Entry entry = (Map.Entry) entries.next();
-            entry.setValue(Collections.unmodifiableList((List) entry.getValue()));
+            Map.Entry<String, List<Record>> entry = entries.next();
+            entry.setValue(Collections.unmodifiableList(entry.getValue()));
         }
     }
+
 }

@@ -84,7 +84,7 @@ public class Record implements Serializable {
         return new Date(date2);
     }
 
-    public int hashCode() {
+    @Override public int hashCode() {
         return (int) (id + name.hashCode() + ("" + string1).hashCode() + bigDecimal1.hashCode() + bigDecimal2.hashCode() + date1 + date2);
     }
 

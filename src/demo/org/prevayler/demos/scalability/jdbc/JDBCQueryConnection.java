@@ -30,12 +30,12 @@ class JDBCQueryConnection extends JDBCScalabilityConnection implements QueryConn
         selectStatement = prepare("select ID,STRING1,BIGDECIMAL1,BIGDECIMAL2,DATE1,DATE2 from " + table() + " where NAME=?");
     }
 
-    protected String table() {
+    @Override protected String table() {
         return "QUERY_TEST";
     }
 
-    public List queryByName(String name) {
-        ArrayList list = new ArrayList();
+    public List<Record> queryByName(String name) {
+        List<Record> list = new ArrayList<Record>();
         try {
             selectStatement.setString(1, name);
             ResultSet resultSet = selectStatement.executeQuery();
@@ -50,4 +50,5 @@ class JDBCQueryConnection extends JDBCScalabilityConnection implements QueryConn
 
         return list;
     }
+
 }

@@ -20,7 +20,7 @@ class TransactionSystem implements ScalabilitySystem {
 
     private static final long serialVersionUID = 461535927650714306L;
 
-    private final Map recordsById = new HashMap();
+    private final Map<Long, Record> recordsById = new HashMap<Long, Record>();
 
     public void performTransaction(Record recordToInsert, Record recordToUpdate, long idToDelete) {
         synchronized (recordsById) {
@@ -31,8 +31,7 @@ class TransactionSystem implements ScalabilitySystem {
     }
 
     private Object put(Record newRecord) {
-        Object key = new Long(newRecord.getId());
-        return recordsById.put(key, newRecord);
+        return recordsById.put(newRecord.getId(), newRecord);
     }
 
     public void replaceAllRecords(RecordIterator newRecords) {
@@ -43,7 +42,8 @@ class TransactionSystem implements ScalabilitySystem {
         }
     }
 
-    public int hashCode() {
+    @Override public int hashCode() {
         return recordsById.hashCode();
     }
+
 }

@@ -22,11 +22,11 @@ import java.util.List;
  * implementation of this class, you must be familiar with Prevayler's
  * Scalability Test (run org.prevayler.test.scalability.ScalabilityTest).
  */
-abstract class ScalabilityTestRun {
+abstract class ScalabilityTestRun<C> {
 
     static private final long ROUND_DURATION_MILLIS = 1000 * 20;
 
-    private final ScalabilityTestSubject subject;
+    private final ScalabilityTestSubject<C> subject;
 
     protected final int numberOfObjects;
 
@@ -34,7 +34,7 @@ abstract class ScalabilityTestRun {
 
     private int bestRoundThreads;
 
-    private final List connectionCache = new LinkedList();
+    private final List<C> connectionCache = new LinkedList<C>();
 
     private long operationCount = 0;
 
@@ -55,7 +55,7 @@ abstract class ScalabilityTestRun {
         return bestRoundOperationsPerSecond;
     }
 
-    protected ScalabilityTestRun(ScalabilityTestSubject subject, int numberOfObjects, int minThreads, int maxThreads) {
+    protected ScalabilityTestRun(ScalabilityTestSubject<C> subject, int numberOfObjects, int minThreads, int maxThreads) {
         if (minThreads > maxThreads)
             throw new IllegalArgumentException("The minimum number of threads cannot be greater than the maximum number.");
         if (minThreads < 1)
@@ -133,9 +133,9 @@ abstract class ScalabilityTestRun {
 
     private void startThread(final long startingOperation, final int operationIncrement) {
         (new Thread() {
-            public void run() {
+            @Override public void run() {
                 try {
-                    Object connection = acquireConnection();
+                    C connection = acquireConnection();
 
                     long operation = startingOperation;
                     while (!isRoundFinished) {
@@ -160,9 +160,9 @@ abstract class ScalabilityTestRun {
         activeRoundThreads++;
     }
 
-    protected abstract void executeOperation(Object connection, long operation);
+    protected abstract void executeOperation(C connection, long operation);
 
-    private Object acquireConnection() {
+    private C acquireConnection() {
         synchronized (connectionCache) {
             return connectionCache.isEmpty() ? subject.createTestConnection() : connectionCache.remove(0);
         }

@@ -106,7 +106,7 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber {
         }
     }
 
-    public <R, E extends Exception> R executeQuery(Query<T, R, E> sensitiveQuery, Clock clock) throws E {
+    public <R, E extends Exception> R executeQuery(Query<? super T, R, E> sensitiveQuery, Clock clock) throws E {
         synchronized (this) {
             if (_prevalentSystem == null) {
                 throw new ErrorInEarlierTransactionError("Prevayler is no longer processing queries due to an Error thrown from an earlier transaction.");

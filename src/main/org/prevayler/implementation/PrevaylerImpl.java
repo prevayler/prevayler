@@ -77,11 +77,11 @@ public class PrevaylerImpl<T> implements Prevayler<T> {
         _publisher.publish(capsule);
     }
 
-    public <R, E extends Exception> R execute(Query<T, R, E> sensitiveQuery) throws E {
+    public <R, E extends Exception> R execute(Query<? super T, R, E> sensitiveQuery) throws E {
         return _guard.executeQuery(sensitiveQuery, clock());
     }
 
-    public <R, E extends Exception> R execute(TransactionWithQuery<T, R, E> transactionWithQuery) throws E {
+    public <R, E extends Exception> R execute(TransactionWithQuery<? super T, R, E> transactionWithQuery) throws E {
         TransactionWithQueryCapsule<T, R, E> capsule = new TransactionWithQueryCapsule<T, R, E>(transactionWithQuery, _journalSerializer);
         publish(capsule);
         return capsule.result();

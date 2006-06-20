@@ -15,7 +15,7 @@ import org.prevayler.foundation.serialization.Serializer;
 
 import java.util.Date;
 
-class TransactionWithQueryCapsule<T, R, E extends Exception> extends Capsule<TransactionWithQuery<T, R, E>, T> {
+class TransactionWithQueryCapsule<T, R, E extends Exception> extends Capsule<TransactionWithQuery<? super T, R, E>, T> {
 
     private static final long serialVersionUID = 78811627002206298L;
 
@@ -25,7 +25,7 @@ class TransactionWithQueryCapsule<T, R, E extends Exception> extends Capsule<Tra
 
     private transient E _queryException;
 
-    public TransactionWithQueryCapsule(TransactionWithQuery<T, R, E> transactionWithQuery, Serializer journalSerializer) {
+    public TransactionWithQueryCapsule(TransactionWithQuery<? super T, R, E> transactionWithQuery, Serializer journalSerializer) {
         super(transactionWithQuery, journalSerializer);
     }
 
@@ -33,7 +33,7 @@ class TransactionWithQueryCapsule<T, R, E extends Exception> extends Capsule<Tra
         super(serialized);
     }
 
-    @SuppressWarnings("unchecked") @Override protected void execute(TransactionWithQuery<T, R, E> transaction, T prevalentSystem, Date executionTime) {
+    @SuppressWarnings("unchecked") @Override protected void execute(TransactionWithQuery<? super T, R, E> transaction, T prevalentSystem, Date executionTime) {
         try {
             _queryResult = transaction.executeAndQuery(prevalentSystem, executionTime);
         } catch (RuntimeException rx) {

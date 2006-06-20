@@ -56,7 +56,7 @@ public interface Prevayler<T> {
      * 
      * @see PrevaylerFactory
      */
-    public void execute(Transaction<T> transaction);
+    public void execute(Transaction<? super T> transaction);
 
     /**
      * Executes the given sensitiveQuery on the prevalentSystem(). A
@@ -78,7 +78,7 @@ public interface Prevayler<T> {
      *             The Exception thrown by the execution of the sensitiveQuery
      *             on the prevalentSystem().
      */
-    public <R, E extends Exception> R execute(Query<T, R, E> sensitiveQuery) throws E;
+    public <R, E extends Exception> R execute(Query<? super T, R, E> sensitiveQuery) throws E;
 
     /**
      * Executes the given transactionWithQuery on the prevalentSystem().
@@ -94,7 +94,7 @@ public interface Prevayler<T> {
      *             on the prevalentSystem().
      * @see PrevaylerFactory
      */
-    public <R, E extends Exception> R execute(TransactionWithQuery<T, R, E> transactionWithQuery) throws E;
+    public <R, E extends Exception> R execute(TransactionWithQuery<? super T, R, E> transactionWithQuery) throws E;
 
     /**
      * The same as execute(TransactionWithQuery) except no Exception is thrown.
@@ -102,7 +102,7 @@ public interface Prevayler<T> {
      * @return The result returned by the execution of the
      *         sureTransactionWithQuery on the prevalentSystem().
      */
-    public <R> R execute(SureTransactionWithQuery<T, R> sureTransactionWithQuery);
+    public <R> R execute(SureTransactionWithQuery<? super T, R> sureTransactionWithQuery);
 
     /**
      * Produces a complete serialized image of the underlying PrevalentSystem.

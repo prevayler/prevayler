@@ -30,7 +30,7 @@ class JDBCTransactionConnection extends JDBCScalabilityConnection implements Tra
         deleteStatement = prepare("delete from " + table() + " where ID=?");
     }
 
-    protected String table() {
+    @Override protected String table() {
         return "TRANSACTION_TEST";
     }
 

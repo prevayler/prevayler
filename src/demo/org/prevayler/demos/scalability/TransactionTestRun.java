@@ -13,19 +13,19 @@ package org.prevayler.demos.scalability;
 /**
  * Tests insert, update and delete scalability.
  */
-public class TransactionTestRun extends ScalabilityTestRun {
+public class TransactionTestRun extends ScalabilityTestRun<TransactionConnection> {
 
     private int halfTheObjects;
 
-    public TransactionTestRun(ScalabilityTestSubject subject, int numberOfObjects, int minThreads, int maxThreads) {
+    public TransactionTestRun(ScalabilityTestSubject<TransactionConnection> subject, int numberOfObjects, int minThreads, int maxThreads) {
         super(subject, numberOfObjects, minThreads, maxThreads);
     }
 
-    protected String name() {
+    @Override protected String name() {
         return "Transaction Test";
     }
 
-    protected void prepare() {
+    @Override protected void prepare() {
         super.prepare();
         halfTheObjects = numberOfObjects / 2;
     }
@@ -40,12 +40,12 @@ public class TransactionTestRun extends ScalabilityTestRun {
      * Inserts records from id 1000000 to id 1499999. Every time 500000
      * operations have completed, all ranges are shifted up by 500000.
      */
-    protected void executeOperation(Object connection, long operationSequence) {
+    @Override protected void executeOperation(TransactionConnection connection, long operationSequence) {
         Record recordToInsert = new Record(numberOfObjects + operationSequence);
         long idToDelete = spreadId(operationSequence);
         Record recordToUpdate = new Record(halfTheObjects + idToDelete);
 
-        ((TransactionConnection) connection).performTransaction(recordToInsert, recordToUpdate, idToDelete);
+        connection.performTransaction(recordToInsert, recordToUpdate, idToDelete);
     }
 
     /**
@@ -53,13 +53,10 @@ public class TransactionTestRun extends ScalabilityTestRun {
      * contiguously.
      */
     private long spreadId(long id) {
-        return (id / halfTheObjects) * halfTheObjects // Step function.
-                + ((id * 16807) % halfTheObjects); // 16807 == 7 * 7 * 7 * 7 *
-                                                    // 7. 16807 is relatively
-                                                    // prime to 50000, 500000
-                                                    // and 5000000. This
-                                                    // guarantees that all ids
-                                                    // in the range will be
-                                                    // covered.
+        // Step function.
+        // 16807 == 7 * 7 * 7 * 7 * 7.
+        // 16807 is relatively prime to 50000, 500000 and 5000000.
+        // This guarantees that all ids in the range will be covered.
+        return (id / halfTheObjects) * halfTheObjects + ((id * 16807) % halfTheObjects);
     }
 }
