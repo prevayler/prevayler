@@ -29,7 +29,7 @@ public class NetworkSessionId implements Serializable {
         this.id = id;
     }
 
-    public boolean equals(Object other) {
+    @Override public boolean equals(Object other) {
         if (other == null) {
             return false;
         }
@@ -45,11 +45,11 @@ public class NetworkSessionId implements Serializable {
         return true;
     }
 
-    public int hashCode() {
+    @Override public int hashCode() {
         return id;
     }
 
-    public String toString() {
+    @Override public String toString() {
         return "NetworkSessionId for " + id + ", timestamped.." + timeStamp;
     }
 }

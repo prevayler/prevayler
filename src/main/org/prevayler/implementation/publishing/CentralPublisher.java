@@ -20,13 +20,13 @@ import org.prevayler.implementation.clock.PausableClock;
 import org.prevayler.implementation.journal.Journal;
 import org.prevayler.implementation.publishing.censorship.TransactionCensor;
 
-public class CentralPublisher extends AbstractPublisher {
+public class CentralPublisher<T> extends AbstractPublisher<T> {
 
     private final PausableClock _pausableClock;
 
-    private final TransactionCensor _censor;
+    private final TransactionCensor<T> _censor;
 
-    private final Journal _journal;
+    private final Journal<T> _journal;
 
     private volatile int _pendingPublications = 0;
 
@@ -38,7 +38,7 @@ public class CentralPublisher extends AbstractPublisher {
 
     private final Object _nextTurnMonitor = new Object();
 
-    public CentralPublisher(Clock clock, TransactionCensor censor, Journal journal) {
+    public CentralPublisher(Clock clock, TransactionCensor<T> censor, Journal<T> journal) {
         super(new PausableClock(clock));
         _pausableClock = (PausableClock) _clock; // This is just to avoid
         // casting the inherited
@@ -48,24 +48,15 @@ public class CentralPublisher extends AbstractPublisher {
         _journal = journal;
     }
 
-    public void publish(Capsule capsule) {
-        synchronized (_pendingPublicationsMonitor) { // Blocks all new
-            // subscriptions until
-            // the publication is
-            // over.
+    public <X> void publish(Capsule<X, T> capsule) {
+        synchronized (_pendingPublicationsMonitor) {
             if (_pendingPublications == 0)
                 _pausableClock.pause();
             _pendingPublications++;
         }
 
         try {
-            publishWithoutWorryingAboutNewSubscriptions(capsule); // Suggestions
-            // for a
-            // better
-            // method
-            // name are
-            // welcome.
-            // :)
+            publishWithoutWorryingAboutNewSubscriptions(capsule);
         } finally {
             synchronized (_pendingPublicationsMonitor) {
                 _pendingPublications--;
@@ -77,15 +68,15 @@ public class CentralPublisher extends AbstractPublisher {
         }
     }
 
-    private void publishWithoutWorryingAboutNewSubscriptions(Capsule capsule) {
-        TransactionGuide guide = approve(capsule);
+    private <X> void publishWithoutWorryingAboutNewSubscriptions(Capsule<X, T> capsule) {
+        TransactionGuide<X, T> guide = approve(capsule);
         _journal.append(guide);
         notifySubscribers(guide);
     }
 
-    private TransactionGuide approve(Capsule capsule) {
+    private <X> TransactionGuide<X, T> approve(Capsule<X, T> capsule) {
         synchronized (_nextTurnMonitor) {
-            TransactionTimestamp timestamp = new TransactionTimestamp(capsule, _nextTransaction, _pausableClock.realTime());
+            TransactionTimestamp<X, T> timestamp = new TransactionTimestamp<X, T>(capsule, _nextTransaction, _pausableClock.realTime());
 
             _censor.approve(timestamp);
 
@@ -94,11 +85,11 @@ public class CentralPublisher extends AbstractPublisher {
             _nextTurn = _nextTurn.next();
             _nextTransaction++;
 
-            return new TransactionGuide(timestamp, turn);
+            return new TransactionGuide<X, T>(timestamp, turn);
         }
     }
 
-    private void notifySubscribers(TransactionGuide guide) {
+    private <X> void notifySubscribers(TransactionGuide<X, T> guide) {
         guide.startTurn();
         try {
             _pausableClock.advanceTo(guide.executionTime());
@@ -108,7 +99,7 @@ public class CentralPublisher extends AbstractPublisher {
         }
     }
 
-    public void subscribe(TransactionSubscriber subscriber, long initialTransaction) {
+    public void subscribe(TransactionSubscriber<T> subscriber, long initialTransaction) {
         synchronized (_pendingPublicationsMonitor) {
             while (_pendingPublications != 0) {
                 Cool.wait(_pendingPublicationsMonitor);

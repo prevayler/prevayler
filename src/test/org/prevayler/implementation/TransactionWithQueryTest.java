@@ -21,27 +21,27 @@ import org.prevayler.foundation.serialization.XStreamSerializer;
 public class TransactionWithQueryTest extends FileIOTest {
 
     public void testJavaJournal() throws Exception {
-        Serializer strategy = new JavaSerializer();
+        Serializer<Object> strategy = new JavaSerializer<Object>();
 
         startAndCrash(strategy);
         recover(strategy);
     }
 
     public void testXStreamJournal() throws Exception {
-        Serializer strategy = new XStreamSerializer();
+        Serializer<Object> strategy = new XStreamSerializer<Object>();
 
         startAndCrash(strategy);
         recover(strategy);
     }
 
     public void testSkaringaJournal() throws Exception {
-        Serializer strategy = new SkaringaSerializer();
+        Serializer<Object> strategy = new SkaringaSerializer<Object>();
 
         startAndCrash(strategy);
         recover(strategy);
     }
 
-    private void startAndCrash(Serializer journalSerializer) throws Exception {
+    private void startAndCrash(Serializer<Object> journalSerializer) throws Exception {
         Prevayler<StringBuilder> prevayler = createPrevayler(journalSerializer);
 
         assertEquals("the system first", prevayler.execute(new AppendTransactionWithQuery(" first")));
@@ -52,12 +52,12 @@ public class TransactionWithQueryTest extends FileIOTest {
         prevayler.close();
     }
 
-    private void recover(Serializer journalSerializer) throws Exception {
+    private void recover(Serializer<Object> journalSerializer) throws Exception {
         Prevayler<StringBuilder> prevayler = createPrevayler(journalSerializer);
         assertEquals("the system first second third", prevayler.prevalentSystem().toString());
     }
 
-    private Prevayler<StringBuilder> createPrevayler(Serializer journalSerializer) throws Exception {
+    private Prevayler<StringBuilder> createPrevayler(Serializer<Object> journalSerializer) throws Exception {
         PrevaylerFactory<StringBuilder> factory = new PrevaylerFactory<StringBuilder>();
         factory.configurePrevalentSystem(new StringBuilder("the system"));
         factory.configurePrevalenceDirectory(_testDirectory);

@@ -18,16 +18,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 
-public class TransactionGuide extends Guided {
+public class TransactionGuide<X, T> extends Guided {
 
-    private final TransactionTimestamp _transactionTimestamp;
+    private final TransactionTimestamp<X, T> _transactionTimestamp;
 
-    public TransactionGuide(TransactionTimestamp transactionTimestamp, Turn pipelineTurn) {
+    public TransactionGuide(TransactionTimestamp<X, T> transactionTimestamp, Turn pipelineTurn) {
         super(pipelineTurn);
         _transactionTimestamp = transactionTimestamp;
     }
 
-    public TransactionTimestamp timestamp() {
+    public TransactionTimestamp<X, T> timestamp() {
         return _transactionTimestamp;
     }
 
@@ -41,7 +41,7 @@ public class TransactionGuide extends Guided {
         return _transactionTimestamp.executionTime();
     }
 
-    public void writeTo(OutputStream stream) throws IOException {
+    @Override public void writeTo(OutputStream stream) throws IOException {
         Chunking.writeChunk(stream, _transactionTimestamp.toChunk());
     }
 

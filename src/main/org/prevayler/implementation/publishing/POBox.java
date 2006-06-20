@@ -18,40 +18,40 @@ import java.util.LinkedList;
 /**
  * An asyncronous buffer for transaction subscribers.
  */
-public class POBox extends Thread implements TransactionSubscriber {
+public class POBox<T> extends Thread implements TransactionSubscriber<T> {
 
-    private final LinkedList _queue = new LinkedList();
+    private final LinkedList<TransactionTimestamp<?, T>> _queue = new LinkedList<TransactionTimestamp<?, T>>();
 
-    private final TransactionSubscriber _delegate;
+    private final TransactionSubscriber<T> _delegate;
 
     private final Object _emptynessMonitor = new Object();
 
-    public POBox(TransactionSubscriber delegate) {
+    public POBox(TransactionSubscriber<T> delegate) {
         _delegate = delegate;
         setDaemon(true);
         start();
     }
 
-    public synchronized void receive(TransactionTimestamp transactionTimestamp) {
+    public synchronized <X> void receive(TransactionTimestamp<X, T> transactionTimestamp) {
         _queue.add(transactionTimestamp);
         notify();
     }
 
-    public void run() {
+    @Override public void run() {
         while (true) {
-            TransactionTimestamp notification = waitForNotification();
+            TransactionTimestamp<?, T> notification = waitForNotification();
             _delegate.receive(notification);
         }
     }
 
-    private synchronized TransactionTimestamp waitForNotification() {
+    private synchronized TransactionTimestamp<?, T> waitForNotification() {
         while (_queue.size() == 0) {
             synchronized (_emptynessMonitor) {
                 _emptynessMonitor.notify();
             }
             Cool.wait(this);
         }
-        return (TransactionTimestamp) _queue.removeFirst();
+        return _queue.removeFirst();
     }
 
     public void waitToEmpty() {

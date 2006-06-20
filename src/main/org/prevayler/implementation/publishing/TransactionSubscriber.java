@@ -12,8 +12,8 @@ package org.prevayler.implementation.publishing;
 
 import org.prevayler.implementation.TransactionTimestamp;
 
-public interface TransactionSubscriber {
+public interface TransactionSubscriber<T> {
 
-    public void receive(TransactionTimestamp transactionTimestamp);
+    public <X> void receive(TransactionTimestamp<X, T> transactionTimestamp);
 
 }

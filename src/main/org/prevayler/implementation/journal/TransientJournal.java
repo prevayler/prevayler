@@ -17,15 +17,15 @@ import org.prevayler.implementation.publishing.TransactionSubscriber;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransientJournal implements Journal {
+public class TransientJournal<T> implements Journal<T> {
 
-    private final List journal = new ArrayList();
+    private final List<TransactionTimestamp<?, T>> journal = new ArrayList<TransactionTimestamp<?, T>>();
 
     private long _initialTransaction;
 
     private boolean _initialTransactionInitialized = false;
 
-    public void append(TransactionGuide guide) {
+    public <X> void append(TransactionGuide<X, T> guide) {
         if (!_initialTransactionInitialized)
             throw new IllegalStateException("Journal.update() has to be called at least once before Journal.journal().");
 
@@ -38,7 +38,7 @@ public class TransientJournal implements Journal {
         }
     }
 
-    public synchronized void update(TransactionSubscriber subscriber, long initialTransaction) {
+    public synchronized void update(TransactionSubscriber<T> subscriber, long initialTransaction) {
         if (!_initialTransactionInitialized) {
             _initialTransactionInitialized = true;
             _initialTransaction = initialTransaction;
@@ -55,7 +55,7 @@ public class TransientJournal implements Journal {
         }
 
         while (i != journal.size()) {
-            TransactionTimestamp entry = (TransactionTimestamp) journal.get(i);
+            TransactionTimestamp<?, T> entry = journal.get(i);
             long recoveringTransaction = _initialTransaction + i;
             if (entry.systemVersion() != recoveringTransaction) {
                 throw new JournalError("Expected " + recoveringTransaction + " but was " + entry.systemVersion());

@@ -49,10 +49,10 @@ import java.io.OutputStreamWriter;
  * driver, such as the DomDriver.
  * </p>
  */
-public class XStreamSerializer implements Serializer {
+public class XStreamSerializer<T> implements Serializer<T> {
 
-    private ThreadLocal _xstreams = new ThreadLocal() {
-        protected Object initialValue() {
+    private ThreadLocal<XStream> _xstreams = new ThreadLocal<XStream>() {
+        @Override protected XStream initialValue() {
             return createXStream();
         }
     };
@@ -74,17 +74,17 @@ public class XStreamSerializer implements Serializer {
     }
 
     private XStream getXStream() {
-        return (XStream) _xstreams.get();
+        return _xstreams.get();
     }
 
-    public void writeObject(OutputStream stream, Object object) throws Exception {
+    public void writeObject(OutputStream stream, T object) throws Exception {
         OutputStreamWriter writer = _encoding == null ? new OutputStreamWriter(stream) : new OutputStreamWriter(stream, _encoding);
         getXStream().toXML(object, writer);
         writer.flush();
     }
 
-    public Object readObject(InputStream stream) throws Exception {
-        return getXStream().fromXML(_encoding == null ? new InputStreamReader(stream) : new InputStreamReader(stream, _encoding));
+    @SuppressWarnings("unchecked") public T readObject(InputStream stream) throws Exception {
+        return (T) getXStream().fromXML(_encoding == null ? new InputStreamReader(stream) : new InputStreamReader(stream, _encoding));
     }
 
     /**

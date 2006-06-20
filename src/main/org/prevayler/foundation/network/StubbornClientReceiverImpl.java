@@ -68,10 +68,6 @@ public class StubbornClientReceiverImpl extends Thread implements ObjectReceiver
 
     }
 
-    public StubbornClientReceiverImpl(ObjectSocket socket, Service service) {
-
-    }
-
     /**
      * Wait for the connection to occur before proceeding
      */
@@ -155,7 +151,7 @@ public class StubbornClientReceiverImpl extends Thread implements ObjectReceiver
         return (_sessionState == CONNECTED);
     }
 
-    public void run() {
+    @Override public void run() {
         while (_wantedOpen)
             try {
                 _socketProvider = _stubbornNetwork.newInstance(_ipAddress, _port);

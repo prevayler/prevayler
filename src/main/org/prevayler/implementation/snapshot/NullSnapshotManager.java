@@ -14,29 +14,29 @@ import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.PrevalentSystemGuard;
 
-public class NullSnapshotManager implements SnapshotManager {
+public class NullSnapshotManager<T> implements SnapshotManager<T> {
 
     private final String _snapshotAttemptErrorMessage;
 
-    private final PrevalentSystemGuard _recoveredPrevalentSystem;
+    private final PrevalentSystemGuard<T> _recoveredPrevalentSystem;
 
-    private final JavaSerializer _primarySerializer;
+    private final JavaSerializer<T> _primarySerializer;
 
-    public NullSnapshotManager(Object newPrevalentSystem, String snapshotAttemptErrorMessage) {
+    public NullSnapshotManager(T newPrevalentSystem, String snapshotAttemptErrorMessage) {
         _snapshotAttemptErrorMessage = snapshotAttemptErrorMessage;
-        _primarySerializer = new JavaSerializer();
-        _recoveredPrevalentSystem = new PrevalentSystemGuard(newPrevalentSystem, 0, _primarySerializer);
+        _primarySerializer = new JavaSerializer<T>();
+        _recoveredPrevalentSystem = new PrevalentSystemGuard<T>(newPrevalentSystem, 0, new JavaSerializer<Object>());
     }
 
-    public void writeSnapshot(Object prevalentSystem, long version) {
+    public void writeSnapshot(@SuppressWarnings("unused") T prevalentSystem, @SuppressWarnings("unused") long version) {
         throw new SnapshotError(_snapshotAttemptErrorMessage);
     }
 
-    public PrevalentSystemGuard recoveredPrevalentSystem() {
+    public PrevalentSystemGuard<T> recoveredPrevalentSystem() {
         return _recoveredPrevalentSystem;
     }
 
-    public Serializer primarySerializer() {
+    public Serializer<T> primarySerializer() {
         return _primarySerializer;
     }
 

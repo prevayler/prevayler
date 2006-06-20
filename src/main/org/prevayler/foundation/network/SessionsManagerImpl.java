@@ -11,17 +11,18 @@
 package org.prevayler.foundation.network;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Manages the sessions for a service
- * 
  */
 public class SessionsManagerImpl implements SessionsManager {
+
     private final long timeStamp;
 
     private int _masterSessionId = 100;
 
-    private HashMap _sessions = new HashMap();
+    private Map<NetworkSessionId, StubbornNetworkProxy> _sessions = new HashMap<NetworkSessionId, StubbornNetworkProxy>();
 
     public SessionsManagerImpl() {
         this(System.currentTimeMillis());
@@ -32,7 +33,7 @@ public class SessionsManagerImpl implements SessionsManager {
     }
 
     public synchronized StubbornNetworkProxy find(NetworkSessionId sessionId) {
-        return (StubbornNetworkProxy) _sessions.get(sessionId);
+        return _sessions.get(sessionId);
     }
 
     public synchronized NetworkSessionId add(StubbornNetworkProxy receiver) {

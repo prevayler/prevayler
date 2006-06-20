@@ -12,8 +12,8 @@ package org.prevayler.implementation.publishing.censorship;
 
 import org.prevayler.implementation.TransactionTimestamp;
 
-public interface TransactionCensor {
+public interface TransactionCensor<T> {
 
-    public void approve(TransactionTimestamp transactionTimestamp);
+    public <X> void approve(TransactionTimestamp<X, T> transactionTimestamp);
 
 }

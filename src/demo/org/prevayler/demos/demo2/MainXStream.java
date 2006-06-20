@@ -27,7 +27,7 @@ public class MainXStream {
         PrevaylerFactory<Bank> factory = new PrevaylerFactory<Bank>();
         factory.configurePrevalenceDirectory("demo2XStream");
 
-        factory.configureSnapshotSerializer(new XStreamSerializer() {
+        factory.configureSnapshotSerializer(new XStreamSerializer<Bank>() {
             @Override protected XStream createXStream() {
                 XStream xstream = new XStream();
                 // This mapping is optional. It just makes the XML in the

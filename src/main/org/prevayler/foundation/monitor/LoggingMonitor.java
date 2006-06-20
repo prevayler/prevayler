@@ -42,7 +42,7 @@ public abstract class LoggingMonitor implements Monitor {
     /**
      * default returns true. Override as needed.
      */
-    protected boolean isInfoEnabled(Class clazz) {
+    protected boolean isInfoEnabled(@SuppressWarnings("unused") Class clazz) {
         return true;
     }
 }

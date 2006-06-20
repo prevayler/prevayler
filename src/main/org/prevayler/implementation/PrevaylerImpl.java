@@ -13,14 +13,11 @@ package org.prevayler.implementation;
 import org.prevayler.Clock;
 import org.prevayler.Prevayler;
 import org.prevayler.Query;
-import org.prevayler.SureTransactionWithQuery;
 import org.prevayler.Transaction;
 import org.prevayler.TransactionWithQuery;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.snapshot.SnapshotManager;
-
-import java.io.IOException;
 
 public class PrevaylerImpl<T> implements Prevayler<T> {
 
@@ -28,11 +25,11 @@ public class PrevaylerImpl<T> implements Prevayler<T> {
 
     private final Clock _clock;
 
-    private final SnapshotManager _snapshotManager;
+    private final SnapshotManager<T> _snapshotManager;
 
-    private final TransactionPublisher _publisher;
+    private final TransactionPublisher<T> _publisher;
 
-    private final Serializer _journalSerializer;
+    private final Serializer<Object> _journalSerializer;
 
     /**
      * Creates a new Prevayler
@@ -48,7 +45,7 @@ public class PrevaylerImpl<T> implements Prevayler<T> {
      *            this PrevaylerImpl.
      * @param journalSerializer
      */
-    public PrevaylerImpl(SnapshotManager snapshotManager, TransactionPublisher transactionPublisher, Serializer journalSerializer) {
+    public PrevaylerImpl(SnapshotManager<T> snapshotManager, TransactionPublisher<T> transactionPublisher, Serializer<Object> journalSerializer) {
         _snapshotManager = snapshotManager;
 
         _guard = _snapshotManager.recoveredPrevalentSystem();
@@ -69,11 +66,11 @@ public class PrevaylerImpl<T> implements Prevayler<T> {
         return _clock;
     }
 
-    public void execute(Transaction transaction) {
-        publish(new TransactionCapsule(transaction, _journalSerializer));
+    public void execute(Transaction<? super T> transaction) {
+        publish(new TransactionCapsule<T>(transaction, _journalSerializer));
     }
 
-    private void publish(Capsule capsule) {
+    private <X> void publish(Capsule<X, T> capsule) {
         _publisher.publish(capsule);
     }
 
@@ -87,21 +84,11 @@ public class PrevaylerImpl<T> implements Prevayler<T> {
         return capsule.result();
     }
 
-    public Object execute(SureTransactionWithQuery sureTransactionWithQuery) {
-        try {
-            return execute((TransactionWithQuery) sureTransactionWithQuery);
-        } catch (RuntimeException runtime) {
-            throw runtime;
-        } catch (Exception checked) {
-            throw new ImpossibleError("SureTransactionWithQuery cannot throw checked exceptions", checked);
-        }
-    }
-
     public void takeSnapshot() {
         _guard.takeSnapshot(_snapshotManager);
     }
 
-    public void close() throws IOException {
+    public void close() {
         _publisher.close();
     }
 

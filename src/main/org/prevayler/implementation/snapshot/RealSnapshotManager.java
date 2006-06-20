@@ -21,17 +21,17 @@ import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Map;
 
-public class RealSnapshotManager implements SnapshotManager {
+public class RealSnapshotManager<T> implements SnapshotManager<T> {
 
-    private Map _strategies;
+    private Map<String, ? extends Serializer<T>> _strategies;
 
     private String _primarySuffix;
 
     private PrevaylerDirectory _directory;
 
-    private PrevalentSystemGuard _recoveredPrevalentSystem;
+    private PrevalentSystemGuard<T> _recoveredPrevalentSystem;
 
-    public RealSnapshotManager(Map snapshotSerializers, String primarySnapshotSuffix, Object newPrevalentSystem, PrevaylerDirectory directory, Serializer journalSerializer) {
+    public RealSnapshotManager(Map<String, ? extends Serializer<T>> snapshotSerializers, String primarySnapshotSuffix, T newPrevalentSystem, PrevaylerDirectory directory, Serializer<Object> journalSerializer) {
         for (Iterator iterator = snapshotSerializers.keySet().iterator(); iterator.hasNext();) {
             String suffix = (String) iterator.next();
             PrevaylerDirectory.checkValidSnapshotSuffix(suffix);
@@ -50,20 +50,20 @@ public class RealSnapshotManager implements SnapshotManager {
 
             File latestSnapshot = _directory.latestSnapshot();
             long recoveredVersion = latestSnapshot == null ? 0 : PrevaylerDirectory.snapshotVersion(latestSnapshot);
-            Object recoveredPrevalentSystem = latestSnapshot == null ? newPrevalentSystem : readSnapshot(latestSnapshot);
-            _recoveredPrevalentSystem = new PrevalentSystemGuard(recoveredPrevalentSystem, recoveredVersion, journalSerializer);
+            T recoveredPrevalentSystem = latestSnapshot == null ? newPrevalentSystem : readSnapshot(latestSnapshot);
+            _recoveredPrevalentSystem = new PrevalentSystemGuard<T>(recoveredPrevalentSystem, recoveredVersion, journalSerializer);
         } catch (Exception e) {
             throw new SnapshotError(e);
         }
     }
 
-    private Object readSnapshot(File snapshotFile) throws Exception {
+    private T readSnapshot(File snapshotFile) throws Exception {
         String suffix = snapshotFile.getName().substring(snapshotFile.getName().indexOf('.') + 1);
         if (!_strategies.containsKey(suffix)) {
             throw new SnapshotError(snapshotFile.toString() + " cannot be read; only " + _strategies.keySet().toString() + " supported");
         }
 
-        Serializer serializer = (Serializer) _strategies.get(suffix);
+        Serializer<T> serializer = _strategies.get(suffix);
         FileInputStream in = new FileInputStream(snapshotFile);
         try {
             return serializer.readObject(in);
@@ -72,15 +72,15 @@ public class RealSnapshotManager implements SnapshotManager {
         }
     }
 
-    public Serializer primarySerializer() {
-        return (Serializer) _strategies.get(_primarySuffix);
+    public Serializer<T> primarySerializer() {
+        return _strategies.get(_primarySuffix);
     }
 
-    public PrevalentSystemGuard recoveredPrevalentSystem() {
+    public PrevalentSystemGuard<T> recoveredPrevalentSystem() {
         return _recoveredPrevalentSystem;
     }
 
-    public void writeSnapshot(Object prevalentSystem, long version) {
+    public void writeSnapshot(T prevalentSystem, long version) {
         try {
             File tempFile = _directory.createTempFile("snapshot" + version + "temp", "generatingSnapshot");
 

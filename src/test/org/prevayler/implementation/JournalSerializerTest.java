@@ -31,7 +31,7 @@ import java.util.Date;
 public class JournalSerializerTest extends FileIOTest {
 
     public void testConfigureJournalSerializationStrategy() throws IOException {
-        Serializer strategy = new MySerializer();
+        Serializer<Object> strategy = new MySerializer();
 
         startAndCrash("MyJournal", strategy);
 
@@ -41,9 +41,9 @@ public class JournalSerializerTest extends FileIOTest {
     }
 
     public void testBadSuffix() {
-        PrevaylerFactory factory = new PrevaylerFactory();
+        PrevaylerFactory<Void> factory = new PrevaylerFactory<Void>();
         try {
-            factory.configureJournalSerializer("JOURNAL", new JavaSerializer());
+            factory.configureJournalSerializer("JOURNAL", new JavaSerializer<Object>());
             fail();
         } catch (IllegalArgumentException expected) {
             assertEquals("Journal filename suffix must match /[a-zA-Z0-9]*[Jj]ournal/, but 'JOURNAL' does not", expected.getMessage());
@@ -51,37 +51,37 @@ public class JournalSerializerTest extends FileIOTest {
     }
 
     public void testTryToConfigureTwo() {
-        PrevaylerFactory factory = new PrevaylerFactory();
-        factory.configureJournalSerializer("journal", new JavaSerializer());
+        PrevaylerFactory<Void> factory = new PrevaylerFactory<Void>();
+        factory.configureJournalSerializer("journal", new JavaSerializer<Object>());
         try {
-            factory.configureJournalSerializer("newjournal", new JavaSerializer());
+            factory.configureJournalSerializer("newjournal", new JavaSerializer<Object>());
             fail();
         } catch (IllegalStateException expected) {
         }
     }
 
     public void testJavaJournal() throws IOException {
-        Serializer strategy = new JavaSerializer();
+        Serializer<Object> strategy = new JavaSerializer<Object>();
 
         startAndCrash("journal", strategy);
         recover("journal", strategy);
     }
 
     public void testXStreamJournal() throws IOException {
-        Serializer strategy = new XStreamSerializer();
+        Serializer<Object> strategy = new XStreamSerializer<Object>();
 
         startAndCrash("journal", strategy);
         recover("journal", strategy);
     }
 
     public void testSkaringaJournal() throws IOException {
-        Serializer strategy = new SkaringaSerializer();
+        Serializer<Object> strategy = new SkaringaSerializer<Object>();
 
         startAndCrash("journal", strategy);
         recover("journal", strategy);
     }
 
-    private void startAndCrash(String suffix, Serializer journalSerializer) throws IOException {
+    private void startAndCrash(String suffix, Serializer<Object> journalSerializer) throws IOException {
         Prevayler<StringBuilder> prevayler = createPrevayler(suffix, journalSerializer);
 
         prevayler.execute(new AppendTransaction(" first"));
@@ -91,12 +91,12 @@ public class JournalSerializerTest extends FileIOTest {
         prevayler.close();
     }
 
-    private void recover(String suffix, Serializer journalSerializer) throws IOException {
+    private void recover(String suffix, Serializer<Object> journalSerializer) throws IOException {
         Prevayler<StringBuilder> prevayler = createPrevayler(suffix, journalSerializer);
         assertEquals("the system first second third", prevayler.prevalentSystem().toString());
     }
 
-    private Prevayler<StringBuilder> createPrevayler(String suffix, Serializer journalSerializer) throws IOException {
+    private Prevayler<StringBuilder> createPrevayler(String suffix, Serializer<Object> journalSerializer) throws IOException {
         PrevaylerFactory<StringBuilder> factory = new PrevaylerFactory<StringBuilder>();
         factory.configurePrevalentSystem(new StringBuilder("the system"));
         factory.configurePrevalenceDirectory(_testDirectory);
@@ -111,7 +111,7 @@ public class JournalSerializerTest extends FileIOTest {
         return factory.create();
     }
 
-    private static class MySerializer implements Serializer {
+    private static class MySerializer implements Serializer<Object> {
 
         public void writeObject(OutputStream stream, Object object) throws Exception {
             Writer writer = new OutputStreamWriter(stream, "UTF-8");

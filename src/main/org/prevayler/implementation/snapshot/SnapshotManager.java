@@ -13,12 +13,12 @@ package org.prevayler.implementation.snapshot;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.PrevalentSystemGuard;
 
-public interface SnapshotManager {
+public interface SnapshotManager<T> {
 
-    public void writeSnapshot(Object prevalentSystem, long systemVersion);
+    public void writeSnapshot(T prevalentSystem, long systemVersion);
 
-    public PrevalentSystemGuard recoveredPrevalentSystem();
+    public PrevalentSystemGuard<T> recoveredPrevalentSystem();
 
-    public Serializer primarySerializer();
+    public Serializer<T> primarySerializer();
 
 }

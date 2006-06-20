@@ -21,28 +21,28 @@ import junit.framework.TestCase;
 public class DeepCopierTest extends TestCase {
 
     public void testNormal() {
-        Object original = "foo";
-        Object copy = DeepCopier.deepCopy(original, new JavaSerializer());
+        String original = "foo";
+        String copy = DeepCopier.deepCopy(original, new JavaSerializer<String>());
 
         assertEquals(original, copy);
         assertNotSame(original, copy);
     }
 
     public void testParallel() {
-        Object original = "foo";
-        Object copy = DeepCopier.deepCopyParallel(original, new JavaSerializer());
+        String original = "foo";
+        String copy = DeepCopier.deepCopyParallel(original, new JavaSerializer<String>());
 
         assertEquals(original, copy);
         assertNotSame(original, copy);
     }
 
     public void testParallelPathological() {
-        Object original = new Byte((byte) 17);
+        Byte original = new Byte((byte) 17);
 
-        Object copy = DeepCopier.deepCopyParallel(original, new Serializer() {
+        Byte copy = DeepCopier.deepCopyParallel(original, new Serializer<Byte>() {
 
-            public void writeObject(OutputStream stream, Object object) throws Exception {
-                stream.write(((Byte) object).byteValue());
+            public void writeObject(OutputStream stream, Byte object) throws Exception {
+                stream.write(object.byteValue());
                 stream.flush();
 
                 Cool.sleep(10);
@@ -59,7 +59,7 @@ public class DeepCopierTest extends TestCase {
                 stream.write(99);
             }
 
-            public Object readObject(InputStream stream) throws Exception {
+            public Byte readObject(InputStream stream) throws Exception {
                 return new Byte((byte) stream.read());
             }
 

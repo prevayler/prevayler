@@ -19,11 +19,11 @@ import java.io.IOException;
 
 public class NetworkImpl extends BaseNetworkImpl {
 
-    public ObjectReceiver newReceiver(String ipAddress, int port, ObjectReceiver client) throws IOException {
+    @Override public ObjectReceiver newReceiver(String ipAddress, int port, ObjectReceiver client) throws IOException {
         return new NetworkClientObjectReceiverImpl(ipAddress, port, client);
     }
 
-    public ObjectReceiver newReceiver(Service service, ObjectSocket socket) {
+    @Override public ObjectReceiver newReceiver(Service service, ObjectSocket socket) {
         return new NetworkClientObjectReceiverImpl(socket, service);
     }
 

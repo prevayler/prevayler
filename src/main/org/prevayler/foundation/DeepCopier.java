@@ -29,8 +29,8 @@ public class DeepCopier {
      * @throws IOException
      * 
      */
-    public static Object deepCopy(Object original) {
-        return deepCopy(original, new JavaSerializer());
+    public static <T> T deepCopy(T original) {
+        return deepCopy(original, new JavaSerializer<T>());
     }
 
     /**
@@ -38,7 +38,7 @@ public class DeepCopier {
      * a byte array in memory. Recommended for relatively small objects, such as
      * individual transactions.
      */
-    public static Object deepCopy(Object original, Serializer serializer) {
+    public static <T> T deepCopy(T original, Serializer<T> serializer) {
         try {
             ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
             serializer.writeObject(byteOut, original);
@@ -56,12 +56,12 @@ public class DeepCopier {
      * original object in order to respect any synchronization the caller may
      * have around it, and a new thread is used for deserializing the copy.
      */
-    @SuppressWarnings("unchecked") public static <T> T deepCopyParallel(T original, Serializer serializer) {
+    public static <T> T deepCopyParallel(T original, Serializer<T> serializer) {
         try {
             PipedOutputStream outputStream = new PipedOutputStream();
             PipedInputStream inputStream = new PipedInputStream(outputStream);
 
-            Receiver receiver = new Receiver(inputStream, serializer);
+            Receiver<T> receiver = new Receiver<T>(inputStream, serializer);
 
             try {
                 serializer.writeObject(outputStream, original);
@@ -69,23 +69,23 @@ public class DeepCopier {
                 outputStream.close();
             }
 
-            return (T) receiver.getResult();
+            return receiver.getResult();
         } catch (Exception e) {
             throw new DeepCopyError(e);
         }
     }
 
-    private static class Receiver extends Thread {
+    private static class Receiver<T> extends Thread {
 
         private InputStream _inputStream;
 
-        private Serializer _serializer;
+        private Serializer<T> _serializer;
 
-        private Object _result;
+        private T _result;
 
         private Throwable _thrown;
 
-        public Receiver(InputStream inputStream, Serializer serializer) {
+        public Receiver(InputStream inputStream, Serializer<T> serializer) {
             _inputStream = inputStream;
             _serializer = serializer;
             start();
@@ -115,7 +115,7 @@ public class DeepCopier {
             }
         }
 
-        public Object getResult() {
+        public T getResult() {
             Cool.join(this);
 
             // join() guarantees that all shared memory is synchronized between

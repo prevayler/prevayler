@@ -44,7 +44,7 @@ public class NetworkServerObjectReceiverImpl extends Thread implements NetworkSe
         start();
     }
 
-    public void run() {
+    @Override public void run() {
         while (_wantedOpen) {
             try {
                 _factory.newReceiver(_service, _provider.accept());

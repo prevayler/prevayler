@@ -23,26 +23,26 @@ import java.util.Map;
  * 
  */
 public class StubbornNetworkImpl extends BaseNetworkImpl implements StubbornNetwork {
-    private final Map _sessionsInService;
+
+    private final Map<Service, SessionsManager> _sessionsInService;
 
     public StubbornNetworkImpl() {
         super();
-        _sessionsInService = Collections.synchronizedMap(new HashMap());
+        _sessionsInService = Collections.synchronizedMap(new HashMap<Service, SessionsManager>());
     }
 
-    public ObjectReceiver newReceiver(String ipAddress, int port, ObjectReceiver client) {
+    @Override public ObjectReceiver newReceiver(String ipAddress, int port, ObjectReceiver client) {
         return new StubbornClientReceiverImpl(this, ipAddress, port, client);
     }
 
-    public ObjectReceiver newReceiver(Service service, ObjectSocket socket) {
+    @Override public ObjectReceiver newReceiver(Service service, ObjectSocket socket) {
         SessionsManager sessionsManager = getSessionManager(service);
-
         return new StubbornServerReceiverImpl(service, socket, sessionsManager);
     }
 
     private SessionsManager getSessionManager(Service service) {
         SessionsManager sessionsManager;
-        sessionsManager = (SessionsManager) _sessionsInService.get(service);
+        sessionsManager = _sessionsInService.get(service);
         if (sessionsManager == null) {
             sessionsManager = new SessionsManagerImpl();
             _sessionsInService.put(service, sessionsManager);

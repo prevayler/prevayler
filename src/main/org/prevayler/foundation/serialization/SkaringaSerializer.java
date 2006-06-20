@@ -51,14 +51,14 @@ import java.io.OutputStream;
  * need to supply everything mentioned above on the classpath.
  * </p>
  */
-public class SkaringaSerializer implements Serializer {
+public class SkaringaSerializer<T> implements Serializer<T> {
 
-    public void writeObject(OutputStream stream, Object object) throws Exception {
+    public void writeObject(OutputStream stream, T object) throws Exception {
         createTransformer().serialize(object, new StreamResult(stream));
     }
 
-    public Object readObject(InputStream stream) throws Exception {
-        return createTransformer().deserialize(new StreamSource(stream));
+    @SuppressWarnings("unchecked") public T readObject(InputStream stream) throws Exception {
+        return (T) createTransformer().deserialize(new StreamSource(stream));
     }
 
     protected ObjectTransformer createTransformer() throws Exception {

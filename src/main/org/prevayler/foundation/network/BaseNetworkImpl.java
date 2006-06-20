@@ -20,10 +20,10 @@ import java.util.Map;
  * 
  */
 public abstract class BaseNetworkImpl implements Network, NetworkReceiverFactory {
-    private final Map _servicesInUse;
+    private final Map<Integer, NetworkServerObjectReceiver> _servicesInUse;
 
     public BaseNetworkImpl() {
-        _servicesInUse = Collections.synchronizedMap(new HashMap());
+        _servicesInUse = Collections.synchronizedMap(new HashMap<Integer, NetworkServerObjectReceiver>());
     }
 
     public void startService(Service service, int port) throws IOException {
@@ -68,7 +68,7 @@ public abstract class BaseNetworkImpl implements Network, NetworkReceiverFactory
     }
 
     private NetworkServerObjectReceiver locateService(int port) throws IOException {
-        NetworkServerObjectReceiver service = (NetworkServerObjectReceiver) _servicesInUse.get(new Integer(port));
+        NetworkServerObjectReceiver service = _servicesInUse.get(new Integer(port));
         if (service == null) {
             throw new PortNotInServiceException("Port Not in Service");
         }

@@ -121,10 +121,8 @@ public class PrevaylerDirectory {
             }
         });
 
-        Arrays.sort(journals, new Comparator() {
-            public int compare(Object o1, Object o2) {
-                File f1 = (File) o1;
-                File f2 = (File) o2;
+        Arrays.sort(journals, new Comparator<File>() {
+            public int compare(File f1, File f2) {
                 return new Long(journalVersion(f1)).compareTo(new Long(journalVersion(f2)));
             }
         });

@@ -15,27 +15,27 @@ import org.prevayler.foundation.Chunk;
 import java.io.Serializable;
 import java.util.Date;
 
-public class TransactionTimestamp implements Serializable {
+public class TransactionTimestamp<X, T> implements Serializable {
 
     static final long serialVersionUID = 1L;
 
-    private final Capsule _capsule;
+    private final Capsule<X, T> _capsule;
 
     private final long _systemVersion;
 
     private final long _executionTime;
 
-    public TransactionTimestamp(Capsule capsule, long systemVersion, Date executionTime) {
+    public TransactionTimestamp(Capsule<X, T> capsule, long systemVersion, Date executionTime) {
         this(capsule, systemVersion, executionTime.getTime());
     }
 
-    private TransactionTimestamp(Capsule capsule, long systemVersion, long executionTime) {
+    private TransactionTimestamp(Capsule<X, T> capsule, long systemVersion, long executionTime) {
         _capsule = capsule;
         _systemVersion = systemVersion;
         _executionTime = executionTime;
     }
 
-    public Capsule capsule() {
+    public Capsule<X, T> capsule() {
         return _capsule;
     }
 
@@ -47,8 +47,8 @@ public class TransactionTimestamp implements Serializable {
         return new Date(_executionTime);
     }
 
-    public TransactionTimestamp cleanCopy() {
-        return new TransactionTimestamp(_capsule.cleanCopy(), _systemVersion, _executionTime);
+    public TransactionTimestamp<X, T> cleanCopy() {
+        return new TransactionTimestamp<X, T>(_capsule.cleanCopy(), _systemVersion, _executionTime);
     }
 
     public Chunk toChunk() {
@@ -58,8 +58,8 @@ public class TransactionTimestamp implements Serializable {
         return chunk;
     }
 
-    public static TransactionTimestamp fromChunk(Chunk chunk) {
-        Capsule capsule = Capsule.fromChunk(chunk);
+    @SuppressWarnings("unchecked") public static <T> TransactionTimestamp<?, T> fromChunk(Chunk chunk) {
+        Capsule<?, T> capsule = Capsule.fromChunk(chunk);
         long systemVersion = Long.parseLong(chunk.getParameter("systemVersion"));
         long executionTime = Long.parseLong(chunk.getParameter("executionTime"));
         return new TransactionTimestamp(capsule, systemVersion, executionTime);

@@ -13,11 +13,11 @@ package org.prevayler.implementation.journal;
 import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 
-public interface Journal {
+public interface Journal<T> {
 
-    public void append(TransactionGuide guide);
+    public <X> void append(TransactionGuide<X, T> guide);
 
-    public void update(TransactionSubscriber subscriber, long initialTransaction);
+    public void update(TransactionSubscriber<T> subscriber, long initialTransaction);
 
     public void close();
 

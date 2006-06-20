@@ -21,22 +21,22 @@ public class NonCloseableOutputStream extends OutputStream {
         _stream = stream;
     }
 
-    public void close() {
+    @Override public void close() {
     }
 
-    public void flush() throws IOException {
+    @Override public void flush() throws IOException {
         _stream.flush();
     }
 
-    public void write(int b) throws IOException {
+    @Override public void write(int b) throws IOException {
         _stream.write(b);
     }
 
-    public void write(byte b[]) throws IOException {
+    @Override public void write(byte b[]) throws IOException {
         _stream.write(b);
     }
 
-    public void write(byte b[], int off, int len) throws IOException {
+    @Override public void write(byte b[], int off, int len) throws IOException {
         _stream.write(b, off, len);
     }
 

@@ -20,25 +20,25 @@ public class NullMonitor implements Monitor {
     /**
      * Does nothing.
      */
-    public void notify(Class clazz, String message, File file, Exception exception) {
+    @SuppressWarnings("unused") public void notify(Class clazz, String message, File file, Exception exception) {
     }
 
     /**
      * Does nothing.
      */
-    public void notify(Class clazz, String message) {
+    @SuppressWarnings("unused") public void notify(Class clazz, String message) {
     }
 
     /**
      * Does nothing.
      */
-    public void notify(Class clazz, String message, Exception ex) {
+    @SuppressWarnings("unused") public void notify(Class clazz, String message, Exception ex) {
     }
 
     /**
      * Does nothing.
      */
-    public void notify(Class clazz, String message, File file) {
+    @SuppressWarnings("unused") public void notify(Class clazz, String message, File file) {
     }
 
 }

@@ -21,23 +21,21 @@ import org.prevayler.implementation.snapshot.SnapshotManager;
 
 import java.util.Date;
 
-public class PrevalentSystemGuard<T> implements TransactionSubscriber {
+public class PrevalentSystemGuard<T> implements TransactionSubscriber<T> {
 
-    private T _prevalentSystem; // All access to field is synchronized
+    // All access to field is synchronized on "this", and all access to object
+    // is synchronized on itself; "this" is always locked before the object
+    private T _prevalentSystem;
 
-    // on "this", and all access to object
-    // is synchronized on itself; "this" is
-    // always locked before the object
+    // All access is synchronized on "this"
+    private long _systemVersion;
 
-    private long _systemVersion; // All access is synchronized on "this"
+    // All access is synchronized on "this"
+    private boolean _ignoreRuntimeExceptions;
 
-    private boolean _ignoreRuntimeExceptions; // All access is synchronized on
+    private final Serializer<Object> _journalSerializer;
 
-    // "this"
-
-    private final Serializer _journalSerializer;
-
-    public PrevalentSystemGuard(T prevalentSystem, long systemVersion, Serializer journalSerializer) {
+    public PrevalentSystemGuard(T prevalentSystem, long systemVersion, Serializer<Object> journalSerializer) {
         _prevalentSystem = prevalentSystem;
         _systemVersion = systemVersion;
         _ignoreRuntimeExceptions = false;
@@ -53,7 +51,7 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber {
         }
     }
 
-    public void subscribeTo(TransactionPublisher publisher) {
+    public void subscribeTo(TransactionPublisher<T> publisher) {
         long initialTransaction;
         synchronized (this) {
             _ignoreRuntimeExceptions = true; // During pending transaction
@@ -72,8 +70,8 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber {
         }
     }
 
-    public void receive(TransactionTimestamp transactionTimestamp) {
-        Capsule capsule = transactionTimestamp.capsule();
+    public <X> void receive(TransactionTimestamp<X, T> transactionTimestamp) {
+        Capsule<X, T> capsule = transactionTimestamp.capsule();
         long systemVersion = transactionTimestamp.systemVersion();
         Date executionTime = transactionTimestamp.executionTime();
 
@@ -89,7 +87,7 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber {
             _systemVersion = systemVersion;
 
             try {
-                Object transaction = capsule.deserialize(_journalSerializer);
+                X transaction = capsule.deserialize(_journalSerializer);
 
                 synchronized (_prevalentSystem) {
                     capsule.execute(transaction, _prevalentSystem, executionTime);
@@ -118,7 +116,7 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber {
         }
     }
 
-    public void takeSnapshot(SnapshotManager snapshotManager) {
+    public void takeSnapshot(SnapshotManager<T> snapshotManager) {
         synchronized (this) {
             if (_prevalentSystem == null) {
                 throw new ErrorInEarlierTransactionError("Prevayler is no longer allowing snapshots due to an Error thrown from an earlier transaction.");
@@ -130,7 +128,7 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber {
         }
     }
 
-    public PrevalentSystemGuard<T> deepCopy(long systemVersion, Serializer snapshotSerializer) {
+    public PrevalentSystemGuard<T> deepCopy(long systemVersion, Serializer<T> snapshotSerializer) {
         synchronized (this) {
             while (_systemVersion < systemVersion && _prevalentSystem != null) {
                 Cool.wait(this);

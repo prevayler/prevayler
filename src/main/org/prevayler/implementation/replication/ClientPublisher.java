@@ -27,15 +27,15 @@ import java.util.Date;
 /**
  * Reserved for future implementation.
  */
-public class ClientPublisher implements TransactionPublisher {
+public class ClientPublisher<T> implements TransactionPublisher<T> {
 
     private final BrokenClock _clock = new BrokenClock();
 
-    private TransactionSubscriber _subscriber;
+    private TransactionSubscriber<T> _subscriber;
 
     private final Object _upToDateMonitor = new Object();
 
-    private Capsule _myCapsule;
+    private Capsule<?, T> _myCapsule;
 
     private final Object _myCapsuleMonitor = new Object();
 
@@ -53,7 +53,7 @@ public class ClientPublisher implements TransactionPublisher {
 
     private void startListening() {
         Thread listener = new Thread() {
-            public void run() {
+            @Override public void run() {
                 try {
                     while (true)
                         receiveTransactionFromServer();
@@ -66,7 +66,7 @@ public class ClientPublisher implements TransactionPublisher {
         listener.start();
     }
 
-    public synchronized void subscribe(TransactionSubscriber subscriber, long initialTransaction) {
+    public synchronized void subscribe(TransactionSubscriber<T> subscriber, long initialTransaction) {
         if (_subscriber != null) {
             throw new UnsupportedOperationException("The current implementation can only support one subscriber. Future implementations will support more.");
         }
@@ -81,13 +81,13 @@ public class ClientPublisher implements TransactionPublisher {
         }
     }
 
-    public void cancelSubscription(TransactionSubscriber subscriber) {
+    public void cancelSubscription(@SuppressWarnings("unused") TransactionSubscriber<T> subscriber) {
         throw new UnsupportedOperationException("Removing subscribers is not yet supported by the current implementation.");
     }
 
     // TODO Remove synchronized allowing multiple transactions to be sent at a
     // time.
-    public synchronized void publish(Capsule capsule) {
+    public synchronized <X> void publish(Capsule<X, T> capsule) {
         if (_subscriber == null)
             throw new IllegalStateException("To publish a transaction, this ClientPublisher needs a registered subscriber.");
         synchronized (_myCapsuleMonitor) {
@@ -119,7 +119,7 @@ public class ClientPublisher implements TransactionPublisher {
         }
     }
 
-    private void receiveTransactionFromServer() throws IOException, ClassNotFoundException {
+    @SuppressWarnings("unchecked") private void receiveTransactionFromServer() throws IOException, ClassNotFoundException {
         Object transactionCandidate = _server.readObject();
 
         if (transactionCandidate.equals(ServerConnection.SUBSCRIBER_UP_TO_DATE)) {

@@ -87,7 +87,7 @@ public class SkipOldTransactionsTest extends FileIOTest {
         assertEquals("the system first second third", recovered.prevalentSystem().toString());
     }
 
-    private Prevayler<StringBuilder> createPrevayler(String suffix, Serializer journalSerializer) throws IOException {
+    private Prevayler<StringBuilder> createPrevayler(String suffix, Serializer<Object> journalSerializer) throws IOException {
         PrevaylerFactory<StringBuilder> factory = new PrevaylerFactory<StringBuilder>();
         factory.configurePrevalentSystem(new StringBuilder("the system"));
         factory.configurePrevalenceDirectory(_testDirectory);
@@ -102,7 +102,7 @@ public class SkipOldTransactionsTest extends FileIOTest {
         return factory.create();
     }
 
-    private static class MySerializer implements Serializer {
+    private static class MySerializer implements Serializer<Object> {
 
         private boolean afterSnapshot;
 

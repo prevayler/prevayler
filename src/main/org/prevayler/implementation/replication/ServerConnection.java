@@ -22,32 +22,32 @@ import java.io.IOException;
 /**
  * Reserved for future implementation.
  */
-class ServerConnection extends Thread implements TransactionSubscriber {
+class ServerConnection<T> extends Thread implements TransactionSubscriber<T> {
 
     static final String SUBSCRIBER_UP_TO_DATE = "SubscriberUpToDate";
 
     static final String REMOTE_TRANSACTION = "RemoteTransaction";
 
-    private final TransactionPublisher _publisher;
+    private final TransactionPublisher<T> _publisher;
 
-    private Capsule _remoteCapsule;
+    private Capsule<?, T> _remoteCapsule;
 
     private final ObjectSocket _remote;
 
     private final Thread _clockTickSender = createClockTickSender();
 
-    ServerConnection(TransactionPublisher publisher, ObjectSocket remoteSocket) {
+    ServerConnection(TransactionPublisher<T> publisher, ObjectSocket remoteSocket) {
         _publisher = publisher;
         _remote = remoteSocket;
         setDaemon(true);
         start();
     }
 
-    public void run() {
+    @Override public void run() {
         try {
             long initialTransaction = ((Long) _remote.readObject()).longValue();
 
-            POBox poBox = new POBox(this);
+            POBox<T> poBox = new POBox<T>(this);
             _publisher.subscribe(poBox, initialTransaction);
             poBox.waitToEmpty();
 
@@ -70,7 +70,7 @@ class ServerConnection extends Thread implements TransactionSubscriber {
 
     private Thread createClockTickSender() {
         return new Thread() { // TODO Consider using TimerTask.
-            public void run() {
+            @Override public void run() {
                 try {
                     while (true) {
                         synchronized (_remote) {
@@ -86,7 +86,7 @@ class ServerConnection extends Thread implements TransactionSubscriber {
         };
     }
 
-    void publishRemoteTransaction() throws IOException, ClassNotFoundException {
+    @SuppressWarnings("unchecked") void publishRemoteTransaction() throws IOException, ClassNotFoundException {
         _remoteCapsule = (Capsule) _remote.readObject();
         try {
             _publisher.publish(_remoteCapsule);
@@ -97,33 +97,12 @@ class ServerConnection extends Thread implements TransactionSubscriber {
         }
     }
 
-    public void receive(TransactionTimestamp tt) {
-
+    public <X> void receive(TransactionTimestamp<X, T> tt) {
         if (tt.capsule() == _remoteCapsule)
-            tt = new TransactionTimestamp(null, tt.systemVersion(), tt.executionTime()); // TODO
-                                                                                            // This
-                                                                                            // is
-                                                                                            // really
-                                                                                            // ugly.
-                                                                                            // It
-                                                                                            // is
-                                                                                            // using
-                                                                                            // a
-                                                                                            // null
-                                                                                            // capsule
-                                                                                            // inside
-                                                                                            // the
-                                                                                            // TransactionTimestamp
-                                                                                            // to
-                                                                                            // signal
-                                                                                            // that
-                                                                                            // the
-                                                                                            // remote
-                                                                                            // Capsule
-                                                                                            // should
-                                                                                            // be
-                                                                                            // executed.
-
+            tt = new TransactionTimestamp<X, T>(null, tt.systemVersion(), tt.executionTime());
+        // TODO This is really ugly. It is using a null capsule inside the
+        // TransactionTimestamp to signal that the remote Capsule should be
+        // executed.
         try {
             synchronized (_remote) {
                 _remote.writeObject(tt);

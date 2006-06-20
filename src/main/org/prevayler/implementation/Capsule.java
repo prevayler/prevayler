@@ -22,7 +22,7 @@ public abstract class Capsule<X, T> implements Serializable {
 
     private final byte[] _serialized;
 
-    protected Capsule(X transaction, Serializer journalSerializer) {
+    protected Capsule(X transaction, Serializer<? super X> journalSerializer) {
         try {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             journalSerializer.writeObject(bytes, transaction);
@@ -65,7 +65,7 @@ public abstract class Capsule<X, T> implements Serializable {
      * Make a clean copy of this capsule that will have its own query result
      * fields.
      */
-    public abstract Capsule cleanCopy();
+    public abstract Capsule<X, T> cleanCopy();
 
     Chunk toChunk() {
         Chunk chunk = new Chunk(_serialized);
@@ -73,7 +73,7 @@ public abstract class Capsule<X, T> implements Serializable {
         return chunk;
     }
 
-    static Capsule fromChunk(Chunk chunk) {
+    @SuppressWarnings("unchecked") static <T> Capsule<?, T> fromChunk(Chunk chunk) {
         boolean withQuery = Boolean.valueOf(chunk.getParameter("withQuery")).booleanValue();
         if (withQuery) {
             return new TransactionWithQueryCapsule(chunk.getBytes());

@@ -35,7 +35,7 @@ import junit.framework.AssertionFailedError;
 public class SnapshotSerializerTest extends FileIOTest {
 
     public void testConfigureSnapshotSerializer() throws IOException {
-        Serializer serializer = new MySerializer();
+        Serializer<StringBuilder> serializer = new MySerializer();
 
         takeSnapshot(serializer);
 
@@ -45,9 +45,9 @@ public class SnapshotSerializerTest extends FileIOTest {
     }
 
     public void testBadSuffix() {
-        PrevaylerFactory factory = new PrevaylerFactory();
+        PrevaylerFactory<Void> factory = new PrevaylerFactory<Void>();
         try {
-            factory.configureSnapshotSerializer("SNAPSHOT", new JavaSerializer());
+            factory.configureSnapshotSerializer("SNAPSHOT", new JavaSerializer<Void>());
             fail();
         } catch (IllegalArgumentException exception) {
             assertEquals("Snapshot filename suffix must match /[a-zA-Z0-9]*[Ss]napshot/, but 'SNAPSHOT' does not", exception.getMessage());
@@ -55,20 +55,20 @@ public class SnapshotSerializerTest extends FileIOTest {
     }
 
     public void testXStreamSnapshot() throws IOException {
-        Serializer serializer = new XStreamSerializer();
+        Serializer<StringBuilder> serializer = new XStreamSerializer<StringBuilder>();
 
         takeSnapshot(serializer);
         recover(serializer);
     }
 
     public void testSkaringaSnapshot() throws IOException {
-        Serializer serializer = new SkaringaSerializer();
+        Serializer<StringBuilder> serializer = new SkaringaSerializer<StringBuilder>();
 
         takeSnapshot(serializer);
         recover(serializer);
     }
 
-    private void takeSnapshot(Serializer snapshotSerializer) throws IOException {
+    private void takeSnapshot(Serializer<StringBuilder> snapshotSerializer) throws IOException {
         Prevayler<StringBuilder> prevayler = createPrevayler(snapshotSerializer);
 
         prevayler.execute(new AppendTransaction(" first"));
@@ -80,12 +80,12 @@ public class SnapshotSerializerTest extends FileIOTest {
         prevayler.close();
     }
 
-    private void recover(Serializer snapshotSerializer) throws IOException {
+    private void recover(Serializer<StringBuilder> snapshotSerializer) throws IOException {
         Prevayler<StringBuilder> prevayler = createPrevayler(snapshotSerializer);
         assertEquals("the system first second third", prevayler.prevalentSystem().toString());
     }
 
-    private Prevayler<StringBuilder> createPrevayler(Serializer snapshotSerializer) throws IOException {
+    private Prevayler<StringBuilder> createPrevayler(Serializer<StringBuilder> snapshotSerializer) throws IOException {
         PrevaylerFactory<StringBuilder> factory = new PrevaylerFactory<StringBuilder>();
         factory.configurePrevalentSystem(new StringBuilder("the system"));
         factory.configurePrevalenceDirectory(_testDirectory);
@@ -114,10 +114,9 @@ public class SnapshotSerializerTest extends FileIOTest {
         return string.toString();
     }
 
-    private static class MySerializer implements Serializer {
+    private static class MySerializer implements Serializer<StringBuilder> {
 
-        public void writeObject(OutputStream stream, Object object) throws Exception {
-            StringBuilder system = (StringBuilder) object;
+        public void writeObject(OutputStream stream, StringBuilder system) throws Exception {
             Writer writer = new OutputStreamWriter(stream, "UTF-8");
             writer.write("Yes, this is MySerializationStrategy!\n");
             writer.write(system.toString());
@@ -125,7 +124,7 @@ public class SnapshotSerializerTest extends FileIOTest {
             writer.flush();
         }
 
-        public Object readObject(InputStream stream) throws Exception {
+        public StringBuilder readObject(InputStream stream) throws Exception {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
             String prolog = reader.readLine();
             if ("Yes, this is MySerializationStrategy!".equals(prolog)) {

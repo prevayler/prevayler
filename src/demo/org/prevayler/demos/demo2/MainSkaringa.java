@@ -23,7 +23,7 @@ public class MainSkaringa {
         PrevaylerFactory<Bank> factory = new PrevaylerFactory<Bank>();
         factory.configurePrevalenceDirectory("demo2Skaringa");
         factory.configurePrevalentSystem(new Bank());
-        factory.configureSnapshotSerializer(new SkaringaSerializer());
+        factory.configureSnapshotSerializer(new SkaringaSerializer<Bank>());
         Prevayler<Bank> prevayler = factory.create();
 
         Main.startSnapshots(prevayler);

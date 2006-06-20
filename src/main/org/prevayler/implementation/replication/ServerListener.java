@@ -19,27 +19,27 @@ import java.io.IOException;
 /**
  * Reserved for future implementation.
  */
-public class ServerListener extends Thread {
+public class ServerListener<T> extends Thread {
 
-    private final TransactionPublisher _publisher;
+    private final TransactionPublisher<T> _publisher;
 
     private final ObjectServerSocket _serverSocket;
 
     // TODO Close the socket when the publisher is closed (listen for it or have
     // the Dashboard (new idea) close this when it closes the publisher).
 
-    public ServerListener(TransactionPublisher publisher, OldNetwork network, int port) throws IOException {
+    public ServerListener(TransactionPublisher<T> publisher, OldNetwork network, int port) throws IOException {
         _serverSocket = network.openObjectServerSocket(port);
         _publisher = publisher;
         setDaemon(true);
         start(); // FIXME: Make sure this thread ends when Prevayler is
-                    // closed.
+        // closed.
     }
 
-    public void run() {
+    @Override public void run() {
         try {
             while (true)
-                new ServerConnection(_publisher, _serverSocket.accept());
+                new ServerConnection<T>(_publisher, _serverSocket.accept());
         } catch (IOException iox) {
             iox.printStackTrace();
         }

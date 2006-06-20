@@ -25,23 +25,23 @@ import java.io.IOException;
 public class GenericSnapshotManagerTest extends FileIOTest {
 
     public void testNoExistingSnapshot() throws IOException {
-        Prevayler<StringBuilder> prevayler = createPrevayler("snapshot", new JavaSerializer());
+        Prevayler<StringBuilder> prevayler = createPrevayler("snapshot", new JavaSerializer<StringBuilder>());
         assertEquals("initial", prevayler.prevalentSystem().toString());
     }
 
     public void testRoundtripJava() throws IOException {
-        checkRoundtrip("snapshot", new JavaSerializer());
+        checkRoundtrip("snapshot", new JavaSerializer<StringBuilder>());
     }
 
     public void testRoundtripXStream() throws IOException {
-        checkRoundtrip("xstreamsnapshot", new XStreamSerializer());
+        checkRoundtrip("xstreamsnapshot", new XStreamSerializer<StringBuilder>());
     }
 
     public void testRoundtripSkaringa() throws IOException {
-        checkRoundtrip("skaringasnapshot", new SkaringaSerializer());
+        checkRoundtrip("skaringasnapshot", new SkaringaSerializer<StringBuilder>());
     }
 
-    private void checkRoundtrip(String suffix, Serializer serializer) throws IOException {
+    private void checkRoundtrip(String suffix, Serializer<StringBuilder> serializer) throws IOException {
         Prevayler<StringBuilder> first = createPrevayler(suffix, serializer);
         appendTakeSnapshotAndClose(first);
 
@@ -53,11 +53,11 @@ public class GenericSnapshotManagerTest extends FileIOTest {
     }
 
     public void testDetectExistingSnapshotFromUnknownSnapshotManager() throws IOException {
-        Prevayler<StringBuilder> first = createPrevayler("xstreamsnapshot", new XStreamSerializer());
+        Prevayler<StringBuilder> first = createPrevayler("xstreamsnapshot", new XStreamSerializer<StringBuilder>());
         appendTakeSnapshotAndClose(first);
 
         try {
-            createPrevayler("snapshot", new JavaSerializer());
+            createPrevayler("snapshot", new JavaSerializer<StringBuilder>());
             fail();
         } catch (SnapshotError e) {
             // This is good because if we only looked for .snapshot files we
@@ -67,7 +67,7 @@ public class GenericSnapshotManagerTest extends FileIOTest {
     }
 
     public void testMultipleSerializationStrategiesFromXStream() throws IOException {
-        Prevayler<StringBuilder> prevayler = createPrevayler("xstreamsnapshot", new XStreamSerializer());
+        Prevayler<StringBuilder> prevayler = createPrevayler("xstreamsnapshot", new XStreamSerializer<StringBuilder>());
         appendTakeSnapshotAndClose(prevayler);
 
         checkSnapshotAndDeleteJournal("0000000000000000002.xstreamsnapshot", "0000000000000000001.journal");
@@ -76,7 +76,7 @@ public class GenericSnapshotManagerTest extends FileIOTest {
     }
 
     public void testMultipleSerializationStrategiesFromJava() throws IOException {
-        Prevayler<StringBuilder> prevayler = createPrevayler("snapshot", new JavaSerializer());
+        Prevayler<StringBuilder> prevayler = createPrevayler("snapshot", new JavaSerializer<StringBuilder>());
         appendTakeSnapshotAndClose(prevayler);
 
         checkSnapshotAndDeleteJournal("0000000000000000002.snapshot", "0000000000000000001.journal");
@@ -89,7 +89,7 @@ public class GenericSnapshotManagerTest extends FileIOTest {
         appendTakeSnapshotAndClose(first);
         checkSnapshotAndDeleteJournal("0000000000000000002.xstreamsnapshot", "0000000000000000001.journal");
 
-        Prevayler<StringBuilder> second = createPrevayler("xstreamsnapshot", new XStreamSerializer());
+        Prevayler<StringBuilder> second = createPrevayler("xstreamsnapshot", new XStreamSerializer<StringBuilder>());
         assertEquals("initial one two", second.prevalentSystem().toString());
         second.close();
     }
@@ -104,12 +104,12 @@ public class GenericSnapshotManagerTest extends FileIOTest {
         PrevaylerFactory<StringBuilder> factory = new PrevaylerFactory<StringBuilder>();
         factory.configurePrevalentSystem(new StringBuilder("initial"));
         factory.configurePrevalenceDirectory(_testDirectory);
-        factory.configureSnapshotSerializer("xstreamsnapshot", new XStreamSerializer());
-        factory.configureSnapshotSerializer("snapshot", new JavaSerializer());
+        factory.configureSnapshotSerializer("xstreamsnapshot", new XStreamSerializer<StringBuilder>());
+        factory.configureSnapshotSerializer("snapshot", new JavaSerializer<StringBuilder>());
         return factory.create();
     }
 
-    private Prevayler<StringBuilder> createPrevayler(String suffix, Serializer serializer) throws IOException {
+    private Prevayler<StringBuilder> createPrevayler(String suffix, Serializer<StringBuilder> serializer) throws IOException {
         PrevaylerFactory<StringBuilder> factory = new PrevaylerFactory<StringBuilder>();
         factory.configurePrevalentSystem(new StringBuilder("initial"));
         factory.configurePrevalenceDirectory(_testDirectory);

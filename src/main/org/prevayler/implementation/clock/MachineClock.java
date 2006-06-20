@@ -21,7 +21,7 @@ public class MachineClock extends BrokenClock {
     /**
      * @return The local machine time.
      */
-    public synchronized Date time() {
+    @Override public synchronized Date time() {
         update();
         return super.time();
     }

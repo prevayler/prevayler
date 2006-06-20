@@ -25,7 +25,7 @@ class TransactionWithQueryCapsule<T, R, E extends Exception> extends Capsule<Tra
 
     private transient E _queryException;
 
-    public TransactionWithQueryCapsule(TransactionWithQuery<? super T, R, E> transactionWithQuery, Serializer journalSerializer) {
+    public TransactionWithQueryCapsule(TransactionWithQuery<? super T, R, E> transactionWithQuery, Serializer<? super TransactionWithQuery<? super T, R, E>> journalSerializer) {
         super(transactionWithQuery, journalSerializer);
     }
 

@@ -21,15 +21,15 @@ public class Log4jMonitor extends LoggingMonitor {
 
     private static final String callerFQCN = LoggingMonitor.class.getName();
 
-    protected void info(Class clazz, String message) {
+    @Override protected void info(Class clazz, String message) {
         log(clazz, Level.INFO, message, null);
     }
 
-    protected void error(Class clazz, String message, Exception ex) {
+    @Override protected void error(Class clazz, String message, Exception ex) {
         log(clazz, Level.ERROR, message, ex);
     }
 
-    protected boolean isInfoEnabled(Class clazz) {
+    @Override protected boolean isInfoEnabled(Class clazz) {
         return logger(clazz).isInfoEnabled();
     }
 

@@ -15,25 +15,25 @@ import org.prevayler.implementation.PrevalentSystemGuard;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.snapshot.SnapshotManager;
 
-public class StrictTransactionCensor implements TransactionCensor {
+public class StrictTransactionCensor<T> implements TransactionCensor<T> {
 
-    private final PrevalentSystemGuard _king;
+    private final PrevalentSystemGuard<T> _king;
 
-    private PrevalentSystemGuard _royalFoodTaster;
+    private PrevalentSystemGuard<T> _royalFoodTaster;
 
-    private final Serializer _snapshotSerializer;
+    private final Serializer<T> _snapshotSerializer;
 
-    public StrictTransactionCensor(SnapshotManager snapshotManager) {
+    public StrictTransactionCensor(SnapshotManager<T> snapshotManager) {
         _king = snapshotManager.recoveredPrevalentSystem();
         // The _royalFoodTaster cannot be initialized here, or else the pending
         // transactions will not be applied to it.
         _snapshotSerializer = snapshotManager.primarySerializer();
     }
 
-    public void approve(TransactionTimestamp transactionTimestamp) {
+    public <X> void approve(TransactionTimestamp<X, T> transactionTimestamp) {
         try {
-            TransactionTimestamp timestampCopy = transactionTimestamp.cleanCopy();
-            PrevalentSystemGuard royalFoodTaster = royalFoodTaster(transactionTimestamp.systemVersion() - 1);
+            TransactionTimestamp<X, T> timestampCopy = transactionTimestamp.cleanCopy();
+            PrevalentSystemGuard<T> royalFoodTaster = royalFoodTaster(transactionTimestamp.systemVersion() - 1);
             royalFoodTaster.receive(timestampCopy);
         } catch (RuntimeException rx) {
             letTheFoodTasterDie();
@@ -56,7 +56,7 @@ public class StrictTransactionCensor implements TransactionCensor {
         _royalFoodTaster = null;
     }
 
-    private PrevalentSystemGuard royalFoodTaster(long systemVersion) {
+    private PrevalentSystemGuard<T> royalFoodTaster(long systemVersion) {
         if (_royalFoodTaster == null) {
             produceNewFoodTaster(systemVersion);
         }

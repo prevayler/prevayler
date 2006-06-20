@@ -97,14 +97,6 @@ public interface Prevayler<T> {
     public <R, E extends Exception> R execute(TransactionWithQuery<? super T, R, E> transactionWithQuery) throws E;
 
     /**
-     * The same as execute(TransactionWithQuery) except no Exception is thrown.
-     * 
-     * @return The result returned by the execution of the
-     *         sureTransactionWithQuery on the prevalentSystem().
-     */
-    public <R> R execute(SureTransactionWithQuery<? super T, R> sureTransactionWithQuery);
-
-    /**
      * Produces a complete serialized image of the underlying PrevalentSystem.
      * This will accelerate future system startups. Taking a snapshot once a day
      * is enough for most applications. This method synchronizes on the

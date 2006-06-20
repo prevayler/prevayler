@@ -28,7 +28,7 @@ import java.io.IOException;
 /**
  * A Journal that will write all transactions to .journal files.
  */
-public class PersistentJournal implements Journal {
+public class PersistentJournal<T> implements Journal<T> {
 
     private final PrevaylerDirectory _directory;
 
@@ -70,7 +70,7 @@ public class PersistentJournal implements Journal {
         _journalSuffix = journalSuffix;
     }
 
-    public void append(TransactionGuide guide) {
+    public <X> void append(TransactionGuide<X, T> guide) {
         if (!_nextTransactionInitialized)
             throw new IllegalStateException("Journal.update() has to be called at least once before Journal.append().");
 
@@ -97,7 +97,7 @@ public class PersistentJournal implements Journal {
         try {
             myOutputJournal.sync(guide);
         } catch (Exception exception) {
-            abort(exception, _outputJournal.file(), "writing to", guide);
+            abort(exception, "writing to", guide);
         }
 
         guide.startTurn();
@@ -106,7 +106,7 @@ public class PersistentJournal implements Journal {
                 if (outputJournalToClose != null)
                     outputJournalToClose.close();
             } catch (Exception exception) {
-                abort(exception, outputJournalToClose.file(), "closing", guide);
+                abort(exception, "closing", guide);
             }
         } finally {
             guide.endTurn();
@@ -130,7 +130,7 @@ public class PersistentJournal implements Journal {
         try {
             return new DurableOutputStream(file);
         } catch (Exception exception) {
-            abort(exception, file, "creating", guide);
+            abort(exception, "creating", guide);
             return null;
         }
     }
@@ -143,7 +143,7 @@ public class PersistentJournal implements Journal {
      * method will define what the next transaction number will be. We have to
      * find clearer/simpler semantics.
      */
-    public void update(TransactionSubscriber subscriber, long initialTransactionWanted) {
+    public void update(TransactionSubscriber<T> subscriber, long initialTransactionWanted) {
         try {
             File initialJournal = _directory.findInitialJournalFile(initialTransactionWanted);
 
@@ -174,7 +174,7 @@ public class PersistentJournal implements Journal {
         _nextTransaction = initialTransactionWanted > nextTransaction ? initialTransactionWanted : nextTransaction;
     }
 
-    private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, File initialJournal) throws Exception {
+    private long recoverPendingTransactions(TransactionSubscriber<T> subscriber, long initialTransaction, File initialJournal) throws Exception {
         long recoveringTransaction = PrevaylerDirectory.journalVersion(initialJournal);
         File journal = initialJournal;
         DurableInputStream input = new DurableInputStream(journal, _monitor);
@@ -188,7 +188,7 @@ public class PersistentJournal implements Journal {
                         throw new JournalError("There are transactions needing to be recovered from " + journal + ", but only " + _journalSuffix + " files are supported");
                     }
 
-                    TransactionTimestamp entry = TransactionTimestamp.fromChunk(chunk);
+                    TransactionTimestamp<?, T> entry = TransactionTimestamp.fromChunk(chunk);
 
                     if (entry.systemVersion() != recoveringTransaction) {
                         throw new JournalError("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
@@ -215,7 +215,7 @@ public class PersistentJournal implements Journal {
         return recoveringTransaction;
     }
 
-    private void abort(Exception exception, File journal, String action, Guided guide) {
+    private void abort(Exception exception, String action, Guided guide) {
         guide.abortTurn("All transaction processing is now aborted. An exception was thrown while " + action + " a journal file.", exception);
     }
 

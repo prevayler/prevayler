@@ -45,7 +45,7 @@ public class NetworkClientObjectReceiverImpl implements ObjectReceiver {
      */
     private void startReading() {
         Thread reader = new Thread() {
-            public void run() {
+            @Override public void run() {
                 while (!_closing)
                     receiveFromNetwork();
             }
