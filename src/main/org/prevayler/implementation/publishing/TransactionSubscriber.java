@@ -14,6 +14,6 @@ import org.prevayler.implementation.TransactionTimestamp;
 
 public interface TransactionSubscriber<T> {
 
-    public <X> void receive(TransactionTimestamp<X, T> transactionTimestamp);
+    public <R, E extends Exception> void receive(TransactionTimestamp<T, R, E> transactionTimestamp);
 
 }

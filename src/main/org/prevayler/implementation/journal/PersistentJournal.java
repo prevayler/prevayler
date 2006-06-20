@@ -70,7 +70,7 @@ public class PersistentJournal<T> implements Journal<T> {
         _journalSuffix = journalSuffix;
     }
 
-    public <X> void append(TransactionGuide<X, T> guide) {
+    public <R, E extends Exception> void append(TransactionGuide<T, R, E> guide) {
         if (!_nextTransactionInitialized)
             throw new IllegalStateException("Journal.update() has to be called at least once before Journal.append().");
 
@@ -188,7 +188,7 @@ public class PersistentJournal<T> implements Journal<T> {
                         throw new JournalError("There are transactions needing to be recovered from " + journal + ", but only " + _journalSuffix + " files are supported");
                     }
 
-                    TransactionTimestamp<?, T> entry = TransactionTimestamp.fromChunk(chunk);
+                    TransactionTimestamp<T, ?, ?> entry = TransactionTimestamp.fromChunk(chunk);
 
                     if (entry.systemVersion() != recoveringTransaction) {
                         throw new JournalError("Expected " + recoveringTransaction + " but was " + entry.systemVersion());

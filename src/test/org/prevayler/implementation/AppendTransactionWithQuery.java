@@ -10,11 +10,12 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.TransactionWithQuery;
+import org.prevayler.Transaction;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class AppendTransactionWithQuery implements TransactionWithQuery<StringBuilder, String, RuntimeException> {
+public class AppendTransactionWithQuery implements Transaction<StringBuilder, String, RuntimeException>, Serializable {
 
     private static final long serialVersionUID = 7725358482908916942L;
 
@@ -28,7 +29,7 @@ public class AppendTransactionWithQuery implements TransactionWithQuery<StringBu
         this.toAdd = toAdd;
     }
 
-    public String executeAndQuery(StringBuilder prevalentSystem, @SuppressWarnings("unused") Date executionTime) {
+    public String executeOn(StringBuilder prevalentSystem, @SuppressWarnings("unused") Date executionTime) {
         prevalentSystem.append(toAdd);
         return prevalentSystem.toString();
     }

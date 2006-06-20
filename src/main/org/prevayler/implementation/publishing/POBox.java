@@ -20,7 +20,7 @@ import java.util.LinkedList;
  */
 public class POBox<T> extends Thread implements TransactionSubscriber<T> {
 
-    private final LinkedList<TransactionTimestamp<?, T>> _queue = new LinkedList<TransactionTimestamp<?, T>>();
+    private final LinkedList<TransactionTimestamp<T, ?, ?>> _queue = new LinkedList<TransactionTimestamp<T, ?, ?>>();
 
     private final TransactionSubscriber<T> _delegate;
 
@@ -32,19 +32,19 @@ public class POBox<T> extends Thread implements TransactionSubscriber<T> {
         start();
     }
 
-    public synchronized <X> void receive(TransactionTimestamp<X, T> transactionTimestamp) {
+    public synchronized <R, E extends Exception> void receive(TransactionTimestamp<T, R, E> transactionTimestamp) {
         _queue.add(transactionTimestamp);
         notify();
     }
 
     @Override public void run() {
         while (true) {
-            TransactionTimestamp<?, T> notification = waitForNotification();
+            TransactionTimestamp<T, ?, ?> notification = waitForNotification();
             _delegate.receive(notification);
         }
     }
 
-    private synchronized TransactionTimestamp<?, T> waitForNotification() {
+    private synchronized TransactionTimestamp<T, ?, ?> waitForNotification() {
         while (_queue.size() == 0) {
             synchronized (_emptynessMonitor) {
                 _emptynessMonitor.notify();

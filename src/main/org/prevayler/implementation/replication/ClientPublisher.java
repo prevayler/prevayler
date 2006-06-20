@@ -35,7 +35,7 @@ public class ClientPublisher<T> implements TransactionPublisher<T> {
 
     private final Object _upToDateMonitor = new Object();
 
-    private Capsule<?, T> _myCapsule;
+    private Capsule<T, ?, ?> _myCapsule;
 
     private final Object _myCapsuleMonitor = new Object();
 
@@ -87,7 +87,7 @@ public class ClientPublisher<T> implements TransactionPublisher<T> {
 
     // TODO Remove synchronized allowing multiple transactions to be sent at a
     // time.
-    public synchronized <X> void publish(Capsule<X, T> capsule) {
+    public synchronized <R, E extends Exception> void publish(Capsule<T, R, E> capsule) {
         if (_subscriber == null)
             throw new IllegalStateException("To publish a transaction, this ClientPublisher needs a registered subscriber.");
         synchronized (_myCapsuleMonitor) {

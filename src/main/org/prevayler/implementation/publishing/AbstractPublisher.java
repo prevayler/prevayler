@@ -42,7 +42,7 @@ public abstract class AbstractPublisher<T> implements TransactionPublisher<T> {
         _subscribers.remove(subscriber);
     }
 
-    protected synchronized <X> void notifySubscribers(TransactionTimestamp<X, T> transactionTimestamp) {
+    protected synchronized <R, E extends Exception> void notifySubscribers(TransactionTimestamp<T, R, E> transactionTimestamp) {
         Iterator<TransactionSubscriber<T>> i = _subscribers.iterator();
         while (i.hasNext())
             i.next().receive(transactionTimestamp);

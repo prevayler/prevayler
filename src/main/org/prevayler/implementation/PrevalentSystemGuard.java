@@ -12,6 +12,7 @@ package org.prevayler.implementation;
 
 import org.prevayler.Clock;
 import org.prevayler.Query;
+import org.prevayler.Transaction;
 import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.DeepCopier;
 import org.prevayler.foundation.serialization.Serializer;
@@ -33,9 +34,9 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber<T> {
     // All access is synchronized on "this"
     private boolean _ignoreRuntimeExceptions;
 
-    private final Serializer<Object> _journalSerializer;
+    private final Serializer<Transaction> _journalSerializer;
 
-    public PrevalentSystemGuard(T prevalentSystem, long systemVersion, Serializer<Object> journalSerializer) {
+    public PrevalentSystemGuard(T prevalentSystem, long systemVersion, Serializer<Transaction> journalSerializer) {
         _prevalentSystem = prevalentSystem;
         _systemVersion = systemVersion;
         _ignoreRuntimeExceptions = false;
@@ -70,8 +71,8 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber<T> {
         }
     }
 
-    public <X> void receive(TransactionTimestamp<X, T> transactionTimestamp) {
-        Capsule<X, T> capsule = transactionTimestamp.capsule();
+    public <R, E extends Exception> void receive(TransactionTimestamp<T, R, E> transactionTimestamp) {
+        Capsule<T, R, E> capsule = transactionTimestamp.capsule();
         long systemVersion = transactionTimestamp.systemVersion();
         Date executionTime = transactionTimestamp.executionTime();
 
@@ -87,7 +88,7 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber<T> {
             _systemVersion = systemVersion;
 
             try {
-                X transaction = capsule.deserialize(_journalSerializer);
+                Transaction<? super T, R, E> transaction = capsule.deserialize(_journalSerializer);
 
                 synchronized (_prevalentSystem) {
                     capsule.execute(transaction, _prevalentSystem, executionTime);

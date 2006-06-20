@@ -12,11 +12,12 @@ package org.prevayler.implementation;
 
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.Transaction;
+import org.prevayler.TransactionWithoutResult;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.implementation.snapshot.SnapshotError;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Date;
 
 public class TransientPrevaylerTest extends FileIOTest {
@@ -75,7 +76,7 @@ public class TransientPrevaylerTest extends FileIOTest {
         prevayler.execute(new Appendix(appendix));
     }
 
-    static private class DirectReferenceTransaction implements Transaction<AppendingSystem> {
+    static private class DirectReferenceTransaction implements TransactionWithoutResult<AppendingSystem>, Serializable {
 
         private static final long serialVersionUID = -7885669885494051746L;
 
@@ -85,8 +86,9 @@ public class TransientPrevaylerTest extends FileIOTest {
             _illegalDirectReference = illegalDirectReference;
         }
 
-        public void executeOn(@SuppressWarnings("unused") AppendingSystem ignored, @SuppressWarnings("unused") Date ignoredToo) {
+        public Void executeOn(@SuppressWarnings("unused") AppendingSystem ignored, @SuppressWarnings("unused") Date ignoredToo) {
             _illegalDirectReference.append("anything");
+            return null;
         }
 
     }

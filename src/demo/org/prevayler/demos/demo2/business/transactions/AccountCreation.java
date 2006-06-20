@@ -10,13 +10,14 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
-import org.prevayler.TransactionWithQuery;
+import org.prevayler.Transaction;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.Bank;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class AccountCreation implements TransactionWithQuery<Bank, Account, Account.InvalidHolder> {
+public class AccountCreation implements Transaction<Bank, Account, Account.InvalidHolder>, Serializable {
 
     private static final long serialVersionUID = 476105268406333743L;
 
@@ -30,7 +31,7 @@ public class AccountCreation implements TransactionWithQuery<Bank, Account, Acco
         _holder = holder;
     }
 
-    public Account executeAndQuery(Bank bank, @SuppressWarnings("unused") Date ignored) throws Account.InvalidHolder {
+    public Account executeOn(Bank bank, @SuppressWarnings("unused") Date ignored) throws Account.InvalidHolder {
         return bank.createAccount(_holder);
     }
 

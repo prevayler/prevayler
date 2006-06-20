@@ -10,13 +10,14 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
-import org.prevayler.TransactionWithQuery;
+import org.prevayler.Transaction;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.Bank;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class AccountDeletion implements TransactionWithQuery<Bank, Void, Bank.AccountNotFound> {
+public class AccountDeletion implements Transaction<Bank, Void, Bank.AccountNotFound>, Serializable {
 
     private static final long serialVersionUID = -3401288850388764433L;
 
@@ -29,7 +30,7 @@ public class AccountDeletion implements TransactionWithQuery<Bank, Void, Bank.Ac
         _accountNumber = account.number();
     }
 
-    public Void executeAndQuery(Bank bank, @SuppressWarnings("unused") Date ignored) throws Bank.AccountNotFound {
+    public Void executeOn(Bank bank, @SuppressWarnings("unused") Date ignored) throws Bank.AccountNotFound {
         bank.deleteAccount(_accountNumber);
         return null;
     }

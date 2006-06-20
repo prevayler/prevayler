@@ -10,6 +10,7 @@
 
 package org.prevayler.implementation.snapshot;
 
+import org.prevayler.Transaction;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.PrevalentSystemGuard;
@@ -25,7 +26,7 @@ public class NullSnapshotManager<T> implements SnapshotManager<T> {
     public NullSnapshotManager(T newPrevalentSystem, String snapshotAttemptErrorMessage) {
         _snapshotAttemptErrorMessage = snapshotAttemptErrorMessage;
         _primarySerializer = new JavaSerializer<T>();
-        _recoveredPrevalentSystem = new PrevalentSystemGuard<T>(newPrevalentSystem, 0, new JavaSerializer<Object>());
+        _recoveredPrevalentSystem = new PrevalentSystemGuard<T>(newPrevalentSystem, 0, new JavaSerializer<Transaction>());
     }
 
     public void writeSnapshot(@SuppressWarnings("unused") T prevalentSystem, @SuppressWarnings("unused") long version) {

@@ -10,6 +10,7 @@
 
 package org.prevayler.implementation.snapshot;
 
+import org.prevayler.Transaction;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.PrevalentSystemGuard;
 import org.prevayler.implementation.PrevaylerDirectory;
@@ -31,7 +32,7 @@ public class RealSnapshotManager<T> implements SnapshotManager<T> {
 
     private PrevalentSystemGuard<T> _recoveredPrevalentSystem;
 
-    public RealSnapshotManager(Map<String, ? extends Serializer<T>> snapshotSerializers, String primarySnapshotSuffix, T newPrevalentSystem, PrevaylerDirectory directory, Serializer<Object> journalSerializer) {
+    public RealSnapshotManager(Map<String, ? extends Serializer<T>> snapshotSerializers, String primarySnapshotSuffix, T newPrevalentSystem, PrevaylerDirectory directory, Serializer<Transaction> journalSerializer) {
         for (Iterator iterator = snapshotSerializers.keySet().iterator(); iterator.hasNext();) {
             String suffix = (String) iterator.next();
             PrevaylerDirectory.checkValidSnapshotSuffix(suffix);

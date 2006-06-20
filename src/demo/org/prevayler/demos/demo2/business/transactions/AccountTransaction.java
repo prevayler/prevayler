@@ -10,13 +10,14 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
-import org.prevayler.TransactionWithQuery;
+import org.prevayler.Transaction;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.Bank;
 
+import java.io.Serializable;
 import java.util.Date;
 
-abstract class AccountTransaction implements TransactionWithQuery<Bank, Void, Exception> {
+abstract class AccountTransaction implements Transaction<Bank, Void, Exception>, Serializable {
 
     private long _accountNumber;
 
@@ -31,7 +32,7 @@ abstract class AccountTransaction implements TransactionWithQuery<Bank, Void, Ex
         _accountNumber = account.number();
     }
 
-    public Void executeAndQuery(Bank bank, Date timestamp) throws Exception {
+    public Void executeOn(Bank bank, Date timestamp) throws Exception {
         executeAndQuery(bank.findAccount(_accountNumber), timestamp);
         return null;
     }

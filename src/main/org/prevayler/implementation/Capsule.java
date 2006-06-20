@@ -10,6 +10,7 @@
 
 package org.prevayler.implementation;
 
+import org.prevayler.Transaction;
 import org.prevayler.foundation.Chunk;
 import org.prevayler.foundation.serialization.Serializer;
 
@@ -18,11 +19,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 
-public abstract class Capsule<X, T> implements Serializable {
+public class Capsule<T, R, E extends Exception> implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final byte[] _serialized;
 
-    protected Capsule(X transaction, Serializer<? super X> journalSerializer) {
+    private transient R _result;
+
+    private transient E _exception;
+
+    private transient RuntimeException _runtimeException;
+
+    public Capsule(Transaction<? super T, R, E> transaction, Serializer<Transaction> journalSerializer) {
         try {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             journalSerializer.writeObject(bytes, transaction);
@@ -32,7 +41,7 @@ public abstract class Capsule<X, T> implements Serializable {
         }
     }
 
-    protected Capsule(byte[] serialized) {
+    public Capsule(byte[] serialized) {
         _serialized = serialized;
     }
 
@@ -47,39 +56,49 @@ public abstract class Capsule<X, T> implements Serializable {
     /**
      * Deserialize the contained Transaction or TransactionWithQuery.
      */
-    @SuppressWarnings("unchecked") public final X deserialize(Serializer journalSerializer) {
+    @SuppressWarnings("unchecked") public final Transaction<? super T, R, E> deserialize(Serializer<Transaction> journalSerializer) {
         try {
-            return (X) journalSerializer.readObject(new ByteArrayInputStream(_serialized));
+            return journalSerializer.readObject(new ByteArrayInputStream(_serialized));
         } catch (Exception exception) {
             throw new TransactionNotDeserializableError("Unable to deserialize transaction", exception);
         }
     }
 
-    /**
-     * Actually execute the Transaction or TransactionWithQuery. The caller is
-     * responsible for synchronizing on the prevalentSystem.
-     */
-    protected abstract void execute(X transaction, T prevalentSystem, Date executionTime);
+    Chunk toChunk() {
+        return new Chunk(_serialized);
+    }
+
+    @SuppressWarnings("unchecked") static <T> Capsule<T, ?, ?> fromChunk(Chunk chunk) {
+        return new Capsule(chunk.getBytes());
+    }
+
+    @SuppressWarnings("unchecked") protected void execute(Transaction<? super T, R, E> transaction, T prevalentSystem, Date executionTime) {
+        try {
+            _result = transaction.executeOn(prevalentSystem, executionTime);
+        } catch (RuntimeException rx) {
+            _runtimeException = rx;
+            throw rx; // This is necessary because of the rollback feature.
+        } catch (Exception ex) {
+            _exception = (E) ex;
+        }
+    }
+
+    public R result() throws E {
+        if (_exception != null) {
+            throw _exception;
+        } else if (_runtimeException != null) {
+            throw _runtimeException;
+        } else {
+            return _result;
+        }
+    }
 
     /**
      * Make a clean copy of this capsule that will have its own query result
      * fields.
      */
-    public abstract Capsule<X, T> cleanCopy();
-
-    Chunk toChunk() {
-        Chunk chunk = new Chunk(_serialized);
-        chunk.setParameter("withQuery", String.valueOf(this instanceof TransactionWithQueryCapsule));
-        return chunk;
-    }
-
-    @SuppressWarnings("unchecked") static <T> Capsule<?, T> fromChunk(Chunk chunk) {
-        boolean withQuery = Boolean.valueOf(chunk.getParameter("withQuery")).booleanValue();
-        if (withQuery) {
-            return new TransactionWithQueryCapsule(chunk.getBytes());
-        } else {
-            return new TransactionCapsule(chunk.getBytes());
-        }
+    public Capsule<T, R, E> cleanCopy() {
+        return new Capsule<T, R, E>(serialized());
     }
 
 }

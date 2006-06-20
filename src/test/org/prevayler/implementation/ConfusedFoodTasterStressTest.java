@@ -12,7 +12,7 @@ package org.prevayler.implementation;
 
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.Transaction;
+import org.prevayler.TransactionWithoutResult;
 import org.prevayler.foundation.FileIOTest;
 
 import java.io.ByteArrayOutputStream;
@@ -102,14 +102,15 @@ public class ConfusedFoodTasterStressTest extends FileIOTest {
         int counter = 0;
     }
 
-    public static class CountTransaction implements Transaction<CountingSystem> {
+    public static class CountTransaction implements TransactionWithoutResult<CountingSystem>, Serializable {
         private static final long serialVersionUID = 5043457505878510633L;
 
-        public void executeOn(CountingSystem countingSystem, @SuppressWarnings("unused") Date executionTime) {
+        public Void executeOn(CountingSystem countingSystem, @SuppressWarnings("unused") Date executionTime) {
             if (countingSystem.counter == WHEN_TO_START_THROWING) {
                 throw new CountException();
             }
             countingSystem.counter++;
+            return null;
         }
     }
 

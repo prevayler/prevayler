@@ -10,22 +10,24 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.Transaction;
+import org.prevayler.TransactionWithoutResult;
 
+import java.io.Serializable;
 import java.util.Date;
 
-class Appendix implements Transaction<AppendingSystem> {
+class Appendix implements TransactionWithoutResult<AppendingSystem>, Serializable {
 
     private static final long serialVersionUID = 7925676108189989759L;
 
     private final String appendix;
 
-    public void executeOn(AppendingSystem prevalentSystem, @SuppressWarnings("unused") Date ignored) {
-        prevalentSystem.append(appendix);
-    }
-
     Appendix(String appendix) {
         this.appendix = appendix;
+    }
+
+    public Void executeOn(AppendingSystem prevalentSystem, @SuppressWarnings("unused") Date ignored) {
+        prevalentSystem.append(appendix);
+        return null;
     }
 
 }

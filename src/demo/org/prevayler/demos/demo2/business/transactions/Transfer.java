@@ -10,12 +10,13 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
-import org.prevayler.TransactionWithQuery;
+import org.prevayler.Transaction;
 import org.prevayler.demos.demo2.business.Bank;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Transfer implements TransactionWithQuery<Bank, Void, Exception> {
+public class Transfer implements Transaction<Bank, Void, Exception>, Serializable {
 
     private static final long serialVersionUID = -8656365915179217238L;
 
@@ -35,7 +36,7 @@ public class Transfer implements TransactionWithQuery<Bank, Void, Exception> {
         _amount = amount;
     }
 
-    public Void executeAndQuery(Bank bank, Date timestamp) throws Exception {
+    public Void executeOn(Bank bank, Date timestamp) throws Exception {
         bank.transfer(_originAccountNumber, _destinationAccountNumber, _amount, timestamp);
         return null;
     }

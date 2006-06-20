@@ -56,7 +56,7 @@ public interface Prevayler<T> {
      * 
      * @see PrevaylerFactory
      */
-    public void execute(Transaction<? super T> transaction);
+    public <R, E extends Exception> R execute(Transaction<? super T, R, E> transaction) throws E;
 
     /**
      * Executes the given sensitiveQuery on the prevalentSystem(). A
@@ -79,22 +79,6 @@ public interface Prevayler<T> {
      *             on the prevalentSystem().
      */
     public <R, E extends Exception> R execute(Query<? super T, R, E> sensitiveQuery) throws E;
-
-    /**
-     * Executes the given transactionWithQuery on the prevalentSystem().
-     * Implementations of this interface can log the given transaction for crash
-     * or shutdown recovery, for example, or execute it remotely on replicas of
-     * the prevalentSystem() for fault-tolerance and load-balancing purposes.
-     * Such a "replicating" implementation is planned for Prevayler release 2.1.
-     * 
-     * @return The result returned by the execution of the transactionWithQuery
-     *         on the prevalentSystem().
-     * @throws Exception
-     *             The Exception thrown by the execution of the sensitiveQuery
-     *             on the prevalentSystem().
-     * @see PrevaylerFactory
-     */
-    public <R, E extends Exception> R execute(TransactionWithQuery<? super T, R, E> transactionWithQuery) throws E;
 
     /**
      * Produces a complete serialized image of the underlying PrevalentSystem.

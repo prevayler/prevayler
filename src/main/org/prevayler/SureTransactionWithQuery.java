@@ -16,16 +16,16 @@ import java.util.Date;
  * The same as TransactionWithQuery except it does not throw Exception when
  * executed.
  * 
- * @see TransactionWithQuery
+ * @see Transaction
  */
-public interface SureTransactionWithQuery<T, R> extends TransactionWithQuery<T, R, RuntimeException> {
+public interface SureTransactionWithQuery<T, R> extends Transaction<T, R, RuntimeException> {
 
     /**
      * The same as TransactionWithQuery.execute(Object, Date) except it does not
      * throw Exception when executed.
      * 
-     * @see TransactionWithQuery#executeAndQuery(Object, Date)
+     * @see Transaction#executeOn(Object, Date)
      */
-    public R executeAndQuery(T prevalentSystem, Date executionTime);
+    public R executeOn(T prevalentSystem, Date executionTime);
 
 }

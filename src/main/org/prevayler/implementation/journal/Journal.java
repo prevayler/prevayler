@@ -15,7 +15,7 @@ import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 public interface Journal<T> {
 
-    public <X> void append(TransactionGuide<X, T> guide);
+    public <R, E extends Exception> void append(TransactionGuide<T, R, E> guide);
 
     public void update(TransactionSubscriber<T> subscriber, long initialTransaction);
 

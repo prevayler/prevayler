@@ -30,9 +30,9 @@ public class StrictTransactionCensor<T> implements TransactionCensor<T> {
         _snapshotSerializer = snapshotManager.primarySerializer();
     }
 
-    public <X> void approve(TransactionTimestamp<X, T> transactionTimestamp) {
+    public <R, E extends Exception> void approve(TransactionTimestamp<T, R, E> transactionTimestamp) {
         try {
-            TransactionTimestamp<X, T> timestampCopy = transactionTimestamp.cleanCopy();
+            TransactionTimestamp<T, R, E> timestampCopy = transactionTimestamp.cleanCopy();
             PrevalentSystemGuard<T> royalFoodTaster = royalFoodTaster(transactionTimestamp.systemVersion() - 1);
             royalFoodTaster.receive(timestampCopy);
         } catch (RuntimeException rx) {

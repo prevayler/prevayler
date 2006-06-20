@@ -14,7 +14,6 @@ import org.prevayler.Clock;
 import org.prevayler.Prevayler;
 import org.prevayler.Query;
 import org.prevayler.Transaction;
-import org.prevayler.TransactionWithQuery;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.snapshot.SnapshotManager;
@@ -29,7 +28,7 @@ public class PrevaylerImpl<T> implements Prevayler<T> {
 
     private final TransactionPublisher<T> _publisher;
 
-    private final Serializer<Object> _journalSerializer;
+    private final Serializer<Transaction> _journalSerializer;
 
     /**
      * Creates a new Prevayler
@@ -45,7 +44,7 @@ public class PrevaylerImpl<T> implements Prevayler<T> {
      *            this PrevaylerImpl.
      * @param journalSerializer
      */
-    public PrevaylerImpl(SnapshotManager<T> snapshotManager, TransactionPublisher<T> transactionPublisher, Serializer<Object> journalSerializer) {
+    public PrevaylerImpl(SnapshotManager<T> snapshotManager, TransactionPublisher<T> transactionPublisher, Serializer<Transaction> journalSerializer) {
         _snapshotManager = snapshotManager;
 
         _guard = _snapshotManager.recoveredPrevalentSystem();
@@ -66,11 +65,7 @@ public class PrevaylerImpl<T> implements Prevayler<T> {
         return _clock;
     }
 
-    public void execute(Transaction<? super T> transaction) {
-        publish(new TransactionCapsule<T>(transaction, _journalSerializer));
-    }
-
-    private <X> void publish(Capsule<X, T> capsule) {
+    private <R, E extends Exception> void publish(Capsule<T, R, E> capsule) {
         _publisher.publish(capsule);
     }
 
@@ -78,8 +73,8 @@ public class PrevaylerImpl<T> implements Prevayler<T> {
         return _guard.executeQuery(sensitiveQuery, clock());
     }
 
-    public <R, E extends Exception> R execute(TransactionWithQuery<? super T, R, E> transactionWithQuery) throws E {
-        TransactionWithQueryCapsule<T, R, E> capsule = new TransactionWithQueryCapsule<T, R, E>(transactionWithQuery, _journalSerializer);
+    public <R, E extends Exception> R execute(Transaction<? super T, R, E> transactionWithQuery) throws E {
+        Capsule<T, R, E> capsule = new Capsule<T, R, E>(transactionWithQuery, _journalSerializer);
         publish(capsule);
         return capsule.result();
     }

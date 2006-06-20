@@ -10,12 +10,13 @@
 
 package org.prevayler.demos.scalability.prevayler;
 
-import org.prevayler.Transaction;
+import org.prevayler.TransactionWithoutResult;
 import org.prevayler.demos.scalability.Record;
 
+import java.io.Serializable;
 import java.util.Date;
 
-class TestTransaction implements Transaction<TransactionSystem> {
+class TestTransaction implements TransactionWithoutResult<TransactionSystem>, Serializable {
 
     private static final long serialVersionUID = -2634307328586761351L;
 
@@ -31,8 +32,9 @@ class TestTransaction implements Transaction<TransactionSystem> {
         this.idToDelete = idToDelete;
     }
 
-    public void executeOn(TransactionSystem system, @SuppressWarnings("unused") Date ignored) {
+    public Void executeOn(TransactionSystem system, @SuppressWarnings("unused") Date ignored) {
         system.performTransaction(recordToInsert, recordToUpdate, idToDelete);
+        return null;
     }
 
 }

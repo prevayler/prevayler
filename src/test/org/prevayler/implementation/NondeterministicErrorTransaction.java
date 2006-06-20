@@ -32,9 +32,9 @@ public class NondeterministicErrorTransaction extends Appendix {
         super(toAdd);
     }
 
-    @Override public void executeOn(AppendingSystem prevalentSystem, Date executionTime) {
+    @Override public Void executeOn(AppendingSystem prevalentSystem, Date executionTime) {
         triggerBomb();
-        super.executeOn(prevalentSystem, executionTime);
+        return super.executeOn(prevalentSystem, executionTime);
     }
 
 }

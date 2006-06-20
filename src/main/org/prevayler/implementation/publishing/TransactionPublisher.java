@@ -33,7 +33,7 @@ public interface TransactionPublisher<T> {
      * guarantee can be made as to wether the subscribers have actually executed
      * it.
      */
-    public <X> void publish(Capsule<X, T> capsule);
+    public <R, E extends Exception> void publish(Capsule<T, R, E> capsule);
 
     /**
      * Returns a Clock which is consistent with the Transaction publishing time.

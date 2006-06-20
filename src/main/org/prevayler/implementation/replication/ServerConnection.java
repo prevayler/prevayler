@@ -30,7 +30,7 @@ class ServerConnection<T> extends Thread implements TransactionSubscriber<T> {
 
     private final TransactionPublisher<T> _publisher;
 
-    private Capsule<?, T> _remoteCapsule;
+    private Capsule<T, ?, ?> _remoteCapsule;
 
     private final ObjectSocket _remote;
 
@@ -97,9 +97,9 @@ class ServerConnection<T> extends Thread implements TransactionSubscriber<T> {
         }
     }
 
-    public <X> void receive(TransactionTimestamp<X, T> tt) {
+    public <R, E extends Exception> void receive(TransactionTimestamp<T, R, E> tt) {
         if (tt.capsule() == _remoteCapsule)
-            tt = new TransactionTimestamp<X, T>(null, tt.systemVersion(), tt.executionTime());
+            tt = new TransactionTimestamp<T, R, E>(null, tt.systemVersion(), tt.executionTime());
         // TODO This is really ugly. It is using a null capsule inside the
         // TransactionTimestamp to signal that the remote Capsule should be
         // executed.

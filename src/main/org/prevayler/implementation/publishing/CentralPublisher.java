@@ -48,7 +48,7 @@ public class CentralPublisher<T> extends AbstractPublisher<T> {
         _journal = journal;
     }
 
-    public <X> void publish(Capsule<X, T> capsule) {
+    public <R, E extends Exception> void publish(Capsule<T, R, E> capsule) {
         synchronized (_pendingPublicationsMonitor) {
             if (_pendingPublications == 0)
                 _pausableClock.pause();
@@ -68,15 +68,15 @@ public class CentralPublisher<T> extends AbstractPublisher<T> {
         }
     }
 
-    private <X> void publishWithoutWorryingAboutNewSubscriptions(Capsule<X, T> capsule) {
-        TransactionGuide<X, T> guide = approve(capsule);
+    private <R, E extends Exception> void publishWithoutWorryingAboutNewSubscriptions(Capsule<T, R, E> capsule) {
+        TransactionGuide<T, R, E> guide = approve(capsule);
         _journal.append(guide);
         notifySubscribers(guide);
     }
 
-    private <X> TransactionGuide<X, T> approve(Capsule<X, T> capsule) {
+    private <R, E extends Exception> TransactionGuide<T, R, E> approve(Capsule<T, R, E> capsule) {
         synchronized (_nextTurnMonitor) {
-            TransactionTimestamp<X, T> timestamp = new TransactionTimestamp<X, T>(capsule, _nextTransaction, _pausableClock.realTime());
+            TransactionTimestamp<T, R, E> timestamp = new TransactionTimestamp<T, R, E>(capsule, _nextTransaction, _pausableClock.realTime());
 
             _censor.approve(timestamp);
 
@@ -85,11 +85,11 @@ public class CentralPublisher<T> extends AbstractPublisher<T> {
             _nextTurn = _nextTurn.next();
             _nextTransaction++;
 
-            return new TransactionGuide<X, T>(timestamp, turn);
+            return new TransactionGuide<T, R, E>(timestamp, turn);
         }
     }
 
-    private <X> void notifySubscribers(TransactionGuide<X, T> guide) {
+    private <R, E extends Exception> void notifySubscribers(TransactionGuide<T, R, E> guide) {
         guide.startTurn();
         try {
             _pausableClock.advanceTo(guide.executionTime());

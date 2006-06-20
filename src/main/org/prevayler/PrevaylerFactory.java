@@ -36,7 +36,6 @@ import org.prevayler.implementation.snapshot.RealSnapshotManager;
 import org.prevayler.implementation.snapshot.SnapshotManager;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,7 +88,7 @@ public class PrevaylerFactory<T> {
 
     private Monitor _monitor;
 
-    private Serializer<Object> _journalSerializer;
+    private Serializer<Transaction> _journalSerializer;
 
     private String _journalSuffix;
 
@@ -140,7 +139,7 @@ public class PrevaylerFactory<T> {
      * 
      * @param newPrevalentSystem
      *            The newly started, "empty" prevalent system.
-     * @see #createCheckpointPrevayler(Serializable newPrevalentSystem, String
+     * @see #createCheckpointPrevayler(T newPrevalentSystem, String
      *      snapshotDirectory)
      */
     public static <T> Prevayler<T> createTransientPrevayler(T newPrevalentSystem) {
@@ -298,15 +297,15 @@ public class PrevaylerFactory<T> {
         _journalAgeThreshold = ageInMilliseconds;
     }
 
-    public void configureJournalSerializer(JavaSerializer<Object> serializer) {
+    public void configureJournalSerializer(JavaSerializer<Transaction> serializer) {
         configureJournalSerializer("journal", serializer);
     }
 
-    public void configureJournalSerializer(XStreamSerializer<Object> serializer) {
+    public void configureJournalSerializer(XStreamSerializer<Transaction> serializer) {
         configureJournalSerializer("xstreamjournal", serializer);
     }
 
-    public void configureJournalSerializer(SkaringaSerializer<Object> serializer) {
+    public void configureJournalSerializer(SkaringaSerializer<Transaction> serializer) {
         configureJournalSerializer("skaringajournal", serializer);
     }
 
@@ -317,7 +316,7 @@ public class PrevaylerFactory<T> {
      * have to take a snapshot first because the journal files written by the
      * previous Serializer will not be read.
      */
-    public void configureJournalSerializer(String suffix, Serializer<Object> serializer) {
+    public void configureJournalSerializer(String suffix, Serializer<Transaction> serializer) {
         PrevaylerDirectory.checkValidJournalSuffix(suffix);
 
         if (_journalSerializer != null) {
@@ -407,10 +406,10 @@ public class PrevaylerFactory<T> {
         }
     }
 
-    private Serializer<Object> journalSerializer() {
+    private Serializer<Transaction> journalSerializer() {
         if (_journalSerializer != null)
             return _journalSerializer;
-        return new JavaSerializer<Object>();
+        return new JavaSerializer<Transaction>();
     }
 
     private String journalSuffix() {

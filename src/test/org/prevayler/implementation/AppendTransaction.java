@@ -10,11 +10,12 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.Transaction;
+import org.prevayler.TransactionWithoutResult;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class AppendTransaction implements Transaction<StringBuilder> {
+public class AppendTransaction implements TransactionWithoutResult<StringBuilder>, Serializable {
 
     private static final long serialVersionUID = -3830205386199825379L;
 
@@ -28,8 +29,9 @@ public class AppendTransaction implements Transaction<StringBuilder> {
         this.toAdd = toAdd;
     }
 
-    public void executeOn(StringBuilder prevalentSystem, @SuppressWarnings("unused") Date executionTime) {
+    public Void executeOn(StringBuilder prevalentSystem, @SuppressWarnings("unused") Date executionTime) {
         prevalentSystem.append(toAdd);
+        return null;
     }
 
 }
