@@ -14,7 +14,7 @@ import org.prevayler.Transaction;
 
 import java.util.Date;
 
-public class AppendTransaction implements Transaction<StringBuffer> {
+public class AppendTransaction implements Transaction<StringBuilder> {
 
     private static final long serialVersionUID = -3830205386199825379L;
 
@@ -28,7 +28,7 @@ public class AppendTransaction implements Transaction<StringBuffer> {
         this.toAdd = toAdd;
     }
 
-    public void executeOn(StringBuffer prevalentSystem, Date executionTime) {
+    public void executeOn(StringBuilder prevalentSystem, Date executionTime) {
         prevalentSystem.append(toAdd);
     }
 

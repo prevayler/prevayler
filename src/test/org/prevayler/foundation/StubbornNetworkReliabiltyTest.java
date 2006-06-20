@@ -170,7 +170,7 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
     }
 
     public class ClientReceiver extends Thread implements ObjectReceiver {
-        private StringBuffer received;
+        private StringBuilder received;
 
         private int expectedLth;
 
@@ -183,7 +183,7 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
         private String threadName;
 
         ClientReceiver(String threadName) {
-            received = new StringBuffer();
+            received = new StringBuilder();
             this.threadName = threadName;
         }
 

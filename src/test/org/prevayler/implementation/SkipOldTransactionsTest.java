@@ -30,7 +30,7 @@ import java.util.Date;
 public class SkipOldTransactionsTest extends FileIOTest {
 
     public void testSkipOldTransactions() throws IOException {
-        Prevayler<StringBuffer> original = createPrevayler("MyJournal", new MySerializer(false));
+        Prevayler<StringBuilder> original = createPrevayler("MyJournal", new MySerializer(false));
 
         original.execute(new AppendTransaction(" first"));
         original.execute(new AppendTransaction(" second"));
@@ -43,12 +43,12 @@ public class SkipOldTransactionsTest extends FileIOTest {
 
         assertEquals("6;withQuery=false;systemVersion=1;executionTime=1000002\r\n" + " first\r\n" + "7;withQuery=false;systemVersion=2;executionTime=1000004\r\n" + " second\r\n" + "6;withQuery=false;systemVersion=3;executionTime=1000006\r\n" + " third\r\n", journalContents("MyJournal"));
 
-        Prevayler<StringBuffer> recovered = createPrevayler("MyJournal", new MySerializer(true));
+        Prevayler<StringBuilder> recovered = createPrevayler("MyJournal", new MySerializer(true));
         assertEquals("the system first second third", recovered.prevalentSystem().toString());
     }
 
     public void testDetectOldJournalSuffix() throws IOException {
-        Prevayler<StringBuffer> original = createPrevayler("OldJournal", new MySerializer(false));
+        Prevayler<StringBuilder> original = createPrevayler("OldJournal", new MySerializer(false));
 
         original.execute(new AppendTransaction(" first"));
         original.execute(new AppendTransaction(" second"));
@@ -71,7 +71,7 @@ public class SkipOldTransactionsTest extends FileIOTest {
     }
 
     public void testAllowOldJournalSuffix() throws IOException {
-        Prevayler<StringBuffer> original = createPrevayler("OldJournal", new MySerializer(false));
+        Prevayler<StringBuilder> original = createPrevayler("OldJournal", new MySerializer(false));
 
         original.execute(new AppendTransaction(" first"));
         original.execute(new AppendTransaction(" second"));
@@ -83,13 +83,13 @@ public class SkipOldTransactionsTest extends FileIOTest {
 
         assertEquals("6;withQuery=false;systemVersion=1;executionTime=1000002\r\n" + " first\r\n" + "7;withQuery=false;systemVersion=2;executionTime=1000004\r\n" + " second\r\n" + "6;withQuery=false;systemVersion=3;executionTime=1000006\r\n" + " third\r\n", journalContents("OldJournal"));
 
-        Prevayler<StringBuffer> recovered = createPrevayler("NewJournal", new MySerializer(true));
+        Prevayler<StringBuilder> recovered = createPrevayler("NewJournal", new MySerializer(true));
         assertEquals("the system first second third", recovered.prevalentSystem().toString());
     }
 
-    private Prevayler<StringBuffer> createPrevayler(String suffix, Serializer journalSerializer) throws IOException {
-        PrevaylerFactory<StringBuffer> factory = new PrevaylerFactory<StringBuffer>();
-        factory.configurePrevalentSystem(new StringBuffer("the system"));
+    private Prevayler<StringBuilder> createPrevayler(String suffix, Serializer journalSerializer) throws IOException {
+        PrevaylerFactory<StringBuilder> factory = new PrevaylerFactory<StringBuilder>();
+        factory.configurePrevalentSystem(new StringBuilder("the system"));
         factory.configurePrevalenceDirectory(_testDirectory);
         factory.configureJournalSerializer(suffix, journalSerializer);
         factory.configureClock(new Clock() {

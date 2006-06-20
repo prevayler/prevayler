@@ -42,7 +42,7 @@ public class TransactionWithQueryTest extends FileIOTest {
     }
 
     private void startAndCrash(Serializer journalSerializer) throws Exception {
-        Prevayler<StringBuffer> prevayler = createPrevayler(journalSerializer);
+        Prevayler<StringBuilder> prevayler = createPrevayler(journalSerializer);
 
         assertEquals("the system first", prevayler.execute(new AppendTransactionWithQuery(" first")));
         assertEquals("the system first second", prevayler.execute(new AppendTransactionWithQuery(" second")));
@@ -53,13 +53,13 @@ public class TransactionWithQueryTest extends FileIOTest {
     }
 
     private void recover(Serializer journalSerializer) throws Exception {
-        Prevayler<StringBuffer> prevayler = createPrevayler(journalSerializer);
+        Prevayler<StringBuilder> prevayler = createPrevayler(journalSerializer);
         assertEquals("the system first second third", prevayler.prevalentSystem().toString());
     }
 
-    private Prevayler<StringBuffer> createPrevayler(Serializer journalSerializer) throws Exception {
-        PrevaylerFactory<StringBuffer> factory = new PrevaylerFactory<StringBuffer>();
-        factory.configurePrevalentSystem(new StringBuffer("the system"));
+    private Prevayler<StringBuilder> createPrevayler(Serializer journalSerializer) throws Exception {
+        PrevaylerFactory<StringBuilder> factory = new PrevaylerFactory<StringBuilder>();
+        factory.configurePrevalentSystem(new StringBuilder("the system"));
         factory.configurePrevalenceDirectory(_testDirectory);
         factory.configureJournalSerializer("journal", journalSerializer);
         return factory.create();

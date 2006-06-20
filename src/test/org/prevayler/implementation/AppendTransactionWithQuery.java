@@ -14,7 +14,7 @@ import org.prevayler.TransactionWithQuery;
 
 import java.util.Date;
 
-public class AppendTransactionWithQuery implements TransactionWithQuery<StringBuffer, String, RuntimeException> {
+public class AppendTransactionWithQuery implements TransactionWithQuery<StringBuilder, String, RuntimeException> {
 
     private static final long serialVersionUID = 7725358482908916942L;
 
@@ -28,7 +28,7 @@ public class AppendTransactionWithQuery implements TransactionWithQuery<StringBu
         this.toAdd = toAdd;
     }
 
-    public String executeAndQuery(StringBuffer prevalentSystem, Date executionTime) {
+    public String executeAndQuery(StringBuilder prevalentSystem, Date executionTime) {
         prevalentSystem.append(toAdd);
         return prevalentSystem.toString();
     }

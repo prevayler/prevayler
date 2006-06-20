@@ -41,7 +41,7 @@ public class MultiMemberGZIPTest extends TestCase {
     }
 
     private String toHex(byte[] beforeClose) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < beforeClose.length; i++) {
             byte b = beforeClose[i];
             if (i > 0)

@@ -69,7 +69,7 @@ public class SnapshotSerializerTest extends FileIOTest {
     }
 
     private void takeSnapshot(Serializer snapshotSerializer) throws IOException {
-        Prevayler<StringBuffer> prevayler = createPrevayler(snapshotSerializer);
+        Prevayler<StringBuilder> prevayler = createPrevayler(snapshotSerializer);
 
         prevayler.execute(new AppendTransaction(" first"));
         prevayler.execute(new AppendTransaction(" second"));
@@ -81,13 +81,13 @@ public class SnapshotSerializerTest extends FileIOTest {
     }
 
     private void recover(Serializer snapshotSerializer) throws IOException {
-        Prevayler<StringBuffer> prevayler = createPrevayler(snapshotSerializer);
+        Prevayler<StringBuilder> prevayler = createPrevayler(snapshotSerializer);
         assertEquals("the system first second third", prevayler.prevalentSystem().toString());
     }
 
-    private Prevayler<StringBuffer> createPrevayler(Serializer snapshotSerializer) throws IOException {
-        PrevaylerFactory<StringBuffer> factory = new PrevaylerFactory<StringBuffer>();
-        factory.configurePrevalentSystem(new StringBuffer("the system"));
+    private Prevayler<StringBuilder> createPrevayler(Serializer snapshotSerializer) throws IOException {
+        PrevaylerFactory<StringBuilder> factory = new PrevaylerFactory<StringBuilder>();
+        factory.configurePrevalentSystem(new StringBuilder("the system"));
         factory.configurePrevalenceDirectory(_testDirectory);
         factory.configureSnapshotSerializer("snapshot", snapshotSerializer);
         return factory.create();
@@ -117,7 +117,7 @@ public class SnapshotSerializerTest extends FileIOTest {
     private static class MySerializer implements Serializer {
 
         public void writeObject(OutputStream stream, Object object) throws Exception {
-            StringBuffer system = (StringBuffer) object;
+            StringBuilder system = (StringBuilder) object;
             Writer writer = new OutputStreamWriter(stream, "UTF-8");
             writer.write("Yes, this is MySerializationStrategy!\n");
             writer.write(system.toString());
@@ -130,7 +130,7 @@ public class SnapshotSerializerTest extends FileIOTest {
             String prolog = reader.readLine();
             if ("Yes, this is MySerializationStrategy!".equals(prolog)) {
                 String contents = reader.readLine();
-                return new StringBuffer(contents);
+                return new StringBuilder(contents);
             } else {
                 throw new AssertionFailedError("got prolog=" + prolog);
             }
