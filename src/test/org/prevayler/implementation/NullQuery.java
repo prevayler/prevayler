@@ -16,7 +16,7 @@ import java.util.Date;
 
 public class NullQuery implements Query<Object, Void, RuntimeException> {
 
-    public Void query(Object prevalentSystem, Date executionTime) {
+    public Void query(@SuppressWarnings("unused") Object prevalentSystem, @SuppressWarnings("unused") Date executionTime) {
         return null;
     }
 

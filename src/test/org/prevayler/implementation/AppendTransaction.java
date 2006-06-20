@@ -28,7 +28,7 @@ public class AppendTransaction implements Transaction<StringBuilder> {
         this.toAdd = toAdd;
     }
 
-    public void executeOn(StringBuilder prevalentSystem, Date executionTime) {
+    public void executeOn(StringBuilder prevalentSystem, @SuppressWarnings("unused") Date executionTime) {
         prevalentSystem.append(toAdd);
     }
 

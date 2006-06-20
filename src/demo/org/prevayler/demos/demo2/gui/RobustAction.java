@@ -21,7 +21,7 @@ abstract class RobustAction extends AbstractAction {
         super(name);
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(@SuppressWarnings("unused") ActionEvent e) {
         try {
             action();
         } catch (Exception exception) {

@@ -32,7 +32,7 @@ class NumberStorageTransaction implements Transaction<NumberKeeper> {
         _numberToKeep = numberToKeep;
     }
 
-    public void executeOn(NumberKeeper prevalentSystem, Date ignored) {
+    public void executeOn(NumberKeeper prevalentSystem, @SuppressWarnings("unused") Date ignored) {
         prevalentSystem.keep(_numberToKeep);
     }
 }

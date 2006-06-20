@@ -30,7 +30,7 @@ public class QueryExecutionTest extends FileIOTest {
 
     private static Query<List<String>, Integer, RuntimeException> query() {
         return new Query<List<String>, Integer, RuntimeException>() {
-            public Integer query(List<String> prevalentSystem, Date ignored) {
+            public Integer query(List<String> prevalentSystem, @SuppressWarnings("unused") Date ignored) {
                 return prevalentSystem.size();
             }
         };
@@ -47,7 +47,7 @@ public class QueryExecutionTest extends FileIOTest {
         return new TransactionWithQuery<List<String>, String, RuntimeException>() {
             private static final long serialVersionUID = -2976662596936807721L;
 
-            public String executeAndQuery(List<String> prevalentSystem, Date timestamp) {
+            public String executeAndQuery(List<String> prevalentSystem, @SuppressWarnings("unused") Date timestamp) {
                 prevalentSystem.add("added element");
                 return "abc";
             }

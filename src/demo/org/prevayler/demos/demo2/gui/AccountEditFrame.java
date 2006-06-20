@@ -133,7 +133,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
     }
 
     private class HolderListener extends FocusAdapter {
-        @Override public void focusLost(FocusEvent e) {
+        @Override public void focusLost(@SuppressWarnings("unused") FocusEvent e) {
             if (holderText().equals(account.holder()))
                 return;
             try {

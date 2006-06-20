@@ -28,7 +28,7 @@ public class AppendTransactionWithQuery implements TransactionWithQuery<StringBu
         this.toAdd = toAdd;
     }
 
-    public String executeAndQuery(StringBuilder prevalentSystem, Date executionTime) {
+    public String executeAndQuery(StringBuilder prevalentSystem, @SuppressWarnings("unused") Date executionTime) {
         prevalentSystem.append(toAdd);
         return prevalentSystem.toString();
     }

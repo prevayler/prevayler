@@ -61,7 +61,7 @@ abstract class JDBCScalabilitySubject<C> implements ScalabilityTestSubject<C> {
         }
     }
 
-    public void reportResourcesUsed(PrintStream out) {
+    public void reportResourcesUsed(@SuppressWarnings("unused") PrintStream out) {
     }
 
 }

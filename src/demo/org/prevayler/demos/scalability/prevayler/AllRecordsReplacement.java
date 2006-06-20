@@ -25,7 +25,7 @@ class AllRecordsReplacement implements Transaction<ScalabilitySystem> {
         _records = records;
     }
 
-    public void executeOn(ScalabilitySystem system, Date ignored) {
+    public void executeOn(ScalabilitySystem system, @SuppressWarnings("unused") Date ignored) {
         system.replaceAllRecords(new RecordIterator(_records));
     }
 

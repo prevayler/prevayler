@@ -152,7 +152,7 @@ public class StubbornNetworkReliabiltyTest extends TestCase {
             }
         }
 
-        public void receive(Object object) {
+        public void receive(@SuppressWarnings("unused") Object object) {
             fail("receive called on server");
         }
 

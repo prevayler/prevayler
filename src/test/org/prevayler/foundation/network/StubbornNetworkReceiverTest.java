@@ -170,7 +170,7 @@ public class StubbornNetworkReceiverTest extends TestCase {
 
         private MockObjectSocket mockProvider;
 
-        public ObjectSocket newInstance(String ipAddress, int port) {
+        public ObjectSocket newInstance(@SuppressWarnings("unused") String ipAddress, @SuppressWarnings("unused") int port) {
             return mockProvider;
         }
 

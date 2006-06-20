@@ -29,7 +29,7 @@ public class HolderChange extends AccountTransaction {
         _newHolder = newHolder;
     }
 
-    @Override public void executeAndQuery(Account account, Date ignored) throws Account.InvalidHolder {
+    @Override public void executeAndQuery(Account account, @SuppressWarnings("unused") Date ignored) throws Account.InvalidHolder {
         account.setHolder(_newHolder);
     }
 }

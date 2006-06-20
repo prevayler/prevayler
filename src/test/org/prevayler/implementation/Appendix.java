@@ -20,7 +20,7 @@ class Appendix implements Transaction<AppendingSystem> {
 
     private final String appendix;
 
-    public void executeOn(AppendingSystem prevalentSystem, Date ignored) {
+    public void executeOn(AppendingSystem prevalentSystem, @SuppressWarnings("unused") Date ignored) {
         prevalentSystem.append(appendix);
     }
 

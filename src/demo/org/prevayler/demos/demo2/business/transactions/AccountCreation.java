@@ -30,7 +30,7 @@ public class AccountCreation implements TransactionWithQuery<Bank, Account, Acco
         _holder = holder;
     }
 
-    public Account executeAndQuery(Bank bank, Date ignored) throws Account.InvalidHolder {
+    public Account executeAndQuery(Bank bank, @SuppressWarnings("unused") Date ignored) throws Account.InvalidHolder {
         return bank.createAccount(_holder);
     }
 

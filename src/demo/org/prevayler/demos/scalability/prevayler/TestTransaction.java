@@ -31,7 +31,7 @@ class TestTransaction implements Transaction<TransactionSystem> {
         this.idToDelete = idToDelete;
     }
 
-    public void executeOn(TransactionSystem system, Date ignored) {
+    public void executeOn(TransactionSystem system, @SuppressWarnings("unused") Date ignored) {
         system.performTransaction(recordToInsert, recordToUpdate, idToDelete);
     }
 

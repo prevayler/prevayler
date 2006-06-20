@@ -1,4 +1,4 @@
-#Tue Jun 20 11:01:05 PDT 2006
+#Tue Jun 20 13:28:26 PDT 2006
 eclipse.preferences.version=1
 org.eclipse.jdt.core.builder.cleanOutputFolder=clean
 org.eclipse.jdt.core.builder.duplicateResourceTask=warning
@@ -69,7 +69,7 @@ org.eclipse.jdt.core.compiler.problem.unusedDeclaredThrownException=warning
 org.eclipse.jdt.core.compiler.problem.unusedDeclaredThrownExceptionWhenOverriding=enabled
 org.eclipse.jdt.core.compiler.problem.unusedImport=warning
 org.eclipse.jdt.core.compiler.problem.unusedLocal=warning
-org.eclipse.jdt.core.compiler.problem.unusedParameter=ignore
+org.eclipse.jdt.core.compiler.problem.unusedParameter=warning
 org.eclipse.jdt.core.compiler.problem.unusedParameterWhenImplementingAbstract=enabled
 org.eclipse.jdt.core.compiler.problem.unusedParameterWhenOverridingConcrete=enabled
 org.eclipse.jdt.core.compiler.problem.unusedPrivateMember=warning

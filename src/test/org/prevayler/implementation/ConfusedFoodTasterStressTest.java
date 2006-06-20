@@ -105,7 +105,7 @@ public class ConfusedFoodTasterStressTest extends FileIOTest {
     public static class CountTransaction implements Transaction<CountingSystem> {
         private static final long serialVersionUID = 5043457505878510633L;
 
-        public void executeOn(CountingSystem countingSystem, Date executionTime) {
+        public void executeOn(CountingSystem countingSystem, @SuppressWarnings("unused") Date executionTime) {
             if (countingSystem.counter == WHEN_TO_START_THROWING) {
                 throw new CountException();
             }

@@ -29,7 +29,7 @@ public class AccountDeletion implements TransactionWithQuery<Bank, Void, Bank.Ac
         _accountNumber = account.number();
     }
 
-    public Void executeAndQuery(Bank bank, Date ignored) throws Bank.AccountNotFound {
+    public Void executeAndQuery(Bank bank, @SuppressWarnings("unused") Date ignored) throws Bank.AccountNotFound {
         bank.deleteAccount(_accountNumber);
         return null;
     }

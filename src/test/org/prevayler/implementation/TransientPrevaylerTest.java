@@ -85,7 +85,7 @@ public class TransientPrevaylerTest extends FileIOTest {
             _illegalDirectReference = illegalDirectReference;
         }
 
-        public void executeOn(AppendingSystem ignored, Date ignoredToo) {
+        public void executeOn(@SuppressWarnings("unused") AppendingSystem ignored, @SuppressWarnings("unused") Date ignoredToo) {
             _illegalDirectReference.append("anything");
         }
 

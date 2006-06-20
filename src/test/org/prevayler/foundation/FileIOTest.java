@@ -62,7 +62,7 @@ public abstract class FileIOTest extends TestCase {
 
     protected String journalContents(final String suffix) throws IOException {
         File[] files = new File(_testDirectory).listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
+            public boolean accept(@SuppressWarnings("unused") File dir, String name) {
                 return name.endsWith("." + suffix);
             }
         });

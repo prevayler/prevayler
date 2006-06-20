@@ -82,7 +82,7 @@ class MatchFrame extends JInternalFrame {
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         refreshButton = new JButton("Refresh");
         refreshButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+            public void actionPerformed(@SuppressWarnings("unused") ActionEvent event) {
                 refreshTable();
             }
         });

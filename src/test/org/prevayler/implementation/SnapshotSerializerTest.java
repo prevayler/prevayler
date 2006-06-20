@@ -95,7 +95,7 @@ public class SnapshotSerializerTest extends FileIOTest {
 
     private String snapshotContents() throws IOException {
         File snapshot = new File(_testDirectory).listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
+            public boolean accept(@SuppressWarnings("unused") File dir, String name) {
                 return name.endsWith(".snapshot");
             }
         })[0];

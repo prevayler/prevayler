@@ -109,7 +109,7 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
             super("Create");
         }
 
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(@SuppressWarnings("unused") ActionEvent e) {
             new NewAccountFrame(_prevayler, getDesktopPane());
         }
 
@@ -127,7 +127,7 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
             this.setEnabled(accountList.getSelectedValue() != null);
         }
 
-        public void valueChanged(ListSelectionEvent event) {
+        public void valueChanged(@SuppressWarnings("unused") ListSelectionEvent event) {
             refreshEnabled();
         }
 
