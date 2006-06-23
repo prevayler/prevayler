@@ -11,7 +11,6 @@
 package org.prevayler.implementation;
 
 import org.prevayler.Clock;
-import org.prevayler.Query;
 import org.prevayler.Transaction;
 import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.DeepCopier;
@@ -105,14 +104,14 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber<T> {
         }
     }
 
-    public <R, E extends Exception> R executeQuery(Query<? super T, R, E> sensitiveQuery, Clock clock) throws E {
+    public <R, E extends Exception> R executeQuery(Transaction<? super T, R, E> readOnlyTransaction, Clock clock) throws E {
         synchronized (this) {
             if (_prevalentSystem == null) {
                 throw new ErrorInEarlierTransactionError("Prevayler is no longer processing queries due to an Error thrown from an earlier transaction.");
             }
 
             synchronized (_prevalentSystem) {
-                return sensitiveQuery.query(_prevalentSystem, clock.time());
+                return readOnlyTransaction.executeOn(_prevalentSystem, clock.time());
             }
         }
     }

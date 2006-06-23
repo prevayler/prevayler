@@ -8,16 +8,12 @@
 // Prevayler is a trademark of Klaus Wuestefeld.
 // See the LICENSE file for license details.
 
-package org.prevayler.implementation;
+package org.prevayler;
 
-import org.prevayler.Query;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.util.Date;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
 
-public class NullQuery extends Query<Object, Void, RuntimeException> {
-
-    public Void executeOn(@SuppressWarnings("unused") Object prevalentSystem, @SuppressWarnings("unused") Date executionTime) {
-        return null;
-    }
-
+@Inherited @Retention(RUNTIME) public @interface ReadOnly {
 }

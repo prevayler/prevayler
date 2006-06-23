@@ -10,6 +10,7 @@
 
 package org.prevayler.demos.demo2.gui;
 
+import org.prevayler.ClockQuery;
 import org.prevayler.Prevayler;
 import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.foundation.Cool;
@@ -51,7 +52,7 @@ public class BankFrame extends JFrame {
             @Override public void run() {
                 while (true) {
                     DateFormat format = new SimpleDateFormat("hh:mm:ss");
-                    setTitle("Bank - " + format.format(_prevayler.clock().time()));
+                    setTitle("Bank - " + format.format(_prevayler.execute(new ClockQuery())));
                     Cool.sleep(500);
                 }
             }

@@ -10,24 +10,12 @@
 
 package org.prevayler;
 
-import java.util.Date;
-
 /**
- * Represents a query that can be executed on a Prevalent System.
+ * Represents a query that can be executed on a Prevalent System. This is just a mild
+ * convenience, mostly for backward compatibility. Query is a class, not an interface,
+ * because annotations are only inherited from superclasses, not interfaces. 
  * 
- * @see org.prevayler.Prevayler#execute(Query)
+ * @see org.prevayler.Prevayler#execute(Transaction)
  */
-public interface Query<T, R, E extends Exception> {
-
-    /**
-     * @param prevalentSystem
-     *            The Prevalent System to be queried.
-     * @param executionTime
-     *            The "current" time.
-     * @return The result of this Query.
-     * @throws Exception
-     *             Any Exception encountered by this Query.
-     */
-    public R query(T prevalentSystem, Date executionTime) throws E;
-
+@ReadOnly public abstract class Query<T, R, E extends Exception> implements Transaction<T, R, E> {
 }

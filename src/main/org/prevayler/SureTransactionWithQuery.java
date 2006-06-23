@@ -10,8 +10,6 @@
 
 package org.prevayler;
 
-import java.util.Date;
-
 /**
  * The same as TransactionWithQuery except it does not throw Exception when
  * executed.
@@ -19,13 +17,4 @@ import java.util.Date;
  * @see Transaction
  */
 public interface SureTransactionWithQuery<T, R> extends Transaction<T, R, RuntimeException> {
-
-    /**
-     * The same as TransactionWithQuery.execute(Object, Date) except it does not
-     * throw Exception when executed.
-     * 
-     * @see Transaction#executeOn(Object, Date)
-     */
-    public R executeOn(T prevalentSystem, Date executionTime);
-
 }

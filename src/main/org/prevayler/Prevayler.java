@@ -31,16 +31,6 @@ public interface Prevayler<T> {
     public T prevalentSystem();
 
     /**
-     * Returns the Clock used to determine the execution time of all Transaction
-     * and Queries executed using this Prevayler. This Clock is useful only to
-     * Communication Objects and must NOT be used by Transactions, Queries or
-     * Business Objects, since that would make them become non-deterministic.
-     * Instead, Transactions, Queries and Business Objects must use the
-     * executionTime parameter which is passed on their execution.
-     */
-    public Clock clock();
-
-    /**
      * Executes the given Transaction on the prevalentSystem(). ALL operations
      * that alter the observable state of the prevalentSystem() must be
      * implemented as Transaction or TransactionWithQuery objects and must be
@@ -57,28 +47,6 @@ public interface Prevayler<T> {
      * @see PrevaylerFactory
      */
     public <R, E extends Exception> R execute(Transaction<? super T, R, E> transaction) throws E;
-
-    /**
-     * Executes the given sensitiveQuery on the prevalentSystem(). A
-     * sensitiveQuery is a Query that would be affected by the concurrent
-     * execution of a Transaction or other sensitiveQuery. This method
-     * synchronizes on the prevalentSystem() to execute the sensitiveQuery. It
-     * is therefore guaranteed that no other Transaction or sensitiveQuery is
-     * executed at the same time. <br>
-     * Robust Queries (queries that do not affect other operations and that are
-     * not affected by them) can be executed directly as plain old method calls
-     * on the prevalentSystem() without the need of being implemented as Query
-     * objects. Examples of Robust Queries are queries that read the value of a
-     * single field or historical queries such as: "What was this account's
-     * balance at mid-night?".
-     * 
-     * @return The result returned by the execution of the sensitiveQuery on the
-     *         prevalentSystem().
-     * @throws Exception
-     *             The Exception thrown by the execution of the sensitiveQuery
-     *             on the prevalentSystem().
-     */
-    public <R, E extends Exception> R execute(Query<? super T, R, E> sensitiveQuery) throws E;
 
     /**
      * Produces a complete serialized image of the underlying PrevalentSystem.

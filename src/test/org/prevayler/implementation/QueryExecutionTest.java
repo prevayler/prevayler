@@ -26,25 +26,25 @@ public class QueryExecutionTest extends FileIOTest {
     public void testQuery() throws Exception {
         List<String> prevalentSystem = new LinkedList<String>();
         Prevayler<List<String>> prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem);
-        assertEquals(0, (int) prevayler.execute(query()));
-    }
-
-    private static Query<List<String>, Integer, RuntimeException> query() {
-        return new Query<List<String>, Integer, RuntimeException>() {
-            public Integer query(List<String> prevalentSystem, @SuppressWarnings("unused") Date ignored) {
-                return prevalentSystem.size();
-            }
-        };
+        assertEquals(0, (int) prevayler.execute(new MyQuery()));
     }
 
     public void testTransactionWithQuery() throws Exception {
         List prevalentSystem = new LinkedList();
         Prevayler<List> prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem);
-        assertEquals("abc", prevayler.execute(new TransactionWithQuery()));
+        assertEquals("abc", prevayler.execute(new MyTransaction()));
         assertEquals("added element", prevalentSystem.get(0));
     }
 
-    private static class TransactionWithQuery implements Transaction<List<String>, String, RuntimeException>, Serializable {
+    private static final class MyQuery extends Query<List<String>, Integer, RuntimeException> {
+        private static final long serialVersionUID = 1L;
+
+        public Integer executeOn(List<String> prevalentSystem, @SuppressWarnings("unused") Date ignored) {
+            return prevalentSystem.size();
+        }
+    }
+
+    private static final class MyTransaction implements Transaction<List<String>, String, RuntimeException>, Serializable {
         private static final long serialVersionUID = -2976662596936807721L;
 
         public String executeOn(List<String> prevalentSystem, @SuppressWarnings("unused") Date timestamp) {

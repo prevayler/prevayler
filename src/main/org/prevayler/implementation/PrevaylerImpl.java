@@ -12,7 +12,7 @@ package org.prevayler.implementation;
 
 import org.prevayler.Clock;
 import org.prevayler.Prevayler;
-import org.prevayler.Query;
+import org.prevayler.ReadOnly;
 import org.prevayler.Transaction;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
@@ -61,22 +61,18 @@ public class PrevaylerImpl<T> implements Prevayler<T> {
         return _guard.prevalentSystem();
     }
 
-    public Clock clock() {
-        return _clock;
+    public <R, E extends Exception> R execute(Transaction<? super T, R, E> transaction) throws E {
+        if (transaction.getClass().isAnnotationPresent(ReadOnly.class)) {
+            return _guard.executeQuery(transaction, _clock);
+        } else {
+            Capsule<T, R, E> capsule = new Capsule<T, R, E>(transaction, _journalSerializer);
+            publish(capsule);
+            return capsule.result();
+        }
     }
 
     private <R, E extends Exception> void publish(Capsule<T, R, E> capsule) {
         _publisher.publish(capsule);
-    }
-
-    public <R, E extends Exception> R execute(Query<? super T, R, E> sensitiveQuery) throws E {
-        return _guard.executeQuery(sensitiveQuery, clock());
-    }
-
-    public <R, E extends Exception> R execute(Transaction<? super T, R, E> transactionWithQuery) throws E {
-        Capsule<T, R, E> capsule = new Capsule<T, R, E>(transactionWithQuery, _journalSerializer);
-        publish(capsule);
-        return capsule.result();
     }
 
     public void takeSnapshot() {

@@ -8,16 +8,14 @@
 // Prevayler is a trademark of Klaus Wuestefeld.
 // See the LICENSE file for license details.
 
-package org.prevayler.implementation;
-
-import org.prevayler.Query;
+package org.prevayler;
 
 import java.util.Date;
 
-public class NullQuery extends Query<Object, Void, RuntimeException> {
+@ReadOnly public class ClockQuery implements Transaction<Object, Date, RuntimeException> {
 
-    public Void executeOn(@SuppressWarnings("unused") Object prevalentSystem, @SuppressWarnings("unused") Date executionTime) {
-        return null;
+    public Date executeOn(@SuppressWarnings("unused") Object prevalentSystem, Date executionTime) {
+        return executionTime;
     }
 
 }

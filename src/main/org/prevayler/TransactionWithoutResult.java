@@ -10,8 +10,6 @@
 
 package org.prevayler;
 
-import java.util.Date;
-
 /**
  * An atomic Transaction to be executed on a Prevalent System. Any operation
  * which changes the observable state of a prevalent system must be encapsulated
@@ -29,20 +27,4 @@ import java.util.Date;
  * despite of this warning.
  */
 public interface TransactionWithoutResult<T> extends Transaction<T, Void, RuntimeException> {
-
-    /**
-     * This method is called by Prevayler.execute(Transaction) to execute this
-     * Transaction on the given Prevalent System. See org.prevayler.demos for
-     * usage examples.
-     * 
-     * @param prevalentSystem
-     *            The system on which this Transaction will execute.
-     * @param executionTime
-     *            The time at which this Transaction is being executed. Every
-     *            Transaction executes completely within a single moment in
-     *            time. Logically, a Prevalent System's time does not pass
-     *            during the execution of a Transaction.
-     */
-    public Void executeOn(T prevalentSystem, Date executionTime);
-
 }
