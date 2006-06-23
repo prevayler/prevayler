@@ -14,7 +14,8 @@ import org.prevayler.implementation.TransactionTimestamp;
 
 public class LiberalTransactionCensor<T> implements TransactionCensor<T> {
 
-    public <R, E extends Exception> void approve(@SuppressWarnings("unused") TransactionTimestamp<T, R, E> transactionTimestamp) {
+    public <R, E extends Exception> boolean approve(@SuppressWarnings("unused") TransactionTimestamp<T, R, E> transactionTimestamp) {
+        return true;
     }
 
 }

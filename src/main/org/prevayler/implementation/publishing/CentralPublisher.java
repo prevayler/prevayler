@@ -70,15 +70,19 @@ public class CentralPublisher<T> extends AbstractPublisher<T> {
 
     private <R, E extends Exception> void publishWithoutWorryingAboutNewSubscriptions(Capsule<T, R, E> capsule) {
         TransactionGuide<T, R, E> guide = approve(capsule);
-        _journal.append(guide);
-        notifySubscribers(guide);
+        if (guide != null) {
+            _journal.append(guide);
+            notifySubscribers(guide);
+        }
     }
 
     private <R, E extends Exception> TransactionGuide<T, R, E> approve(Capsule<T, R, E> capsule) {
         synchronized (_nextTurnMonitor) {
             TransactionTimestamp<T, R, E> timestamp = new TransactionTimestamp<T, R, E>(capsule, _nextTransaction, _pausableClock.realTime());
 
-            _censor.approve(timestamp);
+            if (!_censor.approve(timestamp)) {
+                return null;
+            }
 
             // Only count this transaction once approved.
             Turn turn = _nextTurn;

@@ -73,9 +73,6 @@ public class Capsule<T, R, E extends Exception> implements Serializable {
     protected void execute(Transaction<? super T, R, E> transaction, T prevalentSystem, Date executionTime) {
         try {
             _result = transaction.executeOn(prevalentSystem, executionTime);
-        } catch (RuntimeException e) {
-            _exception = e;
-            throw e; // This is necessary because of the rollback feature.
         } catch (Exception e) {
             _exception = e;
         }
@@ -91,6 +88,15 @@ public class Capsule<T, R, E extends Exception> implements Serializable {
         } else {
             return _result;
         }
+    }
+
+    public boolean threwRuntimeException() {
+        return _exception instanceof RuntimeException;
+    }
+
+    public void cleanUp() {
+        _result = null;
+        _exception = null;
     }
 
     /**

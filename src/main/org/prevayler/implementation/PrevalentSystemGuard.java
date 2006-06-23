@@ -30,15 +30,11 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber<T> {
     // All access is synchronized on "this"
     private long _systemVersion;
 
-    // All access is synchronized on "this"
-    private boolean _ignoreRuntimeExceptions;
-
     private final Serializer<Transaction> _journalSerializer;
 
     public PrevalentSystemGuard(T prevalentSystem, long systemVersion, Serializer<Transaction> journalSerializer) {
         _prevalentSystem = prevalentSystem;
         _systemVersion = systemVersion;
-        _ignoreRuntimeExceptions = false;
         _journalSerializer = journalSerializer;
     }
 
@@ -54,20 +50,10 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber<T> {
     public void subscribeTo(TransactionPublisher<T> publisher) {
         long initialTransaction;
         synchronized (this) {
-            _ignoreRuntimeExceptions = true; // During pending transaction
-            // recovery (rolling forward),
-            // RuntimeExceptions are ignored
-            // because they were already
-            // thrown and handled during the
-            // first transaction execution.
             initialTransaction = _systemVersion + 1;
         }
 
         publisher.subscribe(this, initialTransaction);
-
-        synchronized (this) {
-            _ignoreRuntimeExceptions = false;
-        }
     }
 
     public <R, E extends Exception> void receive(TransactionTimestamp<T, R, E> transactionTimestamp) {
@@ -92,9 +78,6 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber<T> {
                 synchronized (_prevalentSystem) {
                     capsule.execute(transaction, _prevalentSystem, executionTime);
                 }
-            } catch (RuntimeException rx) {
-                if (!_ignoreRuntimeExceptions)
-                    throw rx;
             } catch (Error error) {
                 _prevalentSystem = null;
                 throw error;

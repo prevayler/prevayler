@@ -30,29 +30,28 @@ public class StrictTransactionCensor<T> implements TransactionCensor<T> {
         _snapshotSerializer = snapshotManager.primarySerializer();
     }
 
-    public <R, E extends Exception> void approve(TransactionTimestamp<T, R, E> transactionTimestamp) {
+    public <R, E extends Exception> boolean approve(TransactionTimestamp<T, R, E> transactionTimestamp) {
+        boolean approved = false;
         try {
-            TransactionTimestamp<T, R, E> timestampCopy = transactionTimestamp.cleanCopy();
             PrevalentSystemGuard<T> royalFoodTaster = royalFoodTaster(transactionTimestamp.systemVersion() - 1);
-            royalFoodTaster.receive(timestampCopy);
-        } catch (RuntimeException rx) {
-            letTheFoodTasterDie();
-            throw rx;
-        } catch (Error error) {
-            letTheFoodTasterDie();
-            throw error;
+            royalFoodTaster.receive(transactionTimestamp);
+            approved = !transactionTimestamp.capsule().threwRuntimeException();
+        } finally {
+            if (approved) {
+                transactionTimestamp.capsule().cleanUp();
+            } else {
+                letTheFoodTasterDie();
+            }
         }
+        return approved;
     }
 
     private void letTheFoodTasterDie() {
-        // At this moment there might be
-        // transactions that have already been
-        // approved by this censor but have not yet
-        // been applied to the _king. It is a
-        // requirement, therefore, that the
-        // _royalFoodTaster must not be initialized
-        // now, but only when the next transaction
-        // arrives to be approved.
+        // At this moment there might be transactions that have already been
+        // approved by this censor but have not yet been applied to the _king.
+        // It is a requirement, therefore, that the _royalFoodTaster must not be
+        // initialized now, but only when the next transaction arrives to be
+        // approved.
         _royalFoodTaster = null;
     }
 

@@ -14,6 +14,6 @@ import org.prevayler.implementation.TransactionTimestamp;
 
 public interface TransactionCensor<T> {
 
-    public <R, E extends Exception> void approve(TransactionTimestamp<T, R, E> transactionTimestamp);
+    public <R, E extends Exception> boolean approve(TransactionTimestamp<T, R, E> transactionTimestamp);
 
 }
