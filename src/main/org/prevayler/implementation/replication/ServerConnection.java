@@ -54,8 +54,10 @@ class ServerConnection<T> extends Thread implements TransactionSubscriber<T> {
             send(SUBSCRIBER_UP_TO_DATE);
 
             startSendingClockTicks();
-            while (true)
+
+            while (true) {
                 publishRemoteTransaction();
+            }
         } catch (IOException ex) {
             close();
         } catch (ClassNotFoundException ex) {
@@ -69,7 +71,8 @@ class ServerConnection<T> extends Thread implements TransactionSubscriber<T> {
     }
 
     private Thread createClockTickSender() {
-        return new Thread() { // TODO Consider using TimerTask.
+        // TODO Consider using TimerTask.
+        return new Thread() {
             @Override public void run() {
                 try {
                     while (true) {
@@ -98,11 +101,12 @@ class ServerConnection<T> extends Thread implements TransactionSubscriber<T> {
     }
 
     public <R, E extends Exception> void receive(TransactionTimestamp<T, R, E> tt) {
-        if (tt.capsule() == _remoteCapsule)
+        if (tt.capsule() == _remoteCapsule) {
+            // TODO This is really ugly. It is using a null capsule inside the
+            // TransactionTimestamp to signal that the remote Capsule should be
+            // executed.
             tt = new TransactionTimestamp<T, R, E>(null, tt.systemVersion(), tt.executionTime());
-        // TODO This is really ugly. It is using a null capsule inside the
-        // TransactionTimestamp to signal that the remote Capsule should be
-        // executed.
+        }
         try {
             synchronized (_remote) {
                 _remote.writeObject(tt);

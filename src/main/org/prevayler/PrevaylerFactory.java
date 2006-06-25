@@ -372,8 +372,9 @@ public class PrevaylerFactory<T> {
     public Prevayler<T> create() throws IOException {
         SnapshotManager<T> snapshotManager = snapshotManager();
         TransactionPublisher<T> publisher = publisher(snapshotManager);
-        if (_serverPort != -1)
+        if (_serverPort != -1) {
             new ServerListener<T>(publisher, network(), _serverPort);
+        }
         return new PrevaylerImpl<T>(snapshotManager, publisher, journalSerializer());
     }
 
@@ -388,9 +389,11 @@ public class PrevaylerFactory<T> {
     }
 
     private TransactionPublisher<T> publisher(SnapshotManager<T> snapshotManager) throws IOException {
-        if (_remoteServerIpAddress != null)
+        if (_remoteServerIpAddress != null) {
             return new ClientPublisher<T>(network(), _remoteServerIpAddress, _remoteServerPort);
-        return new CentralPublisher<T>(clock(), censor(snapshotManager), journal());
+        } else {
+            return new CentralPublisher<T>(clock(), censor(snapshotManager), journal());
+        }
     }
 
     private TransactionCensor<T> censor(SnapshotManager<T> snapshotManager) {

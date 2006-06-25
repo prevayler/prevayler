@@ -29,25 +29,9 @@ public class ObjectSocketImpl implements ObjectSocket {
 
     public ObjectSocketImpl(Socket socket) throws IOException {
         _socket = socket;
-        _outputStream = new ObjectOutputStream(_socket.getOutputStream()); // Get
-                                                                            // the
-                                                                            // OUTPUT
-                                                                            // stream
-                                                                            // first.
-                                                                            // JDK
-                                                                            // 1.3.1_01
-                                                                            // for
-                                                                            // Windows
-                                                                            // will
-                                                                            // lock
-                                                                            // up
-                                                                            // if
-                                                                            // you
-                                                                            // get
-                                                                            // the
-                                                                            // INPUT
-                                                                            // stream
-                                                                            // first.
+        // Get the OUTPUT stream first. JDK 1.3.1_01 for Windows will lock up if
+        // you get the INPUT stream first.
+        _outputStream = new ObjectOutputStream(_socket.getOutputStream());
         _inputStream = new ObjectInputStream(_socket.getInputStream());
     }
 
@@ -56,7 +40,6 @@ public class ObjectSocketImpl implements ObjectSocket {
         _outputStream.writeObject(object);
         _outputStream.reset();
         _outputStream.flush();
-
     }
 
     public Object readObject() throws IOException, ClassNotFoundException {
@@ -68,4 +51,5 @@ public class ObjectSocketImpl implements ObjectSocket {
         _inputStream.close();
         _socket.close();
     }
+
 }

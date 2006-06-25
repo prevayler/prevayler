@@ -16,9 +16,6 @@ import org.prevayler.implementation.publishing.TransactionPublisher;
 
 import java.io.IOException;
 
-/**
- * Reserved for future implementation.
- */
 public class ServerListener<T> extends Thread {
 
     private final TransactionPublisher<T> _publisher;
@@ -32,16 +29,18 @@ public class ServerListener<T> extends Thread {
         _serverSocket = network.openObjectServerSocket(port);
         _publisher = publisher;
         setDaemon(true);
-        start(); // FIXME: Make sure this thread ends when Prevayler is
-        // closed.
+        start();
+        // FIXME: Make sure this thread ends when Prevayler is closed.
     }
 
     @Override public void run() {
         try {
-            while (true)
+            while (true) {
                 new ServerConnection<T>(_publisher, _serverSocket.accept());
+            }
         } catch (IOException iox) {
             iox.printStackTrace();
         }
     }
+
 }

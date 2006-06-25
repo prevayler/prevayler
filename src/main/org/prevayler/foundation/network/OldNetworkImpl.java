@@ -21,4 +21,5 @@ public class OldNetworkImpl implements OldNetwork {
     public ObjectServerSocket openObjectServerSocket(int port) throws IOException {
         return new ObjectServerSocketImpl(port);
     }
+
 }

@@ -11,13 +11,13 @@
 package org.prevayler.foundation;
 
 import org.prevayler.foundation.gzip.MultiMemberGZIPTest;
-import org.prevayler.foundation.network.NetworkTest;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 public class Suite extends TestCase {
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.addTestSuite(DeepCopierTest.class);
@@ -25,7 +25,7 @@ public class Suite extends TestCase {
         suite.addTestSuite(DurableOutputStreamTest.class);
         suite.addTestSuite(MultiMemberGZIPTest.class);
         suite.addTestSuite(FileLockerTest.class);
-        suite.addTestSuite(NetworkTest.class);
         return suite;
     }
+
 }
