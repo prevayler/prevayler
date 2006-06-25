@@ -14,13 +14,10 @@ import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.FileIOTest;
-import org.prevayler.foundation.network.NetworkMock;
 
 import java.io.File;
 
 public class ReplicationTest extends FileIOTest {
-
-    private static final NetworkMock NETWORK_MOCK = new NetworkMock();
 
     private Prevayler<AppendingSystem> _server;
 
@@ -114,7 +111,6 @@ public class ReplicationTest extends FileIOTest {
         PrevaylerFactory<AppendingSystem> factory = new PrevaylerFactory<AppendingSystem>();
         factory.configurePrevalentSystem(new AppendingSystem());
         factory.configurePrevalenceDirectory(_testDirectory + File.separator + directory);
-        factory.configureNetwork(NETWORK_MOCK);
         return factory;
     }
 

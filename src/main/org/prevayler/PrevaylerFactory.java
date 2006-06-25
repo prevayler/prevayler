@@ -12,7 +12,6 @@ package org.prevayler;
 
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.monitor.SimpleMonitor;
-import org.prevayler.foundation.network.OldNetwork;
 import org.prevayler.foundation.network.OldNetworkImpl;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
@@ -75,8 +74,6 @@ public class PrevaylerFactory<T> {
     private long _journalSizeThreshold;
 
     private long _journalAgeThreshold;
-
-    private OldNetwork _network;
 
     private int _serverPort = -1;
 
@@ -327,10 +324,6 @@ public class PrevaylerFactory<T> {
         _journalSuffix = suffix;
     }
 
-    public void configureNetwork(OldNetwork network) {
-        _network = network;
-    }
-
     public void configureSnapshotSerializer(JavaSerializer<T> serializer) {
         configureSnapshotSerializer("snapshot", serializer);
     }
@@ -373,7 +366,7 @@ public class PrevaylerFactory<T> {
         SnapshotManager<T> snapshotManager = snapshotManager();
         TransactionPublisher<T> publisher = publisher(snapshotManager);
         if (_serverPort != -1) {
-            new ServerListener<T>(publisher, network(), _serverPort);
+            new ServerListener<T>(publisher, new OldNetworkImpl(), _serverPort);
         }
         return new PrevaylerImpl<T>(snapshotManager, publisher, journalSerializer());
     }
@@ -390,7 +383,7 @@ public class PrevaylerFactory<T> {
 
     private TransactionPublisher<T> publisher(SnapshotManager<T> snapshotManager) throws IOException {
         if (_remoteServerIpAddress != null) {
-            return new ClientPublisher<T>(network(), _remoteServerIpAddress, _remoteServerPort);
+            return new ClientPublisher<T>(new OldNetworkImpl(), _remoteServerIpAddress, _remoteServerPort);
         } else {
             return new CentralPublisher<T>(clock(), censor(snapshotManager), journal());
         }
@@ -417,10 +410,6 @@ public class PrevaylerFactory<T> {
 
     private String journalSuffix() {
         return _journalSuffix != null ? _journalSuffix : "journal";
-    }
-
-    private OldNetwork network() {
-        return _network != null ? _network : new OldNetworkImpl();
     }
 
     private SnapshotManager<T> snapshotManager() {
