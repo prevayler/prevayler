@@ -24,7 +24,6 @@ public class Suite extends TestCase {
         suite.addTestSuite(ChunkingTest.class);
         suite.addTestSuite(DurableOutputStreamTest.class);
         suite.addTestSuite(MultiMemberGZIPTest.class);
-        suite.addTestSuite(FileLockerTest.class);
         return suite;
     }
 
