@@ -11,21 +11,21 @@
 package org.prevayler.implementation.publishing;
 
 import org.prevayler.Clock;
-import org.prevayler.implementation.Capsule;
+import org.prevayler.implementation.TransactionCapsule;
 
-public interface TransactionPublisher<T> {
+public interface TransactionPublisher<S> {
 
     /**
      * Updates the given subscriber with all transactions published since
      * initialTransaction, returns and continues publishing all future
      * transactions to him.
      */
-    public void subscribe(TransactionSubscriber<T> subscriber, long initialTransaction);
+    public void subscribe(TransactionSubscriber<S> subscriber, long initialTransaction);
 
     /**
      * Stops publishing future transactions to the given subscriber.
      */
-    public void cancelSubscription(TransactionSubscriber<T> subscriber);
+    public void cancelSubscription(TransactionSubscriber<S> subscriber);
 
     /**
      * Publishes transaction to the subscribers synchronously. This method will
@@ -33,7 +33,7 @@ public interface TransactionPublisher<T> {
      * guarantee can be made as to wether the subscribers have actually executed
      * it.
      */
-    public <R, E extends Exception> void publish(Capsule<T, R, E> capsule);
+    public <R, E extends Exception> void publish(TransactionCapsule<S, R, E> capsule);
 
     /**
      * Returns a Clock which is consistent with the Transaction publishing time.

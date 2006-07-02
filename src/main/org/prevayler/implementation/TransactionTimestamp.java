@@ -15,27 +15,27 @@ import org.prevayler.foundation.Chunk;
 import java.io.Serializable;
 import java.util.Date;
 
-public class TransactionTimestamp<T, R, E extends Exception> implements Serializable {
+public class TransactionTimestamp<S, R, E extends Exception> implements Serializable {
 
     static final long serialVersionUID = 1L;
 
-    private final Capsule<T, R, E> _capsule;
+    private final TransactionCapsule<S, R, E> _capsule;
 
     private final long _systemVersion;
 
     private final long _executionTime;
 
-    public TransactionTimestamp(Capsule<T, R, E> capsule, long systemVersion, Date executionTime) {
+    public TransactionTimestamp(TransactionCapsule<S, R, E> capsule, long systemVersion, Date executionTime) {
         this(capsule, systemVersion, executionTime.getTime());
     }
 
-    private TransactionTimestamp(Capsule<T, R, E> capsule, long systemVersion, long executionTime) {
+    private TransactionTimestamp(TransactionCapsule<S, R, E> capsule, long systemVersion, long executionTime) {
         _capsule = capsule;
         _systemVersion = systemVersion;
         _executionTime = executionTime;
     }
 
-    public Capsule<T, R, E> capsule() {
+    public TransactionCapsule<S, R, E> capsule() {
         return _capsule;
     }
 
@@ -47,8 +47,8 @@ public class TransactionTimestamp<T, R, E extends Exception> implements Serializ
         return new Date(_executionTime);
     }
 
-    public TransactionTimestamp<T, R, E> cleanCopy() {
-        return new TransactionTimestamp<T, R, E>(_capsule.cleanCopy(), _systemVersion, _executionTime);
+    public TransactionTimestamp<S, R, E> cleanCopy() {
+        return new TransactionTimestamp<S, R, E>(_capsule.cleanCopy(), _systemVersion, _executionTime);
     }
 
     public Chunk toChunk() {
@@ -58,8 +58,8 @@ public class TransactionTimestamp<T, R, E extends Exception> implements Serializ
         return chunk;
     }
 
-    @SuppressWarnings("unchecked") public static <T> TransactionTimestamp<T, ?, ?> fromChunk(Chunk chunk) {
-        Capsule<T, ?, ?> capsule = Capsule.fromChunk(chunk);
+    @SuppressWarnings("unchecked") public static <S> TransactionTimestamp<S, ?, ?> fromChunk(Chunk chunk) {
+        TransactionCapsule<S, ?, ?> capsule = TransactionCapsule.fromChunk(chunk);
         long systemVersion = Long.parseLong(chunk.getParameter("systemVersion"));
         long executionTime = Long.parseLong(chunk.getParameter("executionTime"));
         return new TransactionTimestamp(capsule, systemVersion, executionTime);

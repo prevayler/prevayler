@@ -10,12 +10,12 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.TransactionWithoutResult;
+import org.prevayler.GenericTransaction;
+import org.prevayler.PrevalenceContext;
 
 import java.io.Serializable;
-import java.util.Date;
 
-public class AppendTransaction implements TransactionWithoutResult<StringBuilder>, Serializable {
+public class AppendTransaction implements GenericTransaction<StringBuilder, Void, RuntimeException>, Serializable {
 
     private static final long serialVersionUID = -3830205386199825379L;
 
@@ -29,7 +29,7 @@ public class AppendTransaction implements TransactionWithoutResult<StringBuilder
         this.toAdd = toAdd;
     }
 
-    public Void executeOn(StringBuilder prevalentSystem, @SuppressWarnings("unused") Date executionTime) {
+    public Void executeOn(StringBuilder prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
         prevalentSystem.append(toAdd);
         return null;
     }

@@ -41,11 +41,7 @@ public class RollbackTest extends FileIOTest {
 
     private void append(String appendix, String expectedResult) throws Exception {
         _prevayler.execute(new Appendix(appendix));
-        assertEquals(expectedResult, system().value());
-    }
-
-    private AppendingSystem system() {
-        return _prevayler.prevalentSystem();
+        assertEquals(expectedResult, _prevayler.execute(new ValueQuery()));
     }
 
 }

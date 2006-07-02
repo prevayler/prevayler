@@ -12,8 +12,8 @@ package org.prevayler.implementation.publishing.censorship;
 
 import org.prevayler.implementation.TransactionTimestamp;
 
-public interface TransactionCensor<T> {
+public interface TransactionCensor<S> {
 
-    public <R, E extends Exception> boolean approve(TransactionTimestamp<T, R, E> transactionTimestamp);
+    public <R, E extends Exception> boolean approve(TransactionTimestamp<S, R, E> transactionTimestamp);
 
 }

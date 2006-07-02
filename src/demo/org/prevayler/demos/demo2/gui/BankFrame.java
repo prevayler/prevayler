@@ -10,10 +10,10 @@
 
 package org.prevayler.demos.demo2.gui;
 
-import org.prevayler.ClockQuery;
 import org.prevayler.Prevayler;
 import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.foundation.Cool;
+import org.prevayler.implementation.ClockQuery;
 
 import javax.swing.Box;
 import javax.swing.JDesktopPane;

@@ -10,28 +10,27 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
-import org.prevayler.Transaction;
-import org.prevayler.demos.demo2.business.Account;
+import org.prevayler.GenericTransaction;
+import org.prevayler.PrevalenceContext;
 import org.prevayler.demos.demo2.business.Bank;
 
 import java.io.Serializable;
-import java.util.Date;
 
-public class AccountDeletion implements Transaction<Bank, Void, Bank.AccountNotFound>, Serializable {
+public class AccountDeletion implements GenericTransaction<Bank, Void, RuntimeException>, Serializable {
 
     private static final long serialVersionUID = -3401288850388764433L;
 
-    private long _accountNumber;
+    private String _accountNumber;
 
     private AccountDeletion() {
     } // Necessary for Skaringa XML serialization
 
-    public AccountDeletion(Account account) {
-        _accountNumber = account.number();
+    public AccountDeletion(String accountNumber) {
+        _accountNumber = accountNumber;
     }
 
-    public Void executeOn(Bank bank, @SuppressWarnings("unused") Date ignored) throws Bank.AccountNotFound {
-        bank.deleteAccount(_accountNumber);
+    public Void executeOn(Bank bank, PrevalenceContext prevalenceContext) {
+        bank.deleteAccount(_accountNumber, prevalenceContext);
         return null;
     }
 

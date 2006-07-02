@@ -11,7 +11,6 @@
 package org.prevayler.demos.demo2.gui;
 
 import org.prevayler.Prevayler;
-import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.demos.demo2.business.transactions.Transfer;
 
@@ -26,7 +25,7 @@ class TransferFrame extends AccountFrame {
 
     private static final long serialVersionUID = -3037927508242313124L;
 
-    private final Account account;
+    private final String accountNumber;
 
     private JTextField sourceField;
 
@@ -34,11 +33,11 @@ class TransferFrame extends AccountFrame {
 
     private JTextField amountField;
 
-    TransferFrame(Account account, Prevayler<Bank> prevayler, Container container) {
+    TransferFrame(String accountNumber, Prevayler<Bank> prevayler, Container container) {
         super("Transfer", prevayler, container);
 
-        this.account = account;
-        sourceField.setText(account.numberString());
+        this.accountNumber = accountNumber;
+        sourceField.setText(accountNumber);
 
         setBounds(50, 50, 200, 194);
     }
@@ -73,10 +72,12 @@ class TransferFrame extends AccountFrame {
         }
 
         @Override public void action() throws Exception {
-            long destinationNumber = parse(destinationField.getText());
+            String destinationNumber = destinationField.getText();
             long amount = parse(amountField.getText());
-            _prevayler.execute(new Transfer(account.number(), destinationNumber, amount));
+            _prevayler.execute(new Transfer(accountNumber, destinationNumber, amount));
             dispose();
         }
+
     }
+
 }

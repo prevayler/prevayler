@@ -10,16 +10,16 @@
 
 package org.prevayler.demos.demo1;
 
-import org.prevayler.TransactionWithoutResult;
+import org.prevayler.GenericTransaction;
+import org.prevayler.PrevalenceContext;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * To change the state of the business objects, the client code must use a
  * Transaction like this one.
  */
-class NumberStorageTransaction implements TransactionWithoutResult<NumberKeeper>, Serializable {
+class NumberStorageTransaction implements GenericTransaction<NumberKeeper, Void, RuntimeException>, Serializable {
 
     private static final long serialVersionUID = -2023934810496653301L;
 
@@ -33,7 +33,7 @@ class NumberStorageTransaction implements TransactionWithoutResult<NumberKeeper>
         _numberToKeep = numberToKeep;
     }
 
-    public Void executeOn(NumberKeeper prevalentSystem, @SuppressWarnings("unused") Date ignored) {
+    public Void executeOn(NumberKeeper prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
         prevalentSystem.keep(_numberToKeep);
         return null;
     }

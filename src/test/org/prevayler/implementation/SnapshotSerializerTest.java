@@ -74,7 +74,7 @@ public class SnapshotSerializerTest extends FileIOTest {
         prevayler.execute(new AppendTransaction(" first"));
         prevayler.execute(new AppendTransaction(" second"));
         prevayler.execute(new AppendTransaction(" third"));
-        assertEquals("the system first second third", prevayler.prevalentSystem().toString());
+        assertEquals("the system first second third", prevayler.execute(new ToStringQuery()));
 
         prevayler.takeSnapshot();
         prevayler.close();
@@ -82,7 +82,7 @@ public class SnapshotSerializerTest extends FileIOTest {
 
     private void recover(Serializer<StringBuilder> snapshotSerializer) throws IOException {
         Prevayler<StringBuilder> prevayler = createPrevayler(snapshotSerializer);
-        assertEquals("the system first second third", prevayler.prevalentSystem().toString());
+        assertEquals("the system first second third", prevayler.execute(new ToStringQuery()));
     }
 
     private Prevayler<StringBuilder> createPrevayler(Serializer<StringBuilder> snapshotSerializer) throws IOException {

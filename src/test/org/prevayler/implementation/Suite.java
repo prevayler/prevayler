@@ -19,7 +19,6 @@ import junit.framework.TestSuite;
 public class Suite extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        suite.addTestSuite(PrevaylerFactoryTest.class);
         suite.addTestSuite(TransientPrevaylerTest.class);
         suite.addTestSuite(QueryExecutionTest.class);
         suite.addTestSuite(PersistenceTest.class);

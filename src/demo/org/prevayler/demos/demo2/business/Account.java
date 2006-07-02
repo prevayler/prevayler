@@ -10,12 +10,11 @@
 
 package org.prevayler.demos.demo2.business;
 
+import org.prevayler.PrevalenceContext;
+import org.prevayler.demos.demo2.gui.AccountEvent;
+
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 public class Account implements java.io.Serializable {
 
@@ -29,17 +28,15 @@ public class Account implements java.io.Serializable {
 
     private List<AccountEntry> transactionHistory = new ArrayList<AccountEntry>();
 
-    private transient Set<AccountListener> listeners;
-
     private Account() {
     }
 
-    Account(long number, String holder) throws InvalidHolder {
+    Account(long number, String holder, PrevalenceContext prevalenceContext) throws InvalidHolder {
         this.number = number;
-        setHolder(holder);
+        setHolder(holder, prevalenceContext);
     }
 
-    public long number() {
+    long number() {
         return number;
     }
 
@@ -60,30 +57,30 @@ public class Account implements java.io.Serializable {
         return holder;
     }
 
-    public void setHolder(String holder) throws InvalidHolder {
+    public void setHolder(String holder, PrevalenceContext prevalenceContext) throws InvalidHolder {
         verify(holder);
         this.holder = holder;
-        notifyListeners();
+        triggerEvent(prevalenceContext);
     }
 
     public long balance() {
         return balance;
     }
 
-    public void deposit(long amount, Date timestamp) throws InvalidAmount {
+    public void deposit(long amount, PrevalenceContext prevalenceContext) throws InvalidAmount {
         verify(amount);
-        register(amount, timestamp);
+        register(amount, prevalenceContext);
     }
 
-    public void withdraw(long amount, Date timestamp) throws InvalidAmount {
+    public void withdraw(long amount, PrevalenceContext prevalenceContext) throws InvalidAmount {
         verify(amount);
-        register(-amount, timestamp);
+        register(-amount, prevalenceContext);
     }
 
-    private void register(long amount, Date timestamp) {
+    private void register(long amount, PrevalenceContext prevalenceContext) {
         balance += amount;
-        transactionHistory.add(new AccountEntry(amount, timestamp));
-        notifyListeners();
+        transactionHistory.add(new AccountEntry(amount, prevalenceContext.executionTime()));
+        triggerEvent(prevalenceContext);
     }
 
     private void verify(long amount) throws InvalidAmount {
@@ -93,29 +90,12 @@ public class Account implements java.io.Serializable {
             throw new InvalidAmount("Amount maximum (10000) exceeded.");
     }
 
-    public List transactionHistory() {
+    public List<AccountEntry> transactionHistory() {
         return transactionHistory;
     }
 
-    public void addAccountListener(AccountListener listener) {
-        listeners().add(listener);
-    }
-
-    public void removeAccountListener(AccountListener listener) {
-        listeners().remove(listener);
-    }
-
-    private Set<AccountListener> listeners() {
-        if (listeners == null)
-            listeners = new HashSet<AccountListener>();
-        return listeners;
-    }
-
-    private void notifyListeners() {
-        Iterator it = listeners().iterator();
-        while (it.hasNext()) {
-            ((AccountListener) it.next()).accountChanged();
-        }
+    private void triggerEvent(PrevalenceContext prevalenceContext) {
+        prevalenceContext.trigger(new AccountEvent(this));
     }
 
     public class InvalidAmount extends Exception {

@@ -11,9 +11,9 @@
 package org.prevayler.implementation;
 
 import org.prevayler.Clock;
+import org.prevayler.GenericTransaction;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.Transaction;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.journal.JournalError;
@@ -39,19 +39,19 @@ public class SkipOldTransactionsTest extends FileIOTest {
         original.takeSnapshot();
 
         original.execute(new AppendTransaction(" third"));
-        assertEquals("the system first second third", original.prevalentSystem().toString());
+        assertEquals("the system first second third", original.execute(new ToStringQuery()));
         original.close();
 
         String expected = "6;systemVersion=1;executionTime=1000002\r\n";
         expected += " first\r\n";
         expected += "7;systemVersion=2;executionTime=1000004\r\n";
         expected += " second\r\n";
-        expected += "6;systemVersion=3;executionTime=1000006\r\n";
+        expected += "6;systemVersion=3;executionTime=1000007\r\n";
         expected += " third\r\n";
         assertEquals(expected, journalContents("MyJournal"));
 
         Prevayler<StringBuilder> recovered = createPrevayler("MyJournal", new MySerializer(true));
-        assertEquals("the system first second third", recovered.prevalentSystem().toString());
+        assertEquals("the system first second third", recovered.execute(new ToStringQuery()));
     }
 
     public void testDetectOldJournalSuffix() throws IOException {
@@ -63,14 +63,14 @@ public class SkipOldTransactionsTest extends FileIOTest {
         original.takeSnapshot();
 
         original.execute(new AppendTransaction(" third"));
-        assertEquals("the system first second third", original.prevalentSystem().toString());
+        assertEquals("the system first second third", original.execute(new ToStringQuery()));
         original.close();
 
         String expected = "6;systemVersion=1;executionTime=1000002\r\n";
         expected += " first\r\n";
         expected += "7;systemVersion=2;executionTime=1000004\r\n";
         expected += " second\r\n";
-        expected += "6;systemVersion=3;executionTime=1000006\r\n";
+        expected += "6;systemVersion=3;executionTime=1000007\r\n";
         expected += " third\r\n";
         assertEquals(expected, journalContents("OldJournal"));
 
@@ -91,7 +91,7 @@ public class SkipOldTransactionsTest extends FileIOTest {
         original.execute(new AppendTransaction(" third"));
         original.takeSnapshot();
 
-        assertEquals("the system first second third", original.prevalentSystem().toString());
+        assertEquals("the system first second third", original.execute(new ToStringQuery()));
         original.close();
 
         String expected = "6;systemVersion=1;executionTime=1000002\r\n";
@@ -103,10 +103,10 @@ public class SkipOldTransactionsTest extends FileIOTest {
         assertEquals(expected, journalContents("OldJournal"));
 
         Prevayler<StringBuilder> recovered = createPrevayler("NewJournal", new MySerializer(true));
-        assertEquals("the system first second third", recovered.prevalentSystem().toString());
+        assertEquals("the system first second third", recovered.execute(new ToStringQuery()));
     }
 
-    private Prevayler<StringBuilder> createPrevayler(String suffix, Serializer<Transaction> journalSerializer) throws IOException {
+    private Prevayler<StringBuilder> createPrevayler(String suffix, Serializer<GenericTransaction> journalSerializer) throws IOException {
         PrevaylerFactory<StringBuilder> factory = new PrevaylerFactory<StringBuilder>();
         factory.configurePrevalentSystem(new StringBuilder("the system"));
         factory.configurePrevalenceDirectory(_testDirectory);
@@ -121,7 +121,7 @@ public class SkipOldTransactionsTest extends FileIOTest {
         return factory.create();
     }
 
-    private static class MySerializer implements Serializer<Transaction> {
+    private static class MySerializer implements Serializer<GenericTransaction> {
 
         private boolean afterSnapshot;
 
@@ -129,14 +129,14 @@ public class SkipOldTransactionsTest extends FileIOTest {
             this.afterSnapshot = afterSnapshot;
         }
 
-        public void writeObject(OutputStream stream, Transaction object) throws Exception {
+        public void writeObject(OutputStream stream, GenericTransaction object) throws Exception {
             Writer writer = new OutputStreamWriter(stream, "UTF-8");
             AppendTransaction transaction = (AppendTransaction) object;
             writer.write(transaction.toAdd);
             writer.flush();
         }
 
-        public Transaction readObject(InputStream stream) throws Exception {
+        public GenericTransaction readObject(InputStream stream) throws Exception {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
             String toAdd = reader.readLine();
             if (afterSnapshot) {

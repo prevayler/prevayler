@@ -10,19 +10,21 @@
 
 package org.prevayler.demos.scalability.prevayler;
 
+import org.prevayler.Prevayler;
 import org.prevayler.demos.scalability.QueryConnection;
 
 import java.util.List;
 
 class PrevaylerQueryConnection implements QueryConnection {
 
-    private final QuerySystem querySystem;
+    private final Prevayler<QuerySystem> prevayler;
 
-    PrevaylerQueryConnection(QuerySystem querySystem) {
-        this.querySystem = querySystem;
+    PrevaylerQueryConnection(Prevayler<QuerySystem> prevayler) {
+        this.prevayler = prevayler;
     }
 
     public List queryByName(String name) {
-        return querySystem.queryByName(name);
+        return prevayler.execute(new QueryByName(name));
     }
+
 }

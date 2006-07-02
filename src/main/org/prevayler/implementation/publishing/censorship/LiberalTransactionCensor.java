@@ -12,9 +12,9 @@ package org.prevayler.implementation.publishing.censorship;
 
 import org.prevayler.implementation.TransactionTimestamp;
 
-public class LiberalTransactionCensor<T> implements TransactionCensor<T> {
+public class LiberalTransactionCensor<S> implements TransactionCensor<S> {
 
-    public <R, E extends Exception> boolean approve(@SuppressWarnings("unused") TransactionTimestamp<T, R, E> transactionTimestamp) {
+    public <R, E extends Exception> boolean approve(@SuppressWarnings("unused") TransactionTimestamp<S, R, E> transactionTimestamp) {
         return true;
     }
 

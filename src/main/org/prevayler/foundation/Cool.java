@@ -10,6 +10,8 @@
 
 package org.prevayler.foundation;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+
 /**
  * Cool things that are often needed. In particular, implements <a
  * href="http://www-128.ibm.com/developerworks/java/library/j-jtp05236.html">well-behaved</a>
@@ -79,6 +81,22 @@ public class Cool {
         } finally {
             if (interrupted) {
                 Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    /**
+     * Call the current thread's uncaught exception handler. This is useful at
+     * the top level of a thread, where run() is not allowed to throw checked
+     * exceptions.
+     */
+    public static void uncaught(Throwable thrown) {
+        Thread thread = Thread.currentThread();
+        UncaughtExceptionHandler handler = thread.getUncaughtExceptionHandler();
+        if (handler != null) {
+            try {
+                handler.uncaughtException(thread, thrown);
+            } catch (Exception e) {
             }
         }
     }

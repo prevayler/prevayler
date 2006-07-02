@@ -10,9 +10,8 @@
 
 package org.prevayler.demos.demo2.gui;
 
+import org.prevayler.Listener;
 import org.prevayler.Prevayler;
-import org.prevayler.demos.demo2.business.Account;
-import org.prevayler.demos.demo2.business.AccountListener;
 import org.prevayler.demos.demo2.business.Bank;
 import org.prevayler.demos.demo2.business.transactions.Deposit;
 import org.prevayler.demos.demo2.business.transactions.HolderChange;
@@ -30,22 +29,22 @@ import java.awt.Container;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
-class AccountEditFrame extends AccountFrame implements AccountListener {
+class AccountEditFrame extends AccountFrame implements Listener<AccountEvent> {
 
     private static final long serialVersionUID = -1881757771183108518L;
 
-    private final Account account;
+    private final String accountNumber;
 
     private JTextField balanceField;
 
     private JList historyList;
 
-    AccountEditFrame(Account account, Prevayler<Bank> prevayler, Container container) {
-        super("Account " + account.numberString(), prevayler, container);
+    AccountEditFrame(String accountNumber, Prevayler<Bank> prevayler, Container container) throws Bank.AccountNotFound {
+        super("Account " + accountNumber, prevayler, container);
 
-        this.account = account;
-        account.addAccountListener(this);
-        accountChanged();
+        this.accountNumber = accountNumber;
+        prevayler.register(AccountEvent.class, this);
+        prevayler.execute(new AccountPing(accountNumber));
 
         holderField.addFocusListener(new HolderListener());
 
@@ -86,7 +85,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
             Number amount = enterAmount("Deposit");
             if (amount == null)
                 return;
-            _prevayler.execute(new Deposit(account, amount.longValue()));
+            _prevayler.execute(new Deposit(accountNumber, amount.longValue()));
         }
     }
 
@@ -102,7 +101,7 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
             Number amount = enterAmount("Withdrawal");
             if (amount == null)
                 return;
-            _prevayler.execute(new Withdrawal(account, amount.longValue()));
+            _prevayler.execute(new Withdrawal(accountNumber, amount.longValue()));
         }
     }
 
@@ -122,25 +121,26 @@ class AccountEditFrame extends AccountFrame implements AccountListener {
         }
 
         @Override public void action() {
-            new TransferFrame(account, _prevayler, getDesktopPane());
+            new TransferFrame(accountNumber, _prevayler, getDesktopPane());
         }
     }
 
-    public void accountChanged() { // Implements AccountListener.
-        holderField.setText(account.holder());
-        historyList.setListData(account.transactionHistory().toArray());
-        balanceField.setText(String.valueOf(account.balance()));
+    public void handle(AccountEvent event) {
+        if (event.getNumber().equals(accountNumber)) {
+            holderField.setText(event.getHolder());
+            historyList.setListData(event.getHistory());
+            balanceField.setText(event.getBalance());
+        }
     }
 
     private class HolderListener extends FocusAdapter {
         @Override public void focusLost(@SuppressWarnings("unused") FocusEvent e) {
-            if (holderText().equals(account.holder()))
-                return;
             try {
-                _prevayler.execute(new HolderChange(account, holderText()));
+                _prevayler.execute(new HolderChange(accountNumber, holderText()));
             } catch (Exception exception) {
                 RobustAction.display(exception);
             }
         }
     }
+
 }

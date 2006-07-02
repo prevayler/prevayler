@@ -121,12 +121,12 @@ public class ReplicationTest extends FileIOTest {
     }
 
     private String serverValue() {
-        return _server.prevalentSystem().value();
+        return _server.execute(new ValueQuery());
     }
 
     private String clientValue() {
         Cool.sleep(100); // The client is notified asynchronously.
-        return _client.prevalentSystem().value();
+        return _client.execute(new ValueQuery());
     }
 
 }

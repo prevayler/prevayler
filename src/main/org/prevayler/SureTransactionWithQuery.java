@@ -10,11 +10,16 @@
 
 package org.prevayler;
 
+import java.util.Date;
+
 /**
  * The same as TransactionWithQuery except it does not throw Exception when
  * executed.
  * 
- * @see Transaction
+ * @see GenericTransaction
  */
-public interface SureTransactionWithQuery<T, R> extends Transaction<T, R, RuntimeException> {
+@SuppressWarnings("deprecation") @Deprecated public interface SureTransactionWithQuery<S, R> extends TransactionWithQuery<S, R, RuntimeException> {
+
+    public R executeAndQuery(S prevalentSystem, Date executionTime);
+
 }

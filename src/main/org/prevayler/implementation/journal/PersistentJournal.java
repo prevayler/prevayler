@@ -28,7 +28,7 @@ import java.io.IOException;
 /**
  * A Journal that will write all transactions to .journal files.
  */
-public class PersistentJournal<T> implements Journal<T> {
+public class PersistentJournal<S> implements Journal<S> {
 
     private final PrevaylerDirectory _directory;
 
@@ -70,7 +70,7 @@ public class PersistentJournal<T> implements Journal<T> {
         _journalSuffix = journalSuffix;
     }
 
-    public <R, E extends Exception> void append(TransactionGuide<T, R, E> guide) {
+    public <R, E extends Exception> void append(TransactionGuide<S, R, E> guide) {
         if (!_nextTransactionInitialized)
             throw new IllegalStateException("Journal.update() has to be called at least once before Journal.append().");
 
@@ -143,7 +143,7 @@ public class PersistentJournal<T> implements Journal<T> {
      * method will define what the next transaction number will be. We have to
      * find clearer/simpler semantics.
      */
-    public void update(TransactionSubscriber<T> subscriber, long initialTransactionWanted) {
+    public void update(TransactionSubscriber<S> subscriber, long initialTransactionWanted) {
         try {
             File initialJournal = _directory.findInitialJournalFile(initialTransactionWanted);
 
@@ -174,7 +174,7 @@ public class PersistentJournal<T> implements Journal<T> {
         _nextTransaction = initialTransactionWanted > nextTransaction ? initialTransactionWanted : nextTransaction;
     }
 
-    private long recoverPendingTransactions(TransactionSubscriber<T> subscriber, long initialTransaction, File initialJournal) throws Exception {
+    private long recoverPendingTransactions(TransactionSubscriber<S> subscriber, long initialTransaction, File initialJournal) throws Exception {
         long recoveringTransaction = PrevaylerDirectory.journalVersion(initialJournal);
         File journal = initialJournal;
         DurableInputStream input = new DurableInputStream(journal, _monitor);
@@ -188,7 +188,7 @@ public class PersistentJournal<T> implements Journal<T> {
                         throw new JournalError("There are transactions needing to be recovered from " + journal + ", but only " + _journalSuffix + " files are supported");
                     }
 
-                    TransactionTimestamp<T, ?, ?> entry = TransactionTimestamp.fromChunk(chunk);
+                    TransactionTimestamp<S, ?, ?> entry = TransactionTimestamp.fromChunk(chunk);
 
                     if (entry.systemVersion() != recoveringTransaction) {
                         throw new JournalError("Expected " + recoveringTransaction + " but was " + entry.systemVersion());

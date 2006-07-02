@@ -109,28 +109,18 @@ public class PersistenceTest extends FileIOTest {
             _prevayler.execute(new Appendix("x"));
             fail();
         } catch (ErrorInEarlierTransactionError expected) {
-            assertEquals("Prevayler is no longer processing transactions due to an Error thrown from an earlier transaction.", expected.getMessage());
         }
 
         try {
             _prevayler.execute(new NullQuery());
             fail();
         } catch (ErrorInEarlierTransactionError expected) {
-            assertEquals("Prevayler is no longer processing queries due to an Error thrown from an earlier transaction.", expected.getMessage());
-        }
-
-        try {
-            _prevayler.prevalentSystem();
-            fail();
-        } catch (ErrorInEarlierTransactionError expected) {
-            assertEquals("Prevayler is no longer allowing access to the prevalent system due to an Error thrown from an earlier transaction.", expected.getMessage());
         }
 
         try {
             _prevayler.takeSnapshot();
             fail();
         } catch (ErrorInEarlierTransactionError expected) {
-            assertEquals("Prevayler is no longer allowing snapshots due to an Error thrown from an earlier transaction.", expected.getMessage());
         }
 
         crashRecover();
@@ -197,11 +187,7 @@ public class PersistenceTest extends FileIOTest {
     }
 
     private void verify(String expectedResult) {
-        assertEquals(expectedResult, system().value());
-    }
-
-    private AppendingSystem system() {
-        return _prevayler.prevalentSystem();
+        assertEquals(expectedResult, _prevayler.execute(new ValueQuery()));
     }
 
     private String prevalenceBase() {

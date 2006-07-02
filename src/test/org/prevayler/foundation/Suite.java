@@ -10,8 +10,6 @@
 
 package org.prevayler.foundation;
 
-import org.prevayler.foundation.gzip.MultiMemberGZIPTest;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -23,7 +21,6 @@ public class Suite extends TestCase {
         suite.addTestSuite(DeepCopierTest.class);
         suite.addTestSuite(ChunkingTest.class);
         suite.addTestSuite(DurableOutputStreamTest.class);
-        suite.addTestSuite(MultiMemberGZIPTest.class);
         return suite;
     }
 

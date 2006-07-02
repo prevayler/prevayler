@@ -18,16 +18,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 
-public class TransactionGuide<T, R, E extends Exception> extends Guided {
+public class TransactionGuide<S, R, E extends Exception> extends Guided {
 
-    private final TransactionTimestamp<T, R, E> _transactionTimestamp;
+    private final TransactionTimestamp<S, R, E> _transactionTimestamp;
 
-    public TransactionGuide(TransactionTimestamp<T, R, E> transactionTimestamp, Turn pipelineTurn) {
+    public TransactionGuide(TransactionTimestamp<S, R, E> transactionTimestamp, Turn pipelineTurn) {
         super(pipelineTurn);
         _transactionTimestamp = transactionTimestamp;
     }
 
-    public TransactionTimestamp<T, R, E> timestamp() {
+    public TransactionTimestamp<S, R, E> timestamp() {
         return _transactionTimestamp;
     }
 

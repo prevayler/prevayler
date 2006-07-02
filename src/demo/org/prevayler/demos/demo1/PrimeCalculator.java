@@ -20,25 +20,22 @@ class PrimeCalculator {
 
     private final Prevayler<NumberKeeper> _prevayler;
 
-    private final NumberKeeper _numberKeeper;
-
     PrimeCalculator(Prevayler<NumberKeeper> prevayler) {
         _prevayler = prevayler;
-        _numberKeeper = prevayler.prevalentSystem();
     }
 
     void start() throws Exception {
         int largestPrime = 0;
         int primesFound = 0;
-        int primeCandidate = _numberKeeper.lastNumber() == 0 ? 2 : _numberKeeper.lastNumber() + 1;
+        int lastNumber = _prevayler.execute(new LastNumberQuery());
+        int primeCandidate = lastNumber == 0 ? 2 : lastNumber + 1;
 
         while (primeCandidate <= Integer.MAX_VALUE) {
             if (isPrime(primeCandidate)) {
-
                 _prevayler.execute(new NumberStorageTransaction(primeCandidate));
 
                 largestPrime = primeCandidate;
-                primesFound = _numberKeeper.numbers().size();
+                primesFound = _prevayler.execute(new SizeQuery());
                 System.out.println("Primes found: " + primesFound + ". Largest: " + largestPrime);
             }
 

@@ -10,16 +10,16 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
-import org.prevayler.Transaction;
+import org.prevayler.GenericTransaction;
+import org.prevayler.PrevalenceContext;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.Bank;
 
 import java.io.Serializable;
-import java.util.Date;
 
-abstract class AccountTransaction implements Transaction<Bank, Void, Exception>, Serializable {
+abstract class AccountTransaction implements GenericTransaction<Bank, Void, Exception>, Serializable {
 
-    private long _accountNumber;
+    private String _accountNumber;
 
     // Necessary for Skaringa XML serialization. This would normally be
     // private, but must be package visible (or protected) in this case in
@@ -28,15 +28,15 @@ abstract class AccountTransaction implements Transaction<Bank, Void, Exception>,
     AccountTransaction() {
     }
 
-    protected AccountTransaction(Account account) {
-        _accountNumber = account.number();
+    protected AccountTransaction(String accountNumber) {
+        _accountNumber = accountNumber;
     }
 
-    public Void executeOn(Bank bank, Date timestamp) throws Exception {
-        executeAndQuery(bank.findAccount(_accountNumber), timestamp);
+    public Void executeOn(Bank bank, PrevalenceContext prevalenceContext) throws Exception {
+        executeAndQuery(bank.findAccount(_accountNumber), prevalenceContext);
         return null;
     }
 
-    protected abstract void executeAndQuery(Account account, Date timestamp) throws Exception;
+    protected abstract void executeAndQuery(Account account, PrevalenceContext prevalenceContext) throws Exception;
 
 }

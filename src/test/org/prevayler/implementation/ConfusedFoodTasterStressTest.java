@@ -10,15 +10,15 @@
 
 package org.prevayler.implementation;
 
+import org.prevayler.GenericTransaction;
+import org.prevayler.PrevalenceContext;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.TransactionWithoutResult;
 import org.prevayler.foundation.FileIOTest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
-import java.util.Date;
 
 public class ConfusedFoodTasterStressTest extends FileIOTest {
 
@@ -102,10 +102,10 @@ public class ConfusedFoodTasterStressTest extends FileIOTest {
         int counter = 0;
     }
 
-    public static class CountTransaction implements TransactionWithoutResult<CountingSystem>, Serializable {
+    public static class CountTransaction implements GenericTransaction<CountingSystem, Void, RuntimeException>, Serializable {
         private static final long serialVersionUID = 5043457505878510633L;
 
-        public Void executeOn(CountingSystem countingSystem, @SuppressWarnings("unused") Date executionTime) {
+        public Void executeOn(CountingSystem countingSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
             if (countingSystem.counter == WHEN_TO_START_THROWING) {
                 throw new CountException();
             }

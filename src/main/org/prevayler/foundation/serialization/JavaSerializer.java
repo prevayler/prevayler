@@ -41,9 +41,7 @@ public class JavaSerializer<T> implements Serializer<T> {
 
     @SuppressWarnings("unchecked") public T readObject(InputStream stream) throws Exception {
         ObjectInputStream objects = new ObjectInputStreamWithClassLoader(stream, _loader);
-        Object object = objects.readObject();
-        objects.close();
-        return (T) object;
+        return (T) objects.readObject();
     }
 
 }

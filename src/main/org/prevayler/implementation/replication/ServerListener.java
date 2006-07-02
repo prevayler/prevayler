@@ -11,22 +11,21 @@
 package org.prevayler.implementation.replication;
 
 import org.prevayler.foundation.network.ObjectServerSocket;
-import org.prevayler.foundation.network.OldNetwork;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 
 import java.io.IOException;
 
-public class ServerListener<T> extends Thread {
+public class ServerListener<S> extends Thread {
 
-    private final TransactionPublisher<T> _publisher;
+    private final TransactionPublisher<S> _publisher;
 
     private final ObjectServerSocket _serverSocket;
 
     // TODO Close the socket when the publisher is closed (listen for it or have
     // the Dashboard (new idea) close this when it closes the publisher).
 
-    public ServerListener(TransactionPublisher<T> publisher, OldNetwork network, int port) throws IOException {
-        _serverSocket = network.openObjectServerSocket(port);
+    public ServerListener(TransactionPublisher<S> publisher, int port) throws IOException {
+        _serverSocket = new ObjectServerSocket(port);
         _publisher = publisher;
         setDaemon(true);
         start();
@@ -36,7 +35,7 @@ public class ServerListener<T> extends Thread {
     @Override public void run() {
         try {
             while (true) {
-                new ServerConnection<T>(_publisher, _serverSocket.accept());
+                new ServerConnection<S>(_publisher, _serverSocket.accept());
             }
         } catch (IOException iox) {
             iox.printStackTrace();

@@ -11,10 +11,22 @@
 package org.prevayler.foundation.network;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 
-public interface ObjectServerSocket {
+public class ObjectServerSocket {
 
-    ObjectSocket accept() throws IOException;
+    private final ServerSocket _serverSocket;
 
-    void close() throws IOException;
+    public ObjectServerSocket(int port) throws IOException {
+        _serverSocket = new ServerSocket(port);
+    }
+
+    public ObjectSocket accept() throws IOException {
+        return new ObjectSocket(_serverSocket.accept());
+    }
+
+    public void close() throws IOException {
+        _serverSocket.close();
+    }
+
 }

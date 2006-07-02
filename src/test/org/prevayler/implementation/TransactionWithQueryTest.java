@@ -10,9 +10,9 @@
 
 package org.prevayler.implementation;
 
+import org.prevayler.GenericTransaction;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.Transaction;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
@@ -22,43 +22,43 @@ import org.prevayler.foundation.serialization.XStreamSerializer;
 public class TransactionWithQueryTest extends FileIOTest {
 
     public void testJavaJournal() throws Exception {
-        Serializer<Transaction> strategy = new JavaSerializer<Transaction>();
+        Serializer<GenericTransaction> strategy = new JavaSerializer<GenericTransaction>();
 
         startAndCrash(strategy);
         recover(strategy);
     }
 
     public void testXStreamJournal() throws Exception {
-        Serializer<Transaction> strategy = new XStreamSerializer<Transaction>();
+        Serializer<GenericTransaction> strategy = new XStreamSerializer<GenericTransaction>();
 
         startAndCrash(strategy);
         recover(strategy);
     }
 
     public void testSkaringaJournal() throws Exception {
-        Serializer<Transaction> strategy = new SkaringaSerializer<Transaction>();
+        Serializer<GenericTransaction> strategy = new SkaringaSerializer<GenericTransaction>();
 
         startAndCrash(strategy);
         recover(strategy);
     }
 
-    private void startAndCrash(Serializer<Transaction> journalSerializer) throws Exception {
+    private void startAndCrash(Serializer<GenericTransaction> journalSerializer) throws Exception {
         Prevayler<StringBuilder> prevayler = createPrevayler(journalSerializer);
 
         assertEquals("the system first", prevayler.execute(new AppendTransactionWithQuery(" first")));
         assertEquals("the system first second", prevayler.execute(new AppendTransactionWithQuery(" second")));
         assertEquals("the system first second third", prevayler.execute(new AppendTransactionWithQuery(" third")));
-        assertEquals("the system first second third", prevayler.prevalentSystem().toString());
+        assertEquals("the system first second third", prevayler.execute(new ToStringQuery()));
 
         prevayler.close();
     }
 
-    private void recover(Serializer<Transaction> journalSerializer) throws Exception {
+    private void recover(Serializer<GenericTransaction> journalSerializer) throws Exception {
         Prevayler<StringBuilder> prevayler = createPrevayler(journalSerializer);
-        assertEquals("the system first second third", prevayler.prevalentSystem().toString());
+        assertEquals("the system first second third", prevayler.execute(new ToStringQuery()));
     }
 
-    private Prevayler<StringBuilder> createPrevayler(Serializer<Transaction> journalSerializer) throws Exception {
+    private Prevayler<StringBuilder> createPrevayler(Serializer<GenericTransaction> journalSerializer) throws Exception {
         PrevaylerFactory<StringBuilder> factory = new PrevaylerFactory<StringBuilder>();
         factory.configurePrevalentSystem(new StringBuilder("the system"));
         factory.configurePrevalenceDirectory(_testDirectory);

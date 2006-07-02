@@ -10,34 +10,34 @@
 
 package org.prevayler.implementation.snapshot;
 
-import org.prevayler.Transaction;
+import org.prevayler.GenericTransaction;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.PrevalentSystemGuard;
 
-public class NullSnapshotManager<T> implements SnapshotManager<T> {
+public class NullSnapshotManager<S> implements SnapshotManager<S> {
 
     private final String _snapshotAttemptErrorMessage;
 
-    private final PrevalentSystemGuard<T> _recoveredPrevalentSystem;
+    private final PrevalentSystemGuard<S> _recoveredPrevalentSystem;
 
-    private final JavaSerializer<T> _primarySerializer;
+    private final JavaSerializer<S> _primarySerializer;
 
-    public NullSnapshotManager(T newPrevalentSystem, String snapshotAttemptErrorMessage) {
+    public NullSnapshotManager(S newPrevalentSystem, String snapshotAttemptErrorMessage) {
         _snapshotAttemptErrorMessage = snapshotAttemptErrorMessage;
-        _primarySerializer = new JavaSerializer<T>();
-        _recoveredPrevalentSystem = new PrevalentSystemGuard<T>(newPrevalentSystem, 0, new JavaSerializer<Transaction>());
+        _primarySerializer = new JavaSerializer<S>();
+        _recoveredPrevalentSystem = new PrevalentSystemGuard<S>(newPrevalentSystem, 0, new JavaSerializer<GenericTransaction>());
     }
 
-    public void writeSnapshot(@SuppressWarnings("unused") T prevalentSystem, @SuppressWarnings("unused") long version) {
+    public void writeSnapshot(@SuppressWarnings("unused") S prevalentSystem, @SuppressWarnings("unused") long version) {
         throw new SnapshotError(_snapshotAttemptErrorMessage);
     }
 
-    public PrevalentSystemGuard<T> recoveredPrevalentSystem() {
+    public PrevalentSystemGuard<S> recoveredPrevalentSystem() {
         return _recoveredPrevalentSystem;
     }
 
-    public Serializer<T> primarySerializer() {
+    public Serializer<S> primarySerializer() {
         return _primarySerializer;
     }
 

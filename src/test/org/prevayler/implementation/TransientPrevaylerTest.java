@@ -10,15 +10,15 @@
 
 package org.prevayler.implementation;
 
+import org.prevayler.GenericTransaction;
+import org.prevayler.PrevalenceContext;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.TransactionWithoutResult;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.implementation.snapshot.SnapshotError;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Date;
 
 public class TransientPrevaylerTest extends FileIOTest {
 
@@ -56,7 +56,7 @@ public class TransientPrevaylerTest extends FileIOTest {
     public void testFailFastBaptismProblem() {
         append("a");
 
-        AppendingSystem directReference = prevayler.prevalentSystem();
+        AppendingSystem directReference = prevayler.execute(new SystemQuery<AppendingSystem>());
         prevayler.execute(new DirectReferenceTransaction(directReference));
 
         assertState("a");
@@ -68,15 +68,14 @@ public class TransientPrevaylerTest extends FileIOTest {
     }
 
     private void assertState(String expected) {
-        String result = prevayler.prevalentSystem().value();
-        assertEquals(expected, result);
+        assertEquals(expected, prevayler.execute(new ValueQuery()));
     }
 
     private void append(String appendix) {
         prevayler.execute(new Appendix(appendix));
     }
 
-    static private class DirectReferenceTransaction implements TransactionWithoutResult<AppendingSystem>, Serializable {
+    static private class DirectReferenceTransaction implements GenericTransaction<AppendingSystem, Void, RuntimeException>, Serializable {
 
         private static final long serialVersionUID = -7885669885494051746L;
 
@@ -86,7 +85,7 @@ public class TransientPrevaylerTest extends FileIOTest {
             _illegalDirectReference = illegalDirectReference;
         }
 
-        public Void executeOn(@SuppressWarnings("unused") AppendingSystem ignored, @SuppressWarnings("unused") Date ignoredToo) {
+        public Void executeOn(@SuppressWarnings("unused") AppendingSystem prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
             _illegalDirectReference.append("anything");
             return null;
         }

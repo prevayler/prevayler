@@ -11,59 +11,68 @@
 package org.prevayler.implementation;
 
 import org.prevayler.Clock;
-import org.prevayler.Transaction;
-import org.prevayler.foundation.Cool;
+import org.prevayler.GenericTransaction;
+import org.prevayler.Listener;
+import org.prevayler.PrevalenceContext;
 import org.prevayler.foundation.DeepCopier;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
-import org.prevayler.implementation.snapshot.SnapshotManager;
 
 import java.util.Date;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class PrevalentSystemGuard<T> implements TransactionSubscriber<T> {
+public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
 
-    // All access to field is synchronized on "this", and all access to object
-    // is synchronized on itself; "this" is always locked before the object
-    private T _prevalentSystem;
+    // All access to field is synchronized on _rwlock, and all write access to
+    // object is synchronized on itself; _rwlock is always locked before the
+    // object
+    private S _prevalentSystem;
 
-    // All access is synchronized on "this"
+    // All access is synchronized on _rwlock
     private long _systemVersion;
 
-    private final Serializer<Transaction> _journalSerializer;
+    private final Serializer<GenericTransaction> _journalSerializer;
 
-    public PrevalentSystemGuard(T prevalentSystem, long systemVersion, Serializer<Transaction> journalSerializer) {
+    private final ListenerSet _listeners;
+
+    private final ReadWriteLock _rwlock = new ReentrantReadWriteLock();
+
+    private final Condition _deepCopyPipelineFlush = _rwlock.writeLock().newCondition();
+
+    public PrevalentSystemGuard(S prevalentSystem, long systemVersion, Serializer<GenericTransaction> journalSerializer) {
         _prevalentSystem = prevalentSystem;
         _systemVersion = systemVersion;
         _journalSerializer = journalSerializer;
+        _listeners = new ListenerSet();
     }
 
-    public T prevalentSystem() {
-        synchronized (this) {
-            if (_prevalentSystem == null) {
-                throw new ErrorInEarlierTransactionError("Prevayler is no longer allowing access to the prevalent system due to an Error thrown from an earlier transaction.");
-            }
-            return _prevalentSystem;
-        }
-    }
-
-    public void subscribeTo(TransactionPublisher<T> publisher) {
+    public void subscribeTo(TransactionPublisher<S> publisher) {
         long initialTransaction;
-        synchronized (this) {
+
+        _rwlock.writeLock().lock();
+        try {
             initialTransaction = _systemVersion + 1;
+        } finally {
+            _rwlock.writeLock().unlock();
         }
 
         publisher.subscribe(this, initialTransaction);
     }
 
-    public <R, E extends Exception> void receive(TransactionTimestamp<T, R, E> transactionTimestamp) {
-        Capsule<T, R, E> capsule = transactionTimestamp.capsule();
+    public <R, E extends Exception> void receive(TransactionTimestamp<S, R, E> transactionTimestamp) {
+        TransactionCapsule<S, R, E> capsule = transactionTimestamp.capsule();
         long systemVersion = transactionTimestamp.systemVersion();
         Date executionTime = transactionTimestamp.executionTime();
+        GenericTransaction<? super S, R, E> transaction = capsule.deserialize(_journalSerializer);
+        PrevalenceContext prevalenceContext = new PrevalenceContext(executionTime, systemVersion, false);
 
-        synchronized (this) {
+        _rwlock.writeLock().lock();
+        try {
             if (_prevalentSystem == null) {
-                throw new ErrorInEarlierTransactionError("Prevayler is no longer processing transactions due to an Error thrown from an earlier transaction.");
+                throw new ErrorInEarlierTransactionError();
             }
 
             if (systemVersion != _systemVersion + 1) {
@@ -73,52 +82,60 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber<T> {
             _systemVersion = systemVersion;
 
             try {
-                Transaction<? super T, R, E> transaction = capsule.deserialize(_journalSerializer);
-
                 synchronized (_prevalentSystem) {
-                    capsule.execute(transaction, _prevalentSystem, executionTime);
+                    capsule.execute(transaction, _prevalentSystem, prevalenceContext);
                 }
             } catch (Error error) {
                 _prevalentSystem = null;
                 throw error;
             } finally {
-                notifyAll();
+                _deepCopyPipelineFlush.signalAll();
             }
+        } finally {
+            _rwlock.writeLock().unlock();
         }
+
+        dispatchEvents(prevalenceContext);
     }
 
-    public <R, E extends Exception> R executeQuery(Transaction<? super T, R, E> readOnlyTransaction, Clock clock) throws E {
-        synchronized (this) {
+    public <R, E extends Exception> R executeQuery(GenericTransaction<? super S, R, E> readOnlyTransaction, Clock clock) throws E {
+        PrevalenceContext prevalenceContext;
+        R result;
+
+        _rwlock.readLock().lock();
+        try {
             if (_prevalentSystem == null) {
-                throw new ErrorInEarlierTransactionError("Prevayler is no longer processing queries due to an Error thrown from an earlier transaction.");
+                throw new ErrorInEarlierTransactionError();
             }
 
-            synchronized (_prevalentSystem) {
-                return readOnlyTransaction.executeOn(_prevalentSystem, clock.time());
-            }
+            prevalenceContext = new PrevalenceContext(clock.time(), _systemVersion, true);
+            result = readOnlyTransaction.executeOn(_prevalentSystem, prevalenceContext);
+        } finally {
+            _rwlock.readLock().unlock();
+        }
+
+        dispatchEvents(prevalenceContext);
+        return result;
+    }
+
+    private void dispatchEvents(PrevalenceContext prevalenceContext) {
+        for (Object event : prevalenceContext.events()) {
+            _listeners.dispatch(event);
         }
     }
 
-    public void takeSnapshot(SnapshotManager<T> snapshotManager) {
-        synchronized (this) {
-            if (_prevalentSystem == null) {
-                throw new ErrorInEarlierTransactionError("Prevayler is no longer allowing snapshots due to an Error thrown from an earlier transaction.");
-            }
-
-            synchronized (_prevalentSystem) {
-                snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
-            }
-        }
-    }
-
-    public PrevalentSystemGuard<T> deepCopy(long systemVersion, Serializer<T> snapshotSerializer) {
-        synchronized (this) {
+    public PrevalentSystemGuard<S> deepCopy(long systemVersion, Serializer<S> snapshotSerializer) {
+        // Even though this is only reading the prevalent system, not writing,
+        // it requires the exclusive lock because of the pipeline flushing
+        // behavior.
+        _rwlock.writeLock().lock();
+        try {
             while (_systemVersion < systemVersion && _prevalentSystem != null) {
-                Cool.wait(this);
+                _deepCopyPipelineFlush.awaitUninterruptibly();
             }
 
             if (_prevalentSystem == null) {
-                throw new ErrorInEarlierTransactionError("Prevayler is no longer accepting transactions due to an Error thrown from an earlier transaction.");
+                throw new ErrorInEarlierTransactionError();
             }
 
             if (_systemVersion > systemVersion) {
@@ -126,9 +143,19 @@ public class PrevalentSystemGuard<T> implements TransactionSubscriber<T> {
             }
 
             synchronized (_prevalentSystem) {
-                return new PrevalentSystemGuard<T>(DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer);
+                return new PrevalentSystemGuard<S>(DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer);
             }
+        } finally {
+            _rwlock.writeLock().unlock();
         }
+    }
+
+    public <E> void register(Class<E> eventClass, Listener<? super E> listener) {
+        _listeners.register(eventClass, listener);
+    }
+
+    public <E> void unregister(Class<E> eventClass, Listener<? super E> listener) {
+        _listeners.unregister(eventClass, listener);
     }
 
 }

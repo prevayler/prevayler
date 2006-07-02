@@ -10,10 +10,12 @@
 
 package org.prevayler.demos.demo2.business;
 
+import org.prevayler.PrevalenceContext;
+import org.prevayler.demos.demo2.gui.BankEvent;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,25 +28,19 @@ public class Bank implements java.io.Serializable {
 
     private Map<Long, Account> accountsByNumber = new HashMap<Long, Account>();
 
-    private transient BankListener bankListener;
-
-    public Account createAccount(String holder) throws Account.InvalidHolder {
-        Account account = new Account(nextAccountNumber, holder);
+    public Account createAccount(String holder, PrevalenceContext prevalenceContext) throws Account.InvalidHolder {
+        Account account = new Account(nextAccountNumber, holder, prevalenceContext);
         accountsByNumber.put(nextAccountNumber++, account);
-
-        if (bankListener != null)
-            bankListener.accountCreated(account);
+        prevalenceContext.trigger(new BankEvent());
         return account;
     }
 
-    public void deleteAccount(long number) throws AccountNotFound {
-        Account account = findAccount(number);
+    public void deleteAccount(String number, PrevalenceContext prevalenceContext) {
         accountsByNumber.remove(new Long(number));
-        if (bankListener != null)
-            bankListener.accountDeleted(account);
+        prevalenceContext.trigger(new BankEvent());
     }
 
-    public List accounts() {
+    public List<Account> accounts() {
         List<Account> accounts = new ArrayList<Account>(accountsByNumber.values());
 
         Collections.sort(accounts, new Comparator<Account>() {
@@ -56,25 +52,25 @@ public class Bank implements java.io.Serializable {
         return accounts;
     }
 
-    public void setBankListener(BankListener bankListener) {
-        this.bankListener = bankListener;
+    public Account findAccount(String accountNumber) throws AccountNotFound {
+        return findAccount(Long.parseLong(accountNumber));
     }
 
-    public Account findAccount(long number) throws AccountNotFound {
+    private Account findAccount(long number) throws AccountNotFound {
         Account account = searchAccount(number);
         if (account == null)
             throw new AccountNotFound(number);
         return account;
     }
 
-    public void transfer(long sourceNumber, long destinationNumber, long amount, Date timestamp) throws AccountNotFound, Account.InvalidAmount {
+    public void transfer(String sourceNumber, String destinationNumber, long amount, PrevalenceContext prevalenceContext) throws AccountNotFound, Account.InvalidAmount {
         Account source = findAccount(sourceNumber);
         Account destination = findAccount(destinationNumber);
 
-        source.withdraw(amount, timestamp);
+        source.withdraw(amount, prevalenceContext);
         if (amount == 666)
             throw new RuntimeException("Runtime Exception simulated for rollback demonstration purposes.");
-        destination.deposit(amount, timestamp);
+        destination.deposit(amount, prevalenceContext);
     }
 
     private Account searchAccount(long number) {

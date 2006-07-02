@@ -10,14 +10,14 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
-import org.prevayler.Transaction;
+import org.prevayler.GenericTransaction;
+import org.prevayler.PrevalenceContext;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.Bank;
 
 import java.io.Serializable;
-import java.util.Date;
 
-public class AccountCreation implements Transaction<Bank, Account, Account.InvalidHolder>, Serializable {
+public class AccountCreation implements GenericTransaction<Bank, Account, Account.InvalidHolder>, Serializable {
 
     private static final long serialVersionUID = 476105268406333743L;
 
@@ -31,8 +31,8 @@ public class AccountCreation implements Transaction<Bank, Account, Account.Inval
         _holder = holder;
     }
 
-    public Account executeOn(Bank bank, @SuppressWarnings("unused") Date ignored) throws Account.InvalidHolder {
-        return bank.createAccount(_holder);
+    public Account executeOn(Bank bank, PrevalenceContext prevalenceContext) throws Account.InvalidHolder {
+        return bank.createAccount(_holder, prevalenceContext);
     }
 
 }

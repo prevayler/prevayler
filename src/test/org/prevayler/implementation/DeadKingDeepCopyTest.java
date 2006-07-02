@@ -57,7 +57,6 @@ public class DeadKingDeepCopyTest extends FileIOTest {
             _prevayler.execute(new Appendix("z"));
             fail();
         } catch (ErrorInEarlierTransactionError expected) {
-            assertEquals("Prevayler is no longer accepting transactions due to an Error thrown from an earlier transaction.", expected.getMessage());
         }
 
         crashRecover();
@@ -76,11 +75,7 @@ public class DeadKingDeepCopyTest extends FileIOTest {
     }
 
     private void verify(String expectedResult) {
-        assertEquals(expectedResult, system().value());
-    }
-
-    private AppendingSystem system() {
-        return _prevayler.prevalentSystem();
+        assertEquals(expectedResult, _prevayler.execute(new ValueQuery()));
     }
 
     private String prevalenceBase() {

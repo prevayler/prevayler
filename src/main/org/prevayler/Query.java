@@ -10,12 +10,16 @@
 
 package org.prevayler;
 
+import java.util.Date;
+
 /**
- * Represents a query that can be executed on a Prevalent System. This is just a mild
- * convenience, mostly for backward compatibility. Query is a class, not an interface,
- * because annotations are only inherited from superclasses, not interfaces. 
+ * Represents a query that can be executed on a Prevalent System. This is just a
+ * mild convenience, mostly for backward compatibility.
  * 
- * @see org.prevayler.Prevayler#execute(Transaction)
+ * @see org.prevayler.Prevayler#execute(Query)
  */
-@ReadOnly public abstract class Query<T, R, E extends Exception> implements Transaction<T, R, E> {
+@SuppressWarnings("deprecation") @Deprecated public interface Query<S, R, E extends Exception> {
+
+    public R query(S prevalentSystem, Date executionTime) throws E;
+
 }

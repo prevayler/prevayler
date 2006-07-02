@@ -14,8 +14,7 @@ import org.prevayler.Clock;
 import org.prevayler.PrevalenceError;
 import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.network.ObjectSocket;
-import org.prevayler.foundation.network.OldNetwork;
-import org.prevayler.implementation.Capsule;
+import org.prevayler.implementation.TransactionCapsule;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.clock.BrokenClock;
 import org.prevayler.implementation.publishing.TransactionPublisher;
@@ -27,15 +26,15 @@ import java.util.Date;
 /**
  * Reserved for future implementation.
  */
-public class ClientPublisher<T> implements TransactionPublisher<T> {
+public class ClientPublisher<S> implements TransactionPublisher<S> {
 
     private final BrokenClock _clock = new BrokenClock();
 
-    private TransactionSubscriber<T> _subscriber;
+    private TransactionSubscriber<S> _subscriber;
 
     private final Object _upToDateMonitor = new Object();
 
-    private Capsule<T, ?, ?> _myCapsule;
+    private TransactionCapsule<S, ?, ?> _myCapsule;
 
     private final Object _myCapsuleMonitor = new Object();
 
@@ -45,9 +44,9 @@ public class ClientPublisher<T> implements TransactionPublisher<T> {
 
     private final ObjectSocket _server;
 
-    public ClientPublisher(OldNetwork network, String serverIpAddress, int serverPort) throws IOException {
+    public ClientPublisher(String serverIpAddress, int serverPort) throws IOException {
         System.out.println("The replication logic is still under development.");
-        _server = network.openSocket(serverIpAddress, serverPort);
+        _server = new ObjectSocket(serverIpAddress, serverPort);
         startListening();
     }
 
@@ -66,7 +65,7 @@ public class ClientPublisher<T> implements TransactionPublisher<T> {
         listener.start();
     }
 
-    public synchronized void subscribe(TransactionSubscriber<T> subscriber, long initialTransaction) {
+    public synchronized void subscribe(TransactionSubscriber<S> subscriber, long initialTransaction) {
         if (_subscriber != null) {
             throw new UnsupportedOperationException("The current implementation can only support one subscriber. Future implementations will support more.");
         }
@@ -81,13 +80,13 @@ public class ClientPublisher<T> implements TransactionPublisher<T> {
         }
     }
 
-    public void cancelSubscription(@SuppressWarnings("unused") TransactionSubscriber<T> subscriber) {
+    public void cancelSubscription(@SuppressWarnings("unused") TransactionSubscriber<S> subscriber) {
         throw new UnsupportedOperationException("Removing subscribers is not yet supported by the current implementation.");
     }
 
     // TODO Remove synchronized allowing multiple transactions to be sent at a
     // time.
-    public synchronized <R, E extends Exception> void publish(Capsule<T, R, E> capsule) {
+    public synchronized <R, E extends Exception> void publish(TransactionCapsule<S, R, E> capsule) {
         if (_subscriber == null)
             throw new IllegalStateException("To publish a transaction, this ClientPublisher needs a registered subscriber.");
         synchronized (_myCapsuleMonitor) {

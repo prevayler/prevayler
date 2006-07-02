@@ -10,13 +10,13 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.Query;
+import org.prevayler.GenericTransaction;
+import org.prevayler.PrevalenceContext;
+import org.prevayler.ReadOnly;
 
-import java.util.Date;
+@ReadOnly public class NullQuery implements GenericTransaction<Object, Void, RuntimeException> {
 
-public class NullQuery extends Query<Object, Void, RuntimeException> {
-
-    public Void executeOn(@SuppressWarnings("unused") Object prevalentSystem, @SuppressWarnings("unused") Date executionTime) {
+    public Void executeOn(@SuppressWarnings("unused") Object prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
         return null;
     }
 

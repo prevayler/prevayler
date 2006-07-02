@@ -66,11 +66,7 @@ public class CheckpointTest extends FileIOTest {
     }
 
     private void verify(String expectedResult) {
-        assertEquals(expectedResult, system().value());
-    }
-
-    private AppendingSystem system() {
-        return _prevayler.prevalentSystem();
+        assertEquals(expectedResult, _prevayler.execute(new ValueQuery()));
     }
 
 }

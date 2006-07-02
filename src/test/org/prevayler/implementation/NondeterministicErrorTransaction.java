@@ -10,7 +10,7 @@
 
 package org.prevayler.implementation;
 
-import java.util.Date;
+import org.prevayler.PrevalenceContext;
 
 public class NondeterministicErrorTransaction extends Appendix {
 
@@ -32,9 +32,9 @@ public class NondeterministicErrorTransaction extends Appendix {
         super(toAdd);
     }
 
-    @Override public Void executeOn(AppendingSystem prevalentSystem, Date executionTime) {
+    @Override public Void executeOn(AppendingSystem prevalentSystem, PrevalenceContext prevalenceContext) {
         triggerBomb();
-        return super.executeOn(prevalentSystem, executionTime);
+        return super.executeOn(prevalentSystem, prevalenceContext);
     }
 
 }

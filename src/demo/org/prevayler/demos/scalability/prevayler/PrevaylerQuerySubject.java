@@ -33,7 +33,7 @@ public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject<QuerySyst
     }
 
     public QueryConnection createTestConnection() {
-        return new PrevaylerQueryConnection(prevayler.prevalentSystem());
+        return new PrevaylerQueryConnection(prevayler);
     }
 
     public void reportResourcesUsed(@SuppressWarnings("unused") PrintStream out) {

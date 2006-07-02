@@ -10,11 +10,9 @@
 
 package org.prevayler.demos.demo2.gui;
 
+import org.prevayler.Listener;
 import org.prevayler.Prevayler;
-import org.prevayler.demos.demo2.business.Account;
-import org.prevayler.demos.demo2.business.AccountListener;
 import org.prevayler.demos.demo2.business.Bank;
-import org.prevayler.demos.demo2.business.BankListener;
 import org.prevayler.demos.demo2.business.transactions.AccountDeletion;
 
 import javax.swing.AbstractAction;
@@ -32,7 +30,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 
-class AllAccountsFrame extends JInternalFrame implements BankListener, AccountListener {
+class AllAccountsFrame extends JInternalFrame implements Listener<BankEvent> {
 
     private static final long serialVersionUID = -9182376858708585231L;
 
@@ -46,8 +44,7 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
 
         accountList = new JList();
         accountList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        bank().setBankListener(this);
-        listenToAccounts();
+        prevayler.register(BankEvent.class, this);
         refreshAccounts();
 
         container.add(this);
@@ -58,36 +55,11 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
         show();
     }
 
-    private void listenToAccounts() {
-        java.util.Iterator it = accounts().iterator();
-        while (it.hasNext()) {
-            ((Account) it.next()).addAccountListener(this);
-        }
-    }
-
     private void refreshAccounts() {
-        accountList.setListData(accounts().toArray());
+        accountList.setListData(_prevayler.execute(new AccountInfoQuery()));
     }
 
-    private java.util.List accounts() {
-        return bank().accounts();
-    }
-
-    private Bank bank() {
-        return _prevayler.prevalentSystem();
-    }
-
-    public void accountCreated(Account a) { // Implements BankListener.
-        a.addAccountListener(this);
-        refreshAccounts();
-    }
-
-    public void accountDeleted(Account a) { // Implements BankListener.
-        a.removeAccountListener(this);
-        refreshAccounts();
-    }
-
-    public void accountChanged() { // Implements AccountListener.
+    public void handle(@SuppressWarnings("unused") BankEvent event) {
         refreshAccounts();
     }
 
@@ -132,10 +104,11 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
         }
 
         @Override protected void action() throws Exception {
-            action((Account) accountList.getSelectedValue());
+            action((AccountInfo) accountList.getSelectedValue());
         }
 
-        abstract void action(Account account) throws Exception;
+        abstract void action(AccountInfo accountInfo) throws Exception;
+
     }
 
     class AccountEditAction extends SelectedAccountAction {
@@ -146,8 +119,8 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
             super("Edit");
         }
 
-        @Override void action(Account account) {
-            new AccountEditFrame(account, _prevayler, getDesktopPane());
+        @Override void action(AccountInfo accountInfo) throws Exception {
+            new AccountEditFrame(accountInfo.getNumber(), _prevayler, getDesktopPane());
         }
     }
 
@@ -159,12 +132,12 @@ class AllAccountsFrame extends JInternalFrame implements BankListener, AccountLi
             super("Delete");
         }
 
-        @Override void action(Account account) throws Exception {
+        @Override void action(AccountInfo accountInfo) throws Exception {
             int option = JOptionPane.showConfirmDialog(null, "Delete selected account?", "Account Deletion", JOptionPane.YES_NO_OPTION);
             if (option != JOptionPane.YES_OPTION)
                 return;
 
-            _prevayler.execute(new AccountDeletion(account));
+            _prevayler.execute(new AccountDeletion(accountInfo.getNumber()));
         }
 
     }

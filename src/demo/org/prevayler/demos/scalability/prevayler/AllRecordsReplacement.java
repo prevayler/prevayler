@@ -10,13 +10,13 @@
 
 package org.prevayler.demos.scalability.prevayler;
 
-import org.prevayler.TransactionWithoutResult;
+import org.prevayler.GenericTransaction;
+import org.prevayler.PrevalenceContext;
 import org.prevayler.demos.scalability.RecordIterator;
 
 import java.io.Serializable;
-import java.util.Date;
 
-class AllRecordsReplacement implements TransactionWithoutResult<ScalabilitySystem>, Serializable {
+class AllRecordsReplacement implements GenericTransaction<ScalabilitySystem, Void, RuntimeException>, Serializable {
 
     private static final long serialVersionUID = 6283032417365727408L;
 
@@ -26,7 +26,7 @@ class AllRecordsReplacement implements TransactionWithoutResult<ScalabilitySyste
         _records = records;
     }
 
-    public Void executeOn(ScalabilitySystem system, @SuppressWarnings("unused") Date ignored) {
+    public Void executeOn(ScalabilitySystem system, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
         system.replaceAllRecords(new RecordIterator(_records));
         return null;
     }

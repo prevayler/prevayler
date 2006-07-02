@@ -12,7 +12,6 @@ package org.prevayler;
 
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.monitor.SimpleMonitor;
-import org.prevayler.foundation.network.OldNetworkImpl;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.serialization.SkaringaSerializer;
@@ -57,9 +56,9 @@ import java.util.Map;
  * 
  * @see Prevayler
  */
-public class PrevaylerFactory<T> {
+public class PrevaylerFactory<S> {
 
-    private T _prevalentSystem;
+    private S _prevalentSystem;
 
     private Clock _clock;
 
@@ -69,7 +68,7 @@ public class PrevaylerFactory<T> {
 
     private String _prevalenceDirectory;
 
-    private NullSnapshotManager<T> _nullSnapshotManager;
+    private NullSnapshotManager<S> _nullSnapshotManager;
 
     private long _journalSizeThreshold;
 
@@ -85,11 +84,11 @@ public class PrevaylerFactory<T> {
 
     private Monitor _monitor;
 
-    private Serializer<Transaction> _journalSerializer;
+    private Serializer<GenericTransaction> _journalSerializer;
 
     private String _journalSuffix;
 
-    private Map<String, Serializer<T>> _snapshotSerializers = new HashMap<String, Serializer<T>>();
+    private Map<String, Serializer<S>> _snapshotSerializers = new HashMap<String, Serializer<S>>();
 
     private String _primarySnapshotSuffix;
 
@@ -103,7 +102,7 @@ public class PrevaylerFactory<T> {
      *            as a starting point for every system startup, until the first
      *            snapshot is taken.
      */
-    public static <T> Prevayler<T> createPrevayler(T newPrevalentSystem) throws IOException {
+    public static <S> Prevayler<S> createPrevayler(S newPrevalentSystem) throws IOException {
         return createPrevayler(newPrevalentSystem, "PrevalenceBase");
     }
 
@@ -119,8 +118,8 @@ public class PrevaylerFactory<T> {
      *            The directory where the .snapshot files and .journal files
      *            will be read and written.
      */
-    public static <T> Prevayler<T> createPrevayler(T newPrevalentSystem, String prevalenceBase) throws IOException {
-        PrevaylerFactory<T> factory = new PrevaylerFactory<T>();
+    public static <S> Prevayler<S> createPrevayler(S newPrevalentSystem, String prevalenceBase) throws IOException {
+        PrevaylerFactory<S> factory = new PrevaylerFactory<S>();
         factory.configurePrevalentSystem(newPrevalentSystem);
         factory.configurePrevalenceDirectory(prevalenceBase);
         return factory.create();
@@ -136,13 +135,13 @@ public class PrevaylerFactory<T> {
      * 
      * @param newPrevalentSystem
      *            The newly started, "empty" prevalent system.
-     * @see #createCheckpointPrevayler(T newPrevalentSystem, String
+     * @see #createCheckpointPrevayler(S newPrevalentSystem, String
      *      snapshotDirectory)
      */
-    public static <T> Prevayler<T> createTransientPrevayler(T newPrevalentSystem) {
-        PrevaylerFactory<T> factory = new PrevaylerFactory<T>();
+    public static <S> Prevayler<S> createTransientPrevayler(S newPrevalentSystem) {
+        PrevaylerFactory<S> factory = new PrevaylerFactory<S>();
         factory.configurePrevalentSystem(newPrevalentSystem);
-        factory.configureNullSnapshotManager(new NullSnapshotManager<T>(newPrevalentSystem, "Transient Prevaylers are unable to take snapshots."));
+        factory.configureNullSnapshotManager(new NullSnapshotManager<S>(newPrevalentSystem, "Transient Prevaylers are unable to take snapshots."));
         factory.configureTransientMode(true);
         try {
             return factory.create();
@@ -167,8 +166,8 @@ public class PrevaylerFactory<T> {
      *            The directory where the .snapshot files will be read and
      *            written.
      */
-    public static <T> Prevayler<T> createCheckpointPrevayler(T newPrevalentSystem, String snapshotDirectory) {
-        PrevaylerFactory<T> factory = new PrevaylerFactory<T>();
+    public static <S> Prevayler<S> createCheckpointPrevayler(S newPrevalentSystem, String snapshotDirectory) {
+        PrevaylerFactory<S> factory = new PrevaylerFactory<S>();
         factory.configurePrevalentSystem(newPrevalentSystem);
         factory.configurePrevalenceDirectory(snapshotDirectory);
         factory.configureTransientMode(true);
@@ -245,7 +244,7 @@ public class PrevaylerFactory<T> {
      *            prevalentSystem must be compatible with it.
      * @see #configureSnapshotSerializer(String,Serializer)
      */
-    public void configurePrevalentSystem(T newPrevalentSystem) {
+    public void configurePrevalentSystem(S newPrevalentSystem) {
         _prevalentSystem = newPrevalentSystem;
     }
 
@@ -264,7 +263,7 @@ public class PrevaylerFactory<T> {
         _serverPort = port;
     }
 
-    private void configureNullSnapshotManager(NullSnapshotManager<T> snapshotManager) {
+    private void configureNullSnapshotManager(NullSnapshotManager<S> snapshotManager) {
         _nullSnapshotManager = snapshotManager;
     }
 
@@ -294,15 +293,15 @@ public class PrevaylerFactory<T> {
         _journalAgeThreshold = ageInMilliseconds;
     }
 
-    public void configureJournalSerializer(JavaSerializer<Transaction> serializer) {
+    public void configureJournalSerializer(JavaSerializer<GenericTransaction> serializer) {
         configureJournalSerializer("journal", serializer);
     }
 
-    public void configureJournalSerializer(XStreamSerializer<Transaction> serializer) {
+    public void configureJournalSerializer(XStreamSerializer<GenericTransaction> serializer) {
         configureJournalSerializer("xstreamjournal", serializer);
     }
 
-    public void configureJournalSerializer(SkaringaSerializer<Transaction> serializer) {
+    public void configureJournalSerializer(SkaringaSerializer<GenericTransaction> serializer) {
         configureJournalSerializer("skaringajournal", serializer);
     }
 
@@ -313,7 +312,7 @@ public class PrevaylerFactory<T> {
      * have to take a snapshot first because the journal files written by the
      * previous Serializer will not be read.
      */
-    public void configureJournalSerializer(String suffix, Serializer<Transaction> serializer) {
+    public void configureJournalSerializer(String suffix, Serializer<GenericTransaction> serializer) {
         PrevaylerDirectory.checkValidJournalSuffix(suffix);
 
         if (_journalSerializer != null) {
@@ -324,15 +323,15 @@ public class PrevaylerFactory<T> {
         _journalSuffix = suffix;
     }
 
-    public void configureSnapshotSerializer(JavaSerializer<T> serializer) {
+    public void configureSnapshotSerializer(JavaSerializer<S> serializer) {
         configureSnapshotSerializer("snapshot", serializer);
     }
 
-    public void configureSnapshotSerializer(XStreamSerializer<T> serializer) {
+    public void configureSnapshotSerializer(XStreamSerializer<S> serializer) {
         configureSnapshotSerializer("xstreamsnapshot", serializer);
     }
 
-    public void configureSnapshotSerializer(SkaringaSerializer<T> serializer) {
+    public void configureSnapshotSerializer(SkaringaSerializer<S> serializer) {
         configureSnapshotSerializer("skaringasnapshot", serializer);
     }
 
@@ -343,7 +342,7 @@ public class PrevaylerFactory<T> {
      * the <i>primary</i> strategy, which will be used for writing snapshots as
      * well as for deep-copying the prevalent system whenever necessary.
      */
-    public void configureSnapshotSerializer(String suffix, Serializer<T> serializer) {
+    public void configureSnapshotSerializer(String suffix, Serializer<S> serializer) {
         PrevaylerDirectory.checkValidSnapshotSuffix(suffix);
         _snapshotSerializers.put(suffix, serializer);
         if (_primarySnapshotSuffix == null) {
@@ -362,67 +361,67 @@ public class PrevaylerFactory<T> {
      *             If a class of a serialized Object is not found when reading a
      *             .journal or .snapshot file.
      */
-    public Prevayler<T> create() throws IOException {
-        SnapshotManager<T> snapshotManager = snapshotManager();
-        TransactionPublisher<T> publisher = publisher(snapshotManager);
+    public Prevayler<S> create() throws IOException {
+        SnapshotManager<S> snapshotManager = snapshotManager();
+        TransactionPublisher<S> publisher = publisher(snapshotManager);
         if (_serverPort != -1) {
-            new ServerListener<T>(publisher, new OldNetworkImpl(), _serverPort);
+            new ServerListener<S>(publisher, _serverPort);
         }
-        return new PrevaylerImpl<T>(snapshotManager, publisher, journalSerializer());
+        return new PrevaylerImpl<S>(snapshotManager, publisher, journalSerializer());
     }
 
     private String prevalenceDirectory() {
         return _prevalenceDirectory != null ? _prevalenceDirectory : "Prevalence";
     }
 
-    private T prevalentSystem() {
+    private S prevalentSystem() {
         if (_prevalentSystem == null)
             throw new IllegalStateException("The prevalent system must be configured.");
         return _prevalentSystem;
     }
 
-    private TransactionPublisher<T> publisher(SnapshotManager<T> snapshotManager) throws IOException {
+    private TransactionPublisher<S> publisher(SnapshotManager<S> snapshotManager) throws IOException {
         if (_remoteServerIpAddress != null) {
-            return new ClientPublisher<T>(new OldNetworkImpl(), _remoteServerIpAddress, _remoteServerPort);
+            return new ClientPublisher<S>(_remoteServerIpAddress, _remoteServerPort);
         } else {
-            return new CentralPublisher<T>(clock(), censor(snapshotManager), journal());
+            return new CentralPublisher<S>(clock(), censor(snapshotManager), journal());
         }
     }
 
-    private TransactionCensor<T> censor(SnapshotManager<T> snapshotManager) {
-        return _transactionFiltering ? new StrictTransactionCensor<T>(snapshotManager) : new LiberalTransactionCensor<T>();
+    private TransactionCensor<S> censor(SnapshotManager<S> snapshotManager) {
+        return _transactionFiltering ? new StrictTransactionCensor<S>(snapshotManager) : new LiberalTransactionCensor<S>();
     }
 
-    private Journal<T> journal() throws IOException {
+    private Journal<S> journal() throws IOException {
         if (_transientMode) {
-            return new TransientJournal<T>();
+            return new TransientJournal<S>();
         } else {
             PrevaylerDirectory directory = new PrevaylerDirectory(prevalenceDirectory());
-            return new PersistentJournal<T>(directory, _journalSizeThreshold, _journalAgeThreshold, journalSuffix(), monitor());
+            return new PersistentJournal<S>(directory, _journalSizeThreshold, _journalAgeThreshold, journalSuffix(), monitor());
         }
     }
 
-    private Serializer<Transaction> journalSerializer() {
+    private Serializer<GenericTransaction> journalSerializer() {
         if (_journalSerializer != null)
             return _journalSerializer;
-        return new JavaSerializer<Transaction>();
+        return new JavaSerializer<GenericTransaction>();
     }
 
     private String journalSuffix() {
         return _journalSuffix != null ? _journalSuffix : "journal";
     }
 
-    private SnapshotManager<T> snapshotManager() {
+    private SnapshotManager<S> snapshotManager() {
         if (_nullSnapshotManager != null)
             return _nullSnapshotManager;
 
         PrevaylerDirectory directory = new PrevaylerDirectory(prevalenceDirectory());
         if (!_snapshotSerializers.isEmpty())
-            return new RealSnapshotManager<T>(_snapshotSerializers, _primarySnapshotSuffix, prevalentSystem(), directory, journalSerializer());
+            return new RealSnapshotManager<S>(_snapshotSerializers, _primarySnapshotSuffix, prevalentSystem(), directory, journalSerializer());
 
         String snapshotSuffix = "snapshot";
-        JavaSerializer<T> snapshotSerializer = new JavaSerializer<T>();
-        return new RealSnapshotManager<T>(Collections.singletonMap(snapshotSuffix, snapshotSerializer), snapshotSuffix, prevalentSystem(), directory, journalSerializer());
+        JavaSerializer<S> snapshotSerializer = new JavaSerializer<S>();
+        return new RealSnapshotManager<S>(Collections.singletonMap(snapshotSuffix, snapshotSerializer), snapshotSuffix, prevalentSystem(), directory, journalSerializer());
     }
 
     private Monitor monitor() {

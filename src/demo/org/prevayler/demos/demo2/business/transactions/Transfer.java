@@ -10,19 +10,19 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
-import org.prevayler.Transaction;
+import org.prevayler.GenericTransaction;
+import org.prevayler.PrevalenceContext;
 import org.prevayler.demos.demo2.business.Bank;
 
 import java.io.Serializable;
-import java.util.Date;
 
-public class Transfer implements Transaction<Bank, Void, Exception>, Serializable {
+public class Transfer implements GenericTransaction<Bank, Void, Exception>, Serializable {
 
     private static final long serialVersionUID = -8656365915179217238L;
 
-    private long _originAccountNumber;
+    private String _originAccountNumber;
 
-    private long _destinationAccountNumber;
+    private String _destinationAccountNumber;
 
     private long _amount;
 
@@ -30,14 +30,14 @@ public class Transfer implements Transaction<Bank, Void, Exception>, Serializabl
     private Transfer() {
     }
 
-    public Transfer(long originAccountNumber, long destinationAccountNumber, long amount) {
+    public Transfer(String originAccountNumber, String destinationAccountNumber, long amount) {
         _originAccountNumber = originAccountNumber;
         _destinationAccountNumber = destinationAccountNumber;
         _amount = amount;
     }
 
-    public Void executeOn(Bank bank, Date timestamp) throws Exception {
-        bank.transfer(_originAccountNumber, _destinationAccountNumber, _amount, timestamp);
+    public Void executeOn(Bank bank, PrevalenceContext prevalenceContext) throws Exception {
+        bank.transfer(_originAccountNumber, _destinationAccountNumber, _amount, prevalenceContext);
         return null;
     }
 

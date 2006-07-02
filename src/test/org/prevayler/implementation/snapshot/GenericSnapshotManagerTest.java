@@ -18,6 +18,7 @@ import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
 import org.prevayler.implementation.AppendTransaction;
+import org.prevayler.implementation.ToStringQuery;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class GenericSnapshotManagerTest extends FileIOTest {
 
     public void testNoExistingSnapshot() throws IOException {
         Prevayler<StringBuilder> prevayler = createPrevayler("snapshot", new JavaSerializer<StringBuilder>());
-        assertEquals("initial", prevayler.prevalentSystem().toString());
+        assertEquals("initial", prevayler.execute(new ToStringQuery()));
     }
 
     public void testRoundtripJava() throws IOException {
@@ -48,7 +49,7 @@ public class GenericSnapshotManagerTest extends FileIOTest {
         checkSnapshotAndDeleteJournal("0000000000000000002." + suffix, "0000000000000000001.journal");
 
         Prevayler<StringBuilder> second = createPrevayler(suffix, serializer);
-        assertEquals("initial one two", second.prevalentSystem().toString());
+        assertEquals("initial one two", second.execute(new ToStringQuery()));
         second.close();
     }
 
@@ -90,13 +91,13 @@ public class GenericSnapshotManagerTest extends FileIOTest {
         checkSnapshotAndDeleteJournal("0000000000000000002.xstreamsnapshot", "0000000000000000001.journal");
 
         Prevayler<StringBuilder> second = createPrevayler("xstreamsnapshot", new XStreamSerializer<StringBuilder>());
-        assertEquals("initial one two", second.prevalentSystem().toString());
+        assertEquals("initial one two", second.execute(new ToStringQuery()));
         second.close();
     }
 
     private void checkCanReadSnapshotWithMultipleStrategies() throws IOException {
         Prevayler<StringBuilder> prevayler = createPrevaylerMulti();
-        assertEquals("initial one two", prevayler.prevalentSystem().toString());
+        assertEquals("initial one two", prevayler.execute(new ToStringQuery()));
         prevayler.close();
     }
 

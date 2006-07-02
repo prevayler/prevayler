@@ -10,9 +10,8 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
+import org.prevayler.PrevalenceContext;
 import org.prevayler.demos.demo2.business.Account;
-
-import java.util.Date;
 
 public class Deposit extends AccountTransaction {
 
@@ -24,13 +23,13 @@ public class Deposit extends AccountTransaction {
     private Deposit() {
     }
 
-    public Deposit(Account account, long amount) {
-        super(account);
+    public Deposit(String accountNumber, long amount) {
+        super(accountNumber);
         _amount = amount;
     }
 
-    @Override public void executeAndQuery(Account account, Date timestamp) throws Account.InvalidAmount {
-        account.deposit(_amount, timestamp);
+    @Override public void executeAndQuery(Account account, PrevalenceContext prevalenceContext) throws Account.InvalidAmount {
+        account.deposit(_amount, prevalenceContext);
     }
 
 }

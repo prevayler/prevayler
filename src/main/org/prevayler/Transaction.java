@@ -13,35 +13,23 @@ package org.prevayler;
 import java.util.Date;
 
 /**
- * A Transaction that also returns a result or throws an Exception after
- * executing. <br>
+ * An atomic Transaction to be executed on a Prevalent System. Any operation
+ * which changes the observable state of a prevalent system must be encapsulated
+ * as a Transaction. <br>
  * <br>
- * A "PersonCreation" Transaction, for example, may return the Person it
- * created. Without this, to retrieve the newly created Person, the caller would
- * have to issue a Query like: "What was the last Person I created?". <br>
+ * IMPORTANT: Transactions CANNOT reference business objects directly. Instead,
+ * they must search the business objects they need given the Prevalent System.
+ * See org.prevayler.demos for usage examples. <br>
  * <br>
- * Looking at the Prevayler demos is by far the best way to learn how to use
- * this class.
- * 
- * @see TransactionWithoutResult
+ * Business objects referenced in a transaction will be mere copies of the
+ * original business objects when that transaction is recovered from the
+ * serialized journal file. This will make the transactions work when they are
+ * executed for the first time but have no effect during shutdown recovery. This
+ * is known as the prevalence baptism problem because everyone comes across it,
+ * despite of this warning.
  */
-public interface Transaction<T, R, E extends Exception> {
+@Deprecated public interface Transaction<S> {
 
-    /**
-     * Performs the necessary modifications on the given prevalentSystem and
-     * also returns an Object or throws an Exception. This method is called by
-     * Prevayler.execute(TransactionWithQuery) to execute this
-     * TransactionWithQuery on the given Prevalent System. See
-     * org.prevayler.demos for usage examples.
-     * 
-     * @param prevalentSystem
-     *            The system on which this TransactionWithQuery will execute.
-     * @param executionTime
-     *            The time at which this TransactionWithQuery is being executed.
-     *            Every Transaction executes completely within a single moment
-     *            in time. Logically, a Prevalent System's time does not pass
-     *            during the execution of a Transaction.
-     */
-    public R executeOn(T prevalentSystem, Date executionTime) throws E;
+    public void executeOn(S prevalentSystem, Date executionTime);
 
 }

@@ -10,15 +10,9 @@
 
 package org.prevayler.demos.demo2.gui;
 
-import net.sourceforge.javamatch.engine.MatchEngine;
 import net.sourceforge.javamatch.engine.MatchException;
-import net.sourceforge.javamatch.engine.MatchResult;
-import net.sourceforge.javamatch.engine.ResultItem;
-import net.sourceforge.javamatch.query.Maximum;
-import net.sourceforge.javamatch.query.QuerySet;
 
 import org.prevayler.Prevayler;
-import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.Bank;
 
 import javax.swing.JButton;
@@ -32,7 +26,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class MatchFrame shows the results of matching the data in the bank demo
@@ -46,7 +40,7 @@ class MatchFrame extends JInternalFrame {
 
     private static final long serialVersionUID = 2988308712345594693L;
 
-    private Prevayler prevayler;
+    private Prevayler<Bank> prevayler;
 
     private JButton refreshButton;
 
@@ -64,7 +58,7 @@ class MatchFrame extends JInternalFrame {
      * container.add(this); setVisible(true); }
      */
 
-    MatchFrame(Prevayler prevayler) {
+    MatchFrame(Prevayler<Bank> prevayler) {
         super("Interesting accounts");
         this.prevayler = prevayler;
         initUI();
@@ -100,32 +94,11 @@ class MatchFrame extends JInternalFrame {
      */
     private void refreshTable() {
         matchTableModel.setRowCount(0);
-        Bank bank = (Bank) prevayler.prevalentSystem();
-        java.util.List accounts = bank.accounts();
 
         try {
-            // create the match engine
-            MatchEngine matchEngine = new MatchEngine();
-
-            // create the match query
-            QuerySet query = new QuerySet();
-            query.addPreferred(new Maximum("balance()"));
-            query.addPreferred(new Maximum("transactionHistory().size()"));
-
-            // execute the match query
-            MatchResult matchResult = matchEngine.executeQuery(query, accounts);
-
-            // retrieve matching results
-            for (Iterator resultIterator = matchResult.getResultIterator(); resultIterator.hasNext();) {
-                ResultItem curResultItem = (ResultItem) resultIterator.next();
-                Account matchedAccount = (Account) curResultItem.getMatchedObject();
-                // create a row in the table that displays the matching results
-                Object[] rowData = new Object[4];
-                rowData[0] = new Float(curResultItem.getMatchValue());
-                rowData[1] = matchedAccount;
-                rowData[2] = new Long(matchedAccount.balance());
-                rowData[3] = new Integer(matchedAccount.transactionHistory().size());
-                matchTableModel.addRow(rowData);
+            List<Object[]> results = prevayler.execute(new JavaMatchQuery());
+            for (Object[] result : results) {
+                matchTableModel.addRow(result);
             }
         } catch (MatchException me) {
             System.out.println(me);

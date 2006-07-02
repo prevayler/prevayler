@@ -11,24 +11,25 @@
 package org.prevayler.implementation;
 
 import org.prevayler.Clock;
+import org.prevayler.GenericTransaction;
+import org.prevayler.Listener;
 import org.prevayler.Prevayler;
 import org.prevayler.ReadOnly;
-import org.prevayler.Transaction;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.snapshot.SnapshotManager;
 
-public class PrevaylerImpl<T> implements Prevayler<T> {
+public class PrevaylerImpl<S> implements Prevayler<S> {
 
-    private final PrevalentSystemGuard<T> _guard;
+    private final PrevalentSystemGuard<S> _guard;
 
     private final Clock _clock;
 
-    private final SnapshotManager<T> _snapshotManager;
+    private final SnapshotManager<S> _snapshotManager;
 
-    private final TransactionPublisher<T> _publisher;
+    private final TransactionPublisher<S> _publisher;
 
-    private final Serializer<Transaction> _journalSerializer;
+    private final Serializer<GenericTransaction> _journalSerializer;
 
     /**
      * Creates a new Prevayler
@@ -44,7 +45,7 @@ public class PrevaylerImpl<T> implements Prevayler<T> {
      *            this PrevaylerImpl.
      * @param journalSerializer
      */
-    public PrevaylerImpl(SnapshotManager<T> snapshotManager, TransactionPublisher<T> transactionPublisher, Serializer<Transaction> journalSerializer) {
+    public PrevaylerImpl(SnapshotManager<S> snapshotManager, TransactionPublisher<S> transactionPublisher, Serializer<GenericTransaction> journalSerializer) {
         _snapshotManager = snapshotManager;
 
         _guard = _snapshotManager.recoveredPrevalentSystem();
@@ -57,30 +58,58 @@ public class PrevaylerImpl<T> implements Prevayler<T> {
         _journalSerializer = journalSerializer;
     }
 
-    public T prevalentSystem() {
-        return _guard.prevalentSystem();
-    }
-
-    public <R, E extends Exception> R execute(Transaction<? super T, R, E> transaction) throws E {
+    public <R, E extends Exception> R execute(GenericTransaction<? super S, R, E> transaction) throws E {
         if (transaction.getClass().isAnnotationPresent(ReadOnly.class)) {
             return _guard.executeQuery(transaction, _clock);
         } else {
-            Capsule<T, R, E> capsule = new Capsule<T, R, E>(transaction, _journalSerializer);
+            TransactionCapsule<S, R, E> capsule = new TransactionCapsule<S, R, E>(transaction, _journalSerializer);
             publish(capsule);
             return capsule.result();
         }
     }
 
-    private <R, E extends Exception> void publish(Capsule<T, R, E> capsule) {
+    private <R, E extends Exception> void publish(TransactionCapsule<S, R, E> capsule) {
         _publisher.publish(capsule);
     }
 
     public void takeSnapshot() {
-        _guard.takeSnapshot(_snapshotManager);
+        execute(new SnapshotQuery<S>(_snapshotManager));
     }
 
     public void close() {
         _publisher.close();
+    }
+
+    public <E> void register(Class<E> eventClass, Listener<? super E> listener) {
+        _guard.register(eventClass, listener);
+    }
+
+    public <E> void unregister(Class<E> eventClass, Listener<? super E> listener) {
+        _guard.unregister(eventClass, listener);
+    }
+
+    @SuppressWarnings("deprecation") public S prevalentSystem() {
+        return execute(new SystemQuery<S>());
+    }
+
+    @SuppressWarnings("deprecation") public Clock clock() {
+        return new QueryingClock(this);
+    }
+
+    @SuppressWarnings("deprecation") public void execute(org.prevayler.Transaction<S> transaction) {
+        execute(new TransactionWrapper<S>(transaction));
+    }
+
+    @SuppressWarnings("deprecation") public <R, E extends Exception> R execute(org.prevayler.Query<S, R, E> sensitiveQuery) throws E {
+        return execute(new QueryWrapper<S, R, E>(sensitiveQuery));
+    }
+
+    @SuppressWarnings("deprecation") public <R, E extends Exception> R execute(org.prevayler.TransactionWithQuery<S, R, E> transactionWithQuery) throws E {
+        return execute(new TransactionWithQueryWrapper<S, R, E>(transactionWithQuery));
+    }
+
+    @SuppressWarnings("deprecation") public <R> R execute(org.prevayler.SureTransactionWithQuery<S, R> sureTransactionWithQuery) {
+        return execute(new TransactionWithQueryWrapper<S, R, RuntimeException>(sureTransactionWithQuery));
     }
 
 }

@@ -10,9 +10,8 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
+import org.prevayler.PrevalenceContext;
 import org.prevayler.demos.demo2.business.Account;
-
-import java.util.Date;
 
 public class HolderChange extends AccountTransaction {
 
@@ -24,12 +23,13 @@ public class HolderChange extends AccountTransaction {
     private HolderChange() {
     }
 
-    public HolderChange(Account account, String newHolder) {
-        super(account);
+    public HolderChange(String accountNumber, String newHolder) {
+        super(accountNumber);
         _newHolder = newHolder;
     }
 
-    @Override public void executeAndQuery(Account account, @SuppressWarnings("unused") Date ignored) throws Account.InvalidHolder {
-        account.setHolder(_newHolder);
+    @Override public void executeAndQuery(Account account, PrevalenceContext prevalenceContext) throws Account.InvalidHolder {
+        account.setHolder(_newHolder, prevalenceContext);
     }
+
 }

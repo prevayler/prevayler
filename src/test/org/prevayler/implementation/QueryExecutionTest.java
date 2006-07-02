@@ -10,14 +10,14 @@
 
 package org.prevayler.implementation;
 
+import org.prevayler.GenericTransaction;
+import org.prevayler.PrevalenceContext;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.Query;
-import org.prevayler.Transaction;
+import org.prevayler.ReadOnly;
 import org.prevayler.foundation.FileIOTest;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,18 +36,18 @@ public class QueryExecutionTest extends FileIOTest {
         assertEquals("added element", prevalentSystem.get(0));
     }
 
-    private static final class MyQuery extends Query<List<String>, Integer, RuntimeException> {
+    @ReadOnly private static final class MyQuery implements GenericTransaction<List<String>, Integer, RuntimeException> {
         private static final long serialVersionUID = 1L;
 
-        public Integer executeOn(List<String> prevalentSystem, @SuppressWarnings("unused") Date ignored) {
+        public Integer executeOn(List<String> prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
             return prevalentSystem.size();
         }
     }
 
-    private static final class MyTransaction implements Transaction<List<String>, String, RuntimeException>, Serializable {
+    private static final class MyTransaction implements GenericTransaction<List<String>, String, RuntimeException>, Serializable {
         private static final long serialVersionUID = -2976662596936807721L;
 
-        public String executeOn(List<String> prevalentSystem, @SuppressWarnings("unused") Date timestamp) {
+        public String executeOn(List<String> prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
             prevalentSystem.add("added element");
             return "abc";
         }

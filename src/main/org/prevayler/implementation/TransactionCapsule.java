@@ -10,16 +10,16 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.Transaction;
+import org.prevayler.GenericTransaction;
+import org.prevayler.PrevalenceContext;
 import org.prevayler.foundation.Chunk;
 import org.prevayler.foundation.serialization.Serializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
-import java.util.Date;
 
-public class Capsule<T, R, E extends Exception> implements Serializable {
+public class TransactionCapsule<S, R, E extends Exception> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -29,7 +29,7 @@ public class Capsule<T, R, E extends Exception> implements Serializable {
 
     private transient Exception _exception;
 
-    public Capsule(Transaction<? super T, R, E> transaction, Serializer<Transaction> journalSerializer) {
+    public TransactionCapsule(GenericTransaction<? super S, R, E> transaction, Serializer<GenericTransaction> journalSerializer) {
         try {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             journalSerializer.writeObject(bytes, transaction);
@@ -39,7 +39,7 @@ public class Capsule<T, R, E extends Exception> implements Serializable {
         }
     }
 
-    public Capsule(byte[] serialized) {
+    public TransactionCapsule(byte[] serialized) {
         _serialized = serialized;
     }
 
@@ -54,7 +54,7 @@ public class Capsule<T, R, E extends Exception> implements Serializable {
     /**
      * Deserialize the contained Transaction or TransactionWithQuery.
      */
-    @SuppressWarnings("unchecked") public final Transaction<? super T, R, E> deserialize(Serializer<Transaction> journalSerializer) {
+    @SuppressWarnings("unchecked") public final GenericTransaction<? super S, R, E> deserialize(Serializer<GenericTransaction> journalSerializer) {
         try {
             return journalSerializer.readObject(new ByteArrayInputStream(_serialized));
         } catch (Exception exception) {
@@ -66,13 +66,13 @@ public class Capsule<T, R, E extends Exception> implements Serializable {
         return new Chunk(_serialized);
     }
 
-    @SuppressWarnings("unchecked") static <T> Capsule<T, ?, ?> fromChunk(Chunk chunk) {
-        return new Capsule(chunk.getBytes());
+    @SuppressWarnings("unchecked") static <S> TransactionCapsule<S, ?, ?> fromChunk(Chunk chunk) {
+        return new TransactionCapsule(chunk.getBytes());
     }
 
-    protected void execute(Transaction<? super T, R, E> transaction, T prevalentSystem, Date executionTime) {
+    protected void execute(GenericTransaction<? super S, R, E> transaction, S prevalentSystem, PrevalenceContext prevalenceContext) {
         try {
-            _result = transaction.executeOn(prevalentSystem, executionTime);
+            _result = transaction.executeOn(prevalentSystem, prevalenceContext);
         } catch (Exception e) {
             _exception = e;
         }
@@ -103,8 +103,8 @@ public class Capsule<T, R, E extends Exception> implements Serializable {
      * Make a clean copy of this capsule that will have its own query result
      * fields.
      */
-    public Capsule<T, R, E> cleanCopy() {
-        return new Capsule<T, R, E>(serialized());
+    public TransactionCapsule<S, R, E> cleanCopy() {
+        return new TransactionCapsule<S, R, E>(serialized());
     }
 
 }
