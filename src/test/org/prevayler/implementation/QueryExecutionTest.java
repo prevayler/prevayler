@@ -10,7 +10,7 @@
 
 package org.prevayler.implementation;
 
-import static org.prevayler.Safety.READ_ONLY;
+import static org.prevayler.Safety.Level.LEVEL_1_SHARED_LOCKING;
 
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
@@ -38,7 +38,7 @@ public class QueryExecutionTest extends FileIOTest {
         assertEquals("added element", prevalentSystem.get(0));
     }
 
-    @Safety(READ_ONLY) private static final class MyQuery implements GenericTransaction<List<String>, Integer, RuntimeException> {
+    @Safety(LEVEL_1_SHARED_LOCKING) private static final class MyQuery implements GenericTransaction<List<String>, Integer, RuntimeException> {
         private static final long serialVersionUID = 1L;
 
         public Integer executeOn(List<String> prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {

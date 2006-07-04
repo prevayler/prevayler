@@ -10,7 +10,7 @@
 
 package org.prevayler.implementation;
 
-import static org.prevayler.Safety.READ_ONLY;
+import static org.prevayler.Safety.Level.LEVEL_1_SHARED_LOCKING;
 
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
@@ -18,7 +18,7 @@ import org.prevayler.Safety;
 
 import java.io.Serializable;
 
-@SuppressWarnings("deprecation") @Safety(READ_ONLY) public class QueryWrapper<S, R, E extends Exception> implements GenericTransaction<S, R, E>, Serializable {
+@SuppressWarnings("deprecation") @Safety(LEVEL_1_SHARED_LOCKING) public class QueryWrapper<S, R, E extends Exception> implements GenericTransaction<S, R, E>, Serializable {
 
     private static final long serialVersionUID = 1L;
 

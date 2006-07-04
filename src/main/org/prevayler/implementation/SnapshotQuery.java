@@ -10,14 +10,14 @@
 
 package org.prevayler.implementation;
 
-import static org.prevayler.Safety.READ_ONLY;
+import static org.prevayler.Safety.Level.LEVEL_1_SHARED_LOCKING;
 
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
 import org.prevayler.Safety;
 import org.prevayler.implementation.snapshot.SnapshotManager;
 
-@Safety(READ_ONLY) public class SnapshotQuery<S> implements GenericTransaction<S, Void, RuntimeException> {
+@Safety(LEVEL_1_SHARED_LOCKING) public class SnapshotQuery<S> implements GenericTransaction<S, Void, RuntimeException> {
 
     private final SnapshotManager<S> _snapshotManager;
 

@@ -17,67 +17,104 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Annotation indicating the safety level required by a
+ * {@link GenericTransaction}.
+ */
 @Inherited @Retention(RUNTIME) @Target(TYPE) public @interface Safety {
 
-    /**
-     * Transaction is not journaled, and executes with no locking. <b>Currently
-     * treated the same as LEVEL_1_SHARED_LOCKING.</b>
-     */
-    public static final int LEVEL_0_NO_LOCKING = 0;
+    public static enum Level {
 
-    /**
-     * Transaction is not journaled, and executes with shared (read) lock alone.
-     */
-    public static final int LEVEL_1_SHARED_LOCKING = 1;
+        /**
+         * Transaction is not journaled, and executes with no locking.
+         * <b>Currently treated the same as LEVEL_1_SHARED_LOCKING.</b>
+         */
+        LEVEL_0_NO_LOCKING(0),
 
-    /**
-     * Transaction is not journaled, and executes with exclusive (write) lock
-     * alone. <b>Currently treated the same as LEVEL_1_SHARED_LOCKING.</b>
-     */
-    public static final int LEVEL_2_EXCLUSIVE_LOCKING = 2;
+        /**
+         * Transaction is not journaled, and executes with shared (read) lock
+         * alone.
+         */
+        LEVEL_1_SHARED_LOCKING(1),
 
-    /**
-     * Transaction is not journaled, and executes with both prevalent system
-     * lock and exclusive (write) lock. <b>Currently treated the same as
-     * LEVEL_1_SHARED_LOCKING.</b>
-     */
-    public static final int LEVEL_3_SYSTEM_LOCKING = 3;
+        /**
+         * Transaction is not journaled, and executes with exclusive (write)
+         * lock alone. <b>Currently treated the same as LEVEL_1_SHARED_LOCKING.</b>
+         */
+        LEVEL_2_EXCLUSIVE_LOCKING(2),
 
-    /**
-     * Transaction is journaled, and executes with both prevalent system lock
-     * and exclusive (write) lock. <b>Currently treated the same as
-     * LEVEL_6_CENSORING.</b>
-     */
-    public static final int LEVEL_4_JOURNALING = 4;
+        /**
+         * Transaction is not journaled, and executes with both prevalent system
+         * lock and exclusive (write) lock. <b>Currently treated the same as
+         * LEVEL_1_SHARED_LOCKING.</b>
+         */
+        LEVEL_3_SYSTEM_LOCKING(3),
 
-    /**
-     * Transaction is deep-copied and journaled, and executes with both
-     * prevalent system lock and exclusive (write) lock. <b>Currently treated
-     * the same as LEVEL_6_CENSORING.</b>
-     */
-    public static final int LEVEL_5_DEEP_COPYING = 5;
+        /**
+         * Transaction is journaled, and executes with both prevalent system
+         * lock and exclusive (write) lock. <b>Currently treated the same as
+         * LEVEL_6_CENSORING.</b>
+         */
+        LEVEL_4_JOURNALING(4),
 
-    /**
-     * Transaction is censored, deep-copied, and journaled, and executes with
-     * both prevalent system lock and exclusive (write) lock. <b>Censoring is
-     * currently applied if and only if a censor is configured.</b>
-     */
-    public static final int LEVEL_6_CENSORING = 6;
+        /**
+         * Transaction is deep-copied and journaled, and executes with both
+         * prevalent system lock and exclusive (write) lock. <b>Currently
+         * treated the same as LEVEL_6_CENSORING.</b>
+         */
+        LEVEL_5_DEEP_COPYING(5),
 
-    /**
-     * Transaction does not modify the prevalent system at all, same as Level 1.
-     * <b>This is just a suggestion.</b>
-     */
-    public static final int READ_ONLY = LEVEL_1_SHARED_LOCKING;
+        /**
+         * Transaction is censored, deep-copied, and journaled, and executes
+         * with both prevalent system lock and exclusive (write) lock.
+         * <b>Censoring is currently applied if and only if a censor is
+         * configured.</b>
+         */
+        LEVEL_6_CENSORING(6);
 
-    /**
-     * Transaction might modify the prevalent system, same as Level 5. <b>This
-     * is just a suggestion.</b>
-     */
-    public static final int READ_WRITE = LEVEL_5_DEEP_COPYING;
+        private final int _level;
+
+        private Level(int level) {
+            _level = level;
+        }
+
+        public boolean isNoLocking() {
+            return _level == 0;
+        }
+
+        public boolean isSharedLocking() {
+            return _level == 1;
+        }
+
+        public boolean isExclusiveLocking() {
+            return _level >= 2;
+        }
+
+        public boolean isSystemLocking() {
+            return _level >= 3;
+        }
+
+        public boolean isJournaling() {
+            return _level >= 4;
+        }
+
+        public boolean isDeepCopying() {
+            return _level >= 5;
+        }
+
+        public boolean isCensoring() {
+            return _level == 6;
+        }
+
+        public static Level safetyLevel(GenericTransaction<?, ?, ?> transaction) {
+            Safety safety = transaction.getClass().getAnnotation(Safety.class);
+            return safety == null ? LEVEL_6_CENSORING : safety.value();
+        }
+
+    }
 
     // This must be called "value" so that the simplified annotation syntax
     // @Safety(#) can be used.
-    public int value();
+    public Level value();
 
 }

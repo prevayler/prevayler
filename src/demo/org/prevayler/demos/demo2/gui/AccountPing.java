@@ -10,14 +10,14 @@
 
 package org.prevayler.demos.demo2.gui;
 
-import static org.prevayler.Safety.READ_ONLY;
+import static org.prevayler.Safety.Level.LEVEL_1_SHARED_LOCKING;
 
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
 import org.prevayler.Safety;
 import org.prevayler.demos.demo2.business.Bank;
 
-@Safety(READ_ONLY) public class AccountPing implements GenericTransaction<Bank, Void, Bank.AccountNotFound> {
+@Safety(LEVEL_1_SHARED_LOCKING) public class AccountPing implements GenericTransaction<Bank, Void, Bank.AccountNotFound> {
 
     private final String accountNumber;
 

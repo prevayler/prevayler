@@ -10,6 +10,8 @@
 
 package org.prevayler.implementation;
 
+import static org.prevayler.Safety.Level.safetyLevel;
+
 import org.prevayler.Clock;
 import org.prevayler.GenericTransaction;
 import org.prevayler.Listener;
@@ -59,18 +61,13 @@ public class PrevaylerImpl<S> implements Prevayler<S> {
     }
 
     public <R, E extends Exception> R execute(GenericTransaction<? super S, R, E> transaction) throws E {
-        if (safetyLevel(transaction) < Safety.LEVEL_4_JOURNALING) {
+        if (!safetyLevel(transaction).isJournaling()) {
             return _guard.executeQuery(transaction, _clock);
         } else {
             TransactionCapsule<S, R, E> capsule = new TransactionCapsule<S, R, E>(transaction, _journalSerializer);
             publish(capsule);
             return capsule.result();
         }
-    }
-
-    private static int safetyLevel(GenericTransaction<?, ?, ?> transaction) {
-        Safety safety = transaction.getClass().getAnnotation(Safety.class);
-        return safety == null ? Safety.LEVEL_6_CENSORING : safety.value();
     }
 
     private <R, E extends Exception> void publish(TransactionCapsule<S, R, E> capsule) {
@@ -102,19 +99,29 @@ public class PrevaylerImpl<S> implements Prevayler<S> {
     }
 
     @SuppressWarnings("deprecation") public void execute(org.prevayler.Transaction<S> transaction) {
+        disallowSafetyAnnotation(transaction);
         execute(new TransactionWrapper<S>(transaction));
     }
 
     @SuppressWarnings("deprecation") public <R, E extends Exception> R execute(org.prevayler.Query<S, R, E> sensitiveQuery) throws E {
+        disallowSafetyAnnotation(sensitiveQuery);
         return execute(new QueryWrapper<S, R, E>(sensitiveQuery));
     }
 
     @SuppressWarnings("deprecation") public <R, E extends Exception> R execute(org.prevayler.TransactionWithQuery<S, R, E> transactionWithQuery) throws E {
+        disallowSafetyAnnotation(transactionWithQuery);
         return execute(new TransactionWithQueryWrapper<S, R, E>(transactionWithQuery));
     }
 
     @SuppressWarnings("deprecation") public <R> R execute(org.prevayler.SureTransactionWithQuery<S, R> sureTransactionWithQuery) {
+        disallowSafetyAnnotation(sureTransactionWithQuery);
         return execute(new TransactionWithQueryWrapper<S, R, RuntimeException>(sureTransactionWithQuery));
+    }
+
+    private static void disallowSafetyAnnotation(Object object) {
+        if (object.getClass().isAnnotationPresent(Safety.class)) {
+            throw new IllegalArgumentException("@Safety only applies to implementations of GenericTransaction");
+        }
     }
 
 }

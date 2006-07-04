@@ -10,7 +10,7 @@
 
 package org.prevayler.demos.demo2.gui;
 
-import static org.prevayler.Safety.READ_ONLY;
+import static org.prevayler.Safety.Level.LEVEL_1_SHARED_LOCKING;
 
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
@@ -20,7 +20,7 @@ import org.prevayler.demos.demo2.business.Bank;
 
 import java.util.List;
 
-@Safety(READ_ONLY) public class AccountInfoQuery implements GenericTransaction<Bank, AccountInfo[], RuntimeException> {
+@Safety(LEVEL_1_SHARED_LOCKING) public class AccountInfoQuery implements GenericTransaction<Bank, AccountInfo[], RuntimeException> {
 
     public AccountInfo[] executeOn(Bank prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) throws RuntimeException {
         List<Account> accounts = prevalentSystem.accounts();
