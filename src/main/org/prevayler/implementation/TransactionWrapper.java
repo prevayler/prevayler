@@ -10,12 +10,15 @@
 
 package org.prevayler.implementation;
 
+import static org.prevayler.Safety.Level.LEVEL_6_CENSORING;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
+import org.prevayler.Safety;
 
 import java.io.Serializable;
 
-@SuppressWarnings("deprecation") public class TransactionWrapper<S> implements GenericTransaction<S, Void, RuntimeException>, Serializable {
+@SuppressWarnings("deprecation") @Safety(LEVEL_6_CENSORING) public class TransactionWrapper<S> implements GenericTransaction<S, Void, RuntimeException>, Serializable {
 
     private static final long serialVersionUID = 1L;
 

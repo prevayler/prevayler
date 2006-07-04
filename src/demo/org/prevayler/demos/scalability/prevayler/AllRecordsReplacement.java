@@ -10,13 +10,16 @@
 
 package org.prevayler.demos.scalability.prevayler;
 
+import static org.prevayler.Safety.Level.LEVEL_4_JOURNALING;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
+import org.prevayler.Safety;
 import org.prevayler.demos.scalability.RecordIterator;
 
 import java.io.Serializable;
 
-class AllRecordsReplacement implements GenericTransaction<ScalabilitySystem, Void, RuntimeException>, Serializable {
+@Safety(LEVEL_4_JOURNALING) class AllRecordsReplacement implements GenericTransaction<ScalabilitySystem, Void, RuntimeException>, Serializable {
 
     private static final long serialVersionUID = 6283032417365727408L;
 

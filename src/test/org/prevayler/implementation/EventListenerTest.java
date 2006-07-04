@@ -10,11 +10,14 @@
 
 package org.prevayler.implementation;
 
+import static org.prevayler.Safety.Level.LEVEL_4_JOURNALING;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.Listener;
 import org.prevayler.PrevalenceContext;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
+import org.prevayler.Safety;
 
 import java.io.Serializable;
 
@@ -70,7 +73,7 @@ public class EventListenerTest extends TestCase {
 
     }
 
-    public static final class MyTransaction implements GenericTransaction<AppendingSystem, Void, RuntimeException>, Serializable {
+    @Safety(LEVEL_4_JOURNALING) public static final class MyTransaction implements GenericTransaction<AppendingSystem, Void, RuntimeException>, Serializable {
 
         private static final long serialVersionUID = 1L;
 

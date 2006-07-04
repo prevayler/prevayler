@@ -10,13 +10,16 @@
 
 package org.prevayler.demos.scalability.prevayler;
 
+import static org.prevayler.Safety.Level.LEVEL_5_DEEP_COPYING;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
+import org.prevayler.Safety;
 import org.prevayler.demos.scalability.Record;
 
 import java.io.Serializable;
 
-class TestTransaction implements GenericTransaction<TransactionSystem, Void, RuntimeException>, Serializable {
+@Safety(LEVEL_5_DEEP_COPYING) class TestTransaction implements GenericTransaction<TransactionSystem, Void, RuntimeException>, Serializable {
 
     private static final long serialVersionUID = -2634307328586761351L;
 

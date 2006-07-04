@@ -108,7 +108,10 @@ import java.lang.annotation.Target;
 
         public static Level safetyLevel(GenericTransaction<?, ?, ?> transaction) {
             Safety safety = transaction.getClass().getAnnotation(Safety.class);
-            return safety == null ? LEVEL_6_CENSORING : safety.value();
+            if (safety == null) {
+                throw new IllegalArgumentException("Every implementation of GenericTransaction must have a @Safety annotation");
+            }
+            return safety.value();
         }
 
     }

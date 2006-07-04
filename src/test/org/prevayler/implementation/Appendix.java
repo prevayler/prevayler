@@ -10,12 +10,15 @@
 
 package org.prevayler.implementation;
 
+import static org.prevayler.Safety.Level.LEVEL_4_JOURNALING;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
+import org.prevayler.Safety;
 
 import java.io.Serializable;
 
-class Appendix implements GenericTransaction<AppendingSystem, Void, RuntimeException>, Serializable {
+@Safety(LEVEL_4_JOURNALING) class Appendix implements GenericTransaction<AppendingSystem, Void, RuntimeException>, Serializable {
 
     private static final long serialVersionUID = 7925676108189989759L;
 

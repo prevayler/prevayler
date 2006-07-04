@@ -10,10 +10,13 @@
 
 package org.prevayler.implementation;
 
+import static org.prevayler.Safety.Level.LEVEL_5_DEEP_COPYING;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
+import org.prevayler.Safety;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.implementation.snapshot.SnapshotError;
 
@@ -75,7 +78,7 @@ public class TransientPrevaylerTest extends FileIOTest {
         prevayler.execute(new Appendix(appendix));
     }
 
-    static private class DirectReferenceTransaction implements GenericTransaction<AppendingSystem, Void, RuntimeException>, Serializable {
+    @Safety(LEVEL_5_DEEP_COPYING) static private class DirectReferenceTransaction implements GenericTransaction<AppendingSystem, Void, RuntimeException>, Serializable {
 
         private static final long serialVersionUID = -7885669885494051746L;
 

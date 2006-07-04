@@ -10,13 +10,16 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
+import static org.prevayler.Safety.Level.LEVEL_4_JOURNALING;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
+import org.prevayler.Safety;
 import org.prevayler.demos.demo2.business.Bank;
 
 import java.io.Serializable;
 
-public class Transfer implements GenericTransaction<Bank, Void, Exception>, Serializable {
+@Safety(LEVEL_4_JOURNALING) public class Transfer implements GenericTransaction<Bank, Void, Exception>, Serializable {
 
     private static final long serialVersionUID = -8656365915179217238L;
 
