@@ -10,12 +10,14 @@
 
 package org.prevayler.demos.demo2.gui;
 
+import static org.prevayler.Safety.READ_ONLY;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.ReadOnly;
+import org.prevayler.Safety;
 import org.prevayler.demos.demo2.business.Bank;
 
-@ReadOnly public class AccountPing implements GenericTransaction<Bank, Void, Bank.AccountNotFound> {
+@Safety(READ_ONLY) public class AccountPing implements GenericTransaction<Bank, Void, Bank.AccountNotFound> {
 
     private final String accountNumber;
 

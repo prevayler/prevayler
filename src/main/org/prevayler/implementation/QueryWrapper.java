@@ -10,13 +10,15 @@
 
 package org.prevayler.implementation;
 
+import static org.prevayler.Safety.READ_ONLY;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.ReadOnly;
+import org.prevayler.Safety;
 
 import java.io.Serializable;
 
-@SuppressWarnings("deprecation") @ReadOnly public class QueryWrapper<S, R, E extends Exception> implements GenericTransaction<S, R, E>, Serializable {
+@SuppressWarnings("deprecation") @Safety(READ_ONLY) public class QueryWrapper<S, R, E extends Exception> implements GenericTransaction<S, R, E>, Serializable {
 
     private static final long serialVersionUID = 1L;
 

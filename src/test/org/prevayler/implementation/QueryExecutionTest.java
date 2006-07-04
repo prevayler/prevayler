@@ -10,11 +10,13 @@
 
 package org.prevayler.implementation;
 
+import static org.prevayler.Safety.READ_ONLY;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.ReadOnly;
+import org.prevayler.Safety;
 import org.prevayler.foundation.FileIOTest;
 
 import java.io.Serializable;
@@ -36,7 +38,7 @@ public class QueryExecutionTest extends FileIOTest {
         assertEquals("added element", prevalentSystem.get(0));
     }
 
-    @ReadOnly private static final class MyQuery implements GenericTransaction<List<String>, Integer, RuntimeException> {
+    @Safety(READ_ONLY) private static final class MyQuery implements GenericTransaction<List<String>, Integer, RuntimeException> {
         private static final long serialVersionUID = 1L;
 
         public Integer executeOn(List<String> prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {

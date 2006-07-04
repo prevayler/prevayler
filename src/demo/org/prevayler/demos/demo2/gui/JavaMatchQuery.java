@@ -10,6 +10,7 @@
 
 package org.prevayler.demos.demo2.gui;
 
+import static org.prevayler.Safety.READ_ONLY;
 import net.sourceforge.javamatch.engine.MatchEngine;
 import net.sourceforge.javamatch.engine.MatchException;
 import net.sourceforge.javamatch.engine.MatchResult;
@@ -19,7 +20,7 @@ import net.sourceforge.javamatch.query.QuerySet;
 
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.ReadOnly;
+import org.prevayler.Safety;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.Bank;
 
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@ReadOnly public class JavaMatchQuery implements GenericTransaction<Bank, List<Object[]>, MatchException> {
+@Safety(READ_ONLY) public class JavaMatchQuery implements GenericTransaction<Bank, List<Object[]>, MatchException> {
 
     public List<Object[]> executeOn(Bank prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) throws MatchException {
         List<Object[]> results = new ArrayList<Object[]>();

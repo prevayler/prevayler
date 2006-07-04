@@ -10,15 +10,17 @@
 
 package org.prevayler.demos.demo2.gui;
 
+import static org.prevayler.Safety.READ_ONLY;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.ReadOnly;
+import org.prevayler.Safety;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.Bank;
 
 import java.util.List;
 
-@ReadOnly public class AccountInfoQuery implements GenericTransaction<Bank, AccountInfo[], RuntimeException> {
+@Safety(READ_ONLY) public class AccountInfoQuery implements GenericTransaction<Bank, AccountInfo[], RuntimeException> {
 
     public AccountInfo[] executeOn(Bank prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) throws RuntimeException {
         List<Account> accounts = prevalentSystem.accounts();

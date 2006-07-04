@@ -10,11 +10,13 @@
 
 package org.prevayler.demos.demo1;
 
+import static org.prevayler.Safety.READ_ONLY;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.ReadOnly;
+import org.prevayler.Safety;
 
-@ReadOnly public class LastNumberQuery implements GenericTransaction<NumberKeeper, Integer, RuntimeException> {
+@Safety(READ_ONLY) public class LastNumberQuery implements GenericTransaction<NumberKeeper, Integer, RuntimeException> {
 
     public Integer executeOn(NumberKeeper prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
         return prevalentSystem.lastNumber();

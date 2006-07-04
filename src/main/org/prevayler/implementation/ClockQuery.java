@@ -10,13 +10,15 @@
 
 package org.prevayler.implementation;
 
+import static org.prevayler.Safety.READ_ONLY;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.ReadOnly;
+import org.prevayler.Safety;
 
 import java.util.Date;
 
-@ReadOnly public class ClockQuery implements GenericTransaction<Object, Date, RuntimeException> {
+@Safety(READ_ONLY) public class ClockQuery implements GenericTransaction<Object, Date, RuntimeException> {
 
     public Date executeOn(@SuppressWarnings("unused") Object prevalentSystem, PrevalenceContext prevalenceContext) {
         return prevalenceContext.executionTime();

@@ -10,12 +10,14 @@
 
 package org.prevayler.implementation;
 
+import static org.prevayler.Safety.READ_ONLY;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.ReadOnly;
+import org.prevayler.Safety;
 import org.prevayler.implementation.snapshot.SnapshotManager;
 
-@ReadOnly public class SnapshotQuery<S> implements GenericTransaction<S, Void, RuntimeException> {
+@Safety(READ_ONLY) public class SnapshotQuery<S> implements GenericTransaction<S, Void, RuntimeException> {
 
     private final SnapshotManager<S> _snapshotManager;
 

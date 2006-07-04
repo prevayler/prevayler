@@ -10,11 +10,13 @@
 
 package org.prevayler.implementation;
 
+import static org.prevayler.Safety.READ_ONLY;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.ReadOnly;
+import org.prevayler.Safety;
 
-@ReadOnly public class ToStringQuery implements GenericTransaction<Object, String, RuntimeException> {
+@Safety(READ_ONLY) public class ToStringQuery implements GenericTransaction<Object, String, RuntimeException> {
 
     public String executeOn(Object prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
         return prevalentSystem.toString();

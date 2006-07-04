@@ -10,11 +10,13 @@
 
 package org.prevayler.implementation;
 
+import static org.prevayler.Safety.READ_ONLY;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.ReadOnly;
+import org.prevayler.Safety;
 
-@ReadOnly public class SystemQuery<S> implements GenericTransaction<S, S, RuntimeException> {
+@Safety(READ_ONLY) public class SystemQuery<S> implements GenericTransaction<S, S, RuntimeException> {
 
     public S executeOn(S prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
         return prevalentSystem;

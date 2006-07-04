@@ -10,13 +10,15 @@
 
 package org.prevayler.demos.scalability.prevayler;
 
+import static org.prevayler.Safety.READ_ONLY;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.ReadOnly;
+import org.prevayler.Safety;
 
 import java.util.List;
 
-@ReadOnly public class QueryByName implements GenericTransaction<QuerySystem, List, RuntimeException> {
+@Safety(READ_ONLY) public class QueryByName implements GenericTransaction<QuerySystem, List, RuntimeException> {
 
     private final String name;
 
