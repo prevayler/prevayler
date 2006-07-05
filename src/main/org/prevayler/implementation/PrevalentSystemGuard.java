@@ -36,7 +36,7 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
 
     private final Serializer<GenericTransaction> _journalSerializer;
 
-    private final ListenerSet _listeners;
+    private final Listeners _listeners;
 
     private final ReadWriteLock _rwlock = new ReentrantReadWriteLock();
 
@@ -46,7 +46,7 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
         _prevalentSystem = prevalentSystem;
         _systemVersion = systemVersion;
         _journalSerializer = journalSerializer;
-        _listeners = new ListenerSet();
+        _listeners = new Listeners();
     }
 
     public void subscribeTo(TransactionPublisher<S> publisher) {
