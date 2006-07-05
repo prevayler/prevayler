@@ -80,11 +80,9 @@ public class TransactionCapsule<S, R, E extends Exception> implements Serializab
 
     @SuppressWarnings("unchecked") public R result() throws E {
         if (_exception != null) {
-            if (_exception instanceof RuntimeException) {
-                throw (RuntimeException) _exception;
-            } else {
-                throw (E) _exception;
-            }
+            // No cast is actually performed, so this works even for
+            // RuntimeExceptions.
+            throw (E) _exception;
         } else {
             return _result;
         }

@@ -10,6 +10,8 @@
 
 package org.prevayler.foundation.serialization;
 
+import org.prevayler.foundation.Cool;
+
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
@@ -30,7 +32,8 @@ public class DESSerializer<T> implements Serializer<T> {
             try {
                 return Cipher.getInstance(_triple ? "DESede" : "DES");
             } catch (GeneralSecurityException e) {
-                throw new RuntimeException(e);
+                // The method calling _ciphers.get() throws Exception anyway.
+                throw Cool.<RuntimeException> loophole(e);
             }
         }
     };
@@ -73,16 +76,8 @@ public class DESSerializer<T> implements Serializer<T> {
         return _delegate.readObject(decrypt);
     }
 
-    private Cipher getCipher() throws GeneralSecurityException {
-        try {
-            return _ciphers.get();
-        } catch (RuntimeException e) {
-            if (e.getCause() instanceof GeneralSecurityException) {
-                throw (GeneralSecurityException) e.getCause();
-            } else {
-                throw e;
-            }
-        }
+    private Cipher getCipher() throws Exception {
+        return _ciphers.get();
     }
 
 }

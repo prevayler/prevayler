@@ -101,4 +101,28 @@ public class Cool {
         }
     }
 
+    /**
+     * Rethrow the given throwable as some arbitrary other type, circumventing
+     * checked exception typesafety.
+     * <p>
+     * <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4708394">Bug
+     * 4708394</a> discusses this technique. No casting or other typechecking
+     * is performed at runtime, so the following code compiles successfully and
+     * throws the IOException from the method without declaring IOException as
+     * being thrown:
+     * 
+     * <pre>
+     * public void example() {
+     *     throw Cool.&lt;RuntimeException&gt; loophole(new IOException());
+     * }
+     * </pre>
+     * 
+     * The fact that T is also returned is just for syntactic convenience in the
+     * caller; no value is returned, since this method itself throws the given
+     * throwable.
+     */
+    @SuppressWarnings("unchecked") public static <T extends Throwable> T loophole(Throwable t) throws T {
+        throw (T) t;
+    }
+
 }
