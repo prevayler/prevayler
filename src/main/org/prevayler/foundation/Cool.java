@@ -102,8 +102,22 @@ public class Cool {
     }
 
     /**
-     * Rethrow the given throwable as some arbitrary other type, circumventing
-     * checked exception typesafety.
+     * Rethrow the given throwable as if it were an unchecked exception.
+     * Equivalent to:
+     * 
+     * <pre>
+     * throw Cool.&lt;RuntimeException&gt; loophole(t);
+     * </pre>
+     * 
+     * @see #loophole(Throwable)
+     */
+    public static RuntimeException unchecked(Throwable t) {
+        throw Cool.<RuntimeException> loophole(t);
+    }
+
+    /**
+     * Rethrow the given throwable as if it were some arbitrary other type,
+     * circumventing checked exception declarations.
      * <p>
      * <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4708394">Bug
      * 4708394</a> discusses this technique. No casting or other typechecking

@@ -33,7 +33,7 @@ public class DESSerializer<T> implements Serializer<T> {
                 return Cipher.getInstance(_triple ? "DESede" : "DES");
             } catch (GeneralSecurityException e) {
                 // The method calling _ciphers.get() throws Exception anyway.
-                throw Cool.<RuntimeException> loophole(e);
+                throw Cool.unchecked(e);
             }
         }
     };
