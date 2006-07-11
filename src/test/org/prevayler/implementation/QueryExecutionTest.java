@@ -10,14 +10,12 @@
 
 package org.prevayler.implementation;
 
-import static org.prevayler.Safety.Level.LEVEL_1_SHARED_LOCKING;
-import static org.prevayler.Safety.Level.LEVEL_4_JOURNALING;
-
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-import org.prevayler.Safety;
+import org.prevayler.demos.ReadOnly;
+import org.prevayler.demos.ReadWrite;
 import org.prevayler.foundation.FileIOTest;
 
 import java.io.Serializable;
@@ -39,7 +37,7 @@ public class QueryExecutionTest extends FileIOTest {
         assertEquals("added element", prevalentSystem.get(0));
     }
 
-    @Safety(LEVEL_1_SHARED_LOCKING) private static final class MyQuery implements GenericTransaction<List<String>, Integer, RuntimeException> {
+    @ReadOnly private static final class MyQuery implements GenericTransaction<List<String>, Integer, RuntimeException> {
         private static final long serialVersionUID = 1L;
 
         public Integer executeOn(List<String> prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
@@ -47,7 +45,7 @@ public class QueryExecutionTest extends FileIOTest {
         }
     }
 
-    @Safety(LEVEL_4_JOURNALING) private static final class MyTransaction implements GenericTransaction<List<String>, String, RuntimeException>, Serializable {
+    @ReadWrite private static final class MyTransaction implements GenericTransaction<List<String>, String, RuntimeException>, Serializable {
         private static final long serialVersionUID = -2976662596936807721L;
 
         public String executeOn(List<String> prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {

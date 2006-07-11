@@ -10,11 +10,9 @@
 
 package org.prevayler.demos.demo1;
 
-import static org.prevayler.Safety.Level.LEVEL_4_JOURNALING;
-
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.Safety;
+import org.prevayler.demos.ReadWrite;
 
 import java.io.Serializable;
 
@@ -22,7 +20,7 @@ import java.io.Serializable;
  * To change the state of the business objects, the client code must use a
  * Transaction like this one.
  */
-@Safety(LEVEL_4_JOURNALING) class NumberStorageTransaction implements GenericTransaction<NumberKeeper, Void, RuntimeException>, Serializable {
+@ReadWrite class NumberStorageTransaction implements GenericTransaction<NumberKeeper, Void, RuntimeException>, Serializable {
 
     private static final long serialVersionUID = -2023934810496653301L;
 

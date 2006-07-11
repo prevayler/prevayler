@@ -10,7 +10,6 @@
 
 package org.prevayler.demos.demo2.gui;
 
-import static org.prevayler.Safety.Level.LEVEL_1_SHARED_LOCKING;
 import net.sourceforge.javamatch.engine.MatchEngine;
 import net.sourceforge.javamatch.engine.MatchException;
 import net.sourceforge.javamatch.engine.MatchResult;
@@ -20,7 +19,7 @@ import net.sourceforge.javamatch.query.QuerySet;
 
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.Safety;
+import org.prevayler.demos.ReadOnly;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.Bank;
 
@@ -28,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@Safety(LEVEL_1_SHARED_LOCKING) public class JavaMatchQuery implements GenericTransaction<Bank, List<Object[]>, MatchException> {
+@ReadOnly public class JavaMatchQuery implements GenericTransaction<Bank, List<Object[]>, MatchException> {
 
     public List<Object[]> executeOn(Bank prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) throws MatchException {
         List<Object[]> results = new ArrayList<Object[]>();

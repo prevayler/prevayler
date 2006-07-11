@@ -10,13 +10,11 @@
 
 package org.prevayler.implementation;
 
-import static org.prevayler.Safety.Level.LEVEL_1_SHARED_LOCKING;
-
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.Safety;
+import org.prevayler.demos.ReadOnly;
 
-@Safety(LEVEL_1_SHARED_LOCKING) public class ToStringQuery implements GenericTransaction<Object, String, RuntimeException> {
+@ReadOnly public class ToStringQuery implements GenericTransaction<Object, String, RuntimeException> {
 
     public String executeOn(Object prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
         return prevalentSystem.toString();

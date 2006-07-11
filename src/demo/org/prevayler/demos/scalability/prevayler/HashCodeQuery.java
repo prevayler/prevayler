@@ -10,13 +10,11 @@
 
 package org.prevayler.demos.scalability.prevayler;
 
-import static org.prevayler.Safety.Level.LEVEL_1_SHARED_LOCKING;
-
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.Safety;
+import org.prevayler.demos.ReadOnly;
 
-@Safety(LEVEL_1_SHARED_LOCKING) public class HashCodeQuery implements GenericTransaction<TransactionSystem, Integer, RuntimeException> {
+@ReadOnly public class HashCodeQuery implements GenericTransaction<TransactionSystem, Integer, RuntimeException> {
 
     public Integer executeOn(TransactionSystem prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
         return prevalentSystem.hashCode();

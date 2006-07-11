@@ -10,15 +10,13 @@
 
 package org.prevayler.demos.scalability.prevayler;
 
-import static org.prevayler.Safety.Level.LEVEL_1_SHARED_LOCKING;
-
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.Safety;
+import org.prevayler.demos.ReadOnly;
 
 import java.util.List;
 
-@Safety(LEVEL_1_SHARED_LOCKING) public class QueryByName implements GenericTransaction<QuerySystem, List, RuntimeException> {
+@ReadOnly public class QueryByName implements GenericTransaction<QuerySystem, List, RuntimeException> {
 
     private final String name;
 

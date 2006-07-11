@@ -10,17 +10,15 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
-import static org.prevayler.Safety.Level.LEVEL_4_JOURNALING;
-
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.Safety;
+import org.prevayler.demos.ReadWrite;
 import org.prevayler.demos.demo2.business.Account;
 import org.prevayler.demos.demo2.business.Bank;
 
 import java.io.Serializable;
 
-@Safety(LEVEL_4_JOURNALING) public class AccountCreation implements GenericTransaction<Bank, Account, Account.InvalidHolder>, Serializable {
+@ReadWrite public class AccountCreation implements GenericTransaction<Bank, Account, Account.InvalidHolder>, Serializable {
 
     private static final long serialVersionUID = 476105268406333743L;
 

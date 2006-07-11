@@ -10,13 +10,11 @@
 
 package org.prevayler.demos.demo1;
 
-import static org.prevayler.Safety.Level.LEVEL_1_SHARED_LOCKING;
-
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.Safety;
+import org.prevayler.demos.ReadOnly;
 
-@Safety(LEVEL_1_SHARED_LOCKING) public class SizeQuery implements GenericTransaction<NumberKeeper, Integer, RuntimeException> {
+@ReadOnly public class SizeQuery implements GenericTransaction<NumberKeeper, Integer, RuntimeException> {
 
     public Integer executeOn(NumberKeeper prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
         return prevalentSystem.numbers().size();

@@ -8,19 +8,15 @@
 // Prevayler is a trademark of Klaus Wuestefeld.
 // See the LICENSE file for license details.
 
-package org.prevayler.implementation;
+package org.prevayler.demos;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.prevayler.Safety.Journaling.TRANSIENT;
-import static org.prevayler.Safety.Locking.NONE;
+import static org.prevayler.Safety.Locking.SHARED;
 
-import org.prevayler.GenericTransaction;
-import org.prevayler.PrevalenceContext;
 import org.prevayler.Safety;
 
-@Safety(journaling = TRANSIENT, locking = NONE) public class SystemQuery<S> implements GenericTransaction<S, S, RuntimeException> {
+import java.lang.annotation.Retention;
 
-    public S executeOn(S prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-        return prevalentSystem;
-    }
-
+@Retention(RUNTIME) @Safety(journaling = TRANSIENT, locking = SHARED) public @interface ReadOnly {
 }

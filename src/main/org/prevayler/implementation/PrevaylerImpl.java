@@ -10,8 +10,6 @@
 
 package org.prevayler.implementation;
 
-import static org.prevayler.Safety.Level.safetyLevel;
-
 import org.prevayler.Clock;
 import org.prevayler.GenericTransaction;
 import org.prevayler.Listener;
@@ -61,7 +59,7 @@ public class PrevaylerImpl<S> implements Prevayler<S> {
     }
 
     public <R, E extends Exception> R execute(GenericTransaction<? super S, R, E> transaction) throws E {
-        if (!safetyLevel(transaction).isJournaling()) {
+        if (!SafetyCache.isJournaling(transaction)) {
             return _guard.executeQuery(transaction, _clock);
         } else {
             TransactionCapsule<S, R, E> capsule = new TransactionCapsule<S, R, E>(transaction, _journalSerializer);

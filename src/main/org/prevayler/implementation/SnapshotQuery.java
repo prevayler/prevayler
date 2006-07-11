@@ -10,14 +10,15 @@
 
 package org.prevayler.implementation;
 
-import static org.prevayler.Safety.Level.LEVEL_1_SHARED_LOCKING;
+import static org.prevayler.Safety.Journaling.TRANSIENT;
+import static org.prevayler.Safety.Locking.SHARED;
 
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
 import org.prevayler.Safety;
 import org.prevayler.implementation.snapshot.SnapshotManager;
 
-@Safety(LEVEL_1_SHARED_LOCKING) public class SnapshotQuery<S> implements GenericTransaction<S, Void, RuntimeException> {
+@Safety(journaling = TRANSIENT, locking = SHARED) public class SnapshotQuery<S> implements GenericTransaction<S, Void, RuntimeException> {
 
     private final SnapshotManager<S> _snapshotManager;
 
@@ -25,7 +26,7 @@ import org.prevayler.implementation.snapshot.SnapshotManager;
         _snapshotManager = snapshotManager;
     }
 
-    public Void executeOn(S prevalentSystem, PrevalenceContext prevalenceContext) throws RuntimeException {
+    public Void executeOn(S prevalentSystem, PrevalenceContext prevalenceContext) {
         _snapshotManager.writeSnapshot(prevalentSystem, prevalenceContext.systemVersion());
         return null;
     }

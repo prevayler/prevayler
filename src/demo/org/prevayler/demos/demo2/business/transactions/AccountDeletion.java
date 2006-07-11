@@ -10,16 +10,14 @@
 
 package org.prevayler.demos.demo2.business.transactions;
 
-import static org.prevayler.Safety.Level.LEVEL_4_JOURNALING;
-
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.Safety;
+import org.prevayler.demos.ReadWrite;
 import org.prevayler.demos.demo2.business.Bank;
 
 import java.io.Serializable;
 
-@Safety(LEVEL_4_JOURNALING) public class AccountDeletion implements GenericTransaction<Bank, Void, RuntimeException>, Serializable {
+@ReadWrite public class AccountDeletion implements GenericTransaction<Bank, Void, RuntimeException>, Serializable {
 
     private static final long serialVersionUID = -3401288850388764433L;
 

@@ -10,7 +10,8 @@
 
 package org.prevayler.implementation;
 
-import static org.prevayler.Safety.Level.LEVEL_1_SHARED_LOCKING;
+import static org.prevayler.Safety.Journaling.TRANSIENT;
+import static org.prevayler.Safety.Locking.NONE;
 
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
@@ -18,7 +19,7 @@ import org.prevayler.Safety;
 
 import java.util.Date;
 
-@Safety(LEVEL_1_SHARED_LOCKING) public class ClockQuery implements GenericTransaction<Object, Date, RuntimeException> {
+@Safety(journaling = TRANSIENT, locking = NONE) public class ClockQuery implements GenericTransaction<Object, Date, RuntimeException> {
 
     public Date executeOn(@SuppressWarnings("unused") Object prevalentSystem, PrevalenceContext prevalenceContext) {
         return prevalenceContext.executionTime();
