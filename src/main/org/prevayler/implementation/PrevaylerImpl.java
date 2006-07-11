@@ -14,7 +14,6 @@ import org.prevayler.Clock;
 import org.prevayler.GenericTransaction;
 import org.prevayler.Listener;
 import org.prevayler.Prevayler;
-import org.prevayler.Safety;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.snapshot.SnapshotManager;
@@ -59,6 +58,7 @@ public class PrevaylerImpl<S> implements Prevayler<S> {
     }
 
     public <R, E extends Exception> R execute(GenericTransaction<? super S, R, E> transaction) throws E {
+        requireSafetyAnnotation(transaction);
         if (!SafetyCache.isJournaling(transaction)) {
             return _guard.executeQuery(transaction, _clock);
         } else {
@@ -116,8 +116,14 @@ public class PrevaylerImpl<S> implements Prevayler<S> {
         return execute(new TransactionWithQueryWrapper<S, R, RuntimeException>(sureTransactionWithQuery));
     }
 
+    private static void requireSafetyAnnotation(Object object) {
+        if (!SafetyCache.isAnnotated(object)) {
+            throw new IllegalArgumentException("@Safety is required for implementations of GenericTransaction");
+        }
+    }
+
     private static void disallowSafetyAnnotation(Object object) {
-        if (object.getClass().isAnnotationPresent(Safety.class)) {
+        if (SafetyCache.isAnnotated(object)) {
             throw new IllegalArgumentException("@Safety only applies to implementations of GenericTransaction");
         }
     }

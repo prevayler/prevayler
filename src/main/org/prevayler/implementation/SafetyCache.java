@@ -93,6 +93,10 @@ public final class SafetyCache {
         return get(transaction.getClass()).isJournaling();
     }
 
+    public static boolean isAnnotated(Object object) {
+        return get(object.getClass()) != UNSPECIFIED;
+    }
+
     private static Entry get(Class<?> key) {
         Entry entry = CACHE.get(key);
         if (entry == null) {
