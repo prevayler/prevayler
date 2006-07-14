@@ -34,8 +34,8 @@ import java.io.Serializable;
         _numberToKeep = numberToKeep;
     }
 
-    public Void executeOn(NumberKeeper prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-        prevalentSystem.keep(_numberToKeep);
+    public Void executeOn(PrevalenceContext<? extends NumberKeeper> prevalenceContext) {
+        prevalenceContext.prevalentSystem().keep(_numberToKeep);
         return null;
     }
 

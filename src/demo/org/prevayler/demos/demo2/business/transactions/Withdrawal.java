@@ -12,6 +12,7 @@ package org.prevayler.demos.demo2.business.transactions;
 
 import org.prevayler.PrevalenceContext;
 import org.prevayler.demos.demo2.business.Account;
+import org.prevayler.demos.demo2.business.Bank;
 
 public class Withdrawal extends AccountTransaction {
 
@@ -28,7 +29,7 @@ public class Withdrawal extends AccountTransaction {
         _amount = amount;
     }
 
-    @Override public void executeAndQuery(Account account, PrevalenceContext prevalenceContext) throws Account.InvalidAmount {
+    @Override public void executeOn(Account account, PrevalenceContext<? extends Bank> prevalenceContext) throws Account.InvalidAmount {
         account.withdraw(_amount, prevalenceContext);
     }
 

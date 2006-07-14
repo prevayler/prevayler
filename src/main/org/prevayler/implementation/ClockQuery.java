@@ -21,7 +21,7 @@ import java.util.Date;
 
 @Safety(journaling = TRANSIENT, locking = NONE) public class ClockQuery implements GenericTransaction<Object, Date, RuntimeException> {
 
-    public Date executeOn(@SuppressWarnings("unused") Object prevalentSystem, PrevalenceContext prevalenceContext) {
+    public Date executeOn(PrevalenceContext<?> prevalenceContext) {
         return prevalenceContext.executionTime();
     }
 

@@ -33,11 +33,12 @@ import java.io.Serializable;
         _accountNumber = accountNumber;
     }
 
-    public Void executeOn(Bank bank, PrevalenceContext prevalenceContext) throws Exception {
-        executeAndQuery(bank.findAccount(_accountNumber), prevalenceContext);
+    public Void executeOn(PrevalenceContext<? extends Bank> prevalenceContext) throws Exception {
+        Bank bank = prevalenceContext.prevalentSystem();
+        executeOn(bank.findAccount(_accountNumber), prevalenceContext);
         return null;
     }
 
-    protected abstract void executeAndQuery(Account account, PrevalenceContext prevalenceContext) throws Exception;
+    protected abstract void executeOn(Account account, PrevalenceContext<? extends Bank> prevalenceContext) throws Exception;
 
 }

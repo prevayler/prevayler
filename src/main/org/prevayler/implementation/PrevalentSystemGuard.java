@@ -67,7 +67,7 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
         long systemVersion = transactionTimestamp.systemVersion();
         Date executionTime = transactionTimestamp.executionTime();
         GenericTransaction<? super S, R, E> transaction = capsule.deserialize(_journalSerializer);
-        PrevalenceContext prevalenceContext = new PrevalenceContext(executionTime, systemVersion, false);
+        PrevalenceContext<S> prevalenceContext;
 
         _rwlock.writeLock().lock();
         try {
@@ -81,9 +81,11 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
 
             _systemVersion = systemVersion;
 
+            prevalenceContext = new PrevalenceContext<S>(_prevalentSystem, executionTime, systemVersion, false);
+
             try {
                 synchronized (_prevalentSystem) {
-                    capsule.execute(transaction, _prevalentSystem, prevalenceContext);
+                    capsule.execute(transaction, prevalenceContext);
                 }
             } catch (Error error) {
                 _prevalentSystem = null;
@@ -99,7 +101,7 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
     }
 
     public <R, E extends Exception> R executeQuery(GenericTransaction<? super S, R, E> readOnlyTransaction, Clock clock) throws E {
-        PrevalenceContext prevalenceContext;
+        PrevalenceContext<S> prevalenceContext;
         R result;
 
         _rwlock.readLock().lock();
@@ -108,8 +110,8 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
                 throw new ErrorInEarlierTransactionError();
             }
 
-            prevalenceContext = new PrevalenceContext(clock.time(), _systemVersion, true);
-            result = readOnlyTransaction.executeOn(_prevalentSystem, prevalenceContext);
+            prevalenceContext = new PrevalenceContext<S>(_prevalentSystem, clock.time(), _systemVersion, true);
+            result = readOnlyTransaction.executeOn(prevalenceContext);
         } finally {
             _rwlock.readLock().unlock();
         }
@@ -118,7 +120,7 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
         return result;
     }
 
-    private void dispatchEvents(PrevalenceContext prevalenceContext) {
+    private void dispatchEvents(PrevalenceContext<S> prevalenceContext) {
         for (Object event : prevalenceContext.events()) {
             _listeners.dispatch(event);
         }

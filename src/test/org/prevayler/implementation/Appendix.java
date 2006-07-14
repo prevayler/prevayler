@@ -26,8 +26,8 @@ import java.io.Serializable;
         this.appendix = appendix;
     }
 
-    public Void executeOn(AppendingSystem prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-        prevalentSystem.append(appendix);
+    public Void executeOn(PrevalenceContext<? extends AppendingSystem> prevalenceContext) {
+        prevalenceContext.prevalentSystem().append(appendix);
         return null;
     }
 

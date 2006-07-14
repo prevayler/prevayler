@@ -28,14 +28,14 @@ public class Bank implements java.io.Serializable {
 
     private Map<Long, Account> accountsByNumber = new HashMap<Long, Account>();
 
-    public Account createAccount(String holder, PrevalenceContext prevalenceContext) throws Account.InvalidHolder {
+    public Account createAccount(String holder, PrevalenceContext<? extends Bank> prevalenceContext) throws Account.InvalidHolder {
         Account account = new Account(nextAccountNumber, holder, prevalenceContext);
         accountsByNumber.put(nextAccountNumber++, account);
         prevalenceContext.trigger(new BankEvent());
         return account;
     }
 
-    public void deleteAccount(String number, PrevalenceContext prevalenceContext) {
+    public void deleteAccount(String number, PrevalenceContext<? extends Bank> prevalenceContext) {
         accountsByNumber.remove(new Long(number));
         prevalenceContext.trigger(new BankEvent());
     }
@@ -63,7 +63,7 @@ public class Bank implements java.io.Serializable {
         return account;
     }
 
-    public void transfer(String sourceNumber, String destinationNumber, long amount, PrevalenceContext prevalenceContext) throws AccountNotFound, Account.InvalidAmount {
+    public void transfer(String sourceNumber, String destinationNumber, long amount, PrevalenceContext<? extends Bank> prevalenceContext) throws AccountNotFound, Account.InvalidAmount {
         Account source = findAccount(sourceNumber);
         Account destination = findAccount(destinationNumber);
 

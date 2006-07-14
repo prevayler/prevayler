@@ -32,8 +32,8 @@ import java.io.Serializable;
         _transactionWithQuery = transactionWithQuery;
     }
 
-    public R executeOn(S prevalentSystem, PrevalenceContext prevalenceContext) throws E {
-        return _transactionWithQuery.executeAndQuery(prevalentSystem, prevalenceContext.executionTime());
+    public R executeOn(PrevalenceContext<? extends S> prevalenceContext) throws E {
+        return _transactionWithQuery.executeAndQuery(prevalenceContext.prevalentSystem(), prevalenceContext.executionTime());
     }
 
 }

@@ -40,16 +40,16 @@ public class QueryExecutionTest extends FileIOTest {
     @ReadOnly private static final class MyQuery implements GenericTransaction<List<String>, Integer, RuntimeException> {
         private static final long serialVersionUID = 1L;
 
-        public Integer executeOn(List<String> prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-            return prevalentSystem.size();
+        public Integer executeOn(PrevalenceContext<? extends List<String>> prevalenceContext) {
+            return prevalenceContext.prevalentSystem().size();
         }
     }
 
     @ReadWrite private static final class MyTransaction implements GenericTransaction<List<String>, String, RuntimeException>, Serializable {
         private static final long serialVersionUID = -2976662596936807721L;
 
-        public String executeOn(List<String> prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-            prevalentSystem.add("added element");
+        public String executeOn(PrevalenceContext<? extends List<String>> prevalenceContext) {
+            prevalenceContext.prevalentSystem().add("added element");
             return "abc";
         }
     }

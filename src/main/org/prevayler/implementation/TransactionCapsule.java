@@ -70,9 +70,9 @@ public class TransactionCapsule<S, R, E extends Exception> implements Serializab
         return new TransactionCapsule(chunk.getBytes());
     }
 
-    protected void execute(GenericTransaction<? super S, R, E> transaction, S prevalentSystem, PrevalenceContext prevalenceContext) {
+    protected void execute(GenericTransaction<? super S, R, E> transaction, PrevalenceContext<S> prevalenceContext) {
         try {
-            _result = transaction.executeOn(prevalentSystem, prevalenceContext);
+            _result = transaction.executeOn(prevalenceContext);
         } catch (Exception e) {
             _exception = e;
         }

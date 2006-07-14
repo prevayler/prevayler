@@ -32,8 +32,8 @@ import java.io.Serializable;
         _transaction = transaction;
     }
 
-    public Void executeOn(S prevalentSystem, PrevalenceContext prevalenceContext) {
-        _transaction.executeOn(prevalentSystem, prevalenceContext.executionTime());
+    public Void executeOn(PrevalenceContext<? extends S> prevalenceContext) {
+        _transaction.executeOn(prevalenceContext.prevalentSystem(), prevalenceContext.executionTime());
         return null;
     }
 

@@ -32,9 +32,9 @@ public class NondeterministicErrorTransaction extends Appendix {
         super(toAdd);
     }
 
-    @Override public Void executeOn(AppendingSystem prevalentSystem, PrevalenceContext prevalenceContext) {
+    @Override public Void executeOn(PrevalenceContext<? extends AppendingSystem> prevalenceContext) {
         triggerBomb();
-        return super.executeOn(prevalentSystem, prevalenceContext);
+        return super.executeOn(prevalenceContext);
     }
 
 }

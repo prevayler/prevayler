@@ -27,8 +27,8 @@ import java.io.Serializable;
         _records = records;
     }
 
-    public Void executeOn(ScalabilitySystem system, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-        system.replaceAllRecords(new RecordIterator(_records));
+    public Void executeOn(PrevalenceContext<? extends ScalabilitySystem> prevalenceContext) {
+        prevalenceContext.prevalentSystem().replaceAllRecords(new RecordIterator(_records));
         return null;
     }
 

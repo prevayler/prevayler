@@ -15,7 +15,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class PrevalenceContext {
+public class PrevalenceContext<S> {
+
+    private final S _prevalentSystem;
 
     private final Date _executionTime;
 
@@ -25,11 +27,16 @@ public class PrevalenceContext {
 
     private List<Object> _events;
 
-    public PrevalenceContext(Date executionTime, long systemVersion, boolean readOnly) {
+    public PrevalenceContext(S prevalentSystem, Date executionTime, long systemVersion, boolean readOnly) {
+        _prevalentSystem = prevalentSystem;
         _executionTime = executionTime;
         _systemVersion = systemVersion;
         _readOnly = readOnly;
         _events = null;
+    }
+
+    public S prevalentSystem() {
+        return _prevalentSystem;
     }
 
     /**

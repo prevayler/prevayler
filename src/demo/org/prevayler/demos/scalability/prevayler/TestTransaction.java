@@ -33,8 +33,8 @@ import java.io.Serializable;
         this.idToDelete = idToDelete;
     }
 
-    public Void executeOn(TransactionSystem system, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-        system.performTransaction(recordToInsert, recordToUpdate, idToDelete);
+    public Void executeOn(PrevalenceContext<? extends TransactionSystem> prevalenceContext) {
+        prevalenceContext.prevalentSystem().performTransaction(recordToInsert, recordToUpdate, idToDelete);
         return null;
     }
 

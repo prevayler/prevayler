@@ -23,8 +23,9 @@ import org.prevayler.demos.demo2.business.Bank;
         this.accountNumber = accountNumber;
     }
 
-    public Void executeOn(Bank prevalentSystem, PrevalenceContext prevalenceContext) throws Bank.AccountNotFound {
-        prevalenceContext.trigger(new AccountEvent(prevalentSystem.findAccount(accountNumber)));
+    public Void executeOn(PrevalenceContext<? extends Bank> prevalenceContext) throws Bank.AccountNotFound {
+        Bank bank = prevalenceContext.prevalentSystem();
+        prevalenceContext.trigger(new AccountEvent(bank.findAccount(accountNumber)));
         return null;
     }
 

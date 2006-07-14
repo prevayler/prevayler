@@ -37,7 +37,8 @@ import java.io.Serializable;
         _amount = amount;
     }
 
-    public Void executeOn(Bank bank, PrevalenceContext prevalenceContext) throws Exception {
+    public Void executeOn(PrevalenceContext<? extends Bank> prevalenceContext) throws Exception {
+        Bank bank = prevalenceContext.prevalentSystem();
         bank.transfer(_originAccountNumber, _destinationAccountNumber, _amount, prevalenceContext);
         return null;
     }

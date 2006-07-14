@@ -30,8 +30,8 @@ import java.io.Serializable;
         _accountNumber = accountNumber;
     }
 
-    public Void executeOn(Bank bank, PrevalenceContext prevalenceContext) {
-        bank.deleteAccount(_accountNumber, prevalenceContext);
+    public Void executeOn(PrevalenceContext<? extends Bank> prevalenceContext) {
+        prevalenceContext.prevalentSystem().deleteAccount(_accountNumber, prevalenceContext);
         return null;
     }
 

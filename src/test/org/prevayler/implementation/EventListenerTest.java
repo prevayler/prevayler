@@ -75,9 +75,10 @@ public class EventListenerTest extends TestCase {
 
         private static final long serialVersionUID = 1L;
 
-        public Void executeOn(AppendingSystem prevalentSystem, PrevalenceContext prevalenceContext) {
-            prevalentSystem.append("x");
-            prevalenceContext.trigger(new MyEvent(prevalentSystem.value()));
+        public Void executeOn(PrevalenceContext<? extends AppendingSystem> prevalenceContext) {
+            AppendingSystem system = prevalenceContext.prevalentSystem();
+            system.append("x");
+            prevalenceContext.trigger(new MyEvent(system.value()));
             return null;
         }
 

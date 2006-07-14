@@ -32,8 +32,8 @@ import java.io.Serializable;
         _holder = holder;
     }
 
-    public Account executeOn(Bank bank, PrevalenceContext prevalenceContext) throws Account.InvalidHolder {
-        return bank.createAccount(_holder, prevalenceContext);
+    public Account executeOn(PrevalenceContext<? extends Bank> prevalenceContext) throws Account.InvalidHolder {
+        return prevalenceContext.prevalentSystem().createAccount(_holder, prevalenceContext);
     }
 
 }

@@ -30,9 +30,10 @@ import java.io.Serializable;
         this.toAdd = toAdd;
     }
 
-    public String executeOn(StringBuilder prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-        prevalentSystem.append(toAdd);
-        return prevalentSystem.toString();
+    public String executeOn(PrevalenceContext<? extends StringBuilder> prevalenceContext) {
+        StringBuilder system = prevalenceContext.prevalentSystem();
+        system.append(toAdd);
+        return system.toString();
     }
 
 }

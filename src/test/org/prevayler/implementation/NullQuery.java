@@ -10,13 +10,16 @@
 
 package org.prevayler.implementation;
 
+import static org.prevayler.Safety.Journaling.TRANSIENT;
+import static org.prevayler.Safety.Locking.NONE;
+
 import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
-import org.prevayler.demos.ReadOnly;
+import org.prevayler.Safety;
 
-@ReadOnly public class NullQuery implements GenericTransaction<Object, Void, RuntimeException> {
+@Safety(journaling = TRANSIENT, locking = NONE) public class NullQuery implements GenericTransaction<Object, Void, RuntimeException> {
 
-    public Void executeOn(@SuppressWarnings("unused") Object prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
+    public Void executeOn(@SuppressWarnings("unused") PrevalenceContext<?> prevalenceContext) {
         return null;
     }
 

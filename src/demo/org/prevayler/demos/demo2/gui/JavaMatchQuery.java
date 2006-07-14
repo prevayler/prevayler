@@ -29,7 +29,7 @@ import java.util.List;
 
 @ReadOnly public class JavaMatchQuery implements GenericTransaction<Bank, List<Object[]>, MatchException> {
 
-    public List<Object[]> executeOn(Bank prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) throws MatchException {
+    public List<Object[]> executeOn(PrevalenceContext<? extends Bank> prevalenceContext) throws MatchException {
         List<Object[]> results = new ArrayList<Object[]>();
 
         // create the match engine
@@ -41,7 +41,8 @@ import java.util.List;
         query.addPreferred(new Maximum("transactionHistory().size()"));
 
         // execute the match query
-        MatchResult matchResult = matchEngine.executeQuery(query, prevalentSystem.accounts());
+        Bank bank = prevalenceContext.prevalentSystem();
+        MatchResult matchResult = matchEngine.executeQuery(query, bank.accounts());
 
         // retrieve matching results
         for (Iterator resultIterator = matchResult.getResultIterator(); resultIterator.hasNext();) {

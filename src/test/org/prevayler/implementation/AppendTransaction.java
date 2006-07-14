@@ -30,8 +30,8 @@ import java.io.Serializable;
         this.toAdd = toAdd;
     }
 
-    public Void executeOn(StringBuilder prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-        prevalentSystem.append(toAdd);
+    public Void executeOn(PrevalenceContext<? extends StringBuilder> prevalenceContext) {
+        prevalenceContext.prevalentSystem().append(toAdd);
         return null;
     }
 

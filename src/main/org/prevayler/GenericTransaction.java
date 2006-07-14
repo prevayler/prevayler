@@ -30,6 +30,6 @@ public interface GenericTransaction<S, R, E extends Exception> {
      * TransactionWithQuery on the given Prevalent System. See
      * org.prevayler.demos for usage examples.
      */
-    public R executeOn(S prevalentSystem, PrevalenceContext prevalenceContext) throws E;
+    public R executeOn(PrevalenceContext<? extends S> prevalenceContext) throws E;
 
 }

@@ -26,8 +26,8 @@ import org.prevayler.implementation.snapshot.SnapshotManager;
         _snapshotManager = snapshotManager;
     }
 
-    public Void executeOn(S prevalentSystem, PrevalenceContext prevalenceContext) {
-        _snapshotManager.writeSnapshot(prevalentSystem, prevalenceContext.systemVersion());
+    public Void executeOn(PrevalenceContext<? extends S> prevalenceContext) {
+        _snapshotManager.writeSnapshot(prevalenceContext.prevalentSystem(), prevalenceContext.systemVersion());
         return null;
     }
 

@@ -16,8 +16,8 @@ import org.prevayler.demos.ReadOnly;
 
 @ReadOnly public class ToStringQuery implements GenericTransaction<Object, String, RuntimeException> {
 
-    public String executeOn(Object prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-        return prevalentSystem.toString();
+    public String executeOn(PrevalenceContext<?> prevalenceContext) {
+        return prevalenceContext.prevalentSystem().toString();
     }
 
 }

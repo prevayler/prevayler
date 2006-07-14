@@ -86,7 +86,7 @@ public class TransientPrevaylerTest extends FileIOTest {
             _illegalDirectReference = illegalDirectReference;
         }
 
-        public Void executeOn(@SuppressWarnings("unused") AppendingSystem prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
+        public Void executeOn(@SuppressWarnings("unused") PrevalenceContext<? extends AppendingSystem> prevalenceContext) {
             _illegalDirectReference.append("anything");
             return null;
         }

@@ -12,6 +12,7 @@ package org.prevayler.demos.demo2.business.transactions;
 
 import org.prevayler.PrevalenceContext;
 import org.prevayler.demos.demo2.business.Account;
+import org.prevayler.demos.demo2.business.Bank;
 
 public class HolderChange extends AccountTransaction {
 
@@ -28,7 +29,7 @@ public class HolderChange extends AccountTransaction {
         _newHolder = newHolder;
     }
 
-    @Override public void executeAndQuery(Account account, PrevalenceContext prevalenceContext) throws Account.InvalidHolder {
+    @Override public void executeOn(Account account, PrevalenceContext<? extends Bank> prevalenceContext) throws Account.InvalidHolder {
         account.setHolder(_newHolder, prevalenceContext);
     }
 

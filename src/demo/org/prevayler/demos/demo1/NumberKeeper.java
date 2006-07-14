@@ -23,15 +23,15 @@ class NumberKeeper implements java.io.Serializable {
 
     private final List<Integer> numbers = new ArrayList<Integer>();
 
-    void keep(int nextNumber) {
+    public void keep(int nextNumber) {
         numbers.add(nextNumber);
     }
 
-    List numbers() {
+    public List numbers() {
         return numbers;
     }
 
-    int lastNumber() {
+    public int lastNumber() {
         return numbers.isEmpty() ? 0 : numbers.get(numbers.size() - 1);
     }
 

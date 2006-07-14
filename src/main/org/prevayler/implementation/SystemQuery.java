@@ -19,8 +19,8 @@ import org.prevayler.Safety;
 
 @Safety(journaling = TRANSIENT, locking = NONE) public class SystemQuery<S> implements GenericTransaction<S, S, RuntimeException> {
 
-    public S executeOn(S prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-        return prevalentSystem;
+    public S executeOn(PrevalenceContext<? extends S> prevalenceContext) {
+        return prevalenceContext.prevalentSystem();
     }
 
 }

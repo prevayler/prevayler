@@ -16,8 +16,8 @@ import org.prevayler.demos.ReadOnly;
 
 @ReadOnly public class SizeQuery implements GenericTransaction<NumberKeeper, Integer, RuntimeException> {
 
-    public Integer executeOn(NumberKeeper prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-        return prevalentSystem.numbers().size();
+    public Integer executeOn(PrevalenceContext<? extends NumberKeeper> prevalenceContext) {
+        return prevalenceContext.prevalentSystem().numbers().size();
     }
 
 }

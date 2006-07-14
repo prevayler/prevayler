@@ -14,10 +14,10 @@ import org.prevayler.GenericTransaction;
 import org.prevayler.PrevalenceContext;
 import org.prevayler.demos.ReadOnly;
 
-@ReadOnly public class HashCodeQuery implements GenericTransaction<TransactionSystem, Integer, RuntimeException> {
+@ReadOnly public class HashCodeQuery implements GenericTransaction<Object, Integer, RuntimeException> {
 
-    public Integer executeOn(TransactionSystem prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-        return prevalentSystem.hashCode();
+    public Integer executeOn(PrevalenceContext<?> prevalenceContext) {
+        return prevalenceContext.prevalentSystem().hashCode();
     }
 
 }

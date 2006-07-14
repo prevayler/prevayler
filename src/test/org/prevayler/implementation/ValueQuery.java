@@ -16,8 +16,8 @@ import org.prevayler.demos.ReadOnly;
 
 @ReadOnly public class ValueQuery implements GenericTransaction<AppendingSystem, String, RuntimeException> {
 
-    public String executeOn(AppendingSystem prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-        return prevalentSystem.value();
+    public String executeOn(PrevalenceContext<? extends AppendingSystem> prevalenceContext) {
+        return prevalenceContext.prevalentSystem().value();
     }
 
 }

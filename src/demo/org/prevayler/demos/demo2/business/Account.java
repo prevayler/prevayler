@@ -31,7 +31,7 @@ public class Account implements java.io.Serializable {
     private Account() {
     }
 
-    Account(long number, String holder, PrevalenceContext prevalenceContext) throws InvalidHolder {
+    Account(long number, String holder, PrevalenceContext<? extends Bank> prevalenceContext) throws InvalidHolder {
         this.number = number;
         setHolder(holder, prevalenceContext);
     }
@@ -57,7 +57,7 @@ public class Account implements java.io.Serializable {
         return holder;
     }
 
-    public void setHolder(String holder, PrevalenceContext prevalenceContext) throws InvalidHolder {
+    public void setHolder(String holder, PrevalenceContext<? extends Bank> prevalenceContext) throws InvalidHolder {
         verify(holder);
         this.holder = holder;
         triggerEvent(prevalenceContext);
@@ -67,17 +67,17 @@ public class Account implements java.io.Serializable {
         return balance;
     }
 
-    public void deposit(long amount, PrevalenceContext prevalenceContext) throws InvalidAmount {
+    public void deposit(long amount, PrevalenceContext<? extends Bank> prevalenceContext) throws InvalidAmount {
         verify(amount);
         register(amount, prevalenceContext);
     }
 
-    public void withdraw(long amount, PrevalenceContext prevalenceContext) throws InvalidAmount {
+    public void withdraw(long amount, PrevalenceContext<? extends Bank> prevalenceContext) throws InvalidAmount {
         verify(amount);
         register(-amount, prevalenceContext);
     }
 
-    private void register(long amount, PrevalenceContext prevalenceContext) {
+    private void register(long amount, PrevalenceContext<? extends Bank> prevalenceContext) {
         balance += amount;
         transactionHistory.add(new AccountEntry(amount, prevalenceContext.executionTime()));
         triggerEvent(prevalenceContext);
@@ -94,7 +94,7 @@ public class Account implements java.io.Serializable {
         return transactionHistory;
     }
 
-    private void triggerEvent(PrevalenceContext prevalenceContext) {
+    private void triggerEvent(PrevalenceContext<? extends Bank> prevalenceContext) {
         prevalenceContext.trigger(new AccountEvent(this));
     }
 

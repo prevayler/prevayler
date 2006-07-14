@@ -32,8 +32,8 @@ import java.io.Serializable;
         _sensitiveQuery = sensitiveQuery;
     }
 
-    public R executeOn(S prevalentSystem, PrevalenceContext prevalenceContext) throws E {
-        return _sensitiveQuery.query(prevalentSystem, prevalenceContext.executionTime());
+    public R executeOn(PrevalenceContext<? extends S> prevalenceContext) throws E {
+        return _sensitiveQuery.query(prevalenceContext.prevalentSystem(), prevalenceContext.executionTime());
     }
 
 }

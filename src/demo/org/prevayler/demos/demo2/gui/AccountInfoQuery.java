@@ -20,8 +20,8 @@ import java.util.List;
 
 @ReadOnly public class AccountInfoQuery implements GenericTransaction<Bank, AccountInfo[], RuntimeException> {
 
-    public AccountInfo[] executeOn(Bank prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) throws RuntimeException {
-        List<Account> accounts = prevalentSystem.accounts();
+    public AccountInfo[] executeOn(PrevalenceContext<? extends Bank> prevalenceContext) throws RuntimeException {
+        List<Account> accounts = prevalenceContext.prevalentSystem().accounts();
         AccountInfo[] infos = new AccountInfo[accounts.size()];
         int index = 0;
         for (Account account : accounts) {

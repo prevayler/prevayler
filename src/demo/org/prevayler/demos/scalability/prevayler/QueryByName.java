@@ -24,8 +24,8 @@ import java.util.List;
         this.name = name;
     }
 
-    public List executeOn(QuerySystem prevalentSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
-        return prevalentSystem.queryByName(name);
+    public List executeOn(PrevalenceContext<? extends QuerySystem> prevalenceContext) {
+        return prevalenceContext.prevalentSystem().queryByName(name);
     }
 
 }

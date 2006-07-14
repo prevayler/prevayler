@@ -106,7 +106,8 @@ public class ConfusedFoodTasterStressTest extends FileIOTest {
     @ReadWrite public static class CountTransaction implements GenericTransaction<CountingSystem, Void, RuntimeException>, Serializable {
         private static final long serialVersionUID = 5043457505878510633L;
 
-        public Void executeOn(CountingSystem countingSystem, @SuppressWarnings("unused") PrevalenceContext prevalenceContext) {
+        public Void executeOn(PrevalenceContext<? extends CountingSystem> prevalenceContext) {
+            CountingSystem countingSystem = prevalenceContext.prevalentSystem();
             if (countingSystem.counter == WHEN_TO_START_THROWING) {
                 throw new CountException();
             }
