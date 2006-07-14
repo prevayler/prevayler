@@ -65,7 +65,7 @@ public class PrevalenceContext<S> {
      * Trigger an event to be dispatched after the current transaction
      * completes.
      */
-    public <E> void trigger(E event) {
+    public <E> void addEvent(E event) {
         if (_events == null) {
             _events = new ArrayList<Object>();
         }

@@ -44,7 +44,7 @@ class AllAccountsFrame extends JInternalFrame implements Listener<BankEvent> {
 
         accountList = new JList();
         accountList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        prevayler.register(BankEvent.class, this);
+        prevayler.addListener(BankEvent.class, this);
         refreshAccounts();
 
         container.add(this);

@@ -63,9 +63,9 @@ public interface Prevayler<S> {
      */
     public void close() throws IOException;
 
-    public <E> void register(Class<E> eventClass, Listener<? super E> listener);
+    public <E> void addListener(Class<E> eventClass, Listener<? super E> listener);
 
-    public <E> void unregister(Class<E> eventClass, Listener<? super E> listener);
+    public <E> void removeListener(Class<E> eventClass, Listener<? super E> listener);
 
     /**
      * Returns the Object which holds direct or indirect references to all other

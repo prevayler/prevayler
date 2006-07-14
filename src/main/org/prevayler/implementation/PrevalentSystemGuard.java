@@ -152,12 +152,12 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
         }
     }
 
-    public <E> void register(Class<E> eventClass, Listener<? super E> listener) {
-        _listeners.register(eventClass, listener);
+    public <E> void addListener(Class<E> eventClass, Listener<? super E> listener) {
+        _listeners.addListener(eventClass, listener);
     }
 
-    public <E> void unregister(Class<E> eventClass, Listener<? super E> listener) {
-        _listeners.unregister(eventClass, listener);
+    public <E> void removeListener(Class<E> eventClass, Listener<? super E> listener) {
+        _listeners.removeListener(eventClass, listener);
     }
 
 }

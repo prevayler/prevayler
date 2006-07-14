@@ -36,7 +36,7 @@ public class EventListenerTest extends TestCase {
         _prevayler.execute(new MyTransaction());
         assertNull(listener._value);
 
-        _prevayler.register(MyEvent.class, listener);
+        _prevayler.addListener(MyEvent.class, listener);
 
         _prevayler.execute(new MyTransaction());
         assertEquals("xx", listener._value);
@@ -45,7 +45,7 @@ public class EventListenerTest extends TestCase {
         assertEquals("xxx", listener._value);
 
         listener._value = null;
-        _prevayler.unregister(MyEvent.class, listener);
+        _prevayler.removeListener(MyEvent.class, listener);
         _prevayler.execute(new MyTransaction());
         assertNull(listener._value);
         assertEquals("xxxx", _prevayler.execute(new ValueQuery()));
@@ -78,7 +78,7 @@ public class EventListenerTest extends TestCase {
         public Void executeOn(PrevalenceContext<? extends AppendingSystem> prevalenceContext) {
             AppendingSystem system = prevalenceContext.prevalentSystem();
             system.append("x");
-            prevalenceContext.trigger(new MyEvent(system.value()));
+            prevalenceContext.addEvent(new MyEvent(system.value()));
             return null;
         }
 

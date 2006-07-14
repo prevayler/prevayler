@@ -43,7 +43,7 @@ class AccountEditFrame extends AccountFrame implements Listener<AccountEvent> {
         super("Account " + accountNumber, prevayler, container);
 
         this.accountNumber = accountNumber;
-        prevayler.register(AccountEvent.class, this);
+        prevayler.addListener(AccountEvent.class, this);
         prevayler.execute(new AccountPing(accountNumber));
 
         holderField.addFocusListener(new HolderListener());

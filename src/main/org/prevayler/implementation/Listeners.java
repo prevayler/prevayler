@@ -22,7 +22,7 @@ class Listeners {
 
     private final Map<Class<?>, List<Listener<?>>> _listeners = new HashMap<Class<?>, List<Listener<?>>>();
 
-    public synchronized <E> void register(Class<E> eventClass, Listener<? super E> listener) {
+    public synchronized <E> void addListener(Class<E> eventClass, Listener<? super E> listener) {
         if (eventClass == null || listener == null) {
             return;
         }
@@ -32,7 +32,7 @@ class Listeners {
         _listeners.get(eventClass).add(listener);
     }
 
-    public synchronized <E> void unregister(Class<E> eventClass, Listener<? super E> listener) {
+    public synchronized <E> void removeListener(Class<E> eventClass, Listener<? super E> listener) {
         if (eventClass == null || listener == null) {
             return;
         }

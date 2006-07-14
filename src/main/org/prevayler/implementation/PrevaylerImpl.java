@@ -80,12 +80,12 @@ public class PrevaylerImpl<S> implements Prevayler<S> {
         _publisher.close();
     }
 
-    public <E> void register(Class<E> eventClass, Listener<? super E> listener) {
-        _guard.register(eventClass, listener);
+    public <E> void addListener(Class<E> eventClass, Listener<? super E> listener) {
+        _guard.addListener(eventClass, listener);
     }
 
-    public <E> void unregister(Class<E> eventClass, Listener<? super E> listener) {
-        _guard.unregister(eventClass, listener);
+    public <E> void removeListener(Class<E> eventClass, Listener<? super E> listener) {
+        _guard.removeListener(eventClass, listener);
     }
 
     @SuppressWarnings("deprecation") public S prevalentSystem() {

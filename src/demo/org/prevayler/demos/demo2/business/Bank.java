@@ -31,13 +31,13 @@ public class Bank implements java.io.Serializable {
     public Account createAccount(String holder, PrevalenceContext<? extends Bank> prevalenceContext) throws Account.InvalidHolder {
         Account account = new Account(nextAccountNumber, holder, prevalenceContext);
         accountsByNumber.put(nextAccountNumber++, account);
-        prevalenceContext.trigger(new BankEvent());
+        prevalenceContext.addEvent(new BankEvent());
         return account;
     }
 
     public void deleteAccount(String number, PrevalenceContext<? extends Bank> prevalenceContext) {
         accountsByNumber.remove(new Long(number));
-        prevalenceContext.trigger(new BankEvent());
+        prevalenceContext.addEvent(new BankEvent());
     }
 
     public List<Account> accounts() {

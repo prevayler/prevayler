@@ -95,7 +95,7 @@ public class Account implements java.io.Serializable {
     }
 
     private void triggerEvent(PrevalenceContext<? extends Bank> prevalenceContext) {
-        prevalenceContext.trigger(new AccountEvent(this));
+        prevalenceContext.addEvent(new AccountEvent(this));
     }
 
     public class InvalidAmount extends Exception {
