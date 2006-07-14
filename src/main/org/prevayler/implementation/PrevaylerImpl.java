@@ -14,6 +14,7 @@ import org.prevayler.Clock;
 import org.prevayler.GenericTransaction;
 import org.prevayler.Listener;
 import org.prevayler.Prevayler;
+import org.prevayler.Safety.Journaling;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.snapshot.SnapshotManager;
@@ -59,7 +60,8 @@ public class PrevaylerImpl<S> implements Prevayler<S> {
 
     public <R, E extends Exception> R execute(GenericTransaction<? super S, R, E> transaction) throws E {
         requireSafetyAnnotation(transaction);
-        if (!SafetyCache.isJournaling(transaction)) {
+        Journaling journaling = SafetyCache.getJournaling(transaction);
+        if (journaling.compareTo(Journaling.PERSISTENT) < 0) {
             return _guard.executeQuery(transaction, _clock);
         } else {
             TransactionCapsule<S, R, E> capsule = new TransactionCapsule<S, R, E>(transaction, _journalSerializer);

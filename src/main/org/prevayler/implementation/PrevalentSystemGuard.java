@@ -14,6 +14,7 @@ import org.prevayler.Clock;
 import org.prevayler.GenericTransaction;
 import org.prevayler.Listener;
 import org.prevayler.PrevalenceContext;
+import org.prevayler.Safety.Locking;
 import org.prevayler.foundation.DeepCopier;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
@@ -21,6 +22,7 @@ import org.prevayler.implementation.publishing.TransactionSubscriber;
 
 import java.util.Date;
 import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -67,6 +69,7 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
         long systemVersion = transactionTimestamp.systemVersion();
         Date executionTime = transactionTimestamp.executionTime();
         GenericTransaction<? super S, R, E> transaction = capsule.deserialize(_journalSerializer);
+        Locking locking = SafetyCache.getLocking(transaction);
         PrevalenceContext<S> prevalenceContext;
 
         _rwlock.writeLock().lock();
@@ -84,7 +87,11 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
             prevalenceContext = new PrevalenceContext<S>(_prevalentSystem, executionTime, systemVersion, false);
 
             try {
-                synchronized (_prevalentSystem) {
+                if (locking.compareTo(Locking.PREVALENT_SYSTEM) >= 0) {
+                    synchronized (_prevalentSystem) {
+                        capsule.execute(transaction, prevalenceContext);
+                    }
+                } else {
                     capsule.execute(transaction, prevalenceContext);
                 }
             } catch (Error error) {
@@ -101,19 +108,33 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
     }
 
     public <R, E extends Exception> R executeQuery(GenericTransaction<? super S, R, E> readOnlyTransaction, Clock clock) throws E {
+        Locking locking = SafetyCache.getLocking(readOnlyTransaction);
         PrevalenceContext<S> prevalenceContext;
-        R result;
+        R result = null;
 
-        _rwlock.readLock().lock();
+        Lock whichLock = locking.compareTo(Locking.EXCLUSIVE) >= 0 ? _rwlock.writeLock() : _rwlock.readLock();
+
+        whichLock.lock();
         try {
             if (_prevalentSystem == null) {
                 throw new ErrorInEarlierTransactionError();
             }
 
             prevalenceContext = new PrevalenceContext<S>(_prevalentSystem, clock.time(), _systemVersion, true);
-            result = readOnlyTransaction.executeOn(prevalenceContext);
+
+            if (locking.compareTo(Locking.PREVALENT_SYSTEM) >= 0) {
+                synchronized (_prevalentSystem) {
+                    result = readOnlyTransaction.executeOn(prevalenceContext);
+                }
+            } else if (locking.compareTo(Locking.SHARED) >= 0) {
+                result = readOnlyTransaction.executeOn(prevalenceContext);
+            }
         } finally {
-            _rwlock.readLock().unlock();
+            whichLock.unlock();
+        }
+
+        if (locking.compareTo(Locking.SHARED) < 0) {
+            result = readOnlyTransaction.executeOn(prevalenceContext);
         }
 
         dispatchEvents(prevalenceContext);

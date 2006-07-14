@@ -42,10 +42,6 @@ public final class SafetyCache {
             this.locking = locking;
         }
 
-        public boolean isJournaling() {
-            return journaling == null || journaling.compareTo(Journaling.PERSISTENT) >= 0;
-        }
-
         public Entry combine(Entry other) {
             if (journaling == null) {
                 return other;
@@ -89,12 +85,16 @@ public final class SafetyCache {
         CACHE.put(annotationClass, UNSPECIFIED);
     }
 
-    public static boolean isJournaling(GenericTransaction<?, ?, ?> transaction) {
-        return get(transaction.getClass()).isJournaling();
-    }
-
     public static boolean isAnnotated(Object object) {
         return get(object.getClass()) != UNSPECIFIED;
+    }
+
+    public static Journaling getJournaling(GenericTransaction<?, ?, ?> transaction) {
+        return get(transaction.getClass()).journaling;
+    }
+
+    public static Locking getLocking(GenericTransaction<?, ?, ?> transaction) {
+        return get(transaction.getClass()).locking;
     }
 
     private static Entry get(Class<?> key) {
