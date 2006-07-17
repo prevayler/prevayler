@@ -10,20 +10,20 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.GenericTransaction;
-import org.prevayler.PrevalenceContext;
-import org.prevayler.foundation.Chunk;
-import org.prevayler.foundation.serialization.Serializer;
+import org.prevayler.*;
+import org.prevayler.Safety.*;
+import org.prevayler.foundation.*;
+import org.prevayler.foundation.serialization.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.Serializable;
+import java.io.*;
 
 public class TransactionCapsule<S, R, E extends Exception> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private final byte[] _serialized;
+
+    private final boolean _desiresRollback;
 
     private transient R _result;
 
@@ -34,13 +34,15 @@ public class TransactionCapsule<S, R, E extends Exception> implements Serializab
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             journalSerializer.writeObject(bytes, transaction);
             _serialized = bytes.toByteArray();
+            _desiresRollback = SafetyCache.getJournaling(transaction).compareTo(Journaling.ROLLBACK_ON_RUNTIME_EXCEPTION) >= 0;
         } catch (Exception exception) {
             throw new TransactionNotSerializableError("Unable to serialize transaction", exception);
         }
     }
 
-    public TransactionCapsule(byte[] serialized) {
+    public TransactionCapsule(byte[] serialized, boolean desiresRollback) {
         _serialized = serialized;
+        _desiresRollback = desiresRollback;
     }
 
     /**
@@ -67,7 +69,7 @@ public class TransactionCapsule<S, R, E extends Exception> implements Serializab
     }
 
     @SuppressWarnings("unchecked") static <S> TransactionCapsule<S, ?, ?> fromChunk(Chunk chunk) {
-        return new TransactionCapsule(chunk.getBytes());
+        return new TransactionCapsule(chunk.getBytes(), false);
     }
 
     protected void execute(GenericTransaction<? super S, R, E> transaction, PrevalenceContext<S> prevalenceContext) {
@@ -88,8 +90,12 @@ public class TransactionCapsule<S, R, E extends Exception> implements Serializab
         }
     }
 
-    public boolean threwRuntimeException() {
-        return _exception instanceof RuntimeException;
+    public boolean desiresRollback() {
+        return _desiresRollback;
+    }
+
+    public boolean requiresRollback() {
+        return _desiresRollback && _exception instanceof RuntimeException;
     }
 
     public void cleanUp() {
@@ -102,7 +108,7 @@ public class TransactionCapsule<S, R, E extends Exception> implements Serializab
      * fields.
      */
     public TransactionCapsule<S, R, E> cleanCopy() {
-        return new TransactionCapsule<S, R, E>(serialized());
+        return new TransactionCapsule<S, R, E>(_serialized, _desiresRollback);
     }
 
 }

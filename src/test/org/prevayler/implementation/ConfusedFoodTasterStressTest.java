@@ -10,16 +10,11 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.GenericTransaction;
-import org.prevayler.PrevalenceContext;
-import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
-import org.prevayler.demos.ReadWrite;
-import org.prevayler.foundation.FileIOTest;
+import org.prevayler.*;
+import org.prevayler.demos.*;
+import org.prevayler.foundation.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.io.Serializable;
+import java.io.*;
 
 public class ConfusedFoodTasterStressTest extends FileIOTest {
 
@@ -103,7 +98,7 @@ public class ConfusedFoodTasterStressTest extends FileIOTest {
         int counter = 0;
     }
 
-    @ReadWrite public static class CountTransaction implements GenericTransaction<CountingSystem, Void, RuntimeException>, Serializable {
+    @Rollback public static class CountTransaction implements GenericTransaction<CountingSystem, Void, RuntimeException>, Serializable {
         private static final long serialVersionUID = 5043457505878510633L;
 
         public Void executeOn(PrevalenceContext<? extends CountingSystem> prevalenceContext) {

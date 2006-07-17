@@ -35,7 +35,7 @@ public class StrictTransactionCensor<S> implements TransactionCensor<S> {
         try {
             PrevalentSystemGuard<S> royalFoodTaster = royalFoodTaster(transactionTimestamp.systemVersion() - 1);
             royalFoodTaster.receive(transactionTimestamp);
-            approved = !transactionTimestamp.capsule().threwRuntimeException();
+            approved = !transactionTimestamp.capsule().requiresRollback();
         } finally {
             if (approved) {
                 transactionTimestamp.capsule().cleanUp();

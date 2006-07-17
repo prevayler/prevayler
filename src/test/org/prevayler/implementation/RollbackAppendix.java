@@ -15,13 +15,13 @@ import org.prevayler.demos.*;
 
 import java.io.*;
 
-@ReadWrite class Appendix implements GenericTransaction<AppendingSystem, Void, RuntimeException>, Serializable {
+@Rollback class RollbackAppendix implements GenericTransaction<AppendingSystem, Void, RuntimeException>, Serializable {
 
-    private static final long serialVersionUID = 7925676108189989759L;
+    private static final long serialVersionUID = 1L;
 
     private final String appendix;
 
-    Appendix(String appendix) {
+    RollbackAppendix(String appendix) {
         this.appendix = appendix;
     }
 

@@ -10,7 +10,7 @@
 
 package org.prevayler.implementation;
 
-import java.io.Serializable;
+import java.io.*;
 
 class AppendingSystem implements Serializable {
 
@@ -24,8 +24,9 @@ class AppendingSystem implements Serializable {
 
     public void append(String appendix) {
         value = value + appendix;
-        if (appendix.equals("rollback"))
+        if (appendix.contains("rollback")) {
             throw new RuntimeException("Testing Rollback");
+        }
     }
 
 }

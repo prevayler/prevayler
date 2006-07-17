@@ -10,9 +10,8 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
-import org.prevayler.foundation.FileIOTest;
+import org.prevayler.*;
+import org.prevayler.foundation.*;
 
 public class RollbackTest extends FileIOTest {
 
@@ -26,22 +25,30 @@ public class RollbackTest extends FileIOTest {
     private void testRollback(Prevayler<AppendingSystem> prevayler) throws Exception {
         _prevayler = prevayler;
 
-        append("a", "a");
+        _prevayler.execute(new Appendix("a"));
+        assertEquals("a", _prevayler.execute(new ValueQuery()));
 
         try {
-            append("rollback", "ignored");
-            fail("RuntimeException expected and not thrown.");
+            _prevayler.execute(new RollbackAppendix("<rollback>"));
+            fail();
         } catch (RuntimeException rx) {
+            assertEquals("Testing Rollback", rx.getMessage());
         }
 
-        append("b", "ab");
+        _prevayler.execute(new Appendix("b"));
+        assertEquals("ab", _prevayler.execute(new ValueQuery()));
+
+        try {
+            _prevayler.execute(new Appendix("<rollback>"));
+            fail();
+        } catch (RuntimeException rx) {
+            assertEquals("Testing Rollback", rx.getMessage());
+        }
+
+        _prevayler.execute(new Appendix("c"));
+        assertEquals("ab<rollback>c", _prevayler.execute(new ValueQuery()));
 
         _prevayler.close();
-    }
-
-    private void append(String appendix, String expectedResult) throws Exception {
-        _prevayler.execute(new Appendix(appendix));
-        assertEquals(expectedResult, _prevayler.execute(new ValueQuery()));
     }
 
 }

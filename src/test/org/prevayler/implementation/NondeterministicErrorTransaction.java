@@ -10,7 +10,7 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.PrevalenceContext;
+import org.prevayler.*;
 
 public class NondeterministicErrorTransaction extends Appendix {
 

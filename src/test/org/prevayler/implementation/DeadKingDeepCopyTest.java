@@ -10,11 +10,10 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
-import org.prevayler.foundation.FileIOTest;
+import org.prevayler.*;
+import org.prevayler.foundation.*;
 
-import java.io.File;
+import java.io.*;
 
 public class DeadKingDeepCopyTest extends FileIOTest {
 
@@ -46,7 +45,7 @@ public class DeadKingDeepCopyTest extends FileIOTest {
         }
 
         try {
-            _prevayler.execute(new Appendix("rollback"));
+            _prevayler.execute(new RollbackAppendix("rollback"));
             fail();
         } catch (RuntimeException expected) {
             assertEquals(RuntimeException.class, expected.getClass());
@@ -54,7 +53,7 @@ public class DeadKingDeepCopyTest extends FileIOTest {
         }
 
         try {
-            _prevayler.execute(new Appendix("z"));
+            _prevayler.execute(new RollbackAppendix("z"));
             fail();
         } catch (ErrorInEarlierTransactionError expected) {
         }
@@ -70,7 +69,7 @@ public class DeadKingDeepCopyTest extends FileIOTest {
     }
 
     private void append(String appendix, String expectedResult) throws Exception {
-        _prevayler.execute(new Appendix(appendix));
+        _prevayler.execute(new RollbackAppendix(appendix));
         verify(expectedResult);
     }
 
