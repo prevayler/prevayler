@@ -10,33 +10,18 @@
 
 package org.prevayler;
 
-import org.prevayler.foundation.monitor.Monitor;
-import org.prevayler.foundation.monitor.SimpleMonitor;
-import org.prevayler.foundation.serialization.JavaSerializer;
-import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.foundation.serialization.SkaringaSerializer;
-import org.prevayler.foundation.serialization.XStreamSerializer;
-import org.prevayler.implementation.PrevaylerDirectory;
-import org.prevayler.implementation.PrevaylerImpl;
-import org.prevayler.implementation.clock.MachineClock;
-import org.prevayler.implementation.journal.Journal;
-import org.prevayler.implementation.journal.PersistentJournal;
-import org.prevayler.implementation.journal.TransientJournal;
-import org.prevayler.implementation.publishing.CentralPublisher;
-import org.prevayler.implementation.publishing.TransactionPublisher;
-import org.prevayler.implementation.publishing.censorship.LiberalTransactionCensor;
-import org.prevayler.implementation.publishing.censorship.StrictTransactionCensor;
-import org.prevayler.implementation.publishing.censorship.TransactionCensor;
-import org.prevayler.implementation.replication.ClientPublisher;
-import org.prevayler.implementation.replication.ServerListener;
-import org.prevayler.implementation.snapshot.NullSnapshotManager;
-import org.prevayler.implementation.snapshot.RealSnapshotManager;
-import org.prevayler.implementation.snapshot.SnapshotManager;
+import org.prevayler.foundation.monitor.*;
+import org.prevayler.foundation.serialization.*;
+import org.prevayler.implementation.*;
+import org.prevayler.implementation.clock.*;
+import org.prevayler.implementation.journal.*;
+import org.prevayler.implementation.publishing.*;
+import org.prevayler.implementation.publishing.censorship.*;
+import org.prevayler.implementation.replication.*;
+import org.prevayler.implementation.snapshot.*;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 /**
  * Provides easy access to all Prevayler configurations and implementations
@@ -367,7 +352,7 @@ public class PrevaylerFactory<S> {
         if (_serverPort != -1) {
             new ServerListener<S>(publisher, _serverPort);
         }
-        return new PrevaylerImpl<S>(snapshotManager, publisher, journalSerializer());
+        return new PrevaylerImpl<S>(snapshotManager, publisher, journalSerializer(), _transactionFiltering);
     }
 
     private String prevalenceDirectory() {

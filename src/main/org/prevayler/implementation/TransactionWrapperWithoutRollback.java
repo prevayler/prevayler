@@ -10,25 +10,23 @@
 
 package org.prevayler.implementation;
 
-import static org.prevayler.Safety.Journaling.ROLLBACK_ON_RUNTIME_EXCEPTION;
-import static org.prevayler.Safety.Locking.PREVALENT_SYSTEM;
+import static org.prevayler.Safety.Journaling.*;
+import static org.prevayler.Safety.Locking.*;
 
-import org.prevayler.GenericTransaction;
-import org.prevayler.PrevalenceContext;
-import org.prevayler.Safety;
+import org.prevayler.*;
 
-import java.io.Serializable;
+import java.io.*;
 
-@SuppressWarnings("deprecation") @Safety(journaling = ROLLBACK_ON_RUNTIME_EXCEPTION, locking = PREVALENT_SYSTEM) public class TransactionWrapper<S> implements GenericTransaction<S, Void, RuntimeException>, Serializable {
+@SuppressWarnings("deprecation") @Safety(journaling = DESERIALIZE_BEFORE_EXECUTION, locking = PREVALENT_SYSTEM) public class TransactionWrapperWithoutRollback<S> implements GenericTransaction<S, Void, RuntimeException>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     public org.prevayler.Transaction<S> _transaction;
 
-    public TransactionWrapper() {
+    public TransactionWrapperWithoutRollback() {
     }
 
-    public TransactionWrapper(org.prevayler.Transaction<S> transaction) {
+    public TransactionWrapperWithoutRollback(org.prevayler.Transaction<S> transaction) {
         _transaction = transaction;
     }
 

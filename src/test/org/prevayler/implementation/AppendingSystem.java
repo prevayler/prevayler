@@ -12,7 +12,7 @@ package org.prevayler.implementation;
 
 import java.io.*;
 
-class AppendingSystem implements Serializable {
+public class AppendingSystem implements Serializable {
 
     private static final long serialVersionUID = -1151588644550257284L;
 

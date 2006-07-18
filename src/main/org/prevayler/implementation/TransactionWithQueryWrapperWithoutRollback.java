@@ -10,25 +10,23 @@
 
 package org.prevayler.implementation;
 
-import static org.prevayler.Safety.Journaling.ROLLBACK_ON_RUNTIME_EXCEPTION;
-import static org.prevayler.Safety.Locking.PREVALENT_SYSTEM;
+import static org.prevayler.Safety.Journaling.*;
+import static org.prevayler.Safety.Locking.*;
 
-import org.prevayler.GenericTransaction;
-import org.prevayler.PrevalenceContext;
-import org.prevayler.Safety;
+import org.prevayler.*;
 
-import java.io.Serializable;
+import java.io.*;
 
-@SuppressWarnings("deprecation") @Safety(journaling = ROLLBACK_ON_RUNTIME_EXCEPTION, locking = PREVALENT_SYSTEM) public class TransactionWithQueryWrapper<S, R, E extends Exception> implements GenericTransaction<S, R, E>, Serializable {
+@SuppressWarnings("deprecation") @Safety(journaling = DESERIALIZE_BEFORE_EXECUTION, locking = PREVALENT_SYSTEM) public class TransactionWithQueryWrapperWithoutRollback<S, R, E extends Exception> implements GenericTransaction<S, R, E>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     public org.prevayler.TransactionWithQuery<S, R, E> _transactionWithQuery;
 
-    public TransactionWithQueryWrapper() {
+    public TransactionWithQueryWrapperWithoutRollback() {
     }
 
-    public TransactionWithQueryWrapper(org.prevayler.TransactionWithQuery<S, R, E> transactionWithQuery) {
+    public TransactionWithQueryWrapperWithoutRollback(org.prevayler.TransactionWithQuery<S, R, E> transactionWithQuery) {
         _transactionWithQuery = transactionWithQuery;
     }
 

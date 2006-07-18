@@ -10,14 +10,11 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.Clock;
-import org.prevayler.GenericTransaction;
-import org.prevayler.Listener;
-import org.prevayler.Prevayler;
-import org.prevayler.Safety.Journaling;
-import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.implementation.publishing.TransactionPublisher;
-import org.prevayler.implementation.snapshot.SnapshotManager;
+import org.prevayler.*;
+import org.prevayler.Safety.*;
+import org.prevayler.foundation.serialization.*;
+import org.prevayler.implementation.publishing.*;
+import org.prevayler.implementation.snapshot.*;
 
 public class PrevaylerImpl<S> implements Prevayler<S> {
 
@@ -30,6 +27,8 @@ public class PrevaylerImpl<S> implements Prevayler<S> {
     private final TransactionPublisher<S> _publisher;
 
     private final Serializer<GenericTransaction> _journalSerializer;
+
+    private final boolean _withRollbackForBackwardCompatibilty;
 
     /**
      * Creates a new Prevayler
@@ -45,7 +44,7 @@ public class PrevaylerImpl<S> implements Prevayler<S> {
      *            this PrevaylerImpl.
      * @param journalSerializer
      */
-    public PrevaylerImpl(SnapshotManager<S> snapshotManager, TransactionPublisher<S> transactionPublisher, Serializer<GenericTransaction> journalSerializer) {
+    public PrevaylerImpl(SnapshotManager<S> snapshotManager, TransactionPublisher<S> transactionPublisher, Serializer<GenericTransaction> journalSerializer, boolean withRollbackForBackwardCompatibilty) {
         _snapshotManager = snapshotManager;
 
         _guard = _snapshotManager.recoveredPrevalentSystem();
@@ -56,6 +55,8 @@ public class PrevaylerImpl<S> implements Prevayler<S> {
         _guard.subscribeTo(_publisher);
 
         _journalSerializer = journalSerializer;
+
+        _withRollbackForBackwardCompatibilty = withRollbackForBackwardCompatibilty;
     }
 
     public <R, E extends Exception> R execute(GenericTransaction<? super S, R, E> transaction) throws E {
@@ -100,7 +101,7 @@ public class PrevaylerImpl<S> implements Prevayler<S> {
 
     @SuppressWarnings("deprecation") public void execute(org.prevayler.Transaction<S> transaction) {
         disallowSafetyAnnotation(transaction);
-        execute(new TransactionWrapper<S>(transaction));
+        execute(_withRollbackForBackwardCompatibilty ? new TransactionWrapperWithRollback<S>(transaction) : new TransactionWrapperWithoutRollback<S>(transaction));
     }
 
     @SuppressWarnings("deprecation") public <R, E extends Exception> R execute(org.prevayler.Query<S, R, E> sensitiveQuery) throws E {
@@ -110,12 +111,12 @@ public class PrevaylerImpl<S> implements Prevayler<S> {
 
     @SuppressWarnings("deprecation") public <R, E extends Exception> R execute(org.prevayler.TransactionWithQuery<S, R, E> transactionWithQuery) throws E {
         disallowSafetyAnnotation(transactionWithQuery);
-        return execute(new TransactionWithQueryWrapper<S, R, E>(transactionWithQuery));
+        return execute(_withRollbackForBackwardCompatibilty ? new TransactionWithQueryWrapperWithRollback<S, R, E>(transactionWithQuery) : new TransactionWithQueryWrapperWithoutRollback<S, R, E>(transactionWithQuery));
     }
 
     @SuppressWarnings("deprecation") public <R> R execute(org.prevayler.SureTransactionWithQuery<S, R> sureTransactionWithQuery) {
         disallowSafetyAnnotation(sureTransactionWithQuery);
-        return execute(new TransactionWithQueryWrapper<S, R, RuntimeException>(sureTransactionWithQuery));
+        return execute(_withRollbackForBackwardCompatibilty ? new TransactionWithQueryWrapperWithRollback<S, R, RuntimeException>(sureTransactionWithQuery) : new TransactionWithQueryWrapperWithoutRollback<S, R, RuntimeException>(sureTransactionWithQuery));
     }
 
     private static void requireSafetyAnnotation(Object object) {

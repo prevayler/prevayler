@@ -8,17 +8,17 @@
 // Prevayler is a trademark of Klaus Wuestefeld.
 // See the LICENSE file for license details.
 
-package org.prevayler;
+package org.prevayler.backward;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
-public class AllTestSuite extends TestCase {
+public class Suite extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        suite.addTest(org.prevayler.implementation.Suite.suite());
-        suite.addTest(org.prevayler.foundation.Suite.suite());
-        suite.addTest(org.prevayler.backward.Suite.suite());
+        suite.addTestSuite(BackwardCompatibilityTest.class);
         return suite;
     }
 
