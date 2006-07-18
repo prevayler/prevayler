@@ -10,24 +10,23 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.GenericTransaction;
-import org.prevayler.PrevalenceContext;
-import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
-import org.prevayler.demos.ReadWrite;
-import org.prevayler.foundation.FileIOTest;
-import org.prevayler.implementation.snapshot.SnapshotError;
+import org.prevayler.*;
+import org.prevayler.implementation.snapshot.*;
 
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 
-public class TransientPrevaylerTest extends FileIOTest {
+import junit.framework.*;
+
+public class TransientPrevaylerTest extends TestCase {
 
     private Prevayler<AppendingSystem> prevayler;
 
     @Override protected void setUp() throws Exception {
-        super.setUp();
         prevayler = PrevaylerFactory.createTransientPrevayler(new AppendingSystem());
+    }
+
+    @Override protected void tearDown() throws Exception {
+        prevayler = null;
     }
 
     public void testTransactionExecution() {
@@ -50,47 +49,12 @@ public class TransientPrevaylerTest extends FileIOTest {
         }
     }
 
-    /**
-     * The baptism problem occurs when a Transaction keeps a direct reference to
-     * a business object instead of querying for it given the Prevalent System.
-     */
-    public void testFailFastBaptismProblem() {
-        append("a");
-
-        AppendingSystem directReference = prevayler.execute(new SystemQuery<AppendingSystem>());
-        prevayler.execute(new DirectReferenceTransaction(directReference));
-
-        assertState("a");
-    }
-
-    @Override protected void tearDown() throws Exception {
-        prevayler = null;
-        super.tearDown();
-    }
-
     private void assertState(String expected) {
         assertEquals(expected, prevayler.execute(new ValueQuery()));
     }
 
     private void append(String appendix) {
         prevayler.execute(new Appendix(appendix));
-    }
-
-    @ReadWrite static private class DirectReferenceTransaction implements GenericTransaction<AppendingSystem, Void, RuntimeException>, Serializable {
-
-        private static final long serialVersionUID = -7885669885494051746L;
-
-        private final AppendingSystem _illegalDirectReference;
-
-        DirectReferenceTransaction(AppendingSystem illegalDirectReference) {
-            _illegalDirectReference = illegalDirectReference;
-        }
-
-        public Void executeOn(@SuppressWarnings("unused") PrevalenceContext<? extends AppendingSystem> prevalenceContext) {
-            _illegalDirectReference.append("anything");
-            return null;
-        }
-
     }
 
 }

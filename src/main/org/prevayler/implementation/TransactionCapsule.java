@@ -25,16 +25,20 @@ public class TransactionCapsule<S, R, E extends Exception> implements Serializab
 
     private final boolean _desiresRollback;
 
+    private transient GenericTransaction<? super S, R, E> _original;
+
     private transient R _result;
 
     private transient Exception _exception;
 
     public TransactionCapsule(GenericTransaction<? super S, R, E> transaction, Serializer<GenericTransaction> journalSerializer) {
+        Journaling journaling = SafetyCache.getJournaling(transaction);
+        _original = journaling.compareTo(Journaling.DESERIALIZE_BEFORE_EXECUTION) >= 0 ? null : transaction;
+        _desiresRollback = journaling.compareTo(Journaling.ROLLBACK_ON_RUNTIME_EXCEPTION) >= 0;
         try {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             journalSerializer.writeObject(bytes, transaction);
             _serialized = bytes.toByteArray();
-            _desiresRollback = SafetyCache.getJournaling(transaction).compareTo(Journaling.ROLLBACK_ON_RUNTIME_EXCEPTION) >= 0;
         } catch (Exception exception) {
             throw new TransactionNotSerializableError("Unable to serialize transaction", exception);
         }
@@ -46,17 +50,12 @@ public class TransactionCapsule<S, R, E extends Exception> implements Serializab
     }
 
     /**
-     * Get the serialized representation of the transaction. Callers must not
-     * modify the returned array.
-     */
-    public byte[] serialized() {
-        return _serialized;
-    }
-
-    /**
      * Deserialize the contained Transaction or TransactionWithQuery.
      */
-    @SuppressWarnings("unchecked") public final GenericTransaction<? super S, R, E> deserialize(Serializer<GenericTransaction> journalSerializer) {
+    @SuppressWarnings("unchecked") public final GenericTransaction<? super S, R, E> deserialize(Serializer<GenericTransaction> journalSerializer, boolean forKing) {
+        if (forKing && _original != null) {
+            return _original;
+        }
         try {
             return journalSerializer.readObject(new ByteArrayInputStream(_serialized));
         } catch (Exception exception) {

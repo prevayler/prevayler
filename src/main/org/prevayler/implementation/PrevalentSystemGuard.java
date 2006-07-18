@@ -44,11 +44,18 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
 
     private final Condition _deepCopyPipelineFlush = _rwlock.writeLock().newCondition();
 
+    private final boolean _isKing;
+
     public PrevalentSystemGuard(S prevalentSystem, long systemVersion, Serializer<GenericTransaction> journalSerializer) {
+        this(prevalentSystem, systemVersion, journalSerializer, true);
+    }
+
+    private PrevalentSystemGuard(S prevalentSystem, long systemVersion, Serializer<GenericTransaction> journalSerializer, boolean isKing) {
         _prevalentSystem = prevalentSystem;
         _systemVersion = systemVersion;
         _journalSerializer = journalSerializer;
         _listeners = new Listeners();
+        _isKing = isKing;
     }
 
     public void subscribeTo(TransactionPublisher<S> publisher) {
@@ -68,7 +75,7 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
         TransactionCapsule<S, R, E> capsule = transactionTimestamp.capsule();
         long systemVersion = transactionTimestamp.systemVersion();
         Date executionTime = transactionTimestamp.executionTime();
-        GenericTransaction<? super S, R, E> transaction = capsule.deserialize(_journalSerializer);
+        GenericTransaction<? super S, R, E> transaction = capsule.deserialize(_journalSerializer, _isKing);
         Locking locking = SafetyCache.getLocking(transaction);
         PrevalenceContext<S> prevalenceContext;
 
@@ -166,7 +173,7 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
             }
 
             synchronized (_prevalentSystem) {
-                return new PrevalentSystemGuard<S>(DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer);
+                return new PrevalentSystemGuard<S>(DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer, false);
             }
         } finally {
             _rwlock.writeLock().unlock();

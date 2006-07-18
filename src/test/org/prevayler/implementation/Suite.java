@@ -10,13 +10,12 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.implementation.snapshot.GenericSnapshotManagerTest;
+import org.prevayler.implementation.snapshot.*;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import junit.framework.*;
 
 public class Suite extends TestCase {
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.addTestSuite(TransientPrevaylerTest.class);
@@ -26,6 +25,7 @@ public class Suite extends TestCase {
         suite.addTestSuite(SkipOldTransactionsTest.class);
         suite.addTestSuite(CheckpointTest.class);
         suite.addTestSuite(RollbackTest.class);
+        suite.addTestSuite(BaptismTest.class);
         suite.addTestSuite(ReplicationTest.class);
         suite.addTestSuite(GenericSnapshotManagerTest.class);
         suite.addTestSuite(TransactionWithQueryTest.class);
@@ -35,4 +35,5 @@ public class Suite extends TestCase {
         suite.addTestSuite(DeadKingDeepCopyTest.class);
         return suite;
     }
+
 }
