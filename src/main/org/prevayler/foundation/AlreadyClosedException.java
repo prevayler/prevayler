@@ -10,9 +10,9 @@
 
 package org.prevayler.foundation;
 
-import org.prevayler.PrevaylerIOException;
+import java.io.*;
 
-public class AlreadyClosedException extends PrevaylerIOException {
+public class AlreadyClosedException extends IOException {
 
     private static final long serialVersionUID = 1L;
 
@@ -25,11 +25,13 @@ public class AlreadyClosedException extends PrevaylerIOException {
     }
 
     public AlreadyClosedException(String message, Throwable cause) {
-        super(message, cause);
+        super(message);
+        initCause(cause);
     }
 
     public AlreadyClosedException(Throwable cause) {
-        super(cause);
+        super();
+        initCause(cause);
     }
 
 }

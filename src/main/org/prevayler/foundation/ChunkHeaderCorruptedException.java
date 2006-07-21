@@ -10,9 +10,9 @@
 
 package org.prevayler.foundation;
 
-import org.prevayler.PrevaylerIOException;
+import java.io.*;
 
-public class ChunkHeaderCorruptedException extends PrevaylerIOException {
+public class ChunkHeaderCorruptedException extends IOException {
 
     private static final long serialVersionUID = 1L;
 
@@ -25,11 +25,13 @@ public class ChunkHeaderCorruptedException extends PrevaylerIOException {
     }
 
     public ChunkHeaderCorruptedException(String message, Throwable cause) {
-        super(message, cause);
+        super(message);
+        initCause(cause);
     }
 
     public ChunkHeaderCorruptedException(Throwable cause) {
-        super(cause);
+        super();
+        initCause(cause);
     }
 
 }

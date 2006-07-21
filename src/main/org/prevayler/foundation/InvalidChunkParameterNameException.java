@@ -10,9 +10,9 @@
 
 package org.prevayler.foundation;
 
-import org.prevayler.PrevaylerIOException;
+import java.io.*;
 
-public class InvalidChunkParameterNameException extends PrevaylerIOException {
+public class InvalidChunkParameterNameException extends IOException {
 
     private static final long serialVersionUID = 1L;
 
@@ -25,11 +25,13 @@ public class InvalidChunkParameterNameException extends PrevaylerIOException {
     }
 
     public InvalidChunkParameterNameException(String message, Throwable cause) {
-        super(message, cause);
+        super(message);
+        initCause(cause);
     }
 
     public InvalidChunkParameterNameException(Throwable cause) {
-        super(cause);
+        super();
+        initCause(cause);
     }
 
 }
