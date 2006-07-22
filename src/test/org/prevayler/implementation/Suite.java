@@ -27,7 +27,7 @@ public class Suite extends TestCase {
         suite.addTestSuite(RollbackTest.class);
         suite.addTestSuite(BaptismTest.class);
         suite.addTestSuite(ReplicationTest.class);
-        suite.addTestSuite(GenericSnapshotManagerTest.class);
+        suite.addTestSuite(SnapshotManagerTest.class);
         suite.addTestSuite(TransactionWithQueryTest.class);
         suite.addTestSuite(JournalSerializerTest.class);
         suite.addTestSuite(SnapshotSerializerTest.class);

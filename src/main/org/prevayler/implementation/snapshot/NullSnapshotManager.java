@@ -10,10 +10,10 @@
 
 package org.prevayler.implementation.snapshot;
 
-import org.prevayler.GenericTransaction;
-import org.prevayler.foundation.serialization.JavaSerializer;
-import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.implementation.PrevalentSystemGuard;
+import org.prevayler.*;
+import org.prevayler.foundation.*;
+import org.prevayler.foundation.serialization.*;
+import org.prevayler.implementation.*;
 
 public class NullSnapshotManager<S> implements SnapshotManager<S> {
 
@@ -26,7 +26,7 @@ public class NullSnapshotManager<S> implements SnapshotManager<S> {
     public NullSnapshotManager(S newPrevalentSystem, String snapshotAttemptErrorMessage) {
         _snapshotAttemptErrorMessage = snapshotAttemptErrorMessage;
         _primarySerializer = new JavaSerializer<S>();
-        _recoveredPrevalentSystem = new PrevalentSystemGuard<S>(newPrevalentSystem, 0, new JavaSerializer<GenericTransaction>());
+        _recoveredPrevalentSystem = new PrevalentSystemGuard<S>(DeepCopier.deepCopy(newPrevalentSystem, _primarySerializer), 0, new JavaSerializer<GenericTransaction>());
     }
 
     public void writeSnapshot(@SuppressWarnings("unused") S prevalentSystem, @SuppressWarnings("unused") long version) {

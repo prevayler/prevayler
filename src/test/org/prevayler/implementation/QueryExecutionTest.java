@@ -34,7 +34,7 @@ public class QueryExecutionTest extends FileIOTest {
         List prevalentSystem = new LinkedList();
         Prevayler<List> prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem);
         assertEquals("abc", prevayler.execute(new MyTransaction()));
-        assertEquals("added element", prevalentSystem.get(0));
+        assertEquals(1, (int) prevayler.execute(new MyQuery()));
     }
 
     @ReadOnly private static final class MyQuery implements GenericTransaction<List<String>, Integer, RuntimeException> {

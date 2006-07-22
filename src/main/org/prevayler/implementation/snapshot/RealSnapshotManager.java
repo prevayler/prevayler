@@ -10,17 +10,13 @@
 
 package org.prevayler.implementation.snapshot;
 
-import org.prevayler.GenericTransaction;
-import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.implementation.PrevalentSystemGuard;
-import org.prevayler.implementation.PrevaylerDirectory;
+import org.prevayler.*;
+import org.prevayler.foundation.*;
+import org.prevayler.foundation.serialization.*;
+import org.prevayler.implementation.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.util.Iterator;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 public class RealSnapshotManager<S> implements SnapshotManager<S> {
 
@@ -51,7 +47,7 @@ public class RealSnapshotManager<S> implements SnapshotManager<S> {
 
             File latestSnapshot = _directory.latestSnapshot();
             long recoveredVersion = latestSnapshot == null ? 0 : PrevaylerDirectory.snapshotVersion(latestSnapshot);
-            S recoveredPrevalentSystem = latestSnapshot == null ? newPrevalentSystem : readSnapshot(latestSnapshot);
+            S recoveredPrevalentSystem = latestSnapshot == null ? DeepCopier.deepCopy(newPrevalentSystem, primarySerializer()) : readSnapshot(latestSnapshot);
             _recoveredPrevalentSystem = new PrevalentSystemGuard<S>(recoveredPrevalentSystem, recoveredVersion, journalSerializer);
         } catch (Exception e) {
             throw new SnapshotError(e);

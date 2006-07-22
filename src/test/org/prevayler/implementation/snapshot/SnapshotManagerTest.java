@@ -10,20 +10,14 @@
 
 package org.prevayler.implementation.snapshot;
 
-import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
-import org.prevayler.foundation.FileIOTest;
-import org.prevayler.foundation.serialization.JavaSerializer;
-import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.foundation.serialization.SkaringaSerializer;
-import org.prevayler.foundation.serialization.XStreamSerializer;
-import org.prevayler.implementation.AppendTransaction;
-import org.prevayler.implementation.ToStringQuery;
+import org.prevayler.*;
+import org.prevayler.foundation.*;
+import org.prevayler.foundation.serialization.*;
+import org.prevayler.implementation.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
-public class GenericSnapshotManagerTest extends FileIOTest {
+public class SnapshotManagerTest extends FileIOTest {
 
     public void testNoExistingSnapshot() throws IOException {
         Prevayler<StringBuilder> prevayler = createPrevayler("snapshot", new JavaSerializer<StringBuilder>());
@@ -93,6 +87,38 @@ public class GenericSnapshotManagerTest extends FileIOTest {
         Prevayler<StringBuilder> second = createPrevayler("xstreamsnapshot", new XStreamSerializer<StringBuilder>());
         assertEquals("initial one two", second.execute(new ToStringQuery()));
         second.close();
+    }
+
+    public void testRealSnapshotManagerDeepCopiesInitialPrevalentSystem() throws IOException {
+        StringBuilder initialSystem = new StringBuilder("initial");
+        Prevayler<StringBuilder> prevayler1 = createPrevaylerWithRealSnapshotManager(initialSystem);
+        Prevayler<StringBuilder> prevayler2 = createPrevaylerWithRealSnapshotManager(initialSystem);
+        assertEquals("initial", prevayler1.execute(new ToStringQuery()));
+        prevayler2.execute(new AppendTransaction(" added"));
+        assertEquals("initial", prevayler1.execute(new ToStringQuery()));
+        assertEquals("initial added", prevayler2.execute(new ToStringQuery()));
+    }
+
+    private Prevayler<StringBuilder> createPrevaylerWithRealSnapshotManager(StringBuilder initialSystem) throws IOException {
+        PrevaylerFactory<StringBuilder> factory = new PrevaylerFactory<StringBuilder>();
+        factory.configurePrevalentSystem(initialSystem);
+        factory.configurePrevalenceDirectory(_testDirectory);
+        factory.configureTransientMode(true);
+        return factory.create();
+    }
+
+    public void testNullSnapshotManagerDeepCopiesInitialPrevalentSystem() {
+        StringBuilder initialSystem = new StringBuilder("initial");
+        Prevayler<StringBuilder> prevayler1 = createPrevaylerWithNullSnapshotManager(initialSystem);
+        Prevayler<StringBuilder> prevayler2 = createPrevaylerWithNullSnapshotManager(initialSystem);
+        assertEquals("initial", prevayler1.execute(new ToStringQuery()));
+        prevayler2.execute(new AppendTransaction(" added"));
+        assertEquals("initial", prevayler1.execute(new ToStringQuery()));
+        assertEquals("initial added", prevayler2.execute(new ToStringQuery()));
+    }
+
+    private Prevayler<StringBuilder> createPrevaylerWithNullSnapshotManager(StringBuilder initialSystem) {
+        return PrevaylerFactory.createTransientPrevayler(initialSystem);
     }
 
     private void checkCanReadSnapshotWithMultipleStrategies() throws IOException {
