@@ -301,7 +301,7 @@ public class PrevaylerFactory<S> {
         PrevaylerDirectory.checkValidJournalSuffix(suffix);
 
         if (_journalSerializer != null) {
-            throw new IllegalStateException("Read the javadoc to this method.");
+            throw new IllegalStateException("Already configured a journal serializer.");
         }
 
         _journalSerializer = serializer;

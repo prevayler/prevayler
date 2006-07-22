@@ -10,20 +10,12 @@
 
 package org.prevayler.implementation.journal;
 
-import org.prevayler.foundation.Chunk;
-import org.prevayler.foundation.DurableInputStream;
-import org.prevayler.foundation.DurableOutputStream;
-import org.prevayler.foundation.Guided;
-import org.prevayler.foundation.StopWatch;
-import org.prevayler.foundation.monitor.Monitor;
-import org.prevayler.implementation.PrevaylerDirectory;
-import org.prevayler.implementation.TransactionGuide;
-import org.prevayler.implementation.TransactionTimestamp;
-import org.prevayler.implementation.publishing.TransactionSubscriber;
+import org.prevayler.foundation.*;
+import org.prevayler.foundation.monitor.*;
+import org.prevayler.implementation.*;
+import org.prevayler.implementation.publishing.*;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * A Journal that will write all transactions to .journal files.
@@ -72,7 +64,7 @@ public class PersistentJournal<S> implements Journal<S> {
 
     public <R, E extends Exception> void append(TransactionGuide<S, R, E> guide) {
         if (!_nextTransactionInitialized)
-            throw new IllegalStateException("Journal.update() has to be called at least once before Journal.append().");
+            throw new JournalError("Journal.update() has to be called at least once before Journal.append().");
 
         DurableOutputStream myOutputJournal;
         DurableOutputStream outputJournalToClose = null;
@@ -163,11 +155,11 @@ public class PersistentJournal<S> implements Journal<S> {
     private void initializeNextTransaction(long initialTransactionWanted, long nextTransaction) {
         if (_nextTransactionInitialized) {
             if (_nextTransaction < initialTransactionWanted)
-                throw new JournalError("The transaction log has not yet reached transaction " + initialTransactionWanted + ". The last logged transaction was " + (_nextTransaction - 1) + ".");
+                throw new JournalError("The journal has not yet reached transaction " + initialTransactionWanted + ". The last logged transaction was " + (_nextTransaction - 1) + ".");
             if (nextTransaction < _nextTransaction)
                 throw new JournalError("Unable to find journal file containing transaction " + nextTransaction + ". Might have been manually deleted.");
             if (nextTransaction > _nextTransaction)
-                throw new IllegalStateException();
+                throw new JournalError("The journal is is already beyond transaction " + nextTransaction);
             return;
         }
         _nextTransactionInitialized = true;
@@ -231,7 +223,7 @@ public class PersistentJournal<S> implements Journal<S> {
 
     public long nextTransaction() {
         if (!_nextTransactionInitialized) {
-            throw new IllegalStateException("update() must be called at least once");
+            throw new JournalError("update() must be called at least once");
         }
         return _nextTransaction;
     }

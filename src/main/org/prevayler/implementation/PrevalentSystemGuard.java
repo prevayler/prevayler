@@ -86,7 +86,7 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
             }
 
             if (systemVersion != _systemVersion + 1) {
-                throw new IllegalStateException("Attempted to apply transaction " + systemVersion + " when prevalent system was only at " + _systemVersion);
+                throw new TransactionSequenceError("Attempted to apply transaction " + systemVersion + " when prevalent system was only at " + _systemVersion);
             }
 
             _systemVersion = systemVersion;
@@ -169,7 +169,7 @@ public class PrevalentSystemGuard<S> implements TransactionSubscriber<S> {
             }
 
             if (_systemVersion > systemVersion) {
-                throw new IllegalStateException("Already at " + _systemVersion + "; can't go back to " + systemVersion);
+                throw new TransactionSequenceError("Already at " + _systemVersion + "; can't go back to " + systemVersion);
             }
 
             synchronized (_prevalentSystem) {

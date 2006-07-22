@@ -10,13 +10,10 @@
 
 package org.prevayler.implementation;
 
-import org.prevayler.foundation.Chunking;
-import org.prevayler.foundation.Guided;
-import org.prevayler.foundation.Turn;
+import org.prevayler.foundation.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Date;
+import java.io.*;
+import java.util.*;
 
 public class TransactionGuide<S, R, E extends Exception> extends Guided {
 
@@ -33,7 +30,7 @@ public class TransactionGuide<S, R, E extends Exception> extends Guided {
 
     public void checkSystemVersion(long expectedSystemVersion) {
         if (_transactionTimestamp.systemVersion() != expectedSystemVersion) {
-            throw new IllegalStateException("Attempted to process " + _transactionTimestamp.systemVersion() + " when ready for " + expectedSystemVersion);
+            throw new TransactionSequenceError("Attempted to process " + _transactionTimestamp.systemVersion() + " when ready for " + expectedSystemVersion);
         }
     }
 
