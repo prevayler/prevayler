@@ -1,4 +1,4 @@
-Changes from Prevayler 2.0 to Prevayler 2.1
+Changes from Prevayler 2.0 to Prevayler 2.3
 
 ------------------------
 SureTransactionWithQuery
@@ -61,6 +61,6 @@ JavaSerializer.
 ------------------
 Other enhancements
 
-Prevayler 2.1 includes some other behind-the-scenes improvements, including
+Prevayler 2.3 includes some other behind-the-scenes improvements, including
 further increased transaction throughput and fewer threads created internally.
 Work on replication and an improved monitoring interface are still in progress.

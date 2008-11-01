@@ -22,7 +22,7 @@ public interface Prevayler {
 	public Clock clock();
 
 	/** Executes the given Transaction on the prevalentSystem(). ALL operations that alter the observable state of the prevalentSystem() must be implemented as Transaction or TransactionWithQuery objects and must be executed using the Prevayler.execute() methods. This method synchronizes on the prevalentSystem() to execute the Transaction. It is therefore guaranteed that only one Transaction is executed at a time. This means the prevalentSystem() does not have to worry about concurrency issues among Transactions.
-	 * Implementations of this interface can log the given Transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the prevalentSystem() for fault-tolerance and load-balancing purposes. Such a "replicating" implementation is planned for Prevayler release 2.1.
+	 * Implementations of this interface can log the given Transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the prevalentSystem() for fault-tolerance and load-balancing purposes.
 	 * @see PrevaylerFactory
 	 */
 	public void execute(Transaction transaction);
@@ -35,7 +35,7 @@ public interface Prevayler {
 	public Object execute(Query sensitiveQuery) throws Exception;
 
 	/** Executes the given transactionWithQuery on the prevalentSystem().
-	 * Implementations of this interface can log the given transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the prevalentSystem() for fault-tolerance and load-balancing purposes. Such a "replicating" implementation is planned for Prevayler release 2.1.
+	 * Implementations of this interface can log the given transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the prevalentSystem() for fault-tolerance and load-balancing purposes.
 	 * @return The result returned by the execution of the transactionWithQuery on the prevalentSystem().
 	 * @throws Exception The Exception thrown by the execution of the sensitiveQuery on the prevalentSystem().
 	 * @see PrevaylerFactory
