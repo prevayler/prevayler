@@ -11,6 +11,7 @@
     <relativePath>../..</relativePath>
   </parent>
 
+  <groupId>prevayler.extras</groupId>
   <artifactId>prevayler-skaringa</artifactId>
   <packaging>jar</packaging>
 

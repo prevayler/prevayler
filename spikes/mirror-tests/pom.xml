@@ -11,11 +11,12 @@
     <relativePath>../..</relativePath>
   </parent>
 
-  <artifactId>prevayler-factory</artifactId>
+  <groupId>prevayler.spikes</groupId>
+  <artifactId>prevayler-mirror-tests</artifactId>
   <packaging>jar</packaging>
 
-  <name>Prevayler Factory</name>
-  <description>The PrevaylerFactory class.</description>
+  <name>Prevayler Mirroring Tests</name>
+  <description>Tests for mirroring, split apart for dependencies.</description>
 
   <dependencies>
     <dependency>
@@ -23,31 +24,35 @@
       <artifactId>prevayler-core</artifactId>
       <version>2.4-SNAPSHOT</version>
       <type>jar</type>
-      <scope>compile</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>prevayler</groupId>
-      <artifactId>prevayler-skaringa</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
-      <scope>compile</scope>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>prevayler</groupId>
-      <artifactId>prevayler-xstream</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
-      <scope>compile</scope>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>prevayler</groupId>
+      <groupId>prevayler.spikes</groupId>
       <artifactId>prevayler-mirror</artifactId>
       <version>2.4-SNAPSHOT</version>
       <type>jar</type>
-      <scope>compile</scope>
-      <optional>false</optional>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>prevayler</groupId>
+      <artifactId>prevayler-factory</artifactId>
+      <version>2.4-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>prevayler</groupId>
+      <artifactId>prevayler-tests</artifactId>
+      <version>2.4-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <type>jar</type>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

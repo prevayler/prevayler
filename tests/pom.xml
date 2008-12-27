@@ -40,21 +40,21 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>prevayler</groupId>
+      <groupId>prevayler.extras</groupId>
       <artifactId>prevayler-skaringa</artifactId>
       <version>2.4-SNAPSHOT</version>
       <type>jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>prevayler</groupId>
+      <groupId>prevayler.extras</groupId>
       <artifactId>prevayler-xstream</artifactId>
       <version>2.4-SNAPSHOT</version>
       <type>jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>prevayler</groupId>
+      <groupId>prevayler.extras</groupId>
       <artifactId>prevayler-log4j</artifactId>
       <version>2.4-SNAPSHOT</version>
       <type>jar</type>

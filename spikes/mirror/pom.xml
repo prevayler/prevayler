@@ -11,10 +11,11 @@
     <relativePath>../..</relativePath>
   </parent>
 
+  <groupId>prevayler.spikes</groupId>
   <artifactId>prevayler-mirror</artifactId>
   <packaging>jar</packaging>
 
-  <name>Prevayler Mirror Alpha</name>
+  <name>Prevayler Mirroring</name>
   <description>An initial mirroring implementation for Prevayler.</description>
 
   <dependencies>

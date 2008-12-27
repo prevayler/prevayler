@@ -16,11 +16,11 @@
   <modules>
     <module>core</module>
     <module>tests</module>
-    <module>extras/factory</module>
+    <module>factory</module>
     <module>extras/skaringa</module>
     <module>extras/xstream</module>
     <module>extras/log4j</module>
-    <module>extras/mirror</module>
-    <module>extras/mirror-tests</module>
+    <module>spikes/mirror</module>
+    <module>spikes/mirror-tests</module>
   </modules>
 </project>
