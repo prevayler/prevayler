@@ -12,8 +12,6 @@
   </parent>
 
   <artifactId>prevayler-tests</artifactId>
-  <packaging>jar</packaging>
-
   <name>Prevayler Tests</name>
   <description>Unit tests for Prevayler.</description>
 
@@ -22,42 +20,29 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
-      <type>jar</type>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>prevayler</groupId>
       <artifactId>prevayler-core</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>prevayler</groupId>
       <artifactId>prevayler-factory</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>prevayler.extras</groupId>
       <artifactId>prevayler-skaringa</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>prevayler.extras</groupId>
       <artifactId>prevayler-xstream</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>prevayler.extras</groupId>
       <artifactId>prevayler-log4j</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
       <scope>test</scope>
     </dependency>
   </dependencies>

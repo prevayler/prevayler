@@ -23,4 +23,50 @@
     <module>spikes/mirror</module>
     <module>spikes/mirror-tests</module>
   </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>prevayler</groupId>
+        <artifactId>prevayler-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>prevayler</groupId>
+        <artifactId>prevayler-factory</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>prevayler</groupId>
+        <artifactId>prevayler-tests</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>prevayler.extras</groupId>
+        <artifactId>prevayler-skaringa</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>prevayler.extras</groupId>
+        <artifactId>prevayler-xstream</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>prevayler.extras</groupId>
+        <artifactId>prevayler-log4j</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>prevayler.spikes</groupId>
+        <artifactId>prevayler-mirror</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>prevayler.spikes</groupId>
+        <artifactId>prevayler-mirror-tests</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
 </project>

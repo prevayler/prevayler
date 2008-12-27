@@ -13,8 +13,6 @@
 
   <groupId>prevayler.spikes</groupId>
   <artifactId>prevayler-mirror-tests</artifactId>
-  <packaging>jar</packaging>
-
   <name>Prevayler Mirroring Tests</name>
   <description>Tests for mirroring, split apart for dependencies.</description>
 
@@ -22,36 +20,27 @@
     <dependency>
       <groupId>prevayler</groupId>
       <artifactId>prevayler-core</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>prevayler.spikes</groupId>
       <artifactId>prevayler-mirror</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>prevayler</groupId>
       <artifactId>prevayler-factory</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>prevayler</groupId>
       <artifactId>prevayler-tests</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
-      <type>jar</type>
       <scope>test</scope>
     </dependency>
   </dependencies>

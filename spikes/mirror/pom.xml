@@ -13,8 +13,6 @@
 
   <groupId>prevayler.spikes</groupId>
   <artifactId>prevayler-mirror</artifactId>
-  <packaging>jar</packaging>
-
   <name>Prevayler Mirroring</name>
   <description>An initial mirroring implementation for Prevayler.</description>
 
@@ -22,9 +20,6 @@
     <dependency>
       <groupId>prevayler</groupId>
       <artifactId>prevayler-core</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
-      <scope>compile</scope>
     </dependency>
   </dependencies>
 

@@ -13,8 +13,6 @@
 
   <groupId>prevayler.extras</groupId>
   <artifactId>prevayler-log4j</artifactId>
-  <packaging>jar</packaging>
-
   <name>Prevayler Log4J Monitor</name>
   <description>A Log4J-based Monitor implementation for Prevayler.</description>
 
@@ -22,16 +20,11 @@
     <dependency>
       <groupId>prevayler</groupId>
       <artifactId>prevayler-core</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.15</version>
-      <type>jar</type>
-      <scope>compile</scope>
       <exclusions>
         <exclusion>
           <groupId>javax.jms</groupId>

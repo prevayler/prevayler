@@ -12,8 +12,6 @@
   </parent>
 
   <artifactId>prevayler-core</artifactId>
-  <packaging>jar</packaging>
-
   <name>Prevayler Core</name>
   <description>Prevayler itself, with no external dependencies.</description>
 

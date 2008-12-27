@@ -12,8 +12,6 @@
   </parent>
 
   <artifactId>prevayler-factory</artifactId>
-  <packaging>jar</packaging>
-
   <name>Prevayler Factory</name>
   <description>The PrevaylerFactory class.</description>
 
@@ -21,33 +19,20 @@
     <dependency>
       <groupId>prevayler</groupId>
       <artifactId>prevayler-core</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>prevayler.extras</groupId>
       <artifactId>prevayler-skaringa</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
-      <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>prevayler.extras</groupId>
       <artifactId>prevayler-xstream</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
-      <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>prevayler.spikes</groupId>
       <artifactId>prevayler-mirror</artifactId>
-      <version>2.4-SNAPSHOT</version>
-      <type>jar</type>
-      <scope>compile</scope>
-      <optional>false</optional>
     </dependency>
   </dependencies>
 
