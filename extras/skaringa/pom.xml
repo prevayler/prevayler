@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>prevayler</groupId>
+    <artifactId>prevayler</artifactId>
+    <version>2.4-SNAPSHOT</version>
+    <relativePath>../..</relativePath>
+  </parent>
+
+  <artifactId>prevayler-skaringa</artifactId>
+  <packaging>jar</packaging>
+
+  <name>Prevayler Skaringa Serializer</name>
+  <description>A Skaringa-based Serializer for Prevayler.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>prevayler</groupId>
+      <artifactId>prevayler-core</artifactId>
+      <version>2.4-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>skaringa</groupId>
+      <artifactId>skaringa</artifactId>
+      <version>r4p0</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+</project>

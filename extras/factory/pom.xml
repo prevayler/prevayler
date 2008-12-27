@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>prevayler</groupId>
+    <artifactId>prevayler</artifactId>
+    <version>2.4-SNAPSHOT</version>
+    <relativePath>../..</relativePath>
+  </parent>
+
+  <artifactId>prevayler-factory</artifactId>
+  <packaging>jar</packaging>
+
+  <name>Prevayler Factory</name>
+  <description>The PrevaylerFactory class.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>prevayler</groupId>
+      <artifactId>prevayler-core</artifactId>
+      <version>2.4-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>prevayler</groupId>
+      <artifactId>prevayler-skaringa</artifactId>
+      <version>2.4-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>prevayler</groupId>
+      <artifactId>prevayler-xstream</artifactId>
+      <version>2.4-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>prevayler</groupId>
+      <artifactId>prevayler-mirror</artifactId>
+      <version>2.4-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>compile</scope>
+      <optional>false</optional>
+    </dependency>
+  </dependencies>
+
+</project>

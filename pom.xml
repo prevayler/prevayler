@@ -1,0 +1,26 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>prevayler</groupId>
+  <artifactId>prevayler</artifactId>
+  <version>2.4-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Prevayler</name>
+  <description>Prevayler is the open source Java prevalence layer.</description>
+  <url>http://www.prevayler.org/</url>
+  <inceptionYear>2001</inceptionYear>
+
+  <modules>
+    <module>core</module>
+    <module>tests</module>
+    <module>extras/factory</module>
+    <module>extras/skaringa</module>
+    <module>extras/xstream</module>
+    <module>extras/log4j</module>
+    <module>extras/mirror</module>
+    <module>extras/mirror-tests</module>
+  </modules>
+</project>
