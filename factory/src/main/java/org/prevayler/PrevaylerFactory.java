@@ -5,9 +5,14 @@
 
 package org.prevayler;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.monitor.SimpleMonitor;
-import org.prevayler.foundation.network.OldNetwork;
 import org.prevayler.foundation.network.OldNetworkImpl;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
@@ -29,12 +34,6 @@ import org.prevayler.implementation.replication.ServerListener;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 import org.prevayler.implementation.snapshot.NullSnapshotManager;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 /** Provides easy access to all Prevayler configurations and implementations available in this distribution.
  * Static methods are also provided as short-cuts for the most common configurations. 
  * <br>By default, the Prevayler instances created by this class will write their Transactions to .journal files before executing them. The FileDescriptor.sync() method is called to make sure the Java file write-buffers have been written to the operating system. Many operating systems, including most recent versions of Linux and Windows, allow the hard-drive's write-cache to be disabled. This guarantees no executed Transaction will be lost in the event of a power shortage, for example.
@@ -55,7 +54,6 @@ public class PrevaylerFactory {
 	private long _journalSizeThreshold;
 	private long _journalAgeThreshold;
 	
-	private OldNetwork _network;
 	private int _serverPort = -1;
 	private String _remoteServerIpAddress;
 	private int _remoteServerPort;
@@ -247,10 +245,6 @@ public class PrevaylerFactory {
 	}
 
 
-	public void configureNetwork(OldNetwork network) {
-		_network = network;
-	}
-
 	public void configureSnapshotSerializer(JavaSerializer serializer) {
 		configureSnapshotSerializer("snapshot", serializer);
 	}
@@ -285,7 +279,7 @@ public class PrevaylerFactory {
 	public Prevayler create() throws IOException, ClassNotFoundException {
 		GenericSnapshotManager snapshotManager = snapshotManager();
 		TransactionPublisher publisher = publisher(snapshotManager);
-		if (_serverPort != -1) new ServerListener(publisher, network(), _serverPort);
+		if (_serverPort != -1) new ServerListener(publisher, new OldNetworkImpl(), _serverPort);
 		return new PrevaylerImpl(snapshotManager, publisher, journalSerializer());
 	}
 
@@ -302,7 +296,7 @@ public class PrevaylerFactory {
 
 
 	private TransactionPublisher publisher(GenericSnapshotManager snapshotManager) throws IOException {
-		if (_remoteServerIpAddress != null) return new ClientPublisher(network(), _remoteServerIpAddress, _remoteServerPort);
+		if (_remoteServerIpAddress != null) return new ClientPublisher(new OldNetworkImpl(), _remoteServerIpAddress, _remoteServerPort);
 		return new CentralPublisher(clock(), censor(snapshotManager), journal()); 
 	}
 
@@ -331,10 +325,6 @@ public class PrevaylerFactory {
 
 	private String journalSuffix() {
 		return _journalSuffix != null ? _journalSuffix : "journal";
-	}
-
-	private OldNetwork network() {
-		return _network != null ? _network : new OldNetworkImpl();
 	}
 
 	private GenericSnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
