@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+
+    Prevayler logo (http://www.prevayler.org/)
+
+    Created by hand with help from Inkscape (http://www.inkscape.org/)
+
+-->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0"
+   width="1618"
+   height="1000"
+   id="svg2">
+  <defs
+     id="defs4" />
+  <g
+     id="back-layer"
+     style="display:inline">
+    <path
+       d="M 0,309 L 809,0 L 1618,309 L 1618,691 L 1118,500 L 1309,427 L 809,236 L 309,427 L 500,500 L 0,691 L 0,309"
+       id="back"
+       style="opacity:1;fill:#008000;fill-opacity:1;stroke:none" />
+    <path
+       d="M 309,427 L 809,236 L 1309,427 L 1118,500 L 1618,691 L 809,1000 L 0,691 L 500,500 L 309,427"
+       id="bottom"
+       style="opacity:1;fill:#008000;fill-opacity:0.3;stroke:none" />
+  </g>
+  <g
+     id="front-layer"
+     style="display:inline">
+    <path
+       d="M 0,309 L 809,0 L 1618,309 L 809,618 L 0,309"
+       id="top"
+       style="opacity:1;fill:#ffffff;fill-opacity:0.3;stroke:none" />
+    <path
+       d="M 0,309 L 809,618 L 809,1000 L 0,691 L 0,309"
+       id="left"
+       style="opacity:1;fill:#ffffff;fill-opacity:0.15;stroke:none" />
+    <path
+       d="M 809,618 L 1618,309 L 1618,691 L 809,1000 L 809,618"
+       id="right"
+       style="opacity:1;fill:#ffffff;fill-opacity:0;stroke:none" />
+  </g>
+</svg>
