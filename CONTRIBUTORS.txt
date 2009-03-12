@@ -2,6 +2,7 @@ Thanks to Prevayler contributors:
 
 	Aleksey Aristov
 	Eric Bridgwater
+	Toby Cabot
 	Peter Haig
 	Tobias Hill
 	Jacob Kjome
