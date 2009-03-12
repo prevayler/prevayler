@@ -12,6 +12,8 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class PrevaylerDirectory {
 
@@ -31,11 +33,22 @@ public class PrevaylerDirectory {
 		_directory = directory;
 	}
 
+	/**
+	 * Ensure that the directory exists, creating it and parent directories if necessary.
+     * 
+     * @throws IOException if the directory can't be created or isn't a directory.
+	 */
 	public void produceDirectory() throws IOException {
 		FileManager.produceDirectory(_directory);
 	}
 
-
+    /**
+     * Ensure that the given suffix (which should not include a dot) is valid for snapshots.
+     * 
+     * Snapshot suffixes must match the pattern /[a-zA-Z0-9]*[Ss]napshot/.
+     * 
+     * @throws IllegalArgumentException otherwise.
+     */
 	public static void checkValidSnapshotSuffix(String suffix) {
 		if (!suffix.matches(SNAPSHOT_SUFFIX_PATTERN)) {
 			throw new IllegalArgumentException(
@@ -43,6 +56,13 @@ public class PrevaylerDirectory {
 		}
 	}
 
+    /**
+     * Ensure that the given suffix (which should not include a dot) is valid for journals.
+     * 
+     * Journal suffixes must match the pattern /[a-zA-Z0-9]*[Jj]ournal/.
+     * 
+     * @throws IllegalArgumentException otherwise.
+     */
 	public static void checkValidJournalSuffix(String suffix) {
 		if (!suffix.matches(JOURNAL_SUFFIX_PATTERN)) {
 			throw new IllegalArgumentException(
@@ -50,33 +70,49 @@ public class PrevaylerDirectory {
 		}
 	}
 
-
+    /**
+     * Generate a valid snapshot filename.
+     * 
+     * @throws IllegalArgumentException if the version is negative or the suffix is invalid.
+     */
 	public File snapshotFile(long version, String suffix) {
 		checkValidSnapshotSuffix(suffix);
 		return file(version, suffix);
 	}
 
+    /**
+     * Generate a valid journal filename.
+     * 
+     * @throws IllegalArgumentException if the version is negative or the suffix is invalid.
+     */
 	public File journalFile(long transaction, String suffix) {
 		checkValidJournalSuffix(suffix);
 		return file(transaction, suffix);
 	}
 
 	private File file(long version, String suffix) {
+	    if (version < 0) {
+	        throw new IllegalArgumentException("Snapshot and journal version numbers must be non-negative: " + version);
+	    }
 		String fileName = "0000000000000000000" + version;
 		return new File(_directory, fileName.substring(fileName.length() - DIGITS_IN_FILENAME) + "." + suffix);
 	}
 
 
 	/**
-	 * Returns -1 if fileName is not the name of a snapshot file.
+	 * Extract the version number from a snapshot filename.
+	 * 
+	 * Returns -1 if file does not have a valid snapshot filename.
 	 */
 	public static long snapshotVersion(File file) {
 		return version(file, SNAPSHOT_FILENAME_PATTERN);
 	}
 
-	/**
-	 * Returns -1 if fileName is not the name of a journal file.
-	 */
+    /**
+     * Extract the version number from a journal filename.
+     * 
+     * Returns -1 if file does not have a valid journal filename.
+     */
 	public static long journalVersion(File file) {
 		return version(file, JOURNAL_FILENAME_PATTERN);
 	}
@@ -89,7 +125,9 @@ public class PrevaylerDirectory {
 
 
 	/**
-	 * Find the latest snapshot file. Returns null if no snapshot file was found.
+	 * Find the latest snapshot file.
+	 * 
+	 * Returns null if no snapshot file was found.
 	 */
 	public File latestSnapshot() throws IOException {
 		File[] files = _directory.listFiles();
@@ -108,6 +146,11 @@ public class PrevaylerDirectory {
 		return latestSnapshot;
 	}
 
+    /**
+     * Find the journal file containing the desired transaction.
+     * 
+     * Returns null if no appropriate journal file was found.
+     */
 	public File findInitialJournalFile(long initialTransactionWanted) {
 		File[] journals = _directory.listFiles(new FileFilter() {
 			public boolean accept(File pathname) {
@@ -134,13 +177,49 @@ public class PrevaylerDirectory {
 		return null;
 	}
 
-
+    /**
+     * Create a temporary file in the directory.
+     */
 	public File createTempFile(String prefix, String suffix) throws IOException {
 		return File.createTempFile(prefix, suffix, _directory);
 	}
 
+    /**
+     * Rename a journal file to indicate it was found empty and is being ignored.
+     */
 	public static void renameUnusedFile(File journalFile) {
 		journalFile.renameTo(new File(journalFile.getAbsolutePath() + ".unusedFile" + System.currentTimeMillis()));
 	}
 
+
+	/**
+	 * Determine which snapshot and journal files are still necessary for recovery.
+	 * 
+	 * Necessary files include the latest snapshot file and any journal files
+	 * potentially containing transactions after that snapshot version.
+	 */
+	public Set necessaryFiles() throws IOException {
+        File[] allFiles = _directory.listFiles();
+        if (allFiles == null) {
+            throw new IOException("Error reading file list from directory " + _directory);
+        }
+	    File latestSnapshot = latestSnapshot();
+	    long systemVersion = latestSnapshot == null ? 0 : snapshotVersion(latestSnapshot);
+	    File initialJournal = findInitialJournalFile(systemVersion + 1);
+	    Set neededFiles = new TreeSet();
+	    if (latestSnapshot != null) {
+	        neededFiles.add(latestSnapshot);
+	    }
+	    if (initialJournal != null) {
+	        neededFiles.add(initialJournal);
+	        long initialJournalVersion = journalVersion(initialJournal);
+	        for (int i = 0; i < allFiles.length; i++) {
+	            File file = allFiles[i];
+	            if (journalVersion(file) > initialJournalVersion) {
+	                neededFiles.add(file);
+	            }
+	        }
+	    }
+	    return neededFiles;
+	}
 }

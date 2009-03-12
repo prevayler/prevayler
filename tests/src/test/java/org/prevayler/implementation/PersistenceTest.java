@@ -7,6 +7,8 @@ package org.prevayler.implementation;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import junit.framework.AssertionFailedError;
 
@@ -201,6 +203,62 @@ public class PersistenceTest extends FileIOTest {
     private void sneakilyCloseUnderlyingJournalStream() throws Exception {
         FileOutputStream journalStream = (FileOutputStream) Sneaky.get(_prevayler, "_publisher._journal._outputJournal._fileOutputStream");
         journalStream.close();
+    }
+
+    public void testFileCleanupHelper() throws Exception {
+        newPrevalenceBase();
+
+        PrevaylerDirectory directory = new PrevaylerDirectory(prevalenceBase());
+        directory.produceDirectory();
+
+        checkNecessaryFiles(directory, new String[] {});
+
+        crashRecover(); //There is nothing to recover at first. A new system will be created.
+        append("a","a");
+        append("b","ab");
+        
+        checkNecessaryFiles(directory, new String[] {"0000000000000000001.journal"});
+
+        crashRecover();
+        append("c","abc");
+        append("d","abcd");
+        
+        checkNecessaryFiles(directory, new String[] {"0000000000000000001.journal", "0000000000000000003.journal"});
+
+        snapshot("0000000000000000004.snapshot");
+        
+        checkNecessaryFiles(directory, new String[] {"0000000000000000004.snapshot", "0000000000000000003.journal"});
+        
+        crashRecover();
+
+        append("e","abcde");
+        append("f","abcdef");
+        
+        checkNecessaryFiles(directory, new String[] {"0000000000000000004.snapshot", "0000000000000000005.journal"});
+
+        crashRecover();
+
+        append("g","abcdefg");
+
+        checkNecessaryFiles(directory, new String[] {"0000000000000000004.snapshot", "0000000000000000005.journal", "0000000000000000007.journal"});
+
+        snapshot("0000000000000000007.snapshot");
+        
+        _prevayler.close();
+
+        checkNecessaryFiles(directory, new String[] {"0000000000000000007.snapshot", "0000000000000000007.journal"});
+    }
+    
+    private void checkNecessaryFiles(PrevaylerDirectory directory, String[] filenames) throws IOException {
+        assertEquals(setOfFiles(filenames), directory.necessaryFiles());
+    }
+    
+    private Set setOfFiles(String[] filenames) {
+        Set set = new HashSet();
+        for (int i = 0; i < filenames.length; i++) {
+            set.add(new File(prevalenceBase(), filenames[i]));
+        }
+        return set;
     }
 
     private void crashRecover() throws Exception {
