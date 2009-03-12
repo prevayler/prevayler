@@ -5,6 +5,7 @@
 
 package org.prevayler.implementation.snapshot;
 
+import java.io.File;
 import java.io.IOException;
 
 public class NullSnapshotManager extends GenericSnapshotManager {
@@ -16,7 +17,7 @@ public class NullSnapshotManager extends GenericSnapshotManager {
 		_snapshotAttemptErrorMessage = snapshotAttemptErrorMessage;
 	}
 
-	public void writeSnapshot(Object prevalentSystem, long version) throws IOException {
+	public File writeSnapshot(Object prevalentSystem, long version) throws IOException {
 		throw new IOException(_snapshotAttemptErrorMessage);
 	}
 

@@ -9,6 +9,7 @@ Thanks to Prevayler contributors:
 	Frederic Langlet
 	Alexandre Nodari
 	Stefan Ortmanns
+	William Pietri
 	Justin Sampson
 	Jon Tirsen
 	Carlos Villela

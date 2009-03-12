@@ -14,6 +14,7 @@ import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
+import java.io.File;
 import java.io.IOException;
 
 public class PrevaylerImpl implements Prevayler {
@@ -88,8 +89,8 @@ public class PrevaylerImpl implements Prevayler {
 	}
 
 
-	public void takeSnapshot() throws IOException {
-		_guard.takeSnapshot(_snapshotManager);
+	public File takeSnapshot() throws IOException {
+		return _guard.takeSnapshot(_snapshotManager);
 	}
 
 

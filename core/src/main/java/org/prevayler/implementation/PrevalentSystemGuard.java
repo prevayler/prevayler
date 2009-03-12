@@ -9,6 +9,7 @@ import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
@@ -93,14 +94,14 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
         }
 	}
 
-	public void takeSnapshot(GenericSnapshotManager snapshotManager) throws IOException {
+	public File takeSnapshot(GenericSnapshotManager snapshotManager) throws IOException {
 		synchronized (this) {
             if (_prevalentSystem == null) {
                 throw new Error("Prevayler is no longer allowing snapshots due to an Error thrown from an earlier transaction.");
             }
 
 			synchronized (_prevalentSystem) {
-				snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
+				return snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
 			}
 		}
 	}

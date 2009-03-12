@@ -4,6 +4,7 @@
 
 package org.prevayler;
 
+import java.io.File;
 import java.io.IOException;
 
 
@@ -50,9 +51,10 @@ public interface Prevayler {
 	/** Produces a complete serialized image of the underlying PrevalentSystem.
 	 * This will accelerate future system startups. Taking a snapshot once a day is enough for most applications.
 	 * This method synchronizes on the prevalentSystem() in order to take the snapshot. This means that transaction execution will be blocked while the snapshot is taken.
+     * @return The file to which the snapshot was written. This file should be left where it is, so that Prevayler can read it during startup. You can copy it to another location for backup purposes if desired.
 	 * @throws IOException if there is trouble writing to the snapshot file.
 	 */
-	public void takeSnapshot() throws IOException;
+	public File takeSnapshot() throws IOException;
 
 	/** Closes any files or other system resources opened by this Prevayler.
 	 * @throws IOException if there is trouble closing a file or some other system resource.

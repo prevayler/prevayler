@@ -43,14 +43,14 @@ public class PersistenceTest extends FileIOTest {
 
 		append("c","abc");
 		append("d","abcd");
-		snapshot();
-		snapshot();
+		snapshot("0000000000000000004.snapshot");
+		snapshot("0000000000000000004.snapshot");
 		verify("abcd");
 
 		crashRecover();
-		snapshot();
+		snapshot("0000000000000000004.snapshot");
 		append("e","abcde");
-		snapshot();
+		snapshot("0000000000000000005.snapshot");
 		append("f","abcdef");
 		append("g","abcdefg");
 		verify("abcdefg");
@@ -59,7 +59,7 @@ public class PersistenceTest extends FileIOTest {
 		append("h","abcdefgh");
 		verify("abcdefgh");
 
-		snapshot();
+		snapshot("0000000000000000008.snapshot");
 		_prevayler.close();
 		File lastSnapshot =   new File(_prevalenceBase, "0000000000000000008.snapshot");
 		File lastTransactionLog =   new File(_prevalenceBase, "0000000000000000008.journal");
@@ -195,9 +195,10 @@ public class PersistenceTest extends FileIOTest {
         _prevayler = factory.create();
     }
 
-	private void snapshot() throws IOException {
+	private void snapshot(String expectedSnapshotFilename) throws IOException {
 		out("Snapshot.");
-		_prevayler.takeSnapshot();
+		File snapshotFile = _prevayler.takeSnapshot();
+		assertEquals(new File(prevalenceBase(), expectedSnapshotFilename), snapshotFile);
 	}
 
 

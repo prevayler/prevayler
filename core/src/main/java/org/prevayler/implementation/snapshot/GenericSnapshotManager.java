@@ -62,7 +62,7 @@ public class GenericSnapshotManager {
 		return _recoveredPrevalentSystem;
 	}
 
-	public void writeSnapshot(Object prevalentSystem, long version) throws IOException {
+	public File writeSnapshot(Object prevalentSystem, long version) throws IOException {
 		File tempFile = _directory.createTempFile("snapshot" + version + "temp", "generatingSnapshot");
 
 		writeSnapshot(prevalentSystem, tempFile);
@@ -71,6 +71,8 @@ public class GenericSnapshotManager {
 		permanent.delete();
 		if (!tempFile.renameTo(permanent)) throw new IOException(
 				"Temporary snapshot file generated: " + tempFile + "\nUnable to rename it permanently to: " + permanent);
+
+	    return permanent;
 	}
 
 	private void writeSnapshot(Object prevalentSystem, File snapshotFile) throws IOException {
