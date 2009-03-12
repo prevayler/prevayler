@@ -19,6 +19,10 @@ public abstract class Guided {
 		_turn.end();
 	}
 
+    public void abortTurn(String message, Throwable cause) {
+        _turn.abort(message, cause);
+    }
+
 	public abstract void writeTo(OutputStream stream) throws IOException;
 
 }

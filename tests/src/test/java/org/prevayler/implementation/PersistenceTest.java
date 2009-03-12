@@ -5,12 +5,16 @@
 package org.prevayler.implementation;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+
 import junit.framework.AssertionFailedError;
+
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.foundation.FileManager;
+import org.prevayler.foundation.TurnAbortedException;
 
 public class PersistenceTest extends FileIOTest {
 
@@ -142,6 +146,41 @@ public class PersistenceTest extends FileIOTest {
         // subsequent transaction *were* journaled, so they get applied
         // successfully on recovery.
         verify("abcx");
+    }
+
+    public void testJournalPanic() throws Exception {
+        newPrevalenceBase();
+
+        crashRecover();
+        append("a", "a");
+        append("b", "ab");
+
+        sneakilyCloseUnderlyingJournalStream();
+
+        try {
+            _prevayler.execute(new Appendix("x"));
+            fail();
+        } catch (TurnAbortedException aborted) {
+            assertEquals("All transaction processing is now aborted. An IOException was thrown while writing to a .journal file.", aborted.getMessage());
+            assertNotNull(aborted.getCause());
+        }
+
+        try {
+            _prevayler.execute(new Appendix("y"));
+            fail();
+        } catch (TurnAbortedException aborted) {
+            assertNull(aborted.getMessage());
+            assertNull(aborted.getCause());
+        }
+
+        crashRecover();
+        verify("ab");
+        append("c", "abc");
+    }
+
+    private void sneakilyCloseUnderlyingJournalStream() throws Exception {
+        FileOutputStream journalStream = (FileOutputStream) Sneaky.get(_prevayler, "_publisher._journal._outputJournal._fileOutputStream");
+        journalStream.close();
     }
 
     private void crashRecover() throws Exception {
