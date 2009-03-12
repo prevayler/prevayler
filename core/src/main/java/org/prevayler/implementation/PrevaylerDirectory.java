@@ -96,7 +96,7 @@ public class PrevaylerDirectory {
 		if (files == null) throw new IOException("Error reading file list from directory " + _directory);
 
 		File latestSnapshot = null;
-		long latestVersion = 0;
+		long latestVersion = -1;
 		for (int i = 0; i < files.length; i++) {
 			File candidateSnapshot = files[i];
 			long candidateVersion = snapshotVersion(candidateSnapshot);

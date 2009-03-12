@@ -81,6 +81,26 @@ public class PersistenceTest extends FileIOTest {
 		verify("abcdefghijklmn");
 	}
 
+    public void testSnapshotVersion0() throws Exception {
+        newPrevalenceBase();
+
+        crashRecover(); //There is nothing to recover at first. A new system will be created.
+        append("a", "a");
+        append("b", "ab");
+        append("c", "abc");
+        verify("abc");
+        File snapshot = snapshot("0000000000000000003.snapshot");
+
+        _prevayler.close();
+        assertTrue(snapshot.renameTo(new File(prevalenceBase(), "0000000000000000000.snapshot")));
+        assertTrue(new File(_prevalenceBase, "0000000000000000001.journal").delete());
+
+        crashRecover();
+        verify("abc");
+        append("d", "abcd");
+        snapshot("0000000000000000001.snapshot");
+    }
+
     public void testNondeterminsticError() throws Exception {
         newPrevalenceBase();
         crashRecover(); //There is nothing to recover at first. A new system will be created.
@@ -195,10 +215,11 @@ public class PersistenceTest extends FileIOTest {
         _prevayler = factory.create();
     }
 
-	private void snapshot(String expectedSnapshotFilename) throws IOException {
+	private File snapshot(String expectedSnapshotFilename) throws IOException {
 		out("Snapshot.");
 		File snapshotFile = _prevayler.takeSnapshot();
 		assertEquals(new File(prevalenceBase(), expectedSnapshotFilename), snapshotFile);
+		return snapshotFile;
 	}
 
 
