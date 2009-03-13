@@ -31,6 +31,8 @@ public class PersistentJournal implements Journal {
 	private final long _journalSizeThresholdInBytes;
 	private final long _journalAgeThresholdInMillis;
 	private StopWatch _journalAgeTimer;
+
+    private final boolean _journalDiskSync;
 	
 	private long _nextTransaction;
 	private boolean _nextTransactionInitialized = false;
@@ -38,14 +40,13 @@ public class PersistentJournal implements Journal {
 
 	private final String _journalSuffix;
 
-
 	/**
 	 * @param directory
 	 * @param journalSizeThresholdInBytes Size of the current journal file beyond which it is closed and a new one started. Zero indicates no size threshold. This is useful journal backup purposes.
 	 * @param journalAgeThresholdInMillis Age of the current journal file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful journal backup purposes.
 	 */
 	public PersistentJournal(PrevaylerDirectory directory, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis,
-							 String journalSuffix, Monitor monitor) throws IOException {
+							 boolean journalDiskSync, String journalSuffix, Monitor monitor) throws IOException {
 		PrevaylerDirectory.checkValidJournalSuffix(journalSuffix);
 
 	    _monitor = monitor;
@@ -53,6 +54,7 @@ public class PersistentJournal implements Journal {
 		_directory.produceDirectory();
 		_journalSizeThresholdInBytes = journalSizeThresholdInBytes;
 		_journalAgeThresholdInMillis = journalAgeThresholdInMillis;
+        _journalDiskSync = journalDiskSync;
 		_journalSuffix = journalSuffix;
 	}
 
@@ -121,7 +123,7 @@ public class PersistentJournal implements Journal {
 	private DurableOutputStream createOutputJournal(long transactionNumber, Guided guide) {
 		File file = _directory.journalFile(transactionNumber, _journalSuffix);
 		try {
-			return new DurableOutputStream(file);
+			return new DurableOutputStream(file, _journalDiskSync);
 		} catch (Exception exception) {
 			abort(exception, file, "creating", guide);
 			return null;

@@ -1,7 +1,6 @@
 //Prevayler(TM) - The Free-Software Prevalence Layer.
 //Copyright (C) 2001-2005 Klaus Wuestefeld
 //This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-//Contributions: Justin Sampson, Tobias Hill.
 
 package org.prevayler.foundation;
 
@@ -32,6 +31,9 @@ public class DurableOutputStream {
 	/** All access guarded by _syncLock. */
 	private final FileDescriptor _fileDescriptor;
 
+	/** Immutable. */
+	private final boolean _journalDiskSync;
+
 	/** All access guarded by _writeLock. */
 	private ByteArrayOutputStream _active = new ByteArrayOutputStream();
 
@@ -50,10 +52,11 @@ public class DurableOutputStream {
 	/** All access guarded by _syncLock. */
 	private int _fileSyncCount = 0;
 
-	public DurableOutputStream(File file) throws IOException {
+	public DurableOutputStream(File file, boolean journalDiskSync) throws IOException {
 		_file = file;
 		_fileOutputStream = new FileOutputStream(file);
 		_fileDescriptor = _fileOutputStream.getFD();
+		_journalDiskSync = journalDiskSync;
 	}
 
 	public void sync(Guided guide) throws IOException {
@@ -146,8 +149,9 @@ public class DurableOutputStream {
 					_inactive.reset();
 					_fileOutputStream.flush();
 
-					_fileDescriptor.sync();
-
+					if (_journalDiskSync) {
+					    _fileDescriptor.sync();
+					}
 				} catch (IOException exception) {
 					internalClose();
 					throw exception;

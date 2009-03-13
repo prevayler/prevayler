@@ -30,17 +30,24 @@ public class PersistenceTest extends FileIOTest {
         super.tearDown();
     }
 
-	public void testPersistence() throws Exception {
+    public void testPersistenceWithDiskSync() throws Exception {
+        doTestPersistence(true);
+    }
 
+    public void testPersistenceWithoutDiskSync() throws Exception {
+        doTestPersistence(false);
+    }
+
+    public void doTestPersistence(boolean journalDiskSync) throws Exception {
 		newPrevalenceBase();
 
-		crashRecover(); //There is nothing to recover at first. A new system will be created.
-		crashRecover();
+		crashRecover(journalDiskSync); //There is nothing to recover at first. A new system will be created.
+		crashRecover(journalDiskSync);
 		append("a","a");
 		append("b","ab");
 		verify("ab");
 
-		crashRecover();
+		crashRecover(journalDiskSync);
 		verify("ab");
 
 		append("c","abc");
@@ -49,7 +56,7 @@ public class PersistenceTest extends FileIOTest {
 		snapshot("0000000000000000004.snapshot");
 		verify("abcd");
 
-		crashRecover();
+		crashRecover(journalDiskSync);
 		snapshot("0000000000000000004.snapshot");
 		append("e","abcde");
 		snapshot("0000000000000000005.snapshot");
@@ -57,7 +64,7 @@ public class PersistenceTest extends FileIOTest {
 		append("g","abcdefg");
 		verify("abcdefg");
 
-		crashRecover();
+		crashRecover(journalDiskSync);
 		append("h","abcdefgh");
 		verify("abcdefgh");
 
@@ -70,18 +77,44 @@ public class PersistenceTest extends FileIOTest {
 		lastSnapshot.renameTo(new File(_prevalenceBase, "0000000000000000008.snapshot"));  //Moving the file.
 		lastTransactionLog.renameTo(new File(_prevalenceBase, "0000000000000000008.journal"));
 
-		crashRecover();
+		crashRecover(journalDiskSync);
 		append("i","abcdefghi");
 		append("j","abcdefghij");
-		crashRecover();
+		crashRecover(journalDiskSync);
 		append("k","abcdefghijk");
 		append("l","abcdefghijkl");
-		crashRecover();
+		crashRecover(journalDiskSync);
 		append("m","abcdefghijklm");
 		append("n","abcdefghijklmn");
-		crashRecover();
+		crashRecover(journalDiskSync);
 		verify("abcdefghijklmn");
 	}
+
+    public void testDiskSyncPerformance() throws Exception {
+        long false1 = doDiskSyncPerformanceRun(false);
+        long true1 = doDiskSyncPerformanceRun(true);
+        long false2 = doDiskSyncPerformanceRun(false);
+        long true2 = doDiskSyncPerformanceRun(true);
+        long bestTrue = Math.min(true1, true2);
+        long worstFalse = Math.max(false1, false2);
+        assertTrue(bestTrue + " should be worse than " + worstFalse, bestTrue > worstFalse);
+    }
+
+    private long doDiskSyncPerformanceRun(boolean journalDiskSync) throws Exception {
+        newPrevalenceBase();
+        crashRecover(journalDiskSync);
+        append("a", "a");
+        long start = System.currentTimeMillis();
+        String expected = "a";
+        for (char c = 'b'; c <= 'z'; c++) {
+            expected += c;
+            append(String.valueOf(c), expected);
+        }
+        long end = System.currentTimeMillis();
+        crashRecover(journalDiskSync);
+        verify(expected);
+        return end - start;
+    }
 
     public void testSnapshotVersion0() throws Exception {
         newPrevalenceBase();
@@ -262,6 +295,10 @@ public class PersistenceTest extends FileIOTest {
     }
 
     private void crashRecover() throws Exception {
+        crashRecover(true);
+    }
+
+    private void crashRecover(boolean journalDiskSync) throws Exception {
         out("CrashRecovery.");
 
         if (_prevayler != null) _prevayler.close();
@@ -270,6 +307,7 @@ public class PersistenceTest extends FileIOTest {
         factory.configurePrevalentSystem(new AppendingSystem());
         factory.configurePrevalenceDirectory(prevalenceBase());
         factory.configureTransactionFiltering(false);
+        factory.configureJournalDiskSync(journalDiskSync);
         _prevayler = factory.create();
     }
 

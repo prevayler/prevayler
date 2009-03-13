@@ -14,7 +14,7 @@ public class DurableOutputStreamTest extends FileIOTest {
 
 			File file = new File(_testDirectory, "stream" + i + ".bin");
 
-			DurableOutputStream out = new DurableOutputStream(file);
+			DurableOutputStream out = new DurableOutputStream(file, true);
 
 			Turn myTurn = Turn.first();
 			out.sync(new DummyGuide("first", myTurn));
@@ -38,7 +38,7 @@ public class DurableOutputStreamTest extends FileIOTest {
 		for (int i = 0; i < 10 /*5000*/; i++) {
 //            System.out.println("i=" + i);
 			File file = new File(_testDirectory, "stream" + i + ".bin");
-			DurableOutputStream out = new DurableOutputStream(file);
+			DurableOutputStream out = new DurableOutputStream(file, true);
 
 			Turn one = Turn.first();
 			Turn two = one.next();

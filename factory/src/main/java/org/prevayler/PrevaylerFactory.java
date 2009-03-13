@@ -53,6 +53,7 @@ public class PrevaylerFactory {
 
 	private long _journalSizeThreshold;
 	private long _journalAgeThreshold;
+    private boolean _journalDiskSync = true;
 	
 	private int _serverPort = -1;
 	private String _remoteServerIpAddress;
@@ -210,7 +211,6 @@ public class PrevaylerFactory {
 		_journalSizeThreshold = sizeInBytes;
 	}
 
-
 	/**
 	 * Sets the age (in milliseconds) of the journal file. When the current journal expires, a new journal is created.
 	 */
@@ -218,6 +218,27 @@ public class PrevaylerFactory {
 		_journalAgeThreshold = ageInMilliseconds;
 	}
 
+	/**
+     * Configures whether the journal will sync writes to disk. The default is <b>true</b>.
+     * 
+     * True (the default) means that every transaction is forced to be written to the
+     * physical disk before it is executed (using {@link java.io.FileDescriptor#sync()}).
+     * (Many transactions may be written at once, but no transaction will be executed
+     * before it is written to disk.)
+     * 
+     * False means that transactions may execute without necessarily being written to the
+     * physical disk. Transactions are still flushed to the operating system before being
+     * executed, but FileDescriptor.sync() is never called. This increases transaction
+     * throughput dramatically, but allows transactions to be lost if the system
+     * does not shut down cleanly. Calling {@link Prevayler#close()} will close the
+     * underlying journal file and therefore cause all transactions to be written to
+     * disk.
+     */
+    public void configureJournalDiskSync(boolean journalDiskSync) {
+        _journalDiskSync = journalDiskSync;
+    }
+
+	
 	public void configureJournalSerializer(JavaSerializer serializer) {
 		configureJournalSerializer("journal", serializer);
 	}
@@ -313,7 +334,7 @@ public class PrevaylerFactory {
 			return (Journal) new TransientJournal();
 		} else {
 			PrevaylerDirectory directory = new PrevaylerDirectory(prevalenceDirectory());
-			return new PersistentJournal(directory, _journalSizeThreshold, _journalAgeThreshold, journalSuffix(), monitor());
+			return new PersistentJournal(directory, _journalSizeThreshold, _journalAgeThreshold, _journalDiskSync, journalSuffix(), monitor());
 		}
 	}
 

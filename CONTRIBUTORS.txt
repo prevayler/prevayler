@@ -4,6 +4,7 @@ Thanks to Prevayler contributors:
 	Eric Bridgwater
 	Toby Cabot
 	Peter Haig
+	Hans Haggstrom
 	Tobias Hill
 	Jacob Kjome
 	Frederic Langlet
