@@ -5,20 +5,20 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>prevayler</groupId>
+    <groupId>org.prevayler</groupId>
     <artifactId>prevayler</artifactId>
     <version>${prevayler.version}</version>
     <relativePath>../..</relativePath>
   </parent>
 
-  <groupId>prevayler.extras</groupId>
+  <groupId>org.prevayler.extras</groupId>
   <artifactId>prevayler-log4j</artifactId>
   <name>Prevayler Log4J Monitor</name>
   <description>A Log4J-based Monitor implementation for Prevayler.</description>
 
   <dependencies>
     <dependency>
-      <groupId>prevayler</groupId>
+      <groupId>org.prevayler</groupId>
       <artifactId>prevayler-core</artifactId>
     </dependency>
     <dependency>

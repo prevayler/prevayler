@@ -8,7 +8,7 @@
     <prevayler.version>2.4-SNAPSHOT</prevayler.version>
   </properties>
 
-  <groupId>prevayler</groupId>
+  <groupId>org.prevayler</groupId>
   <artifactId>prevayler</artifactId>
   <version>${prevayler.version}</version>
   <packaging>pom</packaging>
@@ -32,42 +32,42 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>prevayler</groupId>
+        <groupId>org.prevayler</groupId>
         <artifactId>prevayler-core</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>prevayler</groupId>
+        <groupId>org.prevayler</groupId>
         <artifactId>prevayler-factory</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>prevayler</groupId>
+        <groupId>org.prevayler</groupId>
         <artifactId>prevayler-tests</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>prevayler.extras</groupId>
+        <groupId>org.prevayler.extras</groupId>
         <artifactId>prevayler-skaringa</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>prevayler.extras</groupId>
+        <groupId>org.prevayler.extras</groupId>
         <artifactId>prevayler-xstream</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>prevayler.extras</groupId>
+        <groupId>org.prevayler.extras</groupId>
         <artifactId>prevayler-log4j</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>prevayler.spikes</groupId>
+        <groupId>org.prevayler.spikes</groupId>
         <artifactId>prevayler-mirror</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>prevayler.spikes</groupId>
+        <groupId>org.prevayler.spikes</groupId>
         <artifactId>prevayler-mirror-tests</artifactId>
         <version>${project.version}</version>
       </dependency>

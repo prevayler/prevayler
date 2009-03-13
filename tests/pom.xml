@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>prevayler</groupId>
+    <groupId>org.prevayler</groupId>
     <artifactId>prevayler</artifactId>
     <version>${prevayler.version}</version>
     <relativePath>..</relativePath>
@@ -22,26 +22,26 @@
       <version>3.8.1</version>
     </dependency>
     <dependency>
-      <groupId>prevayler</groupId>
+      <groupId>org.prevayler</groupId>
       <artifactId>prevayler-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>prevayler</groupId>
+      <groupId>org.prevayler</groupId>
       <artifactId>prevayler-factory</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>prevayler.extras</groupId>
+      <groupId>org.prevayler.extras</groupId>
       <artifactId>prevayler-skaringa</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>prevayler.extras</groupId>
+      <groupId>org.prevayler.extras</groupId>
       <artifactId>prevayler-xstream</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>prevayler.extras</groupId>
+      <groupId>org.prevayler.extras</groupId>
       <artifactId>prevayler-log4j</artifactId>
       <scope>test</scope>
     </dependency>

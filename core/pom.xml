@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>prevayler</groupId>
+    <groupId>org.prevayler</groupId>
     <artifactId>prevayler</artifactId>
     <version>${prevayler.version}</version>
     <relativePath>..</relativePath>

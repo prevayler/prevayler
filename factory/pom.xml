@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>prevayler</groupId>
+    <groupId>org.prevayler</groupId>
     <artifactId>prevayler</artifactId>
     <version>${prevayler.version}</version>
     <relativePath>..</relativePath>
@@ -17,21 +17,21 @@
 
   <dependencies>
     <dependency>
-      <groupId>prevayler</groupId>
+      <groupId>org.prevayler</groupId>
       <artifactId>prevayler-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>prevayler.extras</groupId>
+      <groupId>org.prevayler.extras</groupId>
       <artifactId>prevayler-skaringa</artifactId>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>prevayler.extras</groupId>
+      <groupId>org.prevayler.extras</groupId>
       <artifactId>prevayler-xstream</artifactId>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>prevayler.spikes</groupId>
+      <groupId>org.prevayler.spikes</groupId>
       <artifactId>prevayler-mirror</artifactId>
     </dependency>
   </dependencies>
