@@ -5,3 +5,4 @@ target/
 *.ipr
 *.iml
 /tests/Test*/
+/extras/facade/Prevalence/

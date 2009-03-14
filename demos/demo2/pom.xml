@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.prevayler</groupId>
+    <artifactId>prevayler</artifactId>
+    <version>${prevayler.version}</version>
+    <relativePath>../..</relativePath>
+  </parent>
+
+  <groupId>org.prevayler.demos</groupId>
+  <artifactId>prevayler-demo2</artifactId>
+  <name>Prevayler Demo 2</name>
+  <description>A demo of bank accounts with a graphical interface.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.prevayler</groupId>
+      <artifactId>prevayler-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.prevayler</groupId>
+      <artifactId>prevayler-factory</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.prevayler.extras</groupId>
+      <artifactId>prevayler-xstream</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.prevayler.extras</groupId>
+      <artifactId>prevayler-skaringa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.javamatch</groupId>
+      <artifactId>javamatch</artifactId>
+      <version>0.2</version>
+    </dependency>
+  </dependencies>
+
+</project>

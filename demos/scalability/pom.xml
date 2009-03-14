@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.prevayler</groupId>
+    <artifactId>prevayler</artifactId>
+    <version>${prevayler.version}</version>
+    <relativePath>../..</relativePath>
+  </parent>
+
+  <groupId>org.prevayler.demos</groupId>
+  <artifactId>prevayler-scalability</artifactId>
+  <name>Prevayler Scalability Demo</name>
+  <description>A test of query and transaction throughput.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.prevayler</groupId>
+      <artifactId>prevayler-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.prevayler</groupId>
+      <artifactId>prevayler-factory</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.prevayler.extras</groupId>
+      <artifactId>prevayler-skaringa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.prevayler.extras</groupId>
+      <artifactId>prevayler-xstream</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>

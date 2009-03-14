@@ -25,8 +25,15 @@
     <module>extras/skaringa</module>
     <module>extras/xstream</module>
     <module>extras/log4j</module>
+    <module>extras/facade</module>
+    <module>extras/memento</module>
     <module>spikes/mirror</module>
     <module>spikes/mirror-tests</module>
+    <module>demos/demo1</module>
+    <module>demos/demo2</module>
+    <module>demos/scalability</module>
+    <module>demos/jxpath</module>
+    <module>demos/tutorial</module>
   </modules>
 
   <dependencyManagement>
