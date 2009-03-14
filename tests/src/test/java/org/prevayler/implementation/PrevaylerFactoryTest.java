@@ -4,7 +4,6 @@
 
 package org.prevayler.implementation;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 import org.prevayler.Prevayler;
@@ -23,12 +22,12 @@ public class PrevaylerFactoryTest extends FileIOTest {
 		assertEquals(POJO, prevayler.prevalentSystem());
 	}
 
-	public void testSnapshotPrevaylerCreation() throws IOException, ClassNotFoundException {
+	public void testSnapshotPrevaylerCreation() throws Exception {
 		Prevayler prevayler = PrevaylerFactory.createPrevayler(POJO, _testDirectory);
 		assertEquals(POJO, prevayler.prevalentSystem());
 	}
 
-	public void testCheckpointPrevaylerCreation() throws IOException, ClassNotFoundException {
+	public void testCheckpointPrevaylerCreation() {
 		Prevayler prevayler = PrevaylerFactory.createCheckpointPrevayler(POJO, _testDirectory);
 		assertEquals(POJO, prevayler.prevalentSystem());
 	}

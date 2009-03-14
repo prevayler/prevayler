@@ -52,9 +52,9 @@ public interface Prevayler {
 	 * This will accelerate future system startups. Taking a snapshot once a day is enough for most applications.
 	 * This method synchronizes on the prevalentSystem() in order to take the snapshot. This means that transaction execution will be blocked while the snapshot is taken.
      * @return The file to which the snapshot was written. This file should be left where it is, so that Prevayler can read it during startup. You can copy it to another location for backup purposes if desired.
-	 * @throws IOException if there is trouble writing to the snapshot file.
+	 * @throws Exception if there is trouble writing to the snapshot file or serializing the prevalent system.
 	 */
-	public File takeSnapshot() throws IOException;
+	public File takeSnapshot() throws Exception;
 
 	/** Closes any files or other system resources opened by this Prevayler.
 	 * @throws IOException if there is trouble closing a file or some other system resource.

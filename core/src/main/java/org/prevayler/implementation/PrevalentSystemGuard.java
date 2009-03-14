@@ -94,7 +94,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
         }
 	}
 
-	public File takeSnapshot(GenericSnapshotManager snapshotManager) throws IOException {
+	public File takeSnapshot(GenericSnapshotManager snapshotManager) throws Exception {
 		synchronized (this) {
             if (_prevalentSystem == null) {
                 throw new Error("Prevayler is no longer allowing snapshots due to an Error thrown from an earlier transaction.");
@@ -106,7 +106,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 		}
 	}
 
-	public PrevalentSystemGuard deepCopy(long systemVersion, Serializer snapshotSerializer) throws IOException, ClassNotFoundException {
+	public PrevalentSystemGuard deepCopy(long systemVersion, Serializer snapshotSerializer) throws Exception {
 		synchronized (this) {
 			while (_systemVersion < systemVersion && _prevalentSystem != null) {
 				Cool.wait(this);

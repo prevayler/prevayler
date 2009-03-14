@@ -4,8 +4,6 @@
 
 package org.prevayler.implementation;
 
-import java.io.IOException;
-
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.*;
@@ -51,7 +49,7 @@ public class CheckpointTest extends FileIOTest {
 		_prevayler = PrevaylerFactory.createCheckpointPrevayler(new AppendingSystem(), _testDirectory);
 	}
 
-	private void snapshot() throws IOException {
+	private void snapshot() throws Exception {
 		out("Snapshot.");
 		_prevayler.takeSnapshot();
 	}

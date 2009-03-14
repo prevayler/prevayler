@@ -4,13 +4,12 @@ import junit.framework.TestCase;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 public class DeepCopierTest extends TestCase {
 
-	public void testNormal() throws IOException, ClassNotFoundException {
+	public void testNormal() {
 		Object original = "foo";
 		Object copy = DeepCopier.deepCopy(original, new JavaSerializer());
 
@@ -18,7 +17,7 @@ public class DeepCopierTest extends TestCase {
 		assertNotSame(original, copy);
 	}
 
-	public void testParallel() throws IOException, ClassNotFoundException {
+	public void testParallel() throws Exception {
 		Object original = "foo";
 		Object copy = DeepCopier.deepCopyParallel(original, new JavaSerializer());
 
@@ -26,12 +25,12 @@ public class DeepCopierTest extends TestCase {
 		assertNotSame(original, copy);
 	}
 
-	public void testParallelPathological() throws IOException, ClassNotFoundException {
+	public void testParallelPathological() throws Exception {
 		Object original = new Byte((byte) 17);
 
 		Object copy = DeepCopier.deepCopyParallel(original, new Serializer() {
 
-			public void writeObject(OutputStream stream, Object object) throws IOException {
+			public void writeObject(OutputStream stream, Object object) throws Exception {
 				stream.write(((Byte) object).byteValue());
 				stream.flush();
 
@@ -45,7 +44,7 @@ public class DeepCopierTest extends TestCase {
 				stream.write(99);
 			}
 
-			public Object readObject(InputStream stream) throws IOException, ClassNotFoundException {
+			public Object readObject(InputStream stream) throws Exception {
 				return new Byte((byte) stream.read());
 			}
 

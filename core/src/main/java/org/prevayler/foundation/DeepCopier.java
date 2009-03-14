@@ -44,7 +44,7 @@ public class DeepCopier {
 	 * object in order to respect any synchronization the caller may have around it, and a new thread is used for
 	 * deserializing the copy.
 	 */
-	public static Object deepCopyParallel(Object original, Serializer serializer) throws IOException, ClassNotFoundException {
+	public static Object deepCopyParallel(Object original, Serializer serializer) throws Exception {
 		PipedOutputStream outputStream = new PipedOutputStream();
 		PipedInputStream inputStream = new PipedInputStream(outputStream);
 
@@ -64,9 +64,7 @@ public class DeepCopier {
 		private InputStream _inputStream;
 		private Serializer _serializer;
 		private Object _result;
-		private IOException _ioException;
-		private ClassNotFoundException _classNotFoundException;
-		private RuntimeException _runtimeException;
+		private Exception _exception;
 		private Error _error;
 
 		public Receiver(InputStream inputStream, Serializer serializer) {
@@ -78,12 +76,8 @@ public class DeepCopier {
 		public void run() {
 			try {
 				_result = _serializer.readObject(_inputStream);
-			} catch (IOException e) {
-				_ioException = e;
-			} catch (ClassNotFoundException e) {
-				_classNotFoundException = e;
-			} catch (RuntimeException e) {
-				_runtimeException = e;
+            } catch (Exception e) {
+                _exception = e;
 			} catch (Error e) {
 				_error = e;
 				throw e;
@@ -99,7 +93,7 @@ public class DeepCopier {
 			}
 		}
 
-		public Object getResult() throws ClassNotFoundException, IOException {
+		public Object getResult() throws Exception {
 			try {
 				join();
 			} catch (InterruptedException e) {
@@ -109,9 +103,7 @@ public class DeepCopier {
 			// join() guarantees that all shared memory is synchronized between the two threads
 
 			if (_error != null) throw new RuntimeException("Error during deserialization", _error);
-			if (_runtimeException != null) throw _runtimeException;
-			if (_classNotFoundException != null) throw _classNotFoundException;
-			if (_ioException != null) throw _ioException;
+			if (_exception != null) throw _exception;
 			if (_result == null) throw new RuntimeException("Deep copy failed in an unknown way");
 
 			return _result;

@@ -4,7 +4,6 @@ import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.serialization.Serializer;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 
 
@@ -13,7 +12,7 @@ public class PrevaylerTransactionSubject extends PrevaylerScalabilitySubject {
 	private final String _journalDirectory;
 	private final String _journalSerializer;
 
-	public PrevaylerTransactionSubject(String journalDirectory, String journalSerializer) throws java.io.IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+	public PrevaylerTransactionSubject(String journalDirectory, String journalSerializer) throws Exception {
 		_journalDirectory = journalDirectory;
 		_journalSerializer = journalSerializer;
 		if (new File(_journalDirectory).exists()) PrevalenceTest.delete(_journalDirectory);
@@ -39,7 +38,7 @@ public class PrevaylerTransactionSubject extends PrevaylerScalabilitySubject {
 		return prevayler.prevalentSystem().hashCode() == expectedResult;
 	}
 
-	private void initializePrevayler() throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+	private void initializePrevayler() throws Exception {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new TransactionSystem());
 		factory.configurePrevalenceDirectory(_journalDirectory);

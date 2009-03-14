@@ -18,7 +18,7 @@ import java.util.Date;
 
 public class SkipOldTransactionsTest extends FileIOTest {
 
-	public void testSkipOldTransactions() throws IOException, ClassNotFoundException {
+	public void testSkipOldTransactions() throws Exception {
 		Prevayler original = createPrevayler("MyJournal", new MySerializer(false));
 
 		original.execute(new AppendTransaction(" first"));
@@ -41,7 +41,7 @@ public class SkipOldTransactionsTest extends FileIOTest {
 		assertEquals("the system first second third", recovered.prevalentSystem().toString());
 	}
 
-	public void testDetectOldJournalSuffix() throws IOException, ClassNotFoundException {
+	public void testDetectOldJournalSuffix() throws Exception {
 		Prevayler original = createPrevayler("OldJournal", new MySerializer(false));
 
 		original.execute(new AppendTransaction(" first"));
@@ -70,7 +70,7 @@ public class SkipOldTransactionsTest extends FileIOTest {
 		}
 	}
 
-	public void testAllowOldJournalSuffix() throws IOException, ClassNotFoundException {
+	public void testAllowOldJournalSuffix() throws Exception {
 		Prevayler original = createPrevayler("OldJournal", new MySerializer(false));
 
 		original.execute(new AppendTransaction(" first"));
@@ -93,7 +93,7 @@ public class SkipOldTransactionsTest extends FileIOTest {
 	}
 
 	private Prevayler createPrevayler(String suffix, Serializer journalSerializer)
-			throws IOException, ClassNotFoundException {
+			throws Exception {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new StringBuffer("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);

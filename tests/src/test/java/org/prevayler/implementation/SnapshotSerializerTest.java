@@ -23,7 +23,7 @@ import java.io.Writer;
 
 public class SnapshotSerializerTest extends FileIOTest {
 
-	public void testConfigureSnapshotSerializer() throws IOException, ClassNotFoundException {
+	public void testConfigureSnapshotSerializer() throws Exception {
 		Serializer serializer = new MySerializer();
 
 		takeSnapshot(serializer);
@@ -44,22 +44,21 @@ public class SnapshotSerializerTest extends FileIOTest {
 		}
 	}
 
-	public void testXStreamSnapshot() throws IOException, ClassNotFoundException {
+	public void testXStreamSnapshot() throws Exception {
 		Serializer serializer = new XStreamSerializer();
 
 		takeSnapshot(serializer);
 		recover(serializer);
 	}
 
-	public void testSkaringaSnapshot() throws IOException, ClassNotFoundException {
+	public void testSkaringaSnapshot() throws Exception {
 		Serializer serializer = new SkaringaSerializer();
 
 		takeSnapshot(serializer);
 		recover(serializer);
 	}
 
-	private void takeSnapshot(Serializer snapshotSerializer)
-			throws IOException, ClassNotFoundException {
+	private void takeSnapshot(Serializer snapshotSerializer) throws Exception {
 		Prevayler prevayler = createPrevayler(snapshotSerializer);
 
 		prevayler.execute(new AppendTransaction(" first"));
@@ -71,14 +70,12 @@ public class SnapshotSerializerTest extends FileIOTest {
 		prevayler.close();
 	}
 
-	private void recover(Serializer snapshotSerializer)
-			throws IOException, ClassNotFoundException {
+	private void recover(Serializer snapshotSerializer) throws Exception {
 		Prevayler prevayler = createPrevayler(snapshotSerializer);
 		assertEquals("the system first second third", prevayler.prevalentSystem().toString());
 	}
 
-	private Prevayler createPrevayler(Serializer snapshotSerializer)
-			throws IOException, ClassNotFoundException {
+	private Prevayler createPrevayler(Serializer snapshotSerializer) throws Exception {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new StringBuffer("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);

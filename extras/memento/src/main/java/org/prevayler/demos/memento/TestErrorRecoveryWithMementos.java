@@ -1,6 +1,5 @@
 package org.prevayler.demos.memento;
 
-import java.io.IOException;
 import org.prevayler.util.memento.MementoTransaction;
 import org.prevayler.util.memento.MementoManagerCommand;
 import org.prevayler.demos.memento.commands.AccountCreation;
@@ -43,7 +42,7 @@ public class TestErrorRecoveryWithMementos {
     }
   }
   
-	public static void run() throws IOException, ClassNotFoundException {
+	public static void run() throws Exception {
     Account account1 = null, account2 = null;
     
     System.out.println("*** Creating account 1");

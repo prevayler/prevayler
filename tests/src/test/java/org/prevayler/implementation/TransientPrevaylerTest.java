@@ -35,7 +35,7 @@ public class TransientPrevaylerTest extends FileIOTest {
 		assertState("abc");
 	}
 
-	public void testSnapshotAttempt() {
+	public void testSnapshotAttempt() throws Exception {
 		try {
 			prevayler.takeSnapshot();
 			fail("IOException expected.");

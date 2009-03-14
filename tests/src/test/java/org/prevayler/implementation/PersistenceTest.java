@@ -311,7 +311,7 @@ public class PersistenceTest extends FileIOTest {
         _prevayler = factory.create();
     }
 
-	private File snapshot(String expectedSnapshotFilename) throws IOException {
+	private File snapshot(String expectedSnapshotFilename) throws Exception {
 		out("Snapshot.");
 		File snapshotFile = _prevayler.takeSnapshot();
 		assertEquals(new File(prevalenceBase(), expectedSnapshotFilename), snapshotFile);

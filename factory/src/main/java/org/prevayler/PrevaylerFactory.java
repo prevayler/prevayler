@@ -71,7 +71,7 @@ public class PrevaylerFactory {
 	/** Creates a Prevayler that will use a directory called "PrevalenceBase" under the current directory to read and write its .snapshot and .journal files.
  	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 */
-	public static Prevayler createPrevayler(Serializable newPrevalentSystem) throws IOException, ClassNotFoundException {
+	public static Prevayler createPrevayler(Serializable newPrevalentSystem) throws Exception {
 		return createPrevayler(newPrevalentSystem, "PrevalenceBase");
 	}
 
@@ -80,7 +80,7 @@ public class PrevaylerFactory {
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 * @param prevalenceBase The directory where the .snapshot files and .journal files will be read and written.
 	 */
-	public static Prevayler createPrevayler(Serializable newPrevalentSystem, String prevalenceBase) throws IOException, ClassNotFoundException {
+	public static Prevayler createPrevayler(Serializable newPrevalentSystem, String prevalenceBase) throws Exception {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(newPrevalentSystem);
 		factory.configurePrevalenceDirectory(prevalenceBase);
@@ -297,7 +297,7 @@ public class PrevaylerFactory {
 	 * @throws IOException If there is trouble creating the Prevalence Base directory or reading a .journal or .snapshot file.
 	 * @throws ClassNotFoundException If a class of a serialized Object is not found when reading a .journal or .snapshot file.
 	 */
-	public Prevayler create() throws IOException, ClassNotFoundException {
+	public Prevayler create() throws Exception {
 		GenericSnapshotManager snapshotManager = snapshotManager();
 		TransactionPublisher publisher = publisher(snapshotManager);
 		if (_serverPort != -1) new ServerListener(publisher, new OldNetworkImpl(), _serverPort);
@@ -348,7 +348,7 @@ public class PrevaylerFactory {
 		return _journalSuffix != null ? _journalSuffix : "journal";
 	}
 
-	private GenericSnapshotManager snapshotManager() throws ClassNotFoundException, IOException {
+	private GenericSnapshotManager snapshotManager() throws Exception {
 		if (_nullSnapshotManager != null)
 			return _nullSnapshotManager;
 		

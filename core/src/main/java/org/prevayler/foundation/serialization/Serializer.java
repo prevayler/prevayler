@@ -2,7 +2,6 @@ package org.prevayler.foundation.serialization;
 
 import java.io.OutputStream;
 import java.io.InputStream;
-import java.io.IOException;
 
 /**
  * A strategy for writing objects to and reading objects from streams. Implementations <b>must</b> be safe for
@@ -21,13 +20,13 @@ public interface Serializer {
 	 * as it sees fit, but is not required to do either. An implementation can expect that the
 	 * stream is already buffered, so additional buffering is not required for performance.
 	 */
-	public void writeObject(OutputStream stream, Object object) throws IOException;
+	public void writeObject(OutputStream stream, Object object) throws Exception;
 
 	/**
 	 * Read an object from a stream. An implementation is free to close the given stream
 	 * as it sees fit, but is not required to do so. An implementation can expect that the
 	 * stream is already buffered, so additional buffering is not required for performance.
 	 */
-	public Object readObject(InputStream stream) throws IOException, ClassNotFoundException;
+	public Object readObject(InputStream stream) throws Exception;
 
 }

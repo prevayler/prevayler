@@ -6,11 +6,11 @@ package org.prevayler.foundation;
 
 import junit.framework.TestCase;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.StringWriter;
 
 
 public abstract class FileIOTest extends TestCase {
@@ -52,25 +52,30 @@ public abstract class FileIOTest extends TestCase {
 	}
 
 	protected String journalContents(final String suffix) throws IOException {
-		File[] files = new File(_testDirectory).listFiles(new FilenameFilter() {
+		File journal = findJournal(suffix);
+
+		FileInputStream file = new FileInputStream(journal);
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+		int n;
+		byte[] b = new byte[1024];
+		while ((n = file.read(b)) != -1) {
+			buffer.write(b, 0, n);
+		}
+
+		file.close();
+
+		return buffer.toString("ISO-8859-1");
+	}
+
+    protected File findJournal(final String suffix) {
+        File[] files = new File(_testDirectory).listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return name.endsWith("." + suffix);
 			}
 		});
 		assertEquals(1, files.length);
-		File journal = files[0];
+		return files[0];
+    }
 
-		FileReader file = new FileReader(journal);
-		StringWriter string = new StringWriter();
-
-		int n;
-		char[] c = new char[1024];
-		while ((n = file.read(c)) != -1) {
-			string.write(c, 0, n);
-		}
-
-		file.close();
-
-		return string.toString();
-	}
 }

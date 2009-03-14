@@ -58,6 +58,12 @@ calling threads would simply block, which had the result of hanging the
 application. Now, an exception is thrown (TurnAbortedException) to indicate
 that processing has been halted.
 
+--------------------------------
+GZIPSerializer and DESSerializer
+
+Serializers are now provided that can wrap any other Serializer with
+GZIP compression and DES or 3DES encryption.
+
 ---------------------------------------
 Workaround for a Java 6 ClassLoader bug
 

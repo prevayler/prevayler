@@ -89,7 +89,7 @@ public class PrevaylerImpl implements Prevayler {
 	}
 
 
-	public File takeSnapshot() throws IOException {
+	public File takeSnapshot() throws Exception {
 		return _guard.takeSnapshot(_snapshotManager);
 	}
 
