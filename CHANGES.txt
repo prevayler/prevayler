@@ -55,8 +55,8 @@ No longer block calling threads when there are file errors
 When there is an IOException while writing to a journal file, Prevayler needs
 some way to halt processing of further transactions. In earlier releases,
 calling threads would simply block, which had the result of hanging the
-application. Now, an exception is thrown (TurnAbortedException) to indicate
-that processing has been halted.
+application. Now, an IllegalStateException is thrown to indicate that
+processing has been halted.
 
 --------------------------------
 GZIPSerializer and DESSerializer
