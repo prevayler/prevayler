@@ -12,7 +12,7 @@ JXPath demo example usage...
 
 3.  Run the demo to get usage....
 
-java java org.prevayler.demos.jxpath.Main
+java org.prevayler.demos.jxpath.Main
     Usage: Main <list|proj|task|snap> <parameters>
     
     Parameters:

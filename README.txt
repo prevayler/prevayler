@@ -1,81 +1,156 @@
-
 ===============================================
 PREVAYLER (TM)
 The Free Software Prevalence Layer for Java
 ===============================================
 
-Prevalence is the simplest, fastest and most transparent architecture for business object persistence, load-balancing and fault-tolerance.
+Prevalence is the simplest, fastest and most transparent architecture for
+business object persistence, load-balancing and fault-tolerance.
 
-Prevayler is the original free software prevalence layer implementation for Java.
+Prevayler is the original free software prevalence layer implementation for
+Java.
 
 
 Free Software License
 =========================
-The Prevayler library is free software. See license.txt in the "docs" directory for more details.
+The Prevayler library is free software. See license.txt in the "docs" directory
+for more details.
 
 
 Features
 ============
-Prevayler implements ACID transactions and transparent business object persistence. It does not yet implement replication, which will enable load-balancing and fault-tolerance.
+Prevayler implements ACID transactions and transparent business object
+persistence. It does not yet implement replication, which will enable
+load-balancing and fault-tolerance.
 
 
 Performance Scalability
 ===========================
-10000 (ten thousand) times faster than Oracle. 3000 (three thousand) times faster than MySQL.
+10000 (ten thousand) times faster than Oracle. 3000 (three thousand) times
+faster than MySQL.
 
-These are typical results for the Prevayler query scalability test running against DBMSs using JDBC, even when the DBMSs use local databases fully cached in RAM.
+These are typical results for the Prevayler query scalability test running
+against DBMSs using JDBC, even when the DBMSs use local databases fully cached
+in RAM.
 
-You can compile and run the test for yourself. Its source code is available for inspection in the "src" directory starting at: org.prevayler.demos.scalability.Main. It runs transaction-processing and query scalability tests against Prevayler and any JDBC database. Just follow the instructions displayed on the console.
+You can compile and run the test for yourself. Its source code is available for
+inspection in the "demos/scalability" directory starting at:
+
+    org.prevayler.demos.scalability.Main
+
+It runs transaction-processing and query scalability tests against Prevayler
+and any JDBC database. Just follow the instructions displayed on the console.
 
 
 Required Java Platform
 ==========================
-Prevayler is written and compiled against the APIs of the Java 2 Platform Standard Edition version 1.4.
+Prevayler is written and compiled against the APIs of the Java 2 Platform
+Standard Edition version 1.4.
 
 
 Running Prevayler
 =====================
-Prevayler is a prevalence framework. It is compiled in the "prevayler-X.X.jar" file available in this distribution.
+Prevayler is a prevalence framework. It is compiled in the
+"prevayler-XYZ-N.N.jar" files available in this distribution.
 
-To run Prevayler, you must write an application of your own or use the following demo applications.
+* prevayler-core-2.4.jar
+* prevayler-factory-2.4.jar
+
+    The core and factory modules are required for basic Prevayler operation.
+    Using these two alone does not introduce any external dependencies.
+
+* prevayler-xstream-2.4.jar
+* prevayler-skaringa-2.4.jar
+
+    The xstream and skaringa modules are optional extensions for using XML for
+    journal and snapshot serialization. Each requires the respective external
+    library (XStream or Skaringa).
+
+* prevayler-log4j-2.4.jar
+
+    The log4j module is an optional extension implementing Prevayler's Monitor
+    interface using Log4J. It naturally requires Log4J.
+
+* prevayler-mirror-2.4.jar
+
+    The mirror module is an experimental extension implementing simple
+    master-slave replication. It is not yet very robust, but some users are
+    already using it.
+
+To run Prevayler, you must write an application of your own or use the
+following demo applications.
 
 
 Demo Applications
 =====================
-The Prevayler demo applications are available in the "src" directory. They have the main() method and can be compiled and run directly. They are self explanatory:
+The Prevayler demo applications are available in the "demos" directory. They
+have the main() method and can be compiled and run directly.
 
-- org.prevayler.demos.demo1.Main - A tiny application that finds prime numbers and stores them using Prevayler.
+* demos/demo1: org.prevayler.demos.demo1.Main
 
-- org.prevayler.demos.demo2.Main - A bank application using Prevayler.
+    A tiny application that finds prime numbers and stores them using
+    Prevayler.
 
-- org.prevayler.demos.demo2.MainTransient - Exactly the same bank application running only in RAM.
+* demos/demo2: org.prevayler.demos.demo2.Main
 
-- org.prevayler.demos.demo2.MainReplicaServer - Exactly the same bank application with transparent replication enabled.
+    A bank application using Prevayler.
 
-- org.prevayler.demos.demo2.MainReplica - An application that connects to the MainReplicaSerever above and transparently replicates the bank application.
+* demos/demo2: org.prevayler.demos.demo2.MainTransient
+
+    Exactly the same bank application running only in RAM.
+
+* demos/demo2: org.prevayler.demos.demo2.MainReplicaServer
+
+    Exactly the same bank application with transparent replication enabled.
+
+* demos/demo2: org.prevayler.demos.demo2.MainReplica
+
+    An application that connects to the MainReplicaSerever above and
+    transparently replicates the bank application.
+
+* demos/jxpath: org.prevayler.demos.jxpath.Main
+
+    An example of using JXPath to query Java objects. See demos/jxpath/README
+    for more details.
+
+* demos/tutorial: org.prevayler.tutorial.Main
+
+    A very simple quick-start example.
+
+* demos/scalability: org.prevayler.demos.scalability.Main
+
+    Mentioned previously.
 
 
 Learning Prevayler 1-2-3
 ============================
-The prevalence concepts are ridiculously simple. Unlike using a database, though, writing an application using a prevalence layer actually requires you to know OO.
+The prevalence concepts are ridiculously simple. Unlike using a database,
+though, writing an application using a prevalence layer actually requires you
+to know OO.
 
-1- Read the "Object Prevalence Skeptical FAQ" in the "docs" directory.
-2- Run the demos above and understand their source code. Use the javadoc in the "docs/api/beginners" directory as a reference.
-3- Write a little application of your own using the Bank demo as an example.
+1. Read the "Object Prevalence Skeptical FAQ" in the "docs" directory.
 
-The source code to Prevayler is available in the "src" directory. You are dearly invited to visit it. The whole Prevayler implementation is only a few hundred lines of code.
+2. Run the demos above and understand their source code. Use the javadoc in the
+"apidocs" directory as a reference.
+
+3. Write a little application of your own using the Bank demo as an example.
+
+The source code to Prevayler is available in the "src" directory. You are
+dearly invited to visit it. The core Prevayler implementation is only a couple
+thousand lines of code.
 
 
-Tutorial
-============
-A more elaborate Prevayler tutorial including a web interface (JSP) can be found at: www.prevayler.org/presto .
+Prevayler Pet Store
+=======================
+A more elaborate Prevayler tutorial including a web interface (JSP) can be
+found at: http://sourceforge.net/projects/presto
 
 
 Contact Information
 =======================
-All Prevayler resources are available from www.prevayler.org .
+All Prevayler resources are available from: http://www.prevayler.org/
 
-If you know Java but have any trouble or doubt running Prevayler, please join our discussion lists.
+If you know Java but have any trouble or doubt running Prevayler, please join
+our discussion lists.
 
 Ideas, contributions and suggestions are welcome too.
 
@@ -84,5 +159,5 @@ The Prevayler team.
 
 
 ----------------------------------------------------
-Copyleft 2003 Klaus Wuestefeld
-"PREVAYLER" is a trademark by Klaus Wuestefeld.
+Copyright 2001-2009 by Klaus Wuestefeld and the Prevayler team
+"PREVAYLER" is a trademark of Klaus Wuestefeld.
