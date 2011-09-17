@@ -5,7 +5,6 @@ import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
 import org.prevayler.implementation.AppendTransaction;
 
@@ -25,10 +24,6 @@ public class GenericSnapshotManagerTest extends FileIOTest {
 
 	public void testRoundtripXStream() throws Exception {
 		checkRoundtrip("xstreamsnapshot", new XStreamSerializer());
-	}
-
-	public void testRoundtripSkaringa() throws Exception {
-		checkRoundtrip("skaringasnapshot", new SkaringaSerializer());
 	}
 
 	private void checkRoundtrip(String suffix, Serializer serializer) throws Exception {

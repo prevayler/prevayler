@@ -5,16 +5,18 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.prevayler</groupId>
-    <artifactId>prevayler</artifactId>
-    <version>${prevayler.version}</version>
-    <relativePath>../..</relativePath>
+    <groupId>org.prevayler.spikes</groupId>
+    <artifactId>spikes-parent</artifactId>
+    <version>2.5-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.prevayler.spikes</groupId>
+  <!-- modules inherit parent's group id and version. -->
   <artifactId>prevayler-mirror-tests</artifactId>
   <name>Prevayler Mirroring Tests</name>
   <description>Tests for mirroring, split apart for dependencies.</description>
+
+  <packaging>jar</packaging>
 
   <dependencies>
     <dependency>

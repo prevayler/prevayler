@@ -7,23 +7,21 @@
   <parent>
     <groupId>org.prevayler</groupId>
     <artifactId>prevayler</artifactId>
-    <version>${prevayler.version}</version>
-    <relativePath>..</relativePath>
+    <version>2.5-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
+  <!-- modules inherit parent's group id and version. -->
   <artifactId>prevayler-factory</artifactId>
   <name>Prevayler Factory</name>
   <description>The PrevaylerFactory class.</description>
+
+  <packaging>jar</packaging>
 
   <dependencies>
     <dependency>
       <groupId>org.prevayler</groupId>
       <artifactId>prevayler-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.prevayler.extras</groupId>
-      <artifactId>prevayler-skaringa</artifactId>
-      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.prevayler.extras</groupId>

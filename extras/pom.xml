@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -12,10 +12,11 @@
   </parent>
 
   <!-- modules inherit parent's group id and version. -->
-  <artifactId>prevayler-core</artifactId>
-  <name>Prevayler Core</name>
-  <description>Prevayler itself, with no external dependencies.</description>
+  <groupId>org.prevayler.extras</groupId>
+  <artifactId>extras-parent</artifactId>
+  <name>Extras parent</name>
 
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
+
 
 </project>

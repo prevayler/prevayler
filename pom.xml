@@ -1,16 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
-    <prevayler.version>2.4-SNAPSHOT</prevayler.version>
+    <skipTests>false</skipTests>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <groupId>org.prevayler</groupId>
   <artifactId>prevayler</artifactId>
-  <version>${prevayler.version}</version>
+  <version>2.5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Prevayler</name>
@@ -18,11 +19,54 @@
   <url>http://www.prevayler.org/</url>
   <inceptionYear>2001</inceptionYear>
 
+  <licenses>
+    <license>
+      <name>BSD</name>
+      <url>https://github.com/jsampson/prevayler/blob/master/LICENSE.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <mailingLists>
+    <mailingList>
+      <name>Users list</name>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=prevayler-discussion</archive>
+      <post>mailto:prevayler-discussion@lists.sourceforge.net</post>
+      <subscribe>mailto:prevayler-discussion-request@lists.sourceforge.net?subject=subscribe</subscribe>
+      <unsubscribe>mailto:prevayler-discussion-request@lists.sourceforge.net?subject=unsubscribe</unsubscribe>
+    </mailingList>
+
+    <mailingList>
+      <name>Developers list</name>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=prevayler-coders</archive>
+      <post>mailto:prevayler-coders@lists.sourceforge.net</post>
+      <subscribe>mailto:prevayler-coders-request@lists.sourceforge.net?subject=subscribe</subscribe>
+      <unsubscribe>mailto:prevayler-coders-request@lists.sourceforge.net?subject=unsubscribe</unsubscribe>
+    </mailingList>
+
+    <mailingList>
+      <name>Newsletter</name>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=prevayler-english</archive>
+      <post>mailto:prevayler-english@lists.sourceforge.net</post>
+      <subscribe>mailto:prevayler-english-request@lists.sourceforge.net?subject=subscribe</subscribe>
+      <unsubscribe>mailto:prevayler-english-request@lists.sourceforge.net?subject=unsubscribe</unsubscribe>
+    </mailingList>
+  </mailingLists>
+
+  <!--<issueManagement>-->
+  <!--<system></system>-->
+  <!--<url></url>-->
+  <!--</issueManagement>-->
+
+  <scm>
+    <connection>scm:git:git://github.com/jsampson/prevayler.git</connection>
+    <developerConnection>scm:git:git@github.com:jsampson/prevayler.git</developerConnection>
+  </scm>
+
   <modules>
     <module>core</module>
     <module>tests</module>
     <module>factory</module>
-    <module>extras/skaringa</module>
     <module>extras/xstream</module>
     <module>extras/log4j</module>
     <module>extras/facade</module>
@@ -30,7 +74,6 @@
     <module>spikes/mirror</module>
     <module>spikes/mirror-tests</module>
     <module>demos/demo1</module>
-    <module>demos/demo2</module>
     <module>demos/scalability</module>
     <module>demos/jxpath</module>
     <module>demos/tutorial</module>
@@ -38,6 +81,9 @@
 
   <dependencyManagement>
     <dependencies>
+
+      <!-- our modules -->
+
       <dependency>
         <groupId>org.prevayler</groupId>
         <artifactId>prevayler-core</artifactId>
@@ -51,11 +97,6 @@
       <dependency>
         <groupId>org.prevayler</groupId>
         <artifactId>prevayler-tests</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.prevayler.extras</groupId>
-        <artifactId>prevayler-skaringa</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -78,7 +119,114 @@
         <artifactId>prevayler-mirror-tests</artifactId>
         <version>${project.version}</version>
       </dependency>
+
+
+      <!-- 3rd party  -->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>3.8.1</version>
+        <!--<scope>test</scope>-->
+      </dependency>
+
+      <dependency>
+        <groupId>xpp3</groupId>
+        <artifactId>xpp3_min</artifactId>
+        <version>1.1.4c</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.thoughtworks.xstream</groupId>
+        <artifactId>xstream</artifactId>
+        <version>1.3.1</version>
+      </dependency>
+
+
     </dependencies>
   </dependencyManagement>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.1.2</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.8</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.3.1</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.4.3</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <source>1.6</source>
+          <target>1.6</target>
+          <optimize>true</optimize>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.8.1</version>
+      </plugin>
+
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <forkMode>once</forkMode>
+          <argLine>-Xms256m -Xmx768m</argLine>
+          <testFailureIgnore>false</testFailureIgnore>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+        </configuration>
+      </plugin>
+    </plugins>
+
+
+  </build>
 
 </project>

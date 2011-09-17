@@ -6,7 +6,6 @@ import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
 
 import java.io.BufferedReader;
@@ -46,13 +45,6 @@ public class SnapshotSerializerTest extends FileIOTest {
 
 	public void testXStreamSnapshot() throws Exception {
 		Serializer serializer = new XStreamSerializer();
-
-		takeSnapshot(serializer);
-		recover(serializer);
-	}
-
-	public void testSkaringaSnapshot() throws Exception {
-		Serializer serializer = new SkaringaSerializer();
 
 		takeSnapshot(serializer);
 		recover(serializer);

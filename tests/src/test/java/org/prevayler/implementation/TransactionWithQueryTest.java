@@ -5,7 +5,6 @@ import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
 
 public class TransactionWithQueryTest extends FileIOTest {
@@ -19,13 +18,6 @@ public class TransactionWithQueryTest extends FileIOTest {
 
 	public void testXStreamJournal() throws Exception {
 		Serializer strategy = new XStreamSerializer();
-
-		startAndCrash(strategy);
-		recover(strategy);
-	}
-
-	public void testSkaringaJournal() throws Exception {
-		Serializer strategy = new SkaringaSerializer();
 
 		startAndCrash(strategy);
 		recover(strategy);

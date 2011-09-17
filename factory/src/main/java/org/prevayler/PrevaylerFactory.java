@@ -16,7 +16,6 @@ import org.prevayler.foundation.monitor.SimpleMonitor;
 import org.prevayler.foundation.network.OldNetworkImpl;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
 import org.prevayler.implementation.PrevaylerDirectory;
 import org.prevayler.implementation.PrevaylerImpl;
@@ -247,10 +246,6 @@ public class PrevaylerFactory {
 		configureJournalSerializer("xstreamjournal", serializer);
 	}
 
-	public void configureJournalSerializer(SkaringaSerializer serializer) {
-		configureJournalSerializer("skaringajournal", serializer);
-	}
-
 	/**
 	 * Configures the transaction journal Serializer to be used by the Prevayler created by this factory. Only one Serializer is supported at a time. If you want to change the Serializer of a system in production, you will have to take a snapshot first because the journal files written by the previous Serializer will not be read. 
 	 */
@@ -272,10 +267,6 @@ public class PrevaylerFactory {
 
 	public void configureSnapshotSerializer(XStreamSerializer serializer) {
 		configureSnapshotSerializer("xstreamsnapshot", serializer);
-	}
-
-	public void configureSnapshotSerializer(SkaringaSerializer serializer) {
-		configureSnapshotSerializer("skaringasnapshot", serializer);
 	}
 
 	/**

@@ -7,20 +7,24 @@
   <parent>
     <groupId>org.prevayler</groupId>
     <artifactId>prevayler</artifactId>
-    <version>${prevayler.version}</version>
-    <relativePath>..</relativePath>
+    <version>2.5-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>prevayler-tests</artifactId>
   <name>Prevayler Tests</name>
   <description>Unit tests for Prevayler.</description>
 
+  <packaging>jar</packaging>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <!-- why are there references to junit in the main source path? -->
+      <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.prevayler</groupId>
       <artifactId>prevayler-core</artifactId>
@@ -28,11 +32,6 @@
     <dependency>
       <groupId>org.prevayler</groupId>
       <artifactId>prevayler-factory</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.prevayler.extras</groupId>
-      <artifactId>prevayler-skaringa</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

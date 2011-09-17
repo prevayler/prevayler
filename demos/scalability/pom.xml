@@ -5,16 +5,18 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.prevayler</groupId>
-    <artifactId>prevayler</artifactId>
-    <version>${prevayler.version}</version>
-    <relativePath>../..</relativePath>
+    <groupId>org.prevayler.demos</groupId>
+    <artifactId>demos-parent</artifactId>
+    <version>2.5-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.prevayler.demos</groupId>
+  <!-- modules inherit parent's group id and version. -->
   <artifactId>prevayler-scalability</artifactId>
   <name>Prevayler Scalability Demo</name>
   <description>A test of query and transaction throughput.</description>
+
+  <packaging>jar</packaging>
 
   <dependencies>
     <dependency>
@@ -24,10 +26,6 @@
     <dependency>
       <groupId>org.prevayler</groupId>
       <artifactId>prevayler-factory</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.prevayler.extras</groupId>
-      <artifactId>prevayler-skaringa</artifactId>
     </dependency>
     <dependency>
       <groupId>org.prevayler.extras</groupId>

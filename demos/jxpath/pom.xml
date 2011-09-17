@@ -5,16 +5,18 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.prevayler</groupId>
-    <artifactId>prevayler</artifactId>
-    <version>${prevayler.version}</version>
-    <relativePath>../..</relativePath>
+    <groupId>org.prevayler.demos</groupId>
+    <artifactId>demos-parent</artifactId>
+    <version>2.5-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.prevayler.demos</groupId>
+  <!-- modules inherit parent's group id and version. -->
   <artifactId>prevayler-jxpath</artifactId>
   <name>Prevayler JXPath Demo</name>
   <description>A demo of using JXPath with Prevayler.</description>
+
+  <packaging>jar</packaging>
 
   <dependencies>
     <dependency>

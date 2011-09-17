@@ -8,7 +8,6 @@ import org.prevayler.foundation.serialization.DESSerializer;
 import org.prevayler.foundation.serialization.GZIPSerializer;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.foundation.serialization.SkaringaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
 
 import java.io.BufferedReader;
@@ -87,22 +86,6 @@ public class JournalSerializerTest extends FileIOTest {
                 journalContents("journal"));
 
         recover("journal", strategy);
-	}
-
-	public void testSkaringaJournal() throws Exception {
-		Serializer strategy = new SkaringaSerializer();
-
-		startAndCrash("journal", strategy);
-
-		assertEquals("157;withQuery=false;systemVersion=1;executionTime=1000002\r\n" +
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><org.prevayler.implementation.AppendTransaction xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" id=\"i0\" xsi:type=\"org.prevayler.implementation.AppendTransaction\"><toAdd xsi:type=\"xsd:string\"> first</toAdd></org.prevayler.implementation.AppendTransaction>\r\n" +
-                "158;withQuery=false;systemVersion=2;executionTime=1000004\r\n" +
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><org.prevayler.implementation.AppendTransaction xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" id=\"i0\" xsi:type=\"org.prevayler.implementation.AppendTransaction\"><toAdd xsi:type=\"xsd:string\"> second</toAdd></org.prevayler.implementation.AppendTransaction>\r\n" +
-                "157;withQuery=false;systemVersion=3;executionTime=1000006\r\n" +
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><org.prevayler.implementation.AppendTransaction xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" id=\"i0\" xsi:type=\"org.prevayler.implementation.AppendTransaction\"><toAdd xsi:type=\"xsd:string\"> third</toAdd></org.prevayler.implementation.AppendTransaction>\r\n",
-                journalContents("journal"));
-
-		recover("journal", strategy);
 	}
 
 	public void testCompressedJournal() throws Exception {
