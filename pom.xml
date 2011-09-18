@@ -53,10 +53,10 @@
     </mailingList>
   </mailingLists>
 
-  <!--<issueManagement>-->
-  <!--<system></system>-->
-  <!--<url></url>-->
-  <!--</issueManagement>-->
+  <issueManagement>
+    <system>github</system>
+    <url>https://github.com/jsampson/prevayler/issues</url>
+  </issueManagement>
 
   <scm>
     <connection>scm:git:git://github.com/jsampson/prevayler.git</connection>
