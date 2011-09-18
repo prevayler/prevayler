@@ -12,8 +12,8 @@ Java.
 
 Free Software License
 =========================
-The Prevayler library is free software. See license.txt in the "docs" directory
-for more details.
+The Prevayler library is free software, distributed under a BSD license.
+See LICENCE.TXT in this directory for more details.
 
 
 Features
@@ -43,8 +43,11 @@ and any JDBC database. Just follow the instructions displayed on the console.
 
 Required Java Platform
 ==========================
-Prevayler is written and compiled against the APIs of the Java 2 Platform
-Standard Edition version 1.4.
+Prevayler 2.5 and below is written against the APIs of the Java 2 Platform
+Standard Edition version 1.4. Prior to Prevayler 2.5 the output classes are
+targeting Java 1.4, while Prevayler 2.5 targets Java 1.6.
+
+As of Prevayler 2.6 both code and compiled output will target Java 1.6.
 
 
 Running Prevayler
@@ -52,25 +55,23 @@ Running Prevayler
 Prevayler is a prevalence framework. It is compiled in the
 "prevayler-XYZ-N.N.jar" files available in this distribution.
 
-* prevayler-core-2.4.jar
-* prevayler-factory-2.4.jar
+* prevayler-core-${version}.jar
+* prevayler-factory-${version}.jar
 
     The core and factory modules are required for basic Prevayler operation.
     Using these two alone does not introduce any external dependencies.
 
-* prevayler-xstream-2.4.jar
-* prevayler-skaringa-2.4.jar
+* prevayler-xstream-${version}.jar
 
-    The xstream and skaringa modules are optional extensions for using XML for
-    journal and snapshot serialization. Each requires the respective external
-    library (XStream or Skaringa).
+    The xstream module is an optional extension for using XML for
+    journal and snapshot serialization, requiring the external XStream library.
 
-* prevayler-log4j-2.4.jar
+* prevayler-log4j-${version}.jar
 
     The log4j module is an optional extension implementing Prevayler's Monitor
     interface using Log4J. It naturally requires Log4J.
 
-* prevayler-mirror-2.4.jar
+* prevayler-mirror-${version}.jar
 
     The mirror module is an experimental extension implementing simple
     master-slave replication. It is not yet very robust, but some users are
@@ -89,23 +90,6 @@ have the main() method and can be compiled and run directly.
 
     A tiny application that finds prime numbers and stores them using
     Prevayler.
-
-* demos/demo2: org.prevayler.demos.demo2.Main
-
-    A bank application using Prevayler.
-
-* demos/demo2: org.prevayler.demos.demo2.MainTransient
-
-    Exactly the same bank application running only in RAM.
-
-* demos/demo2: org.prevayler.demos.demo2.MainReplicaServer
-
-    Exactly the same bank application with transparent replication enabled.
-
-* demos/demo2: org.prevayler.demos.demo2.MainReplica
-
-    An application that connects to the MainReplicaSerever above and
-    transparently replicates the bank application.
 
 * demos/jxpath: org.prevayler.demos.jxpath.Main
 
@@ -159,5 +143,5 @@ The Prevayler team.
 
 
 ----------------------------------------------------
-Copyright 2001-2009 by Klaus Wuestefeld and the Prevayler team
+Copyright 2001-2011 by Klaus Wuestefeld and the Prevayler team
 "PREVAYLER" is a trademark of Klaus Wuestefeld.
