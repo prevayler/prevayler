@@ -1,4 +1,32 @@
 ===========================================
+Changes from Prevayler 2.4 to Prevayler 2.5
+
+----------------------------------
+Maven build and dependency cleanup
+
+Preparation for deployment of Prevayler artifacts on Maven central.
+Ie there are no behavioral changes of the code.
+
+Removed module Skaringa and Demo2 as they use dependencies not available in
+Maven central (Latest version of Skaringa XML serializer and Javamatch).
+
+Updated all POMs to point back at parent POM rather than parent directory.
+
+Updated all POMs to use static artifact version rather than using ${property}.
+
+Updated all POMs to use dependencyManagement set versions of dependencies
+rather than defining them over and over in module POMs.
+
+Added <package> types to all POMs.
+
+Added build plugins with static versions of artifact for root POM in order to
+make sure it behaves the same on all environments, to define java target output,
+global surefire (test) settings, javadocs and source jar output, etc.
+
+
+
+
+===========================================
 Changes from Prevayler 2.3 to Prevayler 2.4
 
 ----------------------------------
