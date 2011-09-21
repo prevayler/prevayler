@@ -63,6 +63,105 @@
     <developerConnection>scm:git:git@github.com:jsampson/prevayler.git</developerConnection>
   </scm>
 
+  <developers>
+    <developer>
+      <id>aleksey.aristov</id>
+      <name>Aleksey Aristov</name>
+      <!--<email></email>-->
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>eric.bridgwater</id>
+      <name>Eric Bridgwater</name>
+      <!--<email></email>-->
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>toby.cabot</id>
+      <name>Toby Cabot</name>
+      <!--<email></email>-->
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>peter.haig</id>
+      <name>Peter Haig</name>
+      <!--<email></email>-->
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>hans.haggstrom</id>
+      <name>Hans Haggstrom</name>
+      <!--<email></email>-->
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>tobias.hill</id>
+      <name>Tobias Hill</name>
+      <!--<email></email>-->
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>jacob.kjome</id>
+      <name>Jacob Kjome</name>
+      <!--<email></email>-->
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>frederic.langlet</id>
+      <name>Frederic Langlet</name>
+      <!--<email></email>-->
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>alexandre.nodari</id>
+      <name>Alexandre Nodari</name>
+      <!--<email></email>-->
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>stefan.ortmanns</id>
+      <name>Stefan Ortmanns</name>
+      <!--<email></email>-->
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>william.pietri</id>
+      <name>William Pietri</name>
+      <!--<email></email>-->
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>justin.sampson</id>
+      <name>Justin Sampson</name>
+      <!--<email></email>-->
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>jon.tirsen</id>
+      <name>Jon Tirsen</name>
+      <!--<email></email>-->
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>carlos.villela</id>
+      <name>Carlos Villela</name>
+      <!--<email></email>-->
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>karl.wettin</id>
+      <name>Karl Wettin</name>
+      <email>karl.wettin@gmail.com</email>
+      <roles><role>Contributor</role></roles>
+    </developer>
+    <developer>
+      <id>klaus.wuestefeld</id>
+      <name>Klaus Wuestefeld</name>
+      <!--<email></email>-->
+      <roles><role>Author</role></roles>
+    </developer>
+  </developers>
+
   <modules>
     <module>core</module>
     <module>tests</module>
