@@ -8,7 +8,7 @@
     <groupId>org.prevayler</groupId>
     <artifactId>prevayler</artifactId>
     <version>2.5-SNAPSHOT</version>
-
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <!-- modules inherit parent's group id and version. -->
