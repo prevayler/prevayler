@@ -21,6 +21,16 @@
   <url>http://www.prevayler.org/</url>
   <inceptionYear>2001</inceptionYear>
 
+  <modules>
+    <module>core</module>
+    <module>tests</module>
+    <module>factory</module>
+    <module>extras</module>
+    <module>spikes</module>
+    <module>demos</module>
+  </modules>
+
+
   <licenses>
     <license>
       <name>BSD</name>
@@ -170,21 +180,6 @@
     </developer>
   </developers>
 
-  <modules>
-    <module>core</module>
-    <module>tests</module>
-    <module>factory</module>
-    <module>extras/xstream</module>
-    <module>extras/log4j</module>
-    <module>extras/facade</module>
-    <module>extras/memento</module>
-    <module>spikes/mirror</module>
-    <module>spikes/mirror-tests</module>
-    <module>demos/demo1</module>
-    <module>demos/scalability</module>
-    <module>demos/jxpath</module>
-    <module>demos/tutorial</module>
-  </modules>
 
   <dependencyManagement>
     <dependencies>
