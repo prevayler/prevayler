@@ -10,15 +10,11 @@
     <version>7</version>
   </parent>
 
-  <properties>
-    <skipTests>false</skipTests>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-
   <groupId>org.prevayler</groupId>
   <artifactId>prevayler</artifactId>
   <version>2.5-SNAPSHOT</version>
   <packaging>pom</packaging>
+
 
   <name>Prevayler</name>
   <description>Prevayler is the open source Java prevalence layer.</description>
@@ -32,6 +28,12 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
+  <properties>
+    <skipTests>false</skipTests>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
 
   <mailingLists>
     <mailingList>
