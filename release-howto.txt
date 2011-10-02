@@ -1,0 +1,46 @@
+Simplified guide to deploying snapshots and releasing artifacts:
+
+# https://issues.sonatype.org/browse/OSSRH-2234
+# https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
+
+$ cat > ~/.m2/settings.xml
+<settings>
+  <servers>
+    <server>
+      <id>sonatype-nexus-snapshots</id>
+      <username>jira.login</username>
+      <password>jira.password</password>
+    </server>
+    <server>
+      <id>sonatype-nexus-staging</id>
+      <username>jira.login</username>
+      <password>jira.password</password>
+    </server>
+  </servers>
+</settings>
+
+^C
+
+
+# need gpg? https://docs.sonatype.org/display/Repository/How+To+Generate+PGP+Signatures+With+Maven
+$ gpg --gen-key
+
+# Deploys new snapshot:
+$ mvn clean deploy
+
+# Changes removes -SNAPSHOT in version from all modules,
+# builds jars, sources and javadocs,
+# signs them with gpg,
+# sends them to Sonatype,
+# sets tag in git to release,
+# increases version on all project files, commit and pushed to github:
+
+$ mvn release:clean
+$ mvn release:prepare
+
+Login at http://oss.sonatype.com with jira credentials.
+Go to Staging Repositories page.
+Select the staging repository you just uploaded.
+Click the Close button.
+Get a cup of tea...
+Consider clicking Release button to sync to Maven central. After doing this it's impossible to modify nor remove the artifact.
