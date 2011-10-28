@@ -5,7 +5,7 @@ import java.util.Date;
 import org.prevayler.Transaction;
 import org.prevayler.demos.scalability.Record;
 
-class TestTransaction implements Transaction {
+class TestTransaction implements Transaction<TransactionSystem> {
 
 	private static final long serialVersionUID = -2634307328586761351L;
 	private final Record recordToInsert;
@@ -18,7 +18,7 @@ class TestTransaction implements Transaction {
 		this.idToDelete = idToDelete;
 	}
 
-	public void executeOn(Object system, Date ignored) {
-		((TransactionSystem)system).performTransaction(recordToInsert, recordToUpdate, idToDelete);
+	public void executeOn(TransactionSystem system, Date ignored) {
+		system.performTransaction(recordToInsert, recordToUpdate, idToDelete);
 	}
 }

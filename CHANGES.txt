@@ -1,3 +1,16 @@
+=================================================================
+Changes from Prevayler 2.5 to this forked version (Naveen Chawla)
+
+---------------------------
+Type-safety, using generics
+
+No more need for casting. Objects and return values are delivered in
+original form. Initial declarations of prevalent system, factory, transactions
+and/or queries use similar syntax as ArrayList declarations e.g.
+ArrayList<MyType>, allowing 100% type-safety as well as compile-time
+checking that the prevalent object type implements Serializable.
+
+
 ===========================================
 Changes from Prevayler 2.4 to Prevayler 2.5
 

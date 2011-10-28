@@ -3,6 +3,7 @@ package org.prevayler.demos.memento.commands;
 import java.io.Serializable;
 import org.prevayler.util.memento.MementoCollector;
 import org.prevayler.util.memento.MementoTransaction;
+import org.prevayler.demos.memento.Account;
 import org.prevayler.demos.memento.Bank;
 
 public class Transfer extends MementoTransaction {
@@ -23,8 +24,8 @@ public class Transfer extends MementoTransaction {
     this.amount = amount;
   }
   
-  protected void findObjects(Object prevalentSystem) throws Exception {
-    bank = (Bank)prevalentSystem;
+  protected void findObjects(Bank prevalentSystem) throws Exception {
+    bank = prevalentSystem;
   }
 
   protected void checkPrecondition() {
@@ -33,7 +34,7 @@ public class Transfer extends MementoTransaction {
   protected void createMementos(MementoCollector collector) {
   }
 
-  protected Serializable execute(MementoCollector collector) throws Exception {
+  protected Account execute(MementoCollector collector) throws Exception {
     MementoTransaction command = new Withdrawal(sourceNumber, amount);
     command.execute(collector, bank);
     

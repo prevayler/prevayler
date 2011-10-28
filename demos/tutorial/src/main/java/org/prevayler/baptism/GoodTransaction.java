@@ -12,7 +12,7 @@ import org.prevayler.Transaction;
  * @since Apr 6, 2004
  */
 // START SNIPPET: good
-public class GoodTransaction implements Transaction {
+public class GoodTransaction implements Transaction<MyPrevalentSystem> {
 
     private long millis;
     private String id;
@@ -22,18 +22,10 @@ public class GoodTransaction implements Transaction {
         this.millis = millis;
     }
 
-    public void executeOn(Object prevalentSystem, Date executionTime) {
-        MyPrevalentSystem system = (MyPrevalentSystem) prevalentSystem;
-        Calendar c = system.lookupCalendar(this.id);
+    public void executeOn(MyPrevalentSystem prevalentSystem, Date executionTime) {
+        Calendar c = prevalentSystem.lookupCalendar(this.id);
         c.setTimeInMillis(this.millis);
     }
 
 }
 //END SNIPPET: good
-
-// this is here just to get the example to compile.
-class MyPrevalentSystem {
-    public Calendar lookupCalendar(String id) {
-        return null;
-    }
-}

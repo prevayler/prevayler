@@ -5,14 +5,14 @@ import java.io.File;
 
 import org.prevayler.*;
 
-public class ClusteredPrevayler implements Prevayler, ClusterListener {
-    private PrevaylerFactory factory;
+public class ClusteredPrevayler<P extends Serializable> implements Prevayler<P>, ClusterListener {
+    private PrevaylerFactory<P> factory;
     private String oldPrevalenceBase;
     private String newPrevalenceBase;
     private Node node;
-    private Prevayler prevayler;
+    private Prevayler<P> prevayler;
 
-    public ClusteredPrevayler(PrevaylerFactory factory, String oldPrevalenceBase, String newPrevalenceBase) throws InterruptedException {
+    public ClusteredPrevayler(PrevaylerFactory<P> factory, String oldPrevalenceBase, String newPrevalenceBase) throws InterruptedException {
         System.out.println("EXPERIMENTAL CODE! Spike for implementing a clustered homogenous (i.e. without a master) Prevayler using JavaGroups");
         System.out.println("For example, the clock is *not* properly synchronized across the cluster");
         System.out.println("This code will be thrown away when the real implementation is created");
@@ -28,12 +28,12 @@ public class ClusteredPrevayler implements Prevayler, ClusterListener {
         return transaction.executeOn(this);
     }
 
-    public Object getState() {
+    public P getState() {
         System.out.println("Distributing system " + prevalentSystem());
         return prevalentSystem();
     }
 
-    public void setState(Object prevalentSystem) {
+    public void setState(P prevalentSystem) {
         if (prevalentSystem != null) {
             backupOldLocalTransactionLogs();
             factory.configurePrevalentSystem(prevalentSystem);
@@ -50,7 +50,7 @@ public class ClusteredPrevayler implements Prevayler, ClusterListener {
         }
     }
 
-    public Object prevalentSystem() {
+    public P prevalentSystem() {
         return prevayler.prevalentSystem();
     }
 
@@ -58,21 +58,21 @@ public class ClusteredPrevayler implements Prevayler, ClusterListener {
         return prevayler.clock();
     }
 
-    public void execute(Transaction transaction) {
-        ClusteredTransaction clusterTransaction = new ClusteredTransaction(transaction, clock().time());
+    public void execute(Transaction<P> transaction) {
+        ClusteredTransaction<P> clusterTransaction = new ClusteredTransaction<P>(transaction, clock().time());
         System.out.println("ClusterTransaction created = " + clusterTransaction);
         node.broadcast(clusterTransaction);
     }
 
-    public Object execute(Query sensitiveQuery) throws Exception {
+    public <R> R execute(Query<P,R> sensitiveQuery) throws Exception {
         return prevayler.execute(sensitiveQuery);
     }
 
-    public Object execute(TransactionWithQuery transactionWithQuery) throws Exception {
+    public <R> R execute(TransactionWithQuery<P,R> transactionWithQuery) throws Exception {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    public Object execute(SureTransactionWithQuery sureTransactionWithQuery) {
+    public <R> R execute(SureTransactionWithQuery<P,R> sureTransactionWithQuery) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
@@ -98,7 +98,7 @@ public class ClusteredPrevayler implements Prevayler, ClusterListener {
         new File(newPrevalenceBase).renameTo(oldPrevalenceBaseFile);
     }
 
-    public void executeBroadcastedTransaction(Transaction transaction) {
+    public void executeBroadcastedTransaction(Transaction<P> transaction) {
         prevayler.execute(transaction);
     }
 }

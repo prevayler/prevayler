@@ -3,15 +3,16 @@ package org.prevayler.implementation;
 import org.prevayler.TransactionWithQuery;
 import org.prevayler.foundation.serialization.Serializer;
 
+import java.io.Serializable;
 import java.util.Date;
 
-class TransactionWithQueryCapsule extends Capsule {
+class TransactionWithQueryCapsule<P extends Serializable,R> extends Capsule{
 
 	private static final long serialVersionUID = 78811627002206298L;
-	private transient Object _queryResult;
+	private transient R _queryResult;
 	private transient Exception _queryException;
 
-	public TransactionWithQueryCapsule(TransactionWithQuery transactionWithQuery, Serializer journalSerializer) {
+	public TransactionWithQueryCapsule(TransactionWithQuery<P,R> transactionWithQuery, Serializer journalSerializer) {
 		super(transactionWithQuery, journalSerializer);
 	}
 
@@ -21,7 +22,7 @@ class TransactionWithQueryCapsule extends Capsule {
 
 	protected void justExecute(Object transaction, Object prevalentSystem, Date executionTime) {
 		try {
-			_queryResult = ((TransactionWithQuery) transaction).executeAndQuery(prevalentSystem, executionTime);
+			_queryResult = ((TransactionWithQuery<P,R>) transaction).executeAndQuery((P)prevalentSystem, executionTime);
 		} catch (RuntimeException rx) {
 			_queryException = rx;
 			throw rx;   //This is necessary because of the rollback feature.
@@ -30,13 +31,13 @@ class TransactionWithQueryCapsule extends Capsule {
 		}
 	}
 
-	public Object result() throws Exception {
+	public R result() throws Exception {
 		if (_queryException != null) throw _queryException;
 		return _queryResult;
 	}
 
 	public Capsule cleanCopy() {
-		return new TransactionWithQueryCapsule(serialized());
+		return new TransactionWithQueryCapsule<P,R>(serialized());
 	}
 
 }

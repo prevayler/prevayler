@@ -4,16 +4,17 @@
 
 package org.prevayler;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /** The same as TransactionWithQuery except it does not throw Exception when executed.
  * @see TransactionWithQuery
  */
-public interface SureTransactionWithQuery extends TransactionWithQuery {
+public interface SureTransactionWithQuery<P extends Serializable,R> extends Serializable{
 
-	/** The same as TransactionWithQuery.execute(Object, Date) except it does not throw Exception when executed.
-	 * @see TransactionWithQuery#executeAndQuery(Object, Date)
+	/** The same as TransactionWithQuery.executeAndQuery(P, Date) except it does not throw Exception when executed.
+	 * @see TransactionWithQuery#executeAndQuery(P, Date)
 	 */
-	public Object executeAndQuery(Object prevalentSystem, Date executionTime);
+	public R executeAndQuery(P prevalentSystem, Date executionTime);
 
 }

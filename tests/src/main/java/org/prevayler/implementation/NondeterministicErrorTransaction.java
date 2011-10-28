@@ -22,7 +22,7 @@ public class NondeterministicErrorTransaction extends Appendix {
 		super(toAdd);
 	}
 
-	public void executeOn(Object prevalentSystem, Date executionTime) {
+	public void executeOn(AppendingSystem prevalentSystem, Date executionTime) {
 		triggerBomb();
 		super.executeOn(prevalentSystem, executionTime);
 	}

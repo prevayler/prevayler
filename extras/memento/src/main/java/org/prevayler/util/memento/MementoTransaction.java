@@ -6,6 +6,9 @@ package org.prevayler.util.memento;
 
 import java.io.Serializable;
 
+import org.prevayler.demos.memento.Account;
+import org.prevayler.demos.memento.Bank;
+
 /**
  * An atomic transaction to be executed on a PrevalentSystem. Any operation which changes the
  * observable state of a PrevalentSystem must be encapsulated as a Command.
@@ -38,7 +41,7 @@ public abstract class MementoTransaction implements Serializable {
    * @param system The system on which to execute the command.
    * @return The object returned by the execution of this command. Most commands simply return null.
    */
-  public Serializable execute(MementoCollector collector, Object prevalentSystem) throws Exception {
+  public Account execute(MementoCollector collector, Bank prevalentSystem) throws Exception {
     findObjects(prevalentSystem);
     
     checkPrecondition();
@@ -53,7 +56,7 @@ public abstract class MementoTransaction implements Serializable {
    * 
    * @param system The prevalent system in which to find the objects.
    */
-  protected abstract void findObjects(Object prevalentSystem) throws Exception;
+  protected abstract void findObjects(Bank prevalentSystem) throws Exception;
 
   /**
    * Check the precondition.
@@ -73,5 +76,5 @@ public abstract class MementoTransaction implements Serializable {
    * @param collector The memento collector which can be used to execute subcommands.
    * @return The object returned by the execution of this command. Most commands simply return null.
    */
-  protected abstract Serializable execute(MementoCollector collector) throws Exception;
+  protected abstract Account execute(MementoCollector collector) throws Exception;
 }

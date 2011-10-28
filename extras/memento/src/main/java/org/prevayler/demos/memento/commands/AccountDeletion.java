@@ -18,8 +18,8 @@ public class AccountDeletion extends MementoTransaction {
 		accountNumber = account.number();
 	}
   
-  protected void findObjects(Object prevalentSystem) {
-    bank = (Bank)prevalentSystem;
+  protected void findObjects(Bank prevalentSystem) {
+    bank = prevalentSystem;
   }
   
   protected void checkPrecondition() {
@@ -29,7 +29,7 @@ public class AccountDeletion extends MementoTransaction {
     bank.createMemento(collector);
   }
   
-	protected Serializable execute(MementoCollector collector) throws Bank.AccountNotFound {
+	protected Account execute(MementoCollector collector) throws Bank.AccountNotFound {
 		bank.deleteAccount(accountNumber);
 		return null;
 	}

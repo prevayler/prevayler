@@ -20,16 +20,15 @@ import org.prevayler.demos.jxpath.model.Task;
 /**
  * @author Carlos Villela
  */
-public class AddTask implements Transaction {
+public class AddTask implements Transaction<ProjectManagementSystem> {
 
 	private Task task;
 	private int projectId = Integer.MIN_VALUE;
 
-	public void executeOn(Object system, Date ignored) {
+	public void executeOn(ProjectManagementSystem system, Date ignored) {
 		if(task != null && projectId != Integer.MIN_VALUE) {
-			ProjectManagementSystem pms = (ProjectManagementSystem) system;	
 
-			List projects = pms.getProjects();
+			List projects = system.getProjects();
 			Iterator i = projects.iterator();
 			while (i.hasNext()) {
 				Project p = (Project) i.next();

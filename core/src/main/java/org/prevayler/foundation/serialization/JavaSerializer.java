@@ -11,7 +11,7 @@ import java.io.ObjectInputStream;
 /**
  * Writes and reads objects using Java serialization. This serializer can be used for snapshots, journals or both.
  */
-public class JavaSerializer implements Serializer {
+public class JavaSerializer implements Serializer{
 
 	private ClassLoader _loader;
 

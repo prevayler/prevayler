@@ -11,7 +11,7 @@ import java.util.Date;
 import org.prevayler.TransactionWithQuery;
 
 // START SNIPPET: addtask
-public class AddTask implements TransactionWithQuery {
+public class AddTask implements TransactionWithQuery<TaskList,Task> {
 
     private final Task task;
 
@@ -19,11 +19,9 @@ public class AddTask implements TransactionWithQuery {
         this.task = new Task(description, priority);
     }
 
-    public Object executeAndQuery(Object prevalentSystem, Date executionTime) throws Exception {
-
-        TaskList system = (TaskList) prevalentSystem;
-        system.addTask(task);
-
+    public Task executeAndQuery(TaskList prevalentSystem, Date executionTime) throws Exception {
+        
+    	prevalentSystem.addTask(task);
         return task;
     }
 }

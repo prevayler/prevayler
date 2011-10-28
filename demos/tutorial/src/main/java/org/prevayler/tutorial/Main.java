@@ -22,16 +22,16 @@ public class Main {
     public static void main(String[] args) throws Exception {
         // START SNIPPET: creating
         // Create a new prevayler. /tasklist-base is the tx-journal directory.
-        Prevayler prevayler = PrevaylerFactory.createPrevayler(new TaskList(), "/tasklist-base");
-        TaskList list = (TaskList) prevayler.prevalentSystem();
+        Prevayler<TaskList> prevayler = PrevaylerFactory.createPrevayler(new TaskList(), "/tasklist-base");
+        TaskList list = prevayler.prevalentSystem();
         // END SNIPPET: creating
 
         System.out.println("Tasks: " + list.getTasks().size() + ", adding ");
 
         // START SNIPPET: adding
-        Task dishes = (Task) prevayler.execute(new AddTask("do the dishes", Task.MAX_PRIORITY));
-        Task dog = (Task) prevayler.execute(new AddTask("walk the dog", Task.MED_PRIORITY));
-        Task laundry = (Task) prevayler.execute(new AddTask("do the laundry", Task.MIN_PRIORITY));
+        Task dishes = prevayler.execute(new AddTask("do the dishes", Task.MAX_PRIORITY));
+        Task dog = prevayler.execute(new AddTask("walk the dog", Task.MED_PRIORITY));
+        Task laundry = prevayler.execute(new AddTask("do the laundry", Task.MIN_PRIORITY));
         // END SNIPPET: adding
 
         // START SNIPPET: iterating
