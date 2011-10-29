@@ -313,9 +313,9 @@ public class PrevaylerFactory<P extends Serializable>{
 	}
 
 
-	private TransactionCensor censor(GenericSnapshotManager snapshotManager) {
+	private TransactionCensor censor(GenericSnapshotManager<P> snapshotManager) {
 		return _transactionFiltering
-			? (TransactionCensor) new StrictTransactionCensor(snapshotManager)
+			? (TransactionCensor) new StrictTransactionCensor<P>(snapshotManager)
 			: new LiberalTransactionCensor(); 
 	}
 
