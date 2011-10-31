@@ -2,14 +2,19 @@
 Changes from Prevayler 2.5 to this forked version (Naveen Chawla)
 
 ---------------------------
-Type-safety, using generics
+Type-safety and convenience
 
-No more need for casting. Objects and return values are delivered in
-original form. Initial declarations of prevalent system, factory, transactions
-and/or queries use similar syntax as ArrayList declarations e.g.
-ArrayList<MyType>, allowing 100% type-safety as well as compile-time
-checking that the prevalent object type implements Serializable.
+Prevayler, PrevaylerFactory, transactions and queries are now generic types
+which can be parameterized so that prevalent and return objects and values
+arrive in original type form. Compiler provides you warning where you don't
+do this in your code.
 
+No compilation without error unless prevalent type implements Serializable.
+
+Type-safe usage in demo code. Old code (for 2.5 and earlier) will still
+compile and work EXCEPT for the need to change the first argument type of each
+custom transaction and query's "executeOn"/"executeAndQuery"/"query" method
+from "Object" to "Serializable".
 
 ===========================================
 Changes from Prevayler 2.4 to Prevayler 2.5
