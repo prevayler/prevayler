@@ -10,7 +10,7 @@ import org.prevayler.foundation.FileIOTest;
 
 public class DeadKingDeepCopyTest extends FileIOTest {
 
-	private Prevayler _prevayler;
+	private Prevayler<AppendingSystem> _prevayler;
 
 	private String _prevalenceBase;
 
@@ -80,7 +80,7 @@ public class DeadKingDeepCopyTest extends FileIOTest {
 	}
 
 	private AppendingSystem system() {
-		return (AppendingSystem) _prevayler.prevalentSystem();
+		return _prevayler.prevalentSystem();
 	}
 
 	private String prevalenceBase() {

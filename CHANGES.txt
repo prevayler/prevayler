@@ -1,5 +1,5 @@
-=================================================================
-Changes from Prevayler 2.5 to this forked version (Naveen Chawla)
+===========================================
+Changes from Prevayler 2.5 to Prevayler 2.6
 
 ---------------------------
 Type-safety and convenience

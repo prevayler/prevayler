@@ -19,7 +19,7 @@ import java.util.Date;
 public class SkipOldTransactionsTest extends FileIOTest {
 
 	public void testSkipOldTransactions() throws Exception {
-		Prevayler original = createPrevayler("MyJournal", new MySerializer(false));
+		Prevayler<StringBuffer> original = createPrevayler("MyJournal", new MySerializer(false));
 
 		original.execute(new AppendTransaction(" first"));
 		original.execute(new AppendTransaction(" second"));
@@ -37,12 +37,12 @@ public class SkipOldTransactionsTest extends FileIOTest {
 				"6;withQuery=false;systemVersion=3;executionTime=1000006\r\n" +
 				" third\r\n", journalContents("MyJournal"));
 
-		Prevayler recovered = createPrevayler("MyJournal", new MySerializer(true));
+		Prevayler<StringBuffer> recovered = createPrevayler("MyJournal", new MySerializer(true));
 		assertEquals("the system first second third", recovered.prevalentSystem().toString());
 	}
 
 	public void testDetectOldJournalSuffix() throws Exception {
-		Prevayler original = createPrevayler("OldJournal", new MySerializer(false));
+		Prevayler<StringBuffer> original = createPrevayler("OldJournal", new MySerializer(false));
 
 		original.execute(new AppendTransaction(" first"));
 		original.execute(new AppendTransaction(" second"));
@@ -71,7 +71,7 @@ public class SkipOldTransactionsTest extends FileIOTest {
 	}
 
 	public void testAllowOldJournalSuffix() throws Exception {
-		Prevayler original = createPrevayler("OldJournal", new MySerializer(false));
+		Prevayler<StringBuffer> original = createPrevayler("OldJournal", new MySerializer(false));
 
 		original.execute(new AppendTransaction(" first"));
 		original.execute(new AppendTransaction(" second"));
@@ -88,13 +88,13 @@ public class SkipOldTransactionsTest extends FileIOTest {
 				"6;withQuery=false;systemVersion=3;executionTime=1000006\r\n" +
 				" third\r\n", journalContents("OldJournal"));
 
-		Prevayler recovered = createPrevayler("NewJournal", new MySerializer(true));
+		Prevayler<StringBuffer> recovered = createPrevayler("NewJournal", new MySerializer(true));
 		assertEquals("the system first second third", recovered.prevalentSystem().toString());
 	}
 
-	private Prevayler createPrevayler(String suffix, Serializer journalSerializer)
+	private Prevayler<StringBuffer> createPrevayler(String suffix, Serializer journalSerializer)
 			throws Exception {
-		PrevaylerFactory factory = new PrevaylerFactory();
+		PrevaylerFactory<StringBuffer> factory = new PrevaylerFactory<StringBuffer>();
 		factory.configurePrevalentSystem(new StringBuffer("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);
 		factory.configureJournalSerializer(suffix, journalSerializer);
