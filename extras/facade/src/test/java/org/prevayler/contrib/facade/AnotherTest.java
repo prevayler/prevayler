@@ -105,7 +105,7 @@ public class AnotherTest extends TestCase {
     }
 
     public void testTheBaptismProblem() throws Exception {
-        PrevaylerFactory factory = new PrevaylerFactory();
+        PrevaylerFactory<CampGuide> factory = new PrevaylerFactory<CampGuide>();
         factory.configureJournalSerializer(new XStreamSerializer());
         factory.configureSnapshotSerializer(new XStreamSerializer());
         factory.configureSnapshotSerializer(new JavaSerializer());
