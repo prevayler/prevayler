@@ -36,7 +36,7 @@ public class QueryExecutionTest extends FileIOTest {
 	public void testTransactionWithQuery() throws Exception {
 		LinkedList prevalentSystem = new LinkedList();
 		Prevayler<LinkedList> prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem);
-		Object result = prevayler.execute(transactionWithQuery());
+		String result = prevayler.execute(transactionWithQuery());
 		assertEquals("abc", result);
 		assertEquals("added element", prevalentSystem.get(0));
 	}
