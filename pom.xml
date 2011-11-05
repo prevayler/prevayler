@@ -104,6 +104,14 @@
       </roles>
     </developer>
     <developer>
+      <id>naveen.chawla</id>
+      <name>Naveen Chawla</name>
+      <!--<email></email>-->
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
       <id>peter.haig</id>
       <name>Peter Haig</name>
       <!--<email></email>-->
