@@ -1,4 +1,25 @@
 ===========================================
+Changes from Prevayler 2.5 to Prevayler 2.6
+
+---------------------------
+Type-safety and convenience
+
+Prevayler, PrevaylerFactory, transactions and queries are now generic types
+which can be parameterized so that prevalent and return objects and values
+arrive in original type form. Compiler provides you warning where you don't
+do this in your code.
+
+No compilation without error unless prevalent type implements Serializable.
+
+Existing code written with Prevayler 2.5 and earlier will still compile and 
+work EXCEPT for the minimum need for the first argument type of each custom 
+transaction and query's "executeOn"/"executeAndQuery"/"query" method to be 
+"Serializable" instead of "Object". This is if you still don't intend to 
+implement the new type-safety.
+
+Updated demo code shows the type-safe usage.
+
+===========================================
 Changes from Prevayler 2.4 to Prevayler 2.5
 
 ----------------------------------

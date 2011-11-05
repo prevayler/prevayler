@@ -51,7 +51,7 @@ public class SnapshotSerializerTest extends FileIOTest {
 	}
 
 	private void takeSnapshot(Serializer snapshotSerializer) throws Exception {
-		Prevayler prevayler = createPrevayler(snapshotSerializer);
+		Prevayler<StringBuffer> prevayler = createPrevayler(snapshotSerializer);
 
 		prevayler.execute(new AppendTransaction(" first"));
 		prevayler.execute(new AppendTransaction(" second"));
@@ -63,12 +63,12 @@ public class SnapshotSerializerTest extends FileIOTest {
 	}
 
 	private void recover(Serializer snapshotSerializer) throws Exception {
-		Prevayler prevayler = createPrevayler(snapshotSerializer);
+		Prevayler<StringBuffer> prevayler = createPrevayler(snapshotSerializer);
 		assertEquals("the system first second third", prevayler.prevalentSystem().toString());
 	}
 
-	private Prevayler createPrevayler(Serializer snapshotSerializer) throws Exception {
-		PrevaylerFactory factory = new PrevaylerFactory();
+	private Prevayler<StringBuffer> createPrevayler(Serializer snapshotSerializer) throws Exception {
+		PrevaylerFactory<StringBuffer> factory = new PrevaylerFactory<StringBuffer>();
 		factory.configurePrevalentSystem(new StringBuffer("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);
 		factory.configureSnapshotSerializer("snapshot", snapshotSerializer);

@@ -14,7 +14,7 @@ import java.io.IOException;
 public class GenericSnapshotManagerTest extends FileIOTest {
 
 	public void testNoExistingSnapshot() throws Exception {
-		Prevayler prevayler = createPrevayler("snapshot", new JavaSerializer());
+		Prevayler<StringBuffer> prevayler = createPrevayler("snapshot", new JavaSerializer());
 		assertEquals("initial", prevayler.prevalentSystem().toString());
 	}
 
@@ -27,18 +27,18 @@ public class GenericSnapshotManagerTest extends FileIOTest {
 	}
 
 	private void checkRoundtrip(String suffix, Serializer serializer) throws Exception {
-		Prevayler first = createPrevayler(suffix, serializer);
+		Prevayler<StringBuffer> first = createPrevayler(suffix, serializer);
 		appendTakeSnapshotAndClose(first);
 
 		checkSnapshotAndDeleteJournal("0000000000000000002." + suffix, "0000000000000000001.journal");
 
-		Prevayler second = createPrevayler(suffix, serializer);
+		Prevayler<StringBuffer> second = createPrevayler(suffix, serializer);
 		assertEquals("initial one two", second.prevalentSystem().toString());
 		second.close();
 	}
 
 	public void testDetectExistingSnapshotFromUnknownSnapshotManager() throws Exception {
-		Prevayler first = createPrevayler("xstreamsnapshot", new XStreamSerializer());
+		Prevayler<StringBuffer> first = createPrevayler("xstreamsnapshot", new XStreamSerializer());
 		appendTakeSnapshotAndClose(first);
 
 		try {
@@ -52,7 +52,7 @@ public class GenericSnapshotManagerTest extends FileIOTest {
 	}
 
 	public void testMultipleSerializationStrategiesFromXStream() throws Exception {
-		Prevayler prevayler = createPrevayler("xstreamsnapshot", new XStreamSerializer());
+		Prevayler<StringBuffer> prevayler = createPrevayler("xstreamsnapshot", new XStreamSerializer());
 		appendTakeSnapshotAndClose(prevayler);
 
 		checkSnapshotAndDeleteJournal("0000000000000000002.xstreamsnapshot", "0000000000000000001.journal");
@@ -61,7 +61,7 @@ public class GenericSnapshotManagerTest extends FileIOTest {
 	}
 
 	public void testMultipleSerializationStrategiesFromJava() throws Exception {
-		Prevayler prevayler = createPrevayler("snapshot", new JavaSerializer());
+		Prevayler<StringBuffer> prevayler = createPrevayler("snapshot", new JavaSerializer());
 		appendTakeSnapshotAndClose(prevayler);
 
 		checkSnapshotAndDeleteJournal("0000000000000000002.snapshot", "0000000000000000001.journal");
@@ -70,23 +70,23 @@ public class GenericSnapshotManagerTest extends FileIOTest {
 	}
 
 	public void testUsePrimaryForWritingSnapshot() throws Exception {
-		Prevayler first = createPrevaylerMulti();
+		Prevayler<StringBuffer> first = createPrevaylerMulti();
 		appendTakeSnapshotAndClose(first);
 		checkSnapshotAndDeleteJournal("0000000000000000002.xstreamsnapshot", "0000000000000000001.journal");
 
-		Prevayler second = createPrevayler("xstreamsnapshot", new XStreamSerializer());
+		Prevayler<StringBuffer> second = createPrevayler("xstreamsnapshot", new XStreamSerializer());
 		assertEquals("initial one two", second.prevalentSystem().toString());
 		second.close();
 	}
 
 	private void checkCanReadSnapshotWithMultipleStrategies() throws Exception {
-		Prevayler prevayler = createPrevaylerMulti();
+		Prevayler<StringBuffer> prevayler = createPrevaylerMulti();
 		assertEquals("initial one two", prevayler.prevalentSystem().toString());
 		prevayler.close();
 	}
 
-	private Prevayler createPrevaylerMulti() throws Exception {
-		PrevaylerFactory factory = new PrevaylerFactory();
+	private Prevayler<StringBuffer> createPrevaylerMulti() throws Exception {
+		PrevaylerFactory<StringBuffer> factory = new PrevaylerFactory<StringBuffer>();
 		factory.configurePrevalentSystem(new StringBuffer("initial"));
 		factory.configurePrevalenceDirectory(_testDirectory);
 		factory.configureSnapshotSerializer("xstreamsnapshot", new XStreamSerializer());
@@ -94,15 +94,15 @@ public class GenericSnapshotManagerTest extends FileIOTest {
 		return factory.create();
 	}
 
-	private Prevayler createPrevayler(String suffix, Serializer serializer) throws Exception {
-		PrevaylerFactory factory = new PrevaylerFactory();
+	private Prevayler<StringBuffer> createPrevayler(String suffix, Serializer serializer) throws Exception {
+		PrevaylerFactory<StringBuffer> factory = new PrevaylerFactory<StringBuffer>();
 		factory.configurePrevalentSystem(new StringBuffer("initial"));
 		factory.configurePrevalenceDirectory(_testDirectory);
 		factory.configureSnapshotSerializer(suffix, serializer);
 		return factory.create();
 	}
 
-	private void appendTakeSnapshotAndClose(Prevayler prevayler) throws Exception {
+	private void appendTakeSnapshotAndClose(Prevayler<StringBuffer> prevayler) throws Exception {
 		prevayler.execute(new AppendTransaction(" one"));
 		prevayler.execute(new AppendTransaction(" two"));
 		prevayler.takeSnapshot();

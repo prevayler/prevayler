@@ -2,6 +2,7 @@ package org.prevayler.foundation.serialization;
 
 import java.io.OutputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 
 /**
  * A strategy for writing objects to and reading objects from streams. Implementations <b>must</b> be safe for
@@ -12,7 +13,7 @@ import java.io.InputStream;
  * for journals, it must be able to write and read any transactions it will be used with, but does not need to be
  * able to write or read any other objects.
  */
-public interface Serializer {
+public interface Serializer{
 
 	/**
 	 * Write an object to a stream. An implementation must ensure that the object is written

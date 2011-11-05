@@ -16,13 +16,14 @@ import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 
-public class PrevaylerImpl implements Prevayler {
+public class PrevaylerImpl<P extends Serializable> implements Prevayler<P>{
 
-	private final PrevalentSystemGuard _guard;
+	private final PrevalentSystemGuard<P> _guard;
 	private final Clock _clock;
 
-	private final GenericSnapshotManager _snapshotManager;
+	private final GenericSnapshotManager<P> _snapshotManager;
 
 	private final TransactionPublisher _publisher;
 
@@ -36,7 +37,7 @@ public class PrevaylerImpl implements Prevayler {
 	 * @param prevaylerMonitor The Monitor that will be used to monitor interesting calls to this PrevaylerImpl.
 	 * @param journalSerializer
 	 */
-	public PrevaylerImpl(GenericSnapshotManager snapshotManager, TransactionPublisher transactionPublisher,
+	public PrevaylerImpl(GenericSnapshotManager<P> snapshotManager, TransactionPublisher transactionPublisher,
 						 Serializer journalSerializer) throws IOException, ClassNotFoundException {
 		_snapshotManager = snapshotManager;
 
@@ -50,14 +51,14 @@ public class PrevaylerImpl implements Prevayler {
 		_journalSerializer = journalSerializer;
 	}
 
-	public Object prevalentSystem() { return _guard.prevalentSystem(); }
+	public P prevalentSystem() { return _guard.prevalentSystem(); }
 
 
 	public Clock clock() { return _clock; }
 
 
-	public void execute(Transaction transaction) {
-        publish(new TransactionCapsule(transaction, _journalSerializer));    //TODO Optimizations: 1) The Censor can use the actual given transaction if it is Immutable instead of deserializing a new one from the byte array. 2) Make the baptism fail-fast feature optional (default is on). If it is off, the given transaction can be used instead of deserializing a new one from the byte array.
+	public void execute(Transaction<P> transaction) {
+        publish(new TransactionCapsule<P>(transaction, _journalSerializer));    //TODO Optimizations: 1) The Censor can use the actual given transaction if it is Immutable instead of deserializing a new one from the byte array. 2) Make the baptism fail-fast feature optional (default is on). If it is off, the given transaction can be used instead of deserializing a new one from the byte array.
 	}
 
 
@@ -66,21 +67,21 @@ public class PrevaylerImpl implements Prevayler {
 	}
 
 
-	public Object execute(Query sensitiveQuery) throws Exception {
+	public <R> R execute(Query<P,R> sensitiveQuery) throws Exception {
 		return _guard.executeQuery(sensitiveQuery, clock());
 	}
 
 
-	public Object execute(TransactionWithQuery transactionWithQuery) throws Exception {
-		TransactionWithQueryCapsule capsule = new TransactionWithQueryCapsule(transactionWithQuery, _journalSerializer);
+	public <R> R execute(TransactionWithQuery<P,R> transactionWithQuery) throws Exception {
+		TransactionWithQueryCapsule<P,R> capsule = new TransactionWithQueryCapsule<P,R>(transactionWithQuery, _journalSerializer);
 		publish(capsule);
 		return capsule.result();
 	}
 
 
-	public Object execute(SureTransactionWithQuery sureTransactionWithQuery) {
+	public <R> R execute(SureTransactionWithQuery<P,R> sureTransactionWithQuery) {
 		try {
-			return execute((TransactionWithQuery)sureTransactionWithQuery);
+			return execute((TransactionWithQuery<P,R>)sureTransactionWithQuery);
 		} catch (RuntimeException runtime) {
 			throw runtime;
 		} catch (Exception checked) {

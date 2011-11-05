@@ -1,5 +1,6 @@
 package org.prevayler.implementation;
 
+import org.prevayler.Transaction;
 import org.prevayler.foundation.Chunk;
 import org.prevayler.foundation.serialization.Serializer;
 
@@ -61,7 +62,7 @@ public abstract class Capsule implements Serializable {
 	 * is responsible for synchronizing on the prevalentSystem.
 	 */
 	protected abstract void justExecute(Object transaction, Object prevalentSystem, Date executionTime);
-
+		
 	/**
 	 * Make a clean copy of this capsule that will have its own query result fields.
 	 */

@@ -144,7 +144,7 @@ public class JournalSerializerTest extends FileIOTest {
 
 	private void startAndCrash(String suffix, Serializer journalSerializer)
 			throws Exception {
-		Prevayler prevayler = createPrevayler(suffix, journalSerializer);
+		Prevayler<StringBuffer> prevayler = createPrevayler(suffix, journalSerializer);
 
 		prevayler.execute(new AppendTransaction(" first"));
 		prevayler.execute(new AppendTransaction(" second"));
@@ -155,13 +155,13 @@ public class JournalSerializerTest extends FileIOTest {
 
 	private void recover(String suffix, Serializer journalSerializer)
 			throws Exception {
-		Prevayler prevayler = createPrevayler(suffix, journalSerializer);
+		Prevayler<StringBuffer> prevayler = createPrevayler(suffix, journalSerializer);
 		assertEquals("the system first second third", prevayler.prevalentSystem().toString());
 	}
 
-	private Prevayler createPrevayler(String suffix, Serializer journalSerializer)
+	private Prevayler<StringBuffer> createPrevayler(String suffix, Serializer journalSerializer)
 			throws Exception {
-		PrevaylerFactory factory = new PrevaylerFactory();
+		PrevaylerFactory<StringBuffer> factory = new PrevaylerFactory<StringBuffer>();
 		factory.configurePrevalentSystem(new StringBuffer("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);
 		factory.configureJournalSerializer(suffix, journalSerializer);

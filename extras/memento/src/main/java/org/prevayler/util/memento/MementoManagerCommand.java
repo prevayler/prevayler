@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.prevayler.TransactionWithQuery;
+import org.prevayler.demos.memento.Account;
+import org.prevayler.demos.memento.Bank;
 
 /**
  * This transaction manages the mementos and restores them in case of a failure.
@@ -17,7 +19,7 @@ import org.prevayler.TransactionWithQuery;
  * @author Johan Stuyts
  * @version 2.0
  */
-public class MementoManagerCommand implements TransactionWithQuery, MementoCollector {
+public class MementoManagerCommand implements TransactionWithQuery<Bank,Account>, MementoCollector {
 
 	/**
 	 * Create a memento manager transaction.
@@ -38,7 +40,7 @@ public class MementoManagerCommand implements TransactionWithQuery, MementoColle
 	 * @param system The prevalent system on which to execute the transaction.
 	 * @return The object returned by the execution of this transaction. Most commands simply return null.
 	 */
-	public Object executeAndQuery(Object prevalentSystem, Date timestamp) throws Exception {
+	public Account executeAndQuery(Bank prevalentSystem, Date timestamp) throws Exception {
 		mementos = new HashMap();
 		try {
 			return transaction.execute(this, prevalentSystem);

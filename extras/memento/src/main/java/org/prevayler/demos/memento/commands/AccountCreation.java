@@ -18,8 +18,8 @@ public class AccountCreation extends MementoTransaction {
     this.holder = holder;
   }
   
-  protected void findObjects(Object prevalentSystem) {
-    bank = (Bank)prevalentSystem;
+  protected void findObjects(Bank prevalentSystem) {
+    bank = prevalentSystem;
   }
   
   protected void checkPrecondition() {
@@ -29,7 +29,7 @@ public class AccountCreation extends MementoTransaction {
     bank.createMemento(collector);
   }
   
-  protected Serializable execute(MementoCollector collector) throws Account.InvalidHolder {
+  protected Account execute(MementoCollector collector) throws Account.InvalidHolder {
     return bank.createAccount(holder);
   }
 }

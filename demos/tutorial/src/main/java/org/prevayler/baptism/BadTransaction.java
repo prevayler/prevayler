@@ -12,7 +12,7 @@ import org.prevayler.Transaction;
  * @since Apr 6, 2004
  */
 // START SNIPPET: bad
-public class BadTransaction implements Transaction {
+public class BadTransaction implements Transaction<MyPrevalentSystem> {
 
     private Calendar calendar;
 
@@ -23,7 +23,7 @@ public class BadTransaction implements Transaction {
         this.millis = millis;
     }
 
-    public void executeOn(Object prevalentSystem, Date executionTime) {
+    public void executeOn(MyPrevalentSystem prevalentSystem, Date executionTime) {
         calendar.setTimeInMillis(this.millis);
     }
 }
