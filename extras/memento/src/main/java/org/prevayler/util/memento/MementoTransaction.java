@@ -38,7 +38,7 @@ public abstract class MementoTransaction implements Serializable {
    * @param collector The memento collector to which to add the mementos. A memento
    * collector instead of a Prevayler instance is passed, so the command will not easily
    * invoke subcommands through the prevayler (which is not allowed).
-   * @param system The system on which to execute the command.
+   * @param prevalentSystem The system on which to execute the command.
    * @return The object returned by the execution of this command. Most commands simply return null.
    */
   public Account execute(MementoCollector collector, Bank prevalentSystem) throws Exception {
@@ -54,7 +54,7 @@ public abstract class MementoTransaction implements Serializable {
   /**
    * Find the objects this command modifies.
    * 
-   * @param system The prevalent system in which to find the objects.
+   * @param prevalentSystem The prevalent system in which to find the objects.
    */
   protected abstract void findObjects(Bank prevalentSystem) throws Exception;
 

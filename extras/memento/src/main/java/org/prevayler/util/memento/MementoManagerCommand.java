@@ -37,7 +37,7 @@ public class MementoManagerCommand implements TransactionWithQuery<Bank,Account>
 	 * 
 	 * This method executes the actual transaction and restores the mementos if the execution fails.
 	 * 
-	 * @param system The prevalent system on which to execute the transaction.
+	 * @param prevalentSystem The prevalent system on which to execute the transaction.
 	 * @return The object returned by the execution of this transaction. Most commands simply return null.
 	 */
 	public Account executeAndQuery(Bank prevalentSystem, Date timestamp) throws Exception {

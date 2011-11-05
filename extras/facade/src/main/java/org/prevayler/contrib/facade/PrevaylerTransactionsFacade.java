@@ -50,7 +50,7 @@ public class PrevaylerTransactionsFacade
 {
 
     /**
-     * defaults to using a {@link TransactionHint.NOOP_TRANSACTION_HINT}
+     * defaults to using a {@link TransactionHint#NOOP_TRANSACTION_HINT}
      */
     public static Object create(Class p_intf, Prevayler p_prevayler)
     {
