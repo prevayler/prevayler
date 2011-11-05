@@ -27,8 +27,7 @@ public class Turn {
      * The next turn through the pipeline, allowed to flow only as far as this
      * turn has already gone.
      * 
-     * @throw IllegalStateException if this or any preceding turn has been
-     *        aborted.
+     * @throws IllegalStateException if this or any preceding turn has been aborted.
      */
     public synchronized Turn next() {
         if (_allowed < 0) {
@@ -44,8 +43,7 @@ public class Turn {
      * Start a stage in the pipeline. Will block until the preceding turn has
      * ended the same stage.
      * 
-     * @throw IllegalStateException if this or any preceding turn has been
-     *        aborted.
+     * @throws IllegalStateException if this or any preceding turn has been aborted.
      */
     public synchronized void start() {
         while (_allowed == 0) {
@@ -74,7 +72,7 @@ public class Turn {
      * Abort the pipeline. Prevents this or any following turn from continuing,
      * but doesn't affect preceding turns already further along in the pipeline.
      * 
-     * @throw IllegalStateException always, with the given message and cause.
+     * @throws IllegalStateException always, with the given message and cause.
      */
     public void abort(String message, Throwable cause) {
         Turn turn = this;
