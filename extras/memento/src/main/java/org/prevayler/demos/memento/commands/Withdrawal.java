@@ -24,13 +24,13 @@ public class Withdrawal extends MementoTransaction {
     this.amount = amount;
   }
   
-  protected void findObjects(Object prevalentSystem) throws Exception
+  protected void findObjects(Bank prevalentSystem) throws Exception
   {
     if (JOptionPane.showConfirmDialog(null, "Fail at Withdrawal::findObjects?", "Prevayler with rollback", JOptionPane.YES_NO_OPTION) == 0) {
       throw new RuntimeException();
     }
     
-    account = ((Bank)prevalentSystem).findAccount(accountNumber);
+    account = prevalentSystem.findAccount(accountNumber);
   }
 
   protected void checkPrecondition() throws Exception
@@ -53,7 +53,7 @@ public class Withdrawal extends MementoTransaction {
     account.createMemento(collector);
   }
 
-  protected Serializable execute(MementoCollector collector) throws Exception
+  protected Account execute(MementoCollector collector) throws Exception
   {
     if (JOptionPane.showConfirmDialog(null, "Fail at Withdrawal::execute?", "Prevayler with rollback", JOptionPane.YES_NO_OPTION) == 0) {
       throw new RuntimeException();

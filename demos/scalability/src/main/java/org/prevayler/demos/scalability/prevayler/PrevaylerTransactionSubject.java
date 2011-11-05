@@ -39,7 +39,7 @@ public class PrevaylerTransactionSubject extends PrevaylerScalabilitySubject {
 	}
 
 	private void initializePrevayler() throws Exception {
-		PrevaylerFactory factory = new PrevaylerFactory();
+		PrevaylerFactory<TransactionSystem> factory = new PrevaylerFactory<TransactionSystem>();
 		factory.configurePrevalentSystem(new TransactionSystem());
 		factory.configurePrevalenceDirectory(_journalDirectory);
 		factory.configureJournalSerializer("journal", (Serializer) Class.forName(_journalSerializer).newInstance());

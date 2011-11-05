@@ -19,7 +19,7 @@ import org.prevayler.foundation.FileManager;
 
 public class PersistenceTest extends FileIOTest {
 
-	private Prevayler _prevayler;
+	private Prevayler<AppendingSystem> _prevayler;
 	private String _prevalenceBase;
     
     public void tearDown() throws Exception {
@@ -302,7 +302,7 @@ public class PersistenceTest extends FileIOTest {
 
         if (_prevayler != null) _prevayler.close();
 
-        PrevaylerFactory factory = new PrevaylerFactory();
+        PrevaylerFactory<AppendingSystem> factory = new PrevaylerFactory<AppendingSystem>();
         factory.configurePrevalentSystem(new AppendingSystem());
         factory.configurePrevalenceDirectory(prevalenceBase());
         factory.configureTransactionFiltering(false);
@@ -332,7 +332,7 @@ public class PersistenceTest extends FileIOTest {
 
 
 	private AppendingSystem system() {
-		return (AppendingSystem)_prevayler.prevalentSystem();
+		return _prevayler.prevalentSystem();
 	}
 
 

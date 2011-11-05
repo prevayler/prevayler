@@ -6,16 +6,16 @@ import java.io.Serializable;
 import org.prevayler.Transaction;
 import org.prevayler.cluster.ClusteredPrevayler;
 
-class ClusteredTransaction implements Serializable {
-    private Transaction transaction;
+class ClusteredTransaction<P extends Serializable> implements Serializable {
+    private Transaction<P> transaction;
     private Date executionTime;
 
-    public ClusteredTransaction(Transaction transaction, Date executionTime) {
+    public ClusteredTransaction(Transaction<P> transaction, Date executionTime) {
         this.transaction = transaction;
         this.executionTime = executionTime;
     }
 
-    public Object executeOn(ClusteredPrevayler prevayler) {
+    public Object executeOn(ClusteredPrevayler<P> prevayler) {
         // TODO what about executionTime!
         System.out.println("Executing " + transaction);
         try {

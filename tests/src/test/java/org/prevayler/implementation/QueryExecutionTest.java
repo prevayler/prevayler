@@ -19,34 +19,34 @@ import org.prevayler.foundation.*;
 public class QueryExecutionTest extends FileIOTest {
 
 	public void testQuery() throws Exception {
-		List prevalentSystem = new LinkedList();
-		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler((Serializable)prevalentSystem);
-		Object result = prevayler.execute(query());
-		assertEquals(0, ((Integer)result).intValue());
+		LinkedList prevalentSystem = new LinkedList();
+		Prevayler<LinkedList> prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem);
+		Integer result = prevayler.execute(query());
+		assertEquals(0, result.intValue());
 	}
 
-	private static Query query() {
-		return new Query() {
-			public Object query(Object prevalentSystem, Date ignored) throws Exception {
-				return new Integer(((List)prevalentSystem).size());
+	private static Query<LinkedList,Integer> query() {
+		return new Query<LinkedList,Integer>() {
+			public Integer query(LinkedList prevalentSystem, Date ignored) throws Exception {
+				return new Integer(prevalentSystem.size());
 			}
 		};
 	}
 
 	public void testTransactionWithQuery() throws Exception {
-		List prevalentSystem = new LinkedList();
-		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler((Serializable)prevalentSystem);
-		Object result = prevayler.execute(transactionWithQuery());
+		LinkedList prevalentSystem = new LinkedList();
+		Prevayler<LinkedList> prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem);
+		String result = prevayler.execute(transactionWithQuery());
 		assertEquals("abc", result);
 		assertEquals("added element", prevalentSystem.get(0));
 	}
 
-	private static TransactionWithQuery transactionWithQuery() {
-		return new TransactionWithQuery() {
+	private static TransactionWithQuery<LinkedList,String> transactionWithQuery() {
+		return new TransactionWithQuery<LinkedList,String>() {
 			private static final long serialVersionUID = -2976662596936807721L;
 
-			public Object executeAndQuery(Object prevalentSystem, Date timestamp) {
-				((List)prevalentSystem).add("added element");
+			public String executeAndQuery(LinkedList prevalentSystem, Date timestamp) {
+				prevalentSystem.add("added element");
 				return "abc";
 			}
 		};

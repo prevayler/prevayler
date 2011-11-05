@@ -4,12 +4,13 @@
 
 package org.prevayler;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /** Represents a query that can be executed on a Prevalent System.
- * @see org.prevayler.Prevayler#execute(Query)
+ * @see org.prevayler.Prevayler#execute(Query<P,R>)
  */
-public interface Query {
+public interface Query<P extends Serializable,R> extends Serializable{
 	
 	/**
 	 * @param prevalentSystem The Prevalent System to be queried.
@@ -17,6 +18,6 @@ public interface Query {
 	 * @return The result of this Query.
 	 * @throws Exception Any Exception encountered by this Query.
 	 */
-	public Object query(Object prevalentSystem, Date executionTime) throws Exception;
+	public R query(P prevalentSystem, Date executionTime) throws Exception;
 
 }

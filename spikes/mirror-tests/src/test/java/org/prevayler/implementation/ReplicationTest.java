@@ -13,8 +13,8 @@ import org.prevayler.foundation.FileIOTest;
 
 public class ReplicationTest extends FileIOTest {
 
-	private Prevayler _server;
-	private Prevayler _client;
+	private Prevayler<AppendingSystem> _server;
+	private Prevayler<AppendingSystem> _client;
 
 	public void testServerFirst() throws Exception {
 		serverCrashRecover(0);
@@ -85,7 +85,7 @@ public class ReplicationTest extends FileIOTest {
 		append(_client, appendix, expectedResult);
 	}
 
-	private void append(Prevayler prevayler, String appendix, String expectedResult) {
+	private void append(Prevayler<AppendingSystem> prevayler, String appendix, String expectedResult) {
 		prevayler.execute(new Appendix(appendix));
 		Cool.sleep(10);
 		assertEquals(expectedResult, serverValue());
@@ -93,20 +93,20 @@ public class ReplicationTest extends FileIOTest {
 	}
 
 	private void serverCrashRecover(int portOffset) throws Exception {
-		PrevaylerFactory factory = factory("server");
+		PrevaylerFactory<AppendingSystem> factory = factory("server");
 		factory.configureReplicationServer(PrevaylerFactory.DEFAULT_REPLICATION_PORT + portOffset);
 		factory.configureTransientMode(true);
 		_server = factory.create();
 	}
 	
 	private void clientCrashRecover(int portOffset) throws Exception {
-		PrevaylerFactory factory = factory("client");
+		PrevaylerFactory<AppendingSystem> factory = factory("client");
 		factory.configureReplicationClient("localhost", PrevaylerFactory.DEFAULT_REPLICATION_PORT + portOffset);
 		_client = factory.create();
 	}
 
-    private PrevaylerFactory factory(String directory) {
-		PrevaylerFactory factory = new PrevaylerFactory();
+    private PrevaylerFactory<AppendingSystem> factory(String directory) {
+		PrevaylerFactory<AppendingSystem> factory = new PrevaylerFactory<AppendingSystem>();
 		factory.configurePrevalentSystem(new AppendingSystem());
 		factory.configurePrevalenceDirectory(_testDirectory + File.separator + directory);
 		return factory;
@@ -120,12 +120,12 @@ public class ReplicationTest extends FileIOTest {
     }
 
 	private String serverValue() {
-		return ((AppendingSystem)_server.prevalentSystem()).value();
+		return _server.prevalentSystem().value();
 	}
 
 	private String clientValue() {
 		Cool.sleep(100);  //The client is notified asynchronously.
-		return ((AppendingSystem)_client.prevalentSystem()).value();
+		return _client.prevalentSystem().value();
 	}
 
 }

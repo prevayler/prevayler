@@ -9,13 +9,13 @@ import java.util.Date;
 import org.prevayler.Transaction;
 
 
-class Appendix implements Transaction {
+class Appendix implements Transaction<AppendingSystem> {
 
 	private static final long serialVersionUID = 7925676108189989759L;
 	private final String appendix;
 	
-	public void executeOn(Object prevalentSystem, Date ignored) {
-		((AppendingSystem)prevalentSystem).append(appendix);
+	public void executeOn(AppendingSystem prevalentSystem, Date ignored) {
+		prevalentSystem.append(appendix);
 	}
 
 	Appendix(String appendix) {

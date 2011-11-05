@@ -18,17 +18,17 @@ public class PrevaylerFactoryTest extends FileIOTest {
 		};
 
 	public void testTransientPrevaylerCreation() {
-		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler(POJO);
+		Prevayler<Serializable> prevayler = PrevaylerFactory.createTransientPrevayler(POJO);
 		assertEquals(POJO, prevayler.prevalentSystem());
 	}
 
 	public void testSnapshotPrevaylerCreation() throws Exception {
-		Prevayler prevayler = PrevaylerFactory.createPrevayler(POJO, _testDirectory);
+		Prevayler<Serializable> prevayler = PrevaylerFactory.createPrevayler(POJO, _testDirectory);
 		assertEquals(POJO, prevayler.prevalentSystem());
 	}
 
 	public void testCheckpointPrevaylerCreation() {
-		Prevayler prevayler = PrevaylerFactory.createCheckpointPrevayler(POJO, _testDirectory);
+		Prevayler<Serializable> prevayler = PrevaylerFactory.createCheckpointPrevayler(POJO, _testDirectory);
 		assertEquals(POJO, prevayler.prevalentSystem());
 	}
 

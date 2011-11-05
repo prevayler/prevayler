@@ -28,13 +28,13 @@ public class Deposit extends MementoTransaction {
     this.amount = amount;
   }
   
-  protected void findObjects(Object prevalentSystem) throws Exception
+  protected void findObjects(Bank prevalentSystem) throws Exception
   {
     if (JOptionPane.showConfirmDialog(null, "Fail at Deposit::findObjects?", "Prevayler with rollback", JOptionPane.YES_NO_OPTION) == 0) {
       throw new RuntimeException();
     }
     
-    account = ((Bank)prevalentSystem).findAccount(accountNumber);
+    account = prevalentSystem.findAccount(accountNumber);
   }
 
   protected void checkPrecondition()
@@ -54,7 +54,7 @@ public class Deposit extends MementoTransaction {
     account.createMemento(collector);
   }
 
-  protected Serializable execute(MementoCollector collector) throws Exception
+  protected Account execute(MementoCollector collector) throws Exception
   {
     if (JOptionPane.showConfirmDialog(null, "Fail at Deposit::execute?", "Prevayler with rollback", JOptionPane.YES_NO_OPTION) == 0) {
       throw new RuntimeException();

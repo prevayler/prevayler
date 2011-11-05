@@ -30,13 +30,13 @@ public class TestErrorRecoveryWithMementos {
 		}
 	}
 	
-  private static Prevayler prevayler;
+  private static Prevayler<Bank> prevayler;
   private static Bank bank;
   
   static {
     try {
       prevayler = PrevaylerFactory.createPrevayler(new Bank(), "demoMemento");
-      bank = (Bank)prevayler.prevalentSystem();
+      bank = prevayler.prevalentSystem();
     } catch (Exception e) {
       System.out.println("FAILED TO CREATE PREVAYLER!");
     }
@@ -47,11 +47,11 @@ public class TestErrorRecoveryWithMementos {
     
     System.out.println("*** Creating account 1");
     MementoTransaction command = new AccountCreation("Owner 1");
-    account1 = (Account)execute(command);
+    account1 = execute(command);
     
     System.out.println("*** Creating account 2");
     command = new AccountCreation("Owner 2");
-    account2 = (Account)execute(command);
+    account2 = execute(command);
     
     System.out.println("*** Depositing 500 into account 1");
     command = new Deposit(account1, 500);
@@ -72,7 +72,7 @@ public class TestErrorRecoveryWithMementos {
     prevayler.takeSnapshot();
 	}
   
-  private static Object execute(MementoTransaction command) {
+  private static Account execute(MementoTransaction command) {
     try {
       return new MementoManagerCommand(command).executeAndQuery(prevayler.prevalentSystem(), prevayler.clock().time());
     } catch (Exception exception) {

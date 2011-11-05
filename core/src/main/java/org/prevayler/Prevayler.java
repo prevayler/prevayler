@@ -6,17 +6,18 @@ package org.prevayler;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 
 
 /** Implementations of this interface can provide transparent persistence and replication to all Business Objects in a Prevalent System. ALL operations that alter the observable state of the Prevalent System must be implemented as Transaction or TransactionWithQuery objects and must be executed using the Prevayler.execute(...) methods.
  * See the demo applications in org.prevayler.demos for examples.
  * @see PrevaylerFactory
  */
-public interface Prevayler {
+public interface Prevayler<P extends Serializable>{
 
-	/** Returns the Object which holds direct or indirect references to all other Business Objects in the system. 
+	/** Returns the object which holds direct or indirect references to all other Business Objects in the system. 
 	 */
-	public Object prevalentSystem();
+	public P prevalentSystem();
 
 	/** Returns the Clock used to determine the execution time of all Transaction and Queries executed using this Prevayler. This Clock is useful only to Communication Objects and must NOT be used by Transactions, Queries or Business Objects, since that would make them become non-deterministic. Instead, Transactions, Queries and Business Objects must use the executionTime parameter which is passed on their execution.
 	 */
@@ -26,14 +27,14 @@ public interface Prevayler {
 	 * Implementations of this interface can log the given Transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the prevalentSystem() for fault-tolerance and load-balancing purposes.
 	 * @see PrevaylerFactory
 	 */
-	public void execute(Transaction transaction);
+	public void execute(Transaction<P> transaction);
 
 	/** Executes the given sensitiveQuery on the prevalentSystem(). A sensitiveQuery is a Query that would be affected by the concurrent execution of a Transaction or other sensitiveQuery. This method synchronizes on the prevalentSystem() to execute the sensitiveQuery. It is therefore guaranteed that no other Transaction or sensitiveQuery is executed at the same time.
 	 * <br> Robust Queries (queries that do not affect other operations and that are not affected by them) can be executed directly as plain old method calls on the prevalentSystem() without the need of being implemented as Query objects. Examples of Robust Queries are queries that read the value of a single field or historical queries such as: "What was this account's balance at mid-night?".
 	 * @return The result returned by the execution of the sensitiveQuery on the prevalentSystem().
 	 * @throws Exception The Exception thrown by the execution of the sensitiveQuery on the prevalentSystem().
 	 */
-	public Object execute(Query sensitiveQuery) throws Exception;
+	public <R> R execute(Query<P,R> sensitiveQuery) throws Exception;
 
 	/** Executes the given transactionWithQuery on the prevalentSystem().
 	 * Implementations of this interface can log the given transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the prevalentSystem() for fault-tolerance and load-balancing purposes.
@@ -41,12 +42,12 @@ public interface Prevayler {
 	 * @throws Exception The Exception thrown by the execution of the sensitiveQuery on the prevalentSystem().
 	 * @see PrevaylerFactory
 	 */
-	public Object execute(TransactionWithQuery transactionWithQuery) throws Exception;
+	public <R> R execute(TransactionWithQuery<P,R> transactionWithQuery) throws Exception;
 
-	/** The same as execute(TransactionWithQuery) except no Exception is thrown.
+	/** The same as execute(TransactionWithQuery<P,R>) except no Exception is thrown.
 	 * @return The result returned by the execution of the sureTransactionWithQuery on the prevalentSystem().
 	 */
-	public Object execute(SureTransactionWithQuery sureTransactionWithQuery);
+	public <R> R execute(SureTransactionWithQuery<P,R> sureTransactionWithQuery);
 
 	/** Produces a complete serialized image of the underlying PrevalentSystem.
 	 * This will accelerate future system startups. Taking a snapshot once a day is enough for most applications.

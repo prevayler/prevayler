@@ -11,7 +11,7 @@ import org.prevayler.foundation.*;
 
 public class CheckpointTest extends FileIOTest {
 
-	private Prevayler _prevayler;
+	private Prevayler<AppendingSystem> _prevayler;
 
 	public void testCheckpoint() throws Exception {
 
@@ -69,7 +69,7 @@ public class CheckpointTest extends FileIOTest {
 
 
 	private AppendingSystem system() {
-		return (AppendingSystem)_prevayler.prevalentSystem();
+		return _prevayler.prevalentSystem();
 	}
 
 	private static void out(Object obj) {

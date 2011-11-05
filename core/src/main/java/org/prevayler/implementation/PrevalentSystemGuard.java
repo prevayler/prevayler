@@ -11,23 +11,24 @@ import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Date;
 
-public class PrevalentSystemGuard implements TransactionSubscriber {
+public class PrevalentSystemGuard<P extends Serializable> implements TransactionSubscriber {
 
-	private Object _prevalentSystem; // All access to field is synchronized on "this", and all access to object is synchronized on itself; "this" is always locked before the object
+	private P _prevalentSystem; // All access to field is synchronized on "this", and all access to object is synchronized on itself; "this" is always locked before the object
 	private long _systemVersion; // All access is synchronized on "this"
 	private boolean _ignoreRuntimeExceptions; // All access is synchronized on "this"
 	private final Serializer _journalSerializer;
 
-	public PrevalentSystemGuard(Object prevalentSystem, long systemVersion, Serializer journalSerializer) {
+	public PrevalentSystemGuard(P prevalentSystem, long systemVersion, Serializer journalSerializer) {
 		_prevalentSystem = prevalentSystem;
 		_systemVersion = systemVersion;
 		_ignoreRuntimeExceptions = false;
 		_journalSerializer = journalSerializer;
 	}
 
-	public Object prevalentSystem() {
+	public P prevalentSystem() {
         synchronized (this) {
             if (_prevalentSystem == null) {
                 throw new Error("Prevayler is no longer allowing access to the prevalent system due to an Error thrown from an earlier transaction.");
@@ -82,7 +83,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 		}
 	}
 
-	public Object executeQuery(Query sensitiveQuery, Clock clock) throws Exception {
+	public <R> R executeQuery(Query<P,R> sensitiveQuery, Clock clock) throws Exception {
         synchronized (this) {
             if (_prevalentSystem == null) {
                 throw new Error("Prevayler is no longer processing queries due to an Error thrown from an earlier transaction.");
@@ -94,7 +95,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
         }
 	}
 
-	public File takeSnapshot(GenericSnapshotManager snapshotManager) throws Exception {
+	public File takeSnapshot(GenericSnapshotManager<P> snapshotManager) throws Exception {
 		synchronized (this) {
             if (_prevalentSystem == null) {
                 throw new Error("Prevayler is no longer allowing snapshots due to an Error thrown from an earlier transaction.");
@@ -106,7 +107,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 		}
 	}
 
-	public PrevalentSystemGuard deepCopy(long systemVersion, Serializer snapshotSerializer) throws Exception {
+	public PrevalentSystemGuard<P> deepCopy(long systemVersion, Serializer snapshotSerializer) throws Exception {
 		synchronized (this) {
 			while (_systemVersion < systemVersion && _prevalentSystem != null) {
 				Cool.wait(this);
@@ -121,7 +122,7 @@ public class PrevalentSystemGuard implements TransactionSubscriber {
 			}
 
 			synchronized (_prevalentSystem) {
-				return new PrevalentSystemGuard(DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer);
+				return new PrevalentSystemGuard<P>((P)DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer);
 			}
 		}
 	}

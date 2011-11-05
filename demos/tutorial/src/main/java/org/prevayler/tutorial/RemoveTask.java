@@ -11,7 +11,7 @@ import java.util.Date;
 import org.prevayler.Transaction;
 
 // START SNIPPET: removetask
-public class RemoveTask implements Transaction {
+public class RemoveTask implements Transaction<TaskList> {
 
     private Task task;
 
@@ -19,9 +19,9 @@ public class RemoveTask implements Transaction {
         this.task = task;
     }
 
-    public void executeOn(Object prevalentSystem, Date executionTime) {
-        TaskList system = (TaskList) prevalentSystem;
-        system.removeTask(task);
+    public void executeOn(TaskList prevalentSystem, Date executionTime) {
+    	
+        prevalentSystem.removeTask(task);
     }
 }
 // END SNIPPET: removetask

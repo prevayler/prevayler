@@ -8,13 +8,13 @@ import org.prevayler.Prevayler;
  */
 class PrimeCalculator {
 
-	private final Prevayler _prevayler;
+	private final Prevayler<NumberKeeper> _prevayler;
 	private final NumberKeeper _numberKeeper;
 
 
-	PrimeCalculator(Prevayler prevayler) {
+	PrimeCalculator(Prevayler<NumberKeeper> prevayler) {
 		_prevayler = prevayler;
-		_numberKeeper = (NumberKeeper)prevayler.prevalentSystem();
+		_numberKeeper = prevayler.prevalentSystem();
 	}
 
 

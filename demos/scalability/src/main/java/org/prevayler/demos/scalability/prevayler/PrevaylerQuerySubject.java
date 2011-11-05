@@ -11,7 +11,7 @@ public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject {
 
 	public PrevaylerQuerySubject() throws Exception {
 		if (new File(PREVALENCE_BASE).exists()) PrevalenceTest.delete(PREVALENCE_BASE);
-		PrevaylerFactory factory = new PrevaylerFactory();
+		PrevaylerFactory<QuerySystem> factory = new PrevaylerFactory<QuerySystem>();
 		factory.configurePrevalentSystem(new QuerySystem());
 		factory.configurePrevalenceDirectory(PREVALENCE_BASE);
 		factory.configureTransactionFiltering(false);

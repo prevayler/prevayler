@@ -32,6 +32,7 @@
 
 package org.prevayler.contrib.facade;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Date;
 
@@ -47,7 +48,7 @@ import org.prevayler.Transaction;
  */
 public class ProxyTransaction
     extends AbstractProxy
-    implements Transaction
+    implements Transaction<Serializable>
 {
     private static final long serialVersionUID = -3720257876251185011L;
 
@@ -59,7 +60,7 @@ public class ProxyTransaction
         super(p_method, p_args, p_hint);
     }
 
-    public void executeOn(Object p_prevalentSystem, Date p_timestamp)
+    public void executeOn(Serializable p_prevalentSystem, Date p_timestamp)
     {
         try
         {

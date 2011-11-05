@@ -54,7 +54,7 @@ public class Main {
 
 		try {
 
-			Prevayler prevayler =
+			Prevayler<ProjectManagementSystem> prevayler =
 				PrevaylerFactory.createPrevayler(new ProjectManagementSystem(), "demoJXPath");
 
 			if (args.length < 1) {

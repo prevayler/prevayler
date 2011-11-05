@@ -4,7 +4,7 @@ import org.prevayler.TransactionWithQuery;
 
 import java.util.Date;
 
-public class AppendTransactionWithQuery implements TransactionWithQuery {
+public class AppendTransactionWithQuery implements TransactionWithQuery<StringBuffer,String> {
 
 	private static final long serialVersionUID = 7725358482908916942L;
 	public String toAdd;
@@ -17,10 +17,10 @@ public class AppendTransactionWithQuery implements TransactionWithQuery {
 		this.toAdd = toAdd;
 	}
 
-	public Object executeAndQuery(Object prevalentSystem, Date executionTime) throws Exception {
-		StringBuffer system = (StringBuffer) prevalentSystem;
-		system.append(toAdd);
-		return system.toString();
+	public String executeAndQuery(StringBuffer prevalentSystem, Date executionTime) throws Exception {
+		
+		prevalentSystem.append(toAdd);
+		return prevalentSystem.toString();
 	}
 
 }
