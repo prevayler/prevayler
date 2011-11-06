@@ -12,8 +12,12 @@ import java.util.Date;
 public abstract class Capsule implements Serializable {
 
 	private final byte[] _serialized;
-
-	protected Capsule(Object transaction, Serializer journalSerializer) {
+	private transient Object _transaction;
+	
+	protected Capsule(Object transaction, Serializer journalSerializer, boolean deserializeThenExecuteMode) {
+		if(deserializeThenExecuteMode==false){
+			_transaction=transaction;
+		}
 		try {
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 			journalSerializer.writeObject(bytes, transaction);
@@ -28,14 +32,14 @@ public abstract class Capsule implements Serializable {
 	}
 
 	/**
-	 * Get the serialized representation of the transaction. Callers must not modify the returned array.
+	 * Gets the serialized representation of the transaction. Callers must not modify the returned array.
 	 */
 	public byte[] serialized() {
 		return _serialized;
 	}
 
 	/**
-	 * Deserialize the contained Transaction or TransactionWithQuery.
+	 * Deserializes the contained Transaction or TransactionWithQuery.
 	 */
 	public Object deserialize(Serializer journalSerializer) {
 		try {
@@ -46,25 +50,30 @@ public abstract class Capsule implements Serializable {
 	}
 
 	/**
-	 * Execute a freshly deserialized copy of the transaction. This method will synchronize on the prevalentSystem
-	 * while running the transaction but after deserializing it.
+	 * Executes a freshly deserialized copy of the transaction by default. If <code>configureCopyBeforeExecute</code> was called on the <code>PrevaylerFactory</code> with a value of </code>true</code>, this will execute the transaction directly. The execution will synchronize on the prevalentSystem.
 	 */
 	public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer) {
-		Object transaction = deserialize(journalSerializer);
-
+		Object transaction;
+		if(_transaction!=null){
+			transaction=_transaction;
+		}
+		else{
+			transaction = deserialize(journalSerializer);
+		}
+		
 		synchronized (prevalentSystem) {
 			justExecute(transaction, prevalentSystem, executionTime);
 		}
 	}
 
 	/**
-	 * Actually execute the Transaction or TransactionWithQuery. The caller
+	 * Actually executes the Transaction or TransactionWithQuery. The caller
 	 * is responsible for synchronizing on the prevalentSystem.
 	 */
 	protected abstract void justExecute(Object transaction, Object prevalentSystem, Date executionTime);
 		
 	/**
-	 * Make a clean copy of this capsule that will have its own query result fields.
+	 * Makes a clean copy of this capsule that will have its own query result fields.
 	 */
 	public abstract Capsule cleanCopy();
 

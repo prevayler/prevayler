@@ -44,6 +44,7 @@ public class PrevaylerFactory<P extends Serializable>{
 	private P _prevalentSystem;
 	private Clock _clock;
 
+	private boolean _deserializeThenExecuteMode = true;
 	private boolean _transactionFiltering = true;
 
 	private boolean _transientMode;
@@ -194,7 +195,20 @@ public class PrevaylerFactory<P extends Serializable>{
 	private void configureNullSnapshotManager(NullSnapshotManager<P> snapshotManager) {
 		_nullSnapshotManager = snapshotManager;
 	}
-
+	
+	
+	/**
+	 * Configures whether transactions behave like Java methods with respect to objects passed in, or execute a deserialized copy
+	 * 
+	 * @param copyBeforeExecuteMode
+	 * 
+	 * <code>false</code> - allows ordinary Java method behaviour with respect to objects passed in to transactions. If their contents are changed inside the transaction, this is reflected in the application calling it, as with Java methods. However, neither the baptism problem, nor the use of reference equality with the objects passed in, fail inside the transaction as they would upon recovery. Use with this in mind.
+	 * <code>true</code> - a deserialized copy of the transaction is carried out each time. This allows the baptism problem and the use of reference equality with the objects passed in to fail inside transactions as they would upon recovery. However, changes to contents of objects passed in are not reflected in the application calling it, as they do with Java methods, since they are only copies of those objects. This is the default setting.
+	 * 
+	 */
+	public void configureDeserializeThenExecute(boolean deserializeThenExecuteMode){
+		_deserializeThenExecuteMode = deserializeThenExecuteMode;
+	}
 
 	/** Determines whether the Prevayler created by this factory should filter out all Transactions that would throw a RuntimeException or Error if executed on the Prevalent System (default is true). This requires enough RAM to hold another copy of the prevalent system.
 	 */
@@ -292,7 +306,7 @@ public class PrevaylerFactory<P extends Serializable>{
 		GenericSnapshotManager<P> snapshotManager = snapshotManager();
 		TransactionPublisher publisher = publisher(snapshotManager);
 		if (_serverPort != -1) new ServerListener(publisher, new OldNetworkImpl(), _serverPort);
-		return new PrevaylerImpl<P>(snapshotManager, publisher, journalSerializer());
+		return new PrevaylerImpl<P>(snapshotManager, publisher, journalSerializer(), _deserializeThenExecuteMode);
 	}
 
 

@@ -10,8 +10,8 @@ class TransactionCapsule<P extends Serializable> extends Capsule{
 
 	private static final long serialVersionUID = 3283271592697928351L;
 
-	public TransactionCapsule(Transaction<P> transaction, Serializer journalSerializer) {
-		super(transaction, journalSerializer);
+	public TransactionCapsule(Transaction<P> transaction, Serializer journalSerializer, boolean copyBeforeExecuteMode) {
+		super(transaction, journalSerializer, copyBeforeExecuteMode);
 	}
 
 	public TransactionCapsule(byte[] serialized) {

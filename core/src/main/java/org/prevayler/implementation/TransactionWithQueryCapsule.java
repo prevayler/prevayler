@@ -12,8 +12,8 @@ class TransactionWithQueryCapsule<P extends Serializable,R> extends Capsule{
 	private transient R _queryResult;
 	private transient Exception _queryException;
 
-	public TransactionWithQueryCapsule(TransactionWithQuery<P,R> transactionWithQuery, Serializer journalSerializer) {
-		super(transactionWithQuery, journalSerializer);
+	public TransactionWithQueryCapsule(TransactionWithQuery<P,R> transactionWithQuery, Serializer journalSerializer, boolean copyBeforeExecuteMode) {
+		super(transactionWithQuery, journalSerializer, copyBeforeExecuteMode);
 	}
 
 	public TransactionWithQueryCapsule(byte[] serialized) {
