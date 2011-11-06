@@ -1,9 +1,9 @@
 Thanks to Prevayler contributors:
 	
-	Naveen Chawla
 	Aleksey Aristov
 	Eric Bridgwater
 	Toby Cabot
+	Naveen Chawla
 	Peter Haig
 	Hans Haggstrom
 	Tobias Hill

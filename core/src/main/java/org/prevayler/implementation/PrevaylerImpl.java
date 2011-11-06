@@ -36,7 +36,6 @@ public class PrevaylerImpl<P extends Serializable> implements Prevayler<P>{
 	 * 
 	 * @param snapshotManager The SnapshotManager that will be used for reading and writing snapshot files.
 	 * @param transactionPublisher The TransactionPublisher that will be used for publishing transactions executed with this PrevaylerImpl.
-	 * @param prevaylerMonitor The Monitor that will be used to monitor interesting calls to this PrevaylerImpl.
 	 * @param journalSerializer
 	 */
 	public PrevaylerImpl(GenericSnapshotManager<P> snapshotManager, TransactionPublisher transactionPublisher,

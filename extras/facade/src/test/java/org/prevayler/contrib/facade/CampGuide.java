@@ -32,13 +32,14 @@
 
 package org.prevayler.contrib.facade;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
 /**
  * @author Jacob Kjome [hoju@visi.com]
  */
-public interface CampGuide {
+public interface CampGuide extends Serializable {
     /**
      * Adds the given camp site to this camp guide
      */
