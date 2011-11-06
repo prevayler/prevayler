@@ -12,7 +12,7 @@ import org.prevayler.implementation.PrevalentSystemGuard;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
-public class StrictTransactionCensor<P extends Serializable> implements TransactionCensor {
+public class StrictTransactionCensor<P> implements TransactionCensor {
 
 	private final PrevalentSystemGuard<P> _king;
 	private PrevalentSystemGuard<P> _royalFoodTaster;

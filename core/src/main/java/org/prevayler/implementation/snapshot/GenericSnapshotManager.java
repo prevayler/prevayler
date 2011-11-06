@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
-public class GenericSnapshotManager<P extends Serializable>{
+public class GenericSnapshotManager<P>{
 
 	private Map _strategies;
 	private String _primarySuffix;

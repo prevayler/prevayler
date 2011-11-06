@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 
-public class PrevalentSystemGuard<P extends Serializable> implements TransactionSubscriber {
+public class PrevalentSystemGuard<P> implements TransactionSubscriber {
 
 	private P _prevalentSystem; // All access to field is synchronized on "this", and all access to object is synchronized on itself; "this" is always locked before the object
 	private long _systemVersion; // All access is synchronized on "this"

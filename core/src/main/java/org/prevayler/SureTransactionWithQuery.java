@@ -10,7 +10,7 @@ import java.util.Date;
 /** The same as TransactionWithQuery except it does not throw Exception when executed.
  * @see TransactionWithQuery
  */
-public interface SureTransactionWithQuery<P extends Serializable,R> extends TransactionWithQuery<P,R>{
+public interface SureTransactionWithQuery<P,R> extends TransactionWithQuery<P,R>{
 
 	/** The same as TransactionWithQuery.executeAndQuery(P, Date) except it does not throw Exception when executed.
 	 * @see TransactionWithQuery#executeAndQuery(P, Date)

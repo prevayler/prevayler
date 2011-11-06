@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
-public class NullSnapshotManager<P extends Serializable> extends GenericSnapshotManager<P>{
+public class NullSnapshotManager<P> extends GenericSnapshotManager<P>{
 
 	private final String _snapshotAttemptErrorMessage;
 

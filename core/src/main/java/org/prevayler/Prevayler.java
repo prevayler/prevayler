@@ -13,7 +13,7 @@ import java.io.Serializable;
  * See the demo applications in org.prevayler.demos for examples.
  * @see org.prevayler.PrevaylerFactory
  */
-public interface Prevayler<P extends Serializable>{
+public interface Prevayler<P>{
 
 	/** Returns the object which holds direct or indirect references to all other Business Objects in the system. 
 	 */

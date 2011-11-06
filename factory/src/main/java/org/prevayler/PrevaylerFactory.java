@@ -39,7 +39,7 @@ import org.prevayler.implementation.snapshot.NullSnapshotManager;
  * <br>Also by default, the Prevayler instances created by this class will filter out all Transactions that would throw a RuntimeException or Error if executed on the Prevalent System. This requires enough RAM to hold another copy of the prevalent system. 
  * @see Prevayler 
  */
-public class PrevaylerFactory<P extends Serializable>{
+public class PrevaylerFactory<P>{
 
 	private P _prevalentSystem;
 	private Clock _clock;
@@ -71,7 +71,7 @@ public class PrevaylerFactory<P extends Serializable>{
 	/** Creates a Prevayler that will use a directory called "PrevalenceBase" under the current directory to read and write its .snapshot and .journal files.
  	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 */
-	public static <P extends Serializable> Prevayler<P> createPrevayler(P newPrevalentSystem) throws Exception {
+	public static <P> Prevayler<P> createPrevayler(P newPrevalentSystem) throws Exception {
 		return createPrevayler(newPrevalentSystem, "PrevalenceBase");
 	}
 
@@ -80,7 +80,7 @@ public class PrevaylerFactory<P extends Serializable>{
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 * @param prevalenceBase The directory where the .snapshot files and .journal files will be read and written.
 	 */
-	public static <P extends Serializable> Prevayler<P> createPrevayler(P newPrevalentSystem, String prevalenceBase) throws Exception {
+	public static <P> Prevayler<P> createPrevayler(P newPrevalentSystem, String prevalenceBase) throws Exception {
 		PrevaylerFactory<P> factory = new PrevaylerFactory<P>();
 		factory.configurePrevalentSystem(newPrevalentSystem);
 		factory.configurePrevalenceDirectory(prevalenceBase);
@@ -94,7 +94,7 @@ public class PrevaylerFactory<P extends Serializable>{
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system.
 	 * @see #createCheckpointPrevayler(Serializable newPrevalentSystem, String snapshotDirectory)
 	 */
-	public static <P extends Serializable> Prevayler<P> createTransientPrevayler(P newPrevalentSystem) {
+	public static <P> Prevayler<P> createTransientPrevayler(P newPrevalentSystem) {
 		PrevaylerFactory<P> factory = new PrevaylerFactory<P>();
 		factory.configurePrevalentSystem(newPrevalentSystem);
 		factory.configureNullSnapshotManager(new NullSnapshotManager<P>(newPrevalentSystem, "Transient Prevaylers are unable to take snapshots."));
@@ -110,7 +110,7 @@ public class PrevaylerFactory<P extends Serializable>{
 
 	/** @deprecated Use createCheckpointPrevayler() instead of this method. Deprecated since Prevayler2.00.001.
 	 */
-	public static <P extends Serializable> Prevayler<P> createTransientPrevayler(P newPrevalentSystem, String snapshotDirectory) {
+	public static <P> Prevayler<P> createTransientPrevayler(P newPrevalentSystem, String snapshotDirectory) {
 		return createCheckpointPrevayler(newPrevalentSystem, snapshotDirectory);
 	}
 
@@ -118,7 +118,7 @@ public class PrevaylerFactory<P extends Serializable>{
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 * @param snapshotDirectory The directory where the .snapshot files will be read and written.
 	 */
-	public static <P extends Serializable> Prevayler<P> createCheckpointPrevayler(P newPrevalentSystem, String snapshotDirectory) {
+	public static <P> Prevayler<P> createCheckpointPrevayler(P newPrevalentSystem, String snapshotDirectory) {
 		PrevaylerFactory<P> factory = new PrevaylerFactory<P>();
 		factory.configurePrevalentSystem(newPrevalentSystem);
 		factory.configurePrevalenceDirectory(snapshotDirectory);

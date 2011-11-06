@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
-public class PrevaylerImpl<P extends Serializable> implements Prevayler<P>{
+public class PrevaylerImpl<P> implements Prevayler<P>{
 
 	private final PrevalentSystemGuard<P> _guard;
 	private final Clock _clock;

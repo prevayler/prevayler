@@ -7,7 +7,7 @@ import org.prevayler.Query;
 
 public class NullQuery implements Query {
 
-	public Object query(Serializable prevalentSystem, Date executionTime) throws Exception {
+	public Object query(Object prevalentSystem, Date executionTime) throws Exception {
 		return null;
 	}
 

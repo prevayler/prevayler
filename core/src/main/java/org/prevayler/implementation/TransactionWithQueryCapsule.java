@@ -6,7 +6,7 @@ import org.prevayler.foundation.serialization.Serializer;
 import java.io.Serializable;
 import java.util.Date;
 
-class TransactionWithQueryCapsule<P extends Serializable,R> extends Capsule{
+class TransactionWithQueryCapsule<P,R> extends Capsule{
 
 	private static final long serialVersionUID = 78811627002206298L;
 	private transient R _queryResult;
