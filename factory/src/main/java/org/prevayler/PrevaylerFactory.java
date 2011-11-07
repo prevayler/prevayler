@@ -207,9 +207,9 @@ public class PrevaylerFactory<P>{
 	 * 
 	 * @param transactionDeepCopyMode
 	 * <br><br>
-	 * <code>false</code> - references passed in to transactions are copied naturally, as they are during ordinary Java method calls, allowing their underlying objects to be changed inside transactions. However, any unrecoverable changes to the prevalent system and unrecoverable uses of reference equality inside transactions will not fail as they would upon attempted recovery. Use with this in mind.
+	 * <code>false</code> - references passed in to transactions are copied naturally, as they are during ordinary Java method calls, allowing their underlying objects to be changed inside transactions. However, any unrecoverable changes to the prevalent system and unrecoverable uses of reference equality inside transactions will not fail as they would during recovery. Use with this in mind.
 	 * <br><br>
-	 * <code>true</code> - a deserialized copy of the transaction is carried out each time. This allows unrecoverable changes to the prevalent system and unrecoverable uses of reference equality inside transactions to fail as they would upon attempted recovery. However, it only allows changes to deserialized copies of objects passed in, not the original objects. This is the default setting.
+	 * <code>true</code> - a deserialized copy of the transaction is carried out each time. This allows any unrecoverable changes to the prevalent system and unrecoverable uses of reference equality inside transactions to fail as they would during recovery. However, it only allows changes to deserialized copies of objects passed in, not the original objects. This is the default setting.
 	 * 
 	 */
 	public void configureTransactionDeepCopy(boolean transactionDeepCopyMode){
