@@ -60,7 +60,7 @@ public class PrevaylerImpl<P> implements Prevayler<P>{
 	public Clock clock() { return _clock; }
 
 
-	public void execute(Transaction<P> transaction) {
+	public void execute(Transaction<? super P> transaction) {
         publish(new TransactionCapsule<P>(transaction, _journalSerializer, _deserializeThenExecuteMode));    //TODO Optimization: The Censor can use the actual given transaction if it is Immutable instead of deserializing a new one from the byte array, even if "_deserializeThenExecuteMode" is "true"
 	}
 
@@ -70,21 +70,21 @@ public class PrevaylerImpl<P> implements Prevayler<P>{
 	}
 
 
-	public <R> R execute(Query<P,R> sensitiveQuery) throws Exception {
+	public <R> R execute(Query<? super P,R> sensitiveQuery) throws Exception {
 		return _guard.executeQuery(sensitiveQuery, clock());
 	}
 
 
-	public <R> R execute(TransactionWithQuery<P,R> transactionWithQuery) throws Exception {
-		TransactionWithQueryCapsule<P,R> capsule = new TransactionWithQueryCapsule<P,R>(transactionWithQuery, _journalSerializer, _deserializeThenExecuteMode);
+	public <R> R execute(TransactionWithQuery<? super P,R> transactionWithQuery) throws Exception {
+		TransactionWithQueryCapsule<? super P,R> capsule = new TransactionWithQueryCapsule<P,R>(transactionWithQuery, _journalSerializer, _deserializeThenExecuteMode);
 		publish(capsule);
 		return capsule.result();
 	}
 
 
-	public <R> R execute(SureTransactionWithQuery<P,R> sureTransactionWithQuery) {
+	public <R> R execute(SureTransactionWithQuery<? super P,R> sureTransactionWithQuery) {
 		try {
-			return execute((TransactionWithQuery<P,R>)sureTransactionWithQuery);
+			return execute((TransactionWithQuery<? super P,R>)sureTransactionWithQuery);
 		} catch (RuntimeException runtime) {
 			throw runtime;
 		} catch (Exception checked) {

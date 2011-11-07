@@ -27,14 +27,14 @@ public interface Prevayler<P>{
 	 * Implementations of this interface can log the given Transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the prevalentSystem() for fault-tolerance and load-balancing purposes.
 	 * @see org.prevayler.PrevaylerFactory
 	 */
-	public void execute(Transaction<P> transaction);
+	public void execute(Transaction<? super P> transaction);
 
 	/** Executes the given sensitiveQuery on the prevalentSystem(). A sensitiveQuery is a Query that would be affected by the concurrent execution of a Transaction or other sensitiveQuery. This method synchronizes on the prevalentSystem() to execute the sensitiveQuery. It is therefore guaranteed that no other Transaction or sensitiveQuery is executed at the same time.
 	 * <br> Robust Queries (queries that do not affect other operations and that are not affected by them) can be executed directly as plain old method calls on the prevalentSystem() without the need of being implemented as Query objects. Examples of Robust Queries are queries that read the value of a single field or historical queries such as: "What was this account's balance at mid-night?".
 	 * @return The result returned by the execution of the sensitiveQuery on the prevalentSystem().
 	 * @throws Exception The Exception thrown by the execution of the sensitiveQuery on the prevalentSystem().
 	 */
-	public <R> R execute(Query<P,R> sensitiveQuery) throws Exception;
+	public <R> R execute(Query<? super P,R> sensitiveQuery) throws Exception;
 
 	/** Executes the given transactionWithQuery on the prevalentSystem().
 	 * Implementations of this interface can log the given transaction for crash or shutdown recovery, for example, or execute it remotely on replicas of the prevalentSystem() for fault-tolerance and load-balancing purposes.
@@ -42,12 +42,12 @@ public interface Prevayler<P>{
 	 * @throws Exception The Exception thrown by the execution of the sensitiveQuery on the prevalentSystem().
 	 * @see org.prevayler.PrevaylerFactory
 	 */
-	public <R> R execute(TransactionWithQuery<P,R> transactionWithQuery) throws Exception;
+	public <R> R execute(TransactionWithQuery<? super P,R> transactionWithQuery) throws Exception;
 
 	/** The same as execute(TransactionWithQuery<P,R>) except no Exception is thrown.
 	 * @return The result returned by the execution of the sureTransactionWithQuery on the prevalentSystem().
 	 */
-	public <R> R execute(SureTransactionWithQuery<P,R> sureTransactionWithQuery);
+	public <R> R execute(SureTransactionWithQuery<? super P,R> sureTransactionWithQuery);
 
 	/** Produces a complete serialized image of the underlying PrevalentSystem.
 	 * This will accelerate future system startups. Taking a snapshot once a day is enough for most applications.
