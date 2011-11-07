@@ -15,7 +15,7 @@ work.
 Updated demo code shows the type-safe usage.
 
 -------------------------------------
-Transactions can be executed directly
+Transactions can now be executed directly
 
 Transactions can now allow references passed in to be copied naturally, 
 allowing their contents to change, as with Java methods. Previous versions 
@@ -23,16 +23,12 @@ only allowed a deserialized copy to be executed.
 
 Activated via:
 
-PrevaylerFactory<Something> p = new PrevaylerFactory<Something>;
-//...
-p.configureDeserializeThenExecute(false); //this line does it
-//...
-Prevayler<Something> prevayler = p.create();
+PrevaylerFactory#configureDeserializeThenExecute(false);
 
 It preserves the same transaction filtering and writing to disk before
 execution. However, unrecoverable changes and unrecoverable uses of reference 
 equality do not fail inside the transaction as they would upon recovery, as they 
-do with the deserialize-then-execute behaviour, which is still the default.
+do when this is "true", which is the default setting.
 
 
 ===========================================
