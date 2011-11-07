@@ -203,11 +203,11 @@ public class PrevaylerFactory<P>{
 	}
 
 	/**
-	 * Configures whether deserialized copies of transactions are executed instead of transactions themselves upon calling ".execute" on your Prevayler. The default is <code>true</code>
+	 * Configures whether deserialized copies of transactions are executed instead of the transactions themselves, upon calling ".execute" on your Prevayler. The default is <code>true</code>.
 	 * 
 	 * @param deserializeThenExecuteMode
 	 * 
-	 * <code>false</code> - references passed in are copied naturally, allowing changes to their contents to be reflected in the calling scope, as with Java methods. However, neither unrecoverable changes to the prevalent system nor unrecoverable uses of reference equality inside transaction fail as they would upon recovery. Use with this in mind.
+	 * <code>false</code> - references passed in are copied naturally, allowing changes to their contents to be reflected in the calling scope, as with Java methods. However, neither unrecoverable changes to the prevalent system nor unrecoverable uses of reference equality inside transactions fail as they would upon recovery. Use with this in mind.
 	 * <code>true</code> - a deserialized copy of the transaction is carried out each time. This allows unrecoverable changes to the prevalent system and unrecoverable uses of reference equality inside transactions to fail as they would upon recovery. However, changes to contents of references passed in are not reflected in the calling scope, as they would be with Java methods. This is the default setting.
 	 * 
 	 */

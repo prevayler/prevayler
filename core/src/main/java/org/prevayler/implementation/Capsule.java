@@ -12,11 +12,11 @@ import java.util.Date;
 public abstract class Capsule implements Serializable {
 
 	private final byte[] _serialized;
-	private transient Object _transaction;
+	private transient Object _transaction = null;
 	
 	protected Capsule(Object transaction, Serializer journalSerializer, boolean deserializeThenExecuteMode) {
-		if(deserializeThenExecuteMode==false){
-			_transaction=transaction;
+		if(deserializeThenExecuteMode == false){
+			_transaction = transaction;
 		}
 		try {
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -50,15 +50,15 @@ public abstract class Capsule implements Serializable {
 	}
 
 	/**
-	 * Executes a freshly deserialized copy of the transaction by default. If <code>configureCopyBeforeExecute</code> was called on the <code>PrevaylerFactory</code> with a value of </code>true</code>, this will execute the transaction directly. The execution will synchronize on the prevalentSystem.
+	 * Executes a freshly deserialized copy of the transaction if this is being called via the royal food taster or if <code>configureDeserializeThenExecute</code> wasn't set to <code>false</code> on your <code>PrevaylerFactory</code>. Otherwise, this will execute the transaction directly. The execution will synchronize on the prevalentSystem.
 	 */
 	public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer, boolean guaranteeDeserializeThenExecute) {
 		Object transaction;
-		if(guaranteeDeserializeThenExecute||_transaction==null){
+		if(guaranteeDeserializeThenExecute || _transaction == null){
 			transaction = deserialize(journalSerializer);
 		}
 		else{
-			transaction=_transaction;
+			transaction = _transaction;
 		}
 		
 		synchronized (prevalentSystem) {
