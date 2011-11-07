@@ -14,7 +14,7 @@ work.
 
 Updated demo code shows the type-safe usage.
 
--------------------------------------
+-----------------------------------------
 Transactions can now be executed directly
 
 Transactions can now allow references passed in to be copied naturally, 
