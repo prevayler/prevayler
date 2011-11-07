@@ -24,7 +24,7 @@ executed.
 
 Activated via:
 
-PrevaylerFactory#configureDeserializeThenExecute(false);
+PrevaylerFactory#configureTransactionDeepCopy(false);
 
 It preserves the same transaction filtering and writing to disk before
 execution. However, unrecoverable changes and unrecoverable uses of reference 

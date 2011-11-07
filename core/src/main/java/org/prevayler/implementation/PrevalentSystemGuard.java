@@ -20,7 +20,7 @@ public class PrevalentSystemGuard<P> implements TransactionSubscriber {
 	private long _systemVersion; // All access is synchronized on "this"
 	private boolean _ignoreRuntimeExceptions; // All access is synchronized on "this"
 	private final Serializer _journalSerializer;
-	private boolean _guaranteeDeserializeThenExecute;
+	private boolean _guaranteeTransactionDeepCopy;
 	
 	public PrevalentSystemGuard(P prevalentSystem, long systemVersion, Serializer journalSerializer) {
 		_prevalentSystem = prevalentSystem;
@@ -38,8 +38,8 @@ public class PrevalentSystemGuard<P> implements TransactionSubscriber {
         }
 	}
 
-	public void guaranteeDeserializeThenExecute(){
-		_guaranteeDeserializeThenExecute=true;
+	public void guaranteeTransactionDeepCopy(){
+		_guaranteeTransactionDeepCopy=true;
 	}
 	
 	public void subscribeTo(TransactionPublisher publisher) throws IOException, ClassNotFoundException {
@@ -76,7 +76,7 @@ public class PrevalentSystemGuard<P> implements TransactionSubscriber {
 			try {
 				// Don't synchronize on _prevalentSystem here so that the capsule can deserialize a fresh
 				// copy of the transaction without blocking queries.
-				capsule.executeOn(_prevalentSystem, executionTime, _journalSerializer, _guaranteeDeserializeThenExecute);				
+				capsule.executeOn(_prevalentSystem, executionTime, _journalSerializer, _guaranteeTransactionDeepCopy);				
 			} catch (RuntimeException rx) {
 				if (!_ignoreRuntimeExceptions) throw rx;  //TODO Guarantee that transactions received from pending transaction recovery don't ever throw RuntimeExceptions. Maybe use a wrapper for that.
             } catch (Error error) {

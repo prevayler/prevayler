@@ -12,8 +12,8 @@ class TransactionWithQueryCapsule<P,R> extends Capsule{
 	private transient R _queryResult;
 	private transient Exception _queryException;
 
-	public TransactionWithQueryCapsule(TransactionWithQuery<? super P,R> transactionWithQuery, Serializer journalSerializer, boolean copyBeforeExecuteMode) {
-		super(transactionWithQuery, journalSerializer, copyBeforeExecuteMode);
+	public TransactionWithQueryCapsule(TransactionWithQuery<? super P,R> transactionWithQuery, Serializer journalSerializer, boolean transactionDeepCopyMode) {
+		super(transactionWithQuery, journalSerializer, transactionDeepCopyMode);
 	}
 
 	public TransactionWithQueryCapsule(byte[] serialized) {

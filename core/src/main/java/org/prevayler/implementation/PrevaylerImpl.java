@@ -29,7 +29,7 @@ public class PrevaylerImpl<P> implements Prevayler<P>{
 
 	private final Serializer _journalSerializer;
 	
-	private boolean _deserializeThenExecuteMode;
+	private boolean _transactionDeepCopyMode;
 
 
 	/** Creates a new Prevayler
@@ -39,7 +39,7 @@ public class PrevaylerImpl<P> implements Prevayler<P>{
 	 * @param journalSerializer
 	 */
 	public PrevaylerImpl(GenericSnapshotManager<P> snapshotManager, TransactionPublisher transactionPublisher,
-						 Serializer journalSerializer, boolean deserializeThenExecuteMode) throws IOException, ClassNotFoundException {
+						 Serializer journalSerializer, boolean transactionDeepCopyMode) throws IOException, ClassNotFoundException {
 		_snapshotManager = snapshotManager;
 
 		_guard = _snapshotManager.recoveredPrevalentSystem();
@@ -51,7 +51,7 @@ public class PrevaylerImpl<P> implements Prevayler<P>{
 
 		_journalSerializer = journalSerializer;
 		
-		_deserializeThenExecuteMode = deserializeThenExecuteMode;
+		_transactionDeepCopyMode = transactionDeepCopyMode;
 	}
 
 	public P prevalentSystem() { return _guard.prevalentSystem(); }
@@ -61,7 +61,7 @@ public class PrevaylerImpl<P> implements Prevayler<P>{
 
 
 	public void execute(Transaction<? super P> transaction) {
-        publish(new TransactionCapsule<P>(transaction, _journalSerializer, _deserializeThenExecuteMode));    //TODO Optimization: The Censor can use the actual given transaction if it is Immutable instead of deserializing a new one from the byte array, even if "_deserializeThenExecuteMode" is "true"
+        publish(new TransactionCapsule<P>(transaction, _journalSerializer, _transactionDeepCopyMode));    //TODO Optimization: The Censor can use the actual given transaction if it is Immutable instead of deserializing a new one from the byte array, even if "_transactionDeepCopyMode" is "true"
 	}
 
 
@@ -76,7 +76,7 @@ public class PrevaylerImpl<P> implements Prevayler<P>{
 
 
 	public <R> R execute(TransactionWithQuery<? super P,R> transactionWithQuery) throws Exception {
-		TransactionWithQueryCapsule<? super P,R> capsule = new TransactionWithQueryCapsule<P,R>(transactionWithQuery, _journalSerializer, _deserializeThenExecuteMode);
+		TransactionWithQueryCapsule<? super P,R> capsule = new TransactionWithQueryCapsule<P,R>(transactionWithQuery, _journalSerializer, _transactionDeepCopyMode);
 		publish(capsule);
 		return capsule.result();
 	}

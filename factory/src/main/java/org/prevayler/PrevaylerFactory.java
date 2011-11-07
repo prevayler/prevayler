@@ -44,7 +44,7 @@ public class PrevaylerFactory<P>{
 	private P _prevalentSystem;
 	private Clock _clock;
 
-	private boolean _deserializeThenExecuteMode = true;
+	private boolean _transactionDeepCopyMode = true;
 	private boolean _transactionFiltering = true;
 
 	private boolean _transientMode;
@@ -205,14 +205,14 @@ public class PrevaylerFactory<P>{
 	/**
 	 * Configures whether deserialized copies of transactions are executed instead of the transactions themselves, upon calling ".execute" on your Prevayler. The default is <code>true</code>.
 	 * 
-	 * @param deserializeThenExecuteMode
+	 * @param transactionDeepCopyMode
 	 * 
 	 * <code>false</code> - references passed in are copied naturally, allowing changes to their contents to be reflected in the calling scope, as with Java methods. However, neither unrecoverable changes to the prevalent system nor unrecoverable uses of reference equality inside transactions fail as they would upon recovery. Use with this in mind.
 	 * <code>true</code> - a deserialized copy of the transaction is carried out each time. This allows unrecoverable changes to the prevalent system and unrecoverable uses of reference equality inside transactions to fail as they would upon recovery. However, changes to contents of references passed in are not reflected in the calling scope, as they would be with Java methods. This is the default setting.
 	 * 
 	 */
-	public void configureDeserializeThenExecute(boolean deserializeThenExecuteMode){
-		_deserializeThenExecuteMode = deserializeThenExecuteMode;
+	public void configureTransactionDeepCopy(boolean transactionDeepCopyMode){
+		_transactionDeepCopyMode = transactionDeepCopyMode;
 	}
 
 	/**
@@ -304,7 +304,7 @@ public class PrevaylerFactory<P>{
 		GenericSnapshotManager<P> snapshotManager = snapshotManager();
 		TransactionPublisher publisher = publisher(snapshotManager);
 		if (_serverPort != -1) new ServerListener(publisher, new OldNetworkImpl(), _serverPort);
-		return new PrevaylerImpl<P>(snapshotManager, publisher, journalSerializer(), _deserializeThenExecuteMode);
+		return new PrevaylerImpl<P>(snapshotManager, publisher, journalSerializer(), _transactionDeepCopyMode);
 	}
 
 
