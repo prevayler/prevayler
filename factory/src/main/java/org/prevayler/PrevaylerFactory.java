@@ -203,12 +203,12 @@ public class PrevaylerFactory<P>{
 	}
 
 	/**
-	 * Configures whether transactions behave like Java methods with respect to objects passed in, or execute a deserialized copy
+	 * Configures whether deserialized copies of transactions are executed instead of transactions themselves upon calling ".execute" on your Prevayler. The default is <code>true</code>
 	 * 
-	 * @param copyBeforeExecuteMode
+	 * @param deserializeThenExecuteMode
 	 * 
-	 * <code>false</code> - allows ordinary Java method behaviour with respect to objects passed in to transactions. If their contents are changed inside the transaction, this is reflected in the application calling it, as with Java methods. However, neither the baptism problem, nor the use of reference equality with the objects passed in, fail inside the transaction as they would upon recovery. Use with this in mind.
-	 * <code>true</code> - a deserialized copy of the transaction is carried out each time. This allows the baptism problem and the use of reference equality with the objects passed in to fail inside transactions as they would upon recovery. However, changes to contents of objects passed in are not reflected in the application calling it, as they do with Java methods, since they are only copies of those objects. This is the default setting.
+	 * <code>false</code> - references passed in are copied naturally, allowing changes to their contents to be reflected in the calling scope, as with Java methods. However, neither unrecoverable changes to the prevalent system nor unrecoverable uses of reference equality inside transaction fail as they would upon recovery. Use with this in mind.
+	 * <code>true</code> - a deserialized copy of the transaction is carried out each time. This allows unrecoverable changes to the prevalent system and unrecoverable uses of reference equality inside transactions to fail as they would upon recovery. However, changes to contents of references passed in are not reflected in the calling scope, as they would be with Java methods. This is the default setting.
 	 * 
 	 */
 	public void configureDeserializeThenExecute(boolean deserializeThenExecuteMode){
