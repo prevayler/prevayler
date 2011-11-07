@@ -196,7 +196,12 @@ public class PrevaylerFactory<P>{
 		_nullSnapshotManager = snapshotManager;
 	}
 	
-	
+	/** Determines whether the Prevayler created by this factory should filter out all Transactions that would throw a RuntimeException or Error if executed on the Prevalent System (default is true). This requires enough RAM to hold another copy of the prevalent system.
+	 */
+	public void configureTransactionFiltering(boolean transactionFiltering) {
+		_transactionFiltering = transactionFiltering;
+	}
+
 	/**
 	 * Configures whether transactions behave like Java methods with respect to objects passed in, or execute a deserialized copy
 	 * 
@@ -209,13 +214,6 @@ public class PrevaylerFactory<P>{
 	public void configureDeserializeThenExecute(boolean deserializeThenExecuteMode){
 		_deserializeThenExecuteMode = deserializeThenExecuteMode;
 	}
-
-	/** Determines whether the Prevayler created by this factory should filter out all Transactions that would throw a RuntimeException or Error if executed on the Prevalent System (default is true). This requires enough RAM to hold another copy of the prevalent system.
-	 */
-	public void configureTransactionFiltering(boolean transactionFiltering) {
-		_transactionFiltering = transactionFiltering;
-	}
-
 
 	/**
 	 * Configures the size (in bytes) of the journal file. When the current journal exceeds this size, a new journal is created.

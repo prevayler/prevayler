@@ -182,7 +182,7 @@ public class PersistentJournal implements Journal {
 					if (entry.systemVersion() != recoveringTransaction) {
 						throw new IOException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());
 					}
-
+					
 					subscriber.receive(entry);
 				}
 

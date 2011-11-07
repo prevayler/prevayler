@@ -52,13 +52,13 @@ public abstract class Capsule implements Serializable {
 	/**
 	 * Executes a freshly deserialized copy of the transaction by default. If <code>configureCopyBeforeExecute</code> was called on the <code>PrevaylerFactory</code> with a value of </code>true</code>, this will execute the transaction directly. The execution will synchronize on the prevalentSystem.
 	 */
-	public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer) {
+	public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer, boolean guaranteeDeserializeThenExecute) {
 		Object transaction;
-		if(_transaction!=null){
-			transaction=_transaction;
+		if(guaranteeDeserializeThenExecute||_transaction==null){
+			transaction = deserialize(journalSerializer);
 		}
 		else{
-			transaction = deserialize(journalSerializer);
+			transaction=_transaction;
 		}
 		
 		synchronized (prevalentSystem) {

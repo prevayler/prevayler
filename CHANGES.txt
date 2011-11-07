@@ -14,15 +14,14 @@ work.
 
 Updated demo code shows the type-safe usage.
 
--------------------------------------------------------------------
-Transactions can now do what Java methods do with objects passed in
+-------------------------------------
+Transactions can be executed directly
 
 Transactions can now allow references passed in to be copied naturally, 
 allowing their contents to change, as with Java methods. Previous versions 
-only allowed a deserialized copy to be executed, which doesn't allow changes 
-to be reflected outside the scope of the transaction.
+only allowed a deserialized copy to be executed.
 
-This Java-method-like behaviour is activated via factory initialization:
+Activated via:
 
 PrevaylerFactory<Something> p = new PrevaylerFactory<Something>;
 //...
@@ -30,7 +29,7 @@ p.configureDeserializeThenExecute(false); //this line does it
 //...
 Prevayler<Something> prevayler = p.create();
 
-It still preserves the same transaction filtering and writing to disk before
+It preserves the same transaction filtering and writing to disk before
 execution. However, unrecoverable changes and unrecoverable uses of reference 
 equality do not fail inside the transaction as they would upon recovery, as they 
 do with the deserialize-then-execute behaviour, which is still the default.

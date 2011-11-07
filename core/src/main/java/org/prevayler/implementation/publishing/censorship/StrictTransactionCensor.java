@@ -50,6 +50,7 @@ public class StrictTransactionCensor<P> implements TransactionCensor {
 	private void produceNewFoodTaster(long systemVersion) {
 		try {
 			_royalFoodTaster = _king.deepCopy(systemVersion, _snapshotSerializer);
+			_royalFoodTaster.guaranteeDeserializeThenExecute();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new RuntimeException("Unable to produce a copy of the prevalent system for trying out transactions before applying them to the real system.");
