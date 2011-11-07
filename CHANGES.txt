@@ -28,7 +28,7 @@ PrevaylerFactory#configureDeserializeThenExecute(false);
 It preserves the same transaction filtering and writing to disk before
 execution. However, unrecoverable changes and unrecoverable uses of reference 
 equality do not fail inside the transaction as they would upon recovery, as they 
-do when this is "true", which is the default setting.
+do when this is "true", which is still the default setting.
 
 
 ===========================================
