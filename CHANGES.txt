@@ -32,7 +32,7 @@ recovery, and as they will when this is set to "true", which is still the defaul
 --------------------------------
 Transaction filtering is no more
 
-Existing code written with Prevayler 2.5 earlier which calls
+Existing code written with Prevayler 2.5 and earlier which calls
 
 PrevaylerFactory#configureTransactionFiltering(false);
 
