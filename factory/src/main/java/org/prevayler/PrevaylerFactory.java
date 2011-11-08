@@ -66,7 +66,7 @@ public class PrevaylerFactory<P>{
 	/**
 	 * Example: <code>PrevaylerFactory&lt;MyTypeToPersist&gt; f = new PrevaylerFactory&lt;MyTypeToPersist&gt;();</code>
 	 * <br>
-	 * <br>Use if you want access to any configuration options not aviailable via the static method short-cuts.
+	 * <br>Use if you want access to any configuration options not available via the static method short-cuts.
 	 */
 	public PrevaylerFactory(){}
 	
