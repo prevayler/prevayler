@@ -20,7 +20,7 @@ public class PrevalentSystemGuard<P> implements TransactionSubscriber {
 	private long _systemVersion; // All access is synchronized on "this"
 	private boolean _ignoreRuntimeExceptions; // All access is synchronized on "this"
 	private final Serializer _journalSerializer;
-	private boolean _guaranteeTransactionDeepCopy;
+	private boolean _guaranteeTransactionDeepCopy = false;
 	
 	public PrevalentSystemGuard(P prevalentSystem, long systemVersion, Serializer journalSerializer) {
 		_prevalentSystem = prevalentSystem;
@@ -39,7 +39,7 @@ public class PrevalentSystemGuard<P> implements TransactionSubscriber {
 	}
 
 	public void guaranteeTransactionDeepCopy(){
-		_guaranteeTransactionDeepCopy=true;
+		_guaranteeTransactionDeepCopy = true;
 	}
 	
 	public void subscribeTo(TransactionPublisher publisher) throws IOException, ClassNotFoundException {
