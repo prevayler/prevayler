@@ -12,7 +12,7 @@ import org.prevayler.implementation.PrevalentSystemGuard;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
-public class StrictTransactionCensor<P extends Serializable> implements TransactionCensor {
+public class StrictTransactionCensor<P> implements TransactionCensor {
 
 	private final PrevalentSystemGuard<P> _king;
 	private PrevalentSystemGuard<P> _royalFoodTaster;
@@ -50,6 +50,7 @@ public class StrictTransactionCensor<P extends Serializable> implements Transact
 	private void produceNewFoodTaster(long systemVersion) {
 		try {
 			_royalFoodTaster = _king.deepCopy(systemVersion, _snapshotSerializer);
+			_royalFoodTaster.guaranteeTransactionDeepCopy();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new RuntimeException("Unable to produce a copy of the prevalent system for trying out transactions before applying them to the real system.");

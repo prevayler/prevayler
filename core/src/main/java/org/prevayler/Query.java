@@ -10,7 +10,7 @@ import java.util.Date;
 /** Represents a query that can be executed on a Prevalent System.
  * @see org.prevayler.Prevayler#execute(Query<P,R>)
  */
-public interface Query<P extends Serializable,R> extends Serializable{
+public interface Query<P,R> extends Serializable{
 	
 	/**
 	 * @param prevalentSystem The Prevalent System to be queried.
