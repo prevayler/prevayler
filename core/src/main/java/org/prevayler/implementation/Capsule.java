@@ -1,6 +1,5 @@
 package org.prevayler.implementation;
 
-import org.prevayler.Transaction;
 import org.prevayler.foundation.Chunk;
 import org.prevayler.foundation.serialization.Serializer;
 

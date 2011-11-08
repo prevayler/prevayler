@@ -11,7 +11,6 @@ import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Date;
 
 public class PrevalentSystemGuard<P> implements TransactionSubscriber {

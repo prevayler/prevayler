@@ -4,7 +4,6 @@
 
 package org.prevayler;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /** The same as TransactionWithQuery except it does not throw Exception when executed.
