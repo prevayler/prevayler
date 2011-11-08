@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
-public class PrevaylerImpl<P extends Serializable> implements Prevayler<P>{
+public class PrevaylerImpl<P> implements Prevayler<P>{
 
 	private final PrevalentSystemGuard<P> _guard;
 	private final Clock _clock;
@@ -28,6 +28,8 @@ public class PrevaylerImpl<P extends Serializable> implements Prevayler<P>{
 	private final TransactionPublisher _publisher;
 
 	private final Serializer _journalSerializer;
+	
+	private boolean _transactionDeepCopyMode;
 
 
 	/** Creates a new Prevayler
@@ -37,7 +39,7 @@ public class PrevaylerImpl<P extends Serializable> implements Prevayler<P>{
 	 * @param journalSerializer
 	 */
 	public PrevaylerImpl(GenericSnapshotManager<P> snapshotManager, TransactionPublisher transactionPublisher,
-						 Serializer journalSerializer) throws IOException, ClassNotFoundException {
+						 Serializer journalSerializer, boolean transactionDeepCopyMode) throws IOException, ClassNotFoundException {
 		_snapshotManager = snapshotManager;
 
 		_guard = _snapshotManager.recoveredPrevalentSystem();
@@ -48,6 +50,8 @@ public class PrevaylerImpl<P extends Serializable> implements Prevayler<P>{
 		_guard.subscribeTo(_publisher);
 
 		_journalSerializer = journalSerializer;
+		
+		_transactionDeepCopyMode = transactionDeepCopyMode;
 	}
 
 	public P prevalentSystem() { return _guard.prevalentSystem(); }
@@ -56,8 +60,8 @@ public class PrevaylerImpl<P extends Serializable> implements Prevayler<P>{
 	public Clock clock() { return _clock; }
 
 
-	public void execute(Transaction<P> transaction) {
-        publish(new TransactionCapsule<P>(transaction, _journalSerializer));    //TODO Optimizations: 1) The Censor can use the actual given transaction if it is Immutable instead of deserializing a new one from the byte array. 2) Make the baptism fail-fast feature optional (default is on). If it is off, the given transaction can be used instead of deserializing a new one from the byte array.
+	public void execute(Transaction<? super P> transaction) {
+        publish(new TransactionCapsule<P>(transaction, _journalSerializer, _transactionDeepCopyMode));    //TODO Optimization: The Censor can use the actual given transaction if it is Immutable instead of deserializing a new one from the byte array, even if "_transactionDeepCopyMode" is "true"
 	}
 
 
@@ -66,21 +70,21 @@ public class PrevaylerImpl<P extends Serializable> implements Prevayler<P>{
 	}
 
 
-	public <R> R execute(Query<P,R> sensitiveQuery) throws Exception {
+	public <R> R execute(Query<? super P,R> sensitiveQuery) throws Exception {
 		return _guard.executeQuery(sensitiveQuery, clock());
 	}
 
 
-	public <R> R execute(TransactionWithQuery<P,R> transactionWithQuery) throws Exception {
-		TransactionWithQueryCapsule<P,R> capsule = new TransactionWithQueryCapsule<P,R>(transactionWithQuery, _journalSerializer);
+	public <R> R execute(TransactionWithQuery<? super P,R> transactionWithQuery) throws Exception {
+		TransactionWithQueryCapsule<? super P,R> capsule = new TransactionWithQueryCapsule<P,R>(transactionWithQuery, _journalSerializer, _transactionDeepCopyMode);
 		publish(capsule);
 		return capsule.result();
 	}
 
 
-	public <R> R execute(SureTransactionWithQuery<P,R> sureTransactionWithQuery) {
+	public <R> R execute(SureTransactionWithQuery<? super P,R> sureTransactionWithQuery) {
 		try {
-			return execute((TransactionWithQuery<P,R>)sureTransactionWithQuery);
+			return execute((TransactionWithQuery<? super P,R>)sureTransactionWithQuery);
 		} catch (RuntimeException runtime) {
 			throw runtime;
 		} catch (Exception checked) {

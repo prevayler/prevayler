@@ -9,15 +9,27 @@ which can be parameterized so that prevalent and return objects and values
 arrive in original type form. Compiler provides you warning where you don't
 do this in your code.
 
-No compilation without error unless prevalent type implements Serializable.
-
 Existing code written with Prevayler 2.5 and earlier will still compile and 
-work EXCEPT for the minimum need for the first argument type of each custom 
-transaction and query's "executeOn"/"executeAndQuery"/"query" method to be 
-"Serializable" instead of "Object". This is if you still don't intend to 
-implement the new type-safety.
+work.
 
 Updated demo code shows the type-safe usage.
+
+-----------------------------------------
+Transactions can now be executed directly
+
+Transactions can now allow references passed in to be copied naturally, 
+allowing their contents to change, as with Java methods. Previous versions 
+allowed only a deserialized copy to be executed.
+
+Activated via:
+
+PrevaylerFactory#configureTransactionDeepCopy(false);
+
+It preserves the same transaction filtering and writing to disk before
+execution. However, unrecoverable changes and unrecoverable uses of reference 
+equality do not fail inside the transaction as they would upon recovery, as 
+they do when this is "true", which is still the default setting.
+
 
 ===========================================
 Changes from Prevayler 2.4 to Prevayler 2.5

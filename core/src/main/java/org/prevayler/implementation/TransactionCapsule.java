@@ -6,12 +6,12 @@ import org.prevayler.foundation.serialization.Serializer;
 import java.io.Serializable;
 import java.util.Date;
 
-class TransactionCapsule<P extends Serializable> extends Capsule{
+class TransactionCapsule<P> extends Capsule{
 
 	private static final long serialVersionUID = 3283271592697928351L;
 
-	public TransactionCapsule(Transaction<P> transaction, Serializer journalSerializer) {
-		super(transaction, journalSerializer);
+	public TransactionCapsule(Transaction<? super P> transaction, Serializer journalSerializer, boolean transactionDeepCopyMode) {
+		super(transaction, journalSerializer, transactionDeepCopyMode);
 	}
 
 	public TransactionCapsule(byte[] serialized) {

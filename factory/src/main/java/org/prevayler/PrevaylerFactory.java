@@ -39,11 +39,12 @@ import org.prevayler.implementation.snapshot.NullSnapshotManager;
  * <br>Also by default, the Prevayler instances created by this class will filter out all Transactions that would throw a RuntimeException or Error if executed on the Prevalent System. This requires enough RAM to hold another copy of the prevalent system. 
  * @see Prevayler 
  */
-public class PrevaylerFactory<P extends Serializable>{
+public class PrevaylerFactory<P>{
 
 	private P _prevalentSystem;
 	private Clock _clock;
 
+	private boolean _transactionDeepCopyMode = true;
 	private boolean _transactionFiltering = true;
 
 	private boolean _transientMode;
@@ -70,7 +71,7 @@ public class PrevaylerFactory<P extends Serializable>{
 	/** Creates a Prevayler that will use a directory called "PrevalenceBase" under the current directory to read and write its .snapshot and .journal files.
  	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 */
-	public static <P extends Serializable> Prevayler<P> createPrevayler(P newPrevalentSystem) throws Exception {
+	public static <P> Prevayler<P> createPrevayler(P newPrevalentSystem) throws Exception {
 		return createPrevayler(newPrevalentSystem, "PrevalenceBase");
 	}
 
@@ -79,7 +80,7 @@ public class PrevaylerFactory<P extends Serializable>{
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 * @param prevalenceBase The directory where the .snapshot files and .journal files will be read and written.
 	 */
-	public static <P extends Serializable> Prevayler<P> createPrevayler(P newPrevalentSystem, String prevalenceBase) throws Exception {
+	public static <P> Prevayler<P> createPrevayler(P newPrevalentSystem, String prevalenceBase) throws Exception {
 		PrevaylerFactory<P> factory = new PrevaylerFactory<P>();
 		factory.configurePrevalentSystem(newPrevalentSystem);
 		factory.configurePrevalenceDirectory(prevalenceBase);
@@ -93,7 +94,7 @@ public class PrevaylerFactory<P extends Serializable>{
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system.
 	 * @see #createCheckpointPrevayler(Serializable newPrevalentSystem, String snapshotDirectory)
 	 */
-	public static <P extends Serializable> Prevayler<P> createTransientPrevayler(P newPrevalentSystem) {
+	public static <P> Prevayler<P> createTransientPrevayler(P newPrevalentSystem) {
 		PrevaylerFactory<P> factory = new PrevaylerFactory<P>();
 		factory.configurePrevalentSystem(newPrevalentSystem);
 		factory.configureNullSnapshotManager(new NullSnapshotManager<P>(newPrevalentSystem, "Transient Prevaylers are unable to take snapshots."));
@@ -109,7 +110,7 @@ public class PrevaylerFactory<P extends Serializable>{
 
 	/** @deprecated Use createCheckpointPrevayler() instead of this method. Deprecated since Prevayler2.00.001.
 	 */
-	public static <P extends Serializable> Prevayler<P> createTransientPrevayler(P newPrevalentSystem, String snapshotDirectory) {
+	public static <P> Prevayler<P> createTransientPrevayler(P newPrevalentSystem, String snapshotDirectory) {
 		return createCheckpointPrevayler(newPrevalentSystem, snapshotDirectory);
 	}
 
@@ -117,7 +118,7 @@ public class PrevaylerFactory<P extends Serializable>{
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 * @param snapshotDirectory The directory where the .snapshot files will be read and written.
 	 */
-	public static <P extends Serializable> Prevayler<P> createCheckpointPrevayler(P newPrevalentSystem, String snapshotDirectory) {
+	public static <P> Prevayler<P> createCheckpointPrevayler(P newPrevalentSystem, String snapshotDirectory) {
 		PrevaylerFactory<P> factory = new PrevaylerFactory<P>();
 		factory.configurePrevalentSystem(newPrevalentSystem);
 		factory.configurePrevalenceDirectory(snapshotDirectory);
@@ -194,14 +195,26 @@ public class PrevaylerFactory<P extends Serializable>{
 	private void configureNullSnapshotManager(NullSnapshotManager<P> snapshotManager) {
 		_nullSnapshotManager = snapshotManager;
 	}
-
-
+	
 	/** Determines whether the Prevayler created by this factory should filter out all Transactions that would throw a RuntimeException or Error if executed on the Prevalent System (default is true). This requires enough RAM to hold another copy of the prevalent system.
 	 */
 	public void configureTransactionFiltering(boolean transactionFiltering) {
 		_transactionFiltering = transactionFiltering;
 	}
 
+	/**
+	 * Configures whether deserialized copies of transactions are executed instead of the transactions themselves, upon calling ".execute" on your Prevayler. The default is <code>true</code>.
+	 * 
+	 * @param transactionDeepCopyMode
+	 * <br><br>
+	 * <code>false</code> - references passed in to transactions are copied naturally, as they are during ordinary Java method calls, allowing their underlying objects to be changed inside transactions. However, any unrecoverable changes to the prevalent system and unrecoverable uses of reference equality inside transactions will not fail as they would upon recovery. Use with this in mind.
+	 * <br><br>
+	 * <code>true</code> - a deserialized copy of the transaction is carried out each time. This allows any unrecoverable changes to the prevalent system and unrecoverable uses of reference equality inside transactions to fail as they would upon recovery. However, it only allows changes to deserialized copies of objects passed in, not the original objects. This is the default setting.
+	 * 
+	 */
+	public void configureTransactionDeepCopy(boolean transactionDeepCopyMode){
+		_transactionDeepCopyMode = transactionDeepCopyMode;
+	}
 
 	/**
 	 * Configures the size (in bytes) of the journal file. When the current journal exceeds this size, a new journal is created.
@@ -292,7 +305,7 @@ public class PrevaylerFactory<P extends Serializable>{
 		GenericSnapshotManager<P> snapshotManager = snapshotManager();
 		TransactionPublisher publisher = publisher(snapshotManager);
 		if (_serverPort != -1) new ServerListener(publisher, new OldNetworkImpl(), _serverPort);
-		return new PrevaylerImpl<P>(snapshotManager, publisher, journalSerializer());
+		return new PrevaylerImpl<P>(snapshotManager, publisher, journalSerializer(), _transactionDeepCopyMode);
 	}
 
 
