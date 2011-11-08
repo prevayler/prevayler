@@ -57,12 +57,12 @@ public class CentralPublisher extends AbstractPublisher {
 
 
 	private void publishWithoutWorryingAboutNewSubscriptions(Capsule capsule) {
-		TransactionGuide guide = receive(capsule);
+		TransactionGuide guide = guideFor(capsule);
 		_journal.append(guide);
 		notifySubscribers(guide);
 	}
 
-	private TransactionGuide receive(Capsule capsule) {
+	private TransactionGuide guideFor(Capsule capsule) {
 		synchronized (_nextTurnMonitor) {
 			TransactionTimestamp timestamp = new TransactionTimestamp(capsule, _nextTransaction, _pausableClock.realTime());
 
