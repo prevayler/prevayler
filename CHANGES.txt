@@ -17,9 +17,9 @@ Updated demo code shows the type-safe usage.
 -----------------------------------------
 Transactions can now be executed directly
 
-Transactions can now allow ordinary Java-method-like behaviour with respect
-to objects passed in, by executing the transactions themselves, as opposed 
-to freshly deserialized copies of them, as was previously only allowed.
+Transactions can now allow references passed in to be used naturally, allowing
+their contents to change as with Java methods. Previous versions allowed only
+a freshly deserialized copy to be executed.
 
 It is activated via:
 
