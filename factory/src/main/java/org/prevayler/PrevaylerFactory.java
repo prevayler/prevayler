@@ -34,7 +34,7 @@ import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 import org.prevayler.implementation.snapshot.NullSnapshotManager;
 
 /** Provides easy access to all Prevayler configurations and implementations available in this distribution.
- * Static methods are also provided as short-cuts for the most common configurations. 
+ * <br>Static methods are also provided as short-cuts for the most common configurations. 
  * <br>By default, the Prevayler instances created by this class will write their Transactions to .journal files before executing them. The FileDescriptor.sync() method is called to make sure the Java file write-buffers have been written to the operating system. Many operating systems, including most recent versions of Linux and Windows, allow the hard-drive's write-cache to be disabled. This guarantees no executed Transaction will be lost in the event of a power shortage, for example.
  * <br>Also by default, the Prevayler instances created by this class will filter out all Transactions that would throw a RuntimeException or Error if executed on the Prevalent System. This requires enough RAM to hold another copy of the prevalent system. 
  * @see Prevayler 
@@ -67,8 +67,12 @@ public class PrevaylerFactory<P>{
 	private Map _snapshotSerializers = new HashMap();
 	private String _primarySnapshotSuffix;
 
-
 	/** Creates a Prevayler that will use a directory called "PrevalenceBase" under the current directory to read and write its .snapshot and .journal files.
+	 * <br><br>
+	 * Example:
+	 * <br><br>
+	 * <code>Prevayler<MyTypeToPersist> prevayler = PrevaylerFactory.create(new MyTypeToPersist()); //TODO: substitute "MyTypeToPersist" with the class of object you wish to persist</code>
+	 * 
  	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 */
 	public static <P> Prevayler<P> createPrevayler(P newPrevalentSystem) throws Exception {
@@ -79,6 +83,7 @@ public class PrevaylerFactory<P>{
 	/** Creates a Prevayler that will use the given prevalenceBase directory to read and write its .snapshot and .journal files.
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 * @param prevalenceBase The directory where the .snapshot files and .journal files will be read and written.
+	 * @see PrevaylerFactory#createPrevayler(P) throws Exception
 	 */
 	public static <P> Prevayler<P> createPrevayler(P newPrevalentSystem, String prevalenceBase) throws Exception {
 		PrevaylerFactory<P> factory = new PrevaylerFactory<P>();
