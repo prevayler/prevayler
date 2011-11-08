@@ -14,7 +14,6 @@ public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject {
 		PrevaylerFactory<QuerySystem> factory = new PrevaylerFactory<QuerySystem>();
 		factory.configurePrevalentSystem(new QuerySystem());
 		factory.configurePrevalenceDirectory(PREVALENCE_BASE);
-		factory.configureTransactionFiltering(false);
 		prevayler = factory.create();
 	}
 

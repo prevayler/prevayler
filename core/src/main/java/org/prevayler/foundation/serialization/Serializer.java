@@ -2,7 +2,6 @@ package org.prevayler.foundation.serialization;
 
 import java.io.OutputStream;
 import java.io.InputStream;
-import java.io.Serializable;
 
 /**
  * A strategy for writing objects to and reading objects from streams. Implementations <b>must</b> be safe for
