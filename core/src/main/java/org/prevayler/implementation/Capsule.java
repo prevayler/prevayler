@@ -50,15 +50,15 @@ public abstract class Capsule implements Serializable {
 	}
 
 	/**
-	 * Executes a freshly deserialized copy of the transaction if this is being called via the royal food taster or if <code>configureTransactionDeepCopy</code> wasn't set to <code>false</code> on your <code>PrevaylerFactory</code>. Otherwise, this will execute the transaction directly. The execution will synchronize on the prevalentSystem.
+	 * Executes a freshly deserialized copy of the transaction by default. If <code>configureTransactionDeepCopy</code> was set to <code>true</code> on your <code>PrevaylerFactory</code>, this will execute the transaction directly. The execution will synchronize on the prevalentSystem.
 	 */
-	public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer, boolean guaranteeTransactionDeepCopy) {
+	public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer) {
 		Object transaction;
-		if(guaranteeTransactionDeepCopy || _transaction == null){
-			transaction = deserialize(journalSerializer);
+		if(_transaction != null){
+			transaction = _transaction;
 		}
 		else{
-			transaction = _transaction;
+			transaction = deserialize(journalSerializer);
 		}
 		
 		synchronized (prevalentSystem) {

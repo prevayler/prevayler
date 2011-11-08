@@ -12,14 +12,12 @@ import org.prevayler.implementation.TransactionGuide;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.clock.PausableClock;
 import org.prevayler.implementation.journal.Journal;
-import org.prevayler.implementation.publishing.censorship.TransactionCensor;
 
 import java.io.IOException;
 
 public class CentralPublisher extends AbstractPublisher {
 
 	private final PausableClock _pausableClock;
-	private final TransactionCensor _censor;
 	private final Journal _journal;
 
 	private volatile int _pendingPublications = 0;
@@ -30,11 +28,10 @@ public class CentralPublisher extends AbstractPublisher {
 	private final Object _nextTurnMonitor = new Object();
 
 
-	public CentralPublisher(Clock clock, TransactionCensor censor, Journal journal) {
+	public CentralPublisher(Clock clock, Journal journal) {
 		super(new PausableClock(clock));
 		_pausableClock = (PausableClock) _clock; //This is just to avoid casting the inherited _clock every time.
 
-		_censor = censor;
 		_journal = journal;
 	}
 
@@ -69,9 +66,7 @@ public class CentralPublisher extends AbstractPublisher {
 		synchronized (_nextTurnMonitor) {
 			TransactionTimestamp timestamp = new TransactionTimestamp(capsule, _nextTransaction, _pausableClock.realTime());
 
-			_censor.approve(timestamp);
-
-			// Only count this transaction once approved.
+			// Count this transaction
 			Turn turn = _nextTurn;
 			_nextTurn = _nextTurn.next();
 			_nextTransaction++;
