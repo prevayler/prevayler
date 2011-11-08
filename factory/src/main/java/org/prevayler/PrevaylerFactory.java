@@ -291,12 +291,6 @@ public class PrevaylerFactory<P>{
 		}
 	}
 
-	/**
-	 * Determines whether the Prevayler created by this factory should filter out all Transactions that would throw a RuntimeException or Error if executed on the Prevalent System (default is true). This requires enough RAM to hold another copy of the prevalent system.
-	 * @deprecated This method has been deprecated since Prevayler 2.6. Transaction filtering is no longer a feature. Calling this method with "true" will not activate it. Calling it with "false" has no effect.
-	 */
-	public void configureTransactionFiltering(boolean transactionFiltering){}
-
 	/** Returns a Prevayler created according to what was defined by calls to the configuration methods above.
 	 * @throws IOException If there is trouble creating the Prevalence Base directory or reading a .journal or .snapshot file.
 	 * @throws ClassNotFoundException If a class of a serialized Object is not found when reading a .journal or .snapshot file.

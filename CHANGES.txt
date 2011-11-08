@@ -32,14 +32,9 @@ recovery, and as they will when this is set to "true", which is still the defaul
 --------------------------------
 Transaction filtering is no more
 
-Existing code written with Prevayler 2.5 and earlier which calls
-
-PrevaylerFactory#configureTransactionFiltering(false);
-
-can now remove this call with no effect, as transaction filtering is no longer 
-a feature. Calling this method with "true" will not activate it. Either way,
-a deprecated warning will be shown.
-
+Transaction filtering is no longer a feature in Prevayler. Calls to
+PrevaylerFactory#configureTransactionFiltering(boolean) will no longer compile.
+ 
 
 
 
