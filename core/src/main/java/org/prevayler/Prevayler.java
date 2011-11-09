@@ -10,6 +10,7 @@ import java.io.IOException;
 
 /** Implementations of this interface can provide transparent persistence and replication to all Business Objects in a Prevalent System. ALL operations that alter the observable state of the Prevalent System must be implemented as Transaction or TransactionWithQuery objects and must be executed using the Prevayler.execute(...) methods.
  * See the demo applications in org.prevayler.demos for examples.
+ * @param <P> The type of object you intend to persist.
  * @see org.prevayler.PrevaylerFactory
  */
 public interface Prevayler<P>{
