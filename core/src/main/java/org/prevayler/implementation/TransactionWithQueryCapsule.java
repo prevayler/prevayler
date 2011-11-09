@@ -3,7 +3,6 @@ package org.prevayler.implementation;
 import org.prevayler.TransactionWithQuery;
 import org.prevayler.foundation.serialization.Serializer;
 
-import java.io.Serializable;
 import java.util.Date;
 
 class TransactionWithQueryCapsule<P,R> extends Capsule{

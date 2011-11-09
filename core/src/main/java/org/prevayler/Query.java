@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /** Represents a query that can be executed on a Prevalent System.
- * @see org.prevayler.Prevayler#execute(Query<P,R>)
+ * @see org.prevayler.Prevayler#execute(Query)
  */
 public interface Query<P,R> extends Serializable{
 	

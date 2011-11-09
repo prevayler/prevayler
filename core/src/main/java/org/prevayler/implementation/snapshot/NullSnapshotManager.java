@@ -7,7 +7,6 @@ package org.prevayler.implementation.snapshot;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 
 public class NullSnapshotManager<P> extends GenericSnapshotManager<P>{
 

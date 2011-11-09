@@ -6,7 +6,6 @@ package org.prevayler;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 
 
 /** Implementations of this interface can provide transparent persistence and replication to all Business Objects in a Prevalent System. ALL operations that alter the observable state of the Prevalent System must be implemented as Transaction or TransactionWithQuery objects and must be executed using the Prevayler.execute(...) methods.

@@ -17,18 +17,25 @@ Updated demo code shows the type-safe usage.
 -----------------------------------------
 Transactions can now be executed directly
 
-Transactions can now allow references passed in to be copied naturally, 
-allowing their contents to change, as with Java methods. Previous versions 
-allowed only a deserialized copy to be executed.
+Transactions can now allow references passed in to be used naturally, allowing
+their contents to change as with Java methods. Previous versions allowed only
+a freshly deserialized copy to be executed.
 
-Activated via:
+It is activated via:
 
 PrevaylerFactory#configureTransactionDeepCopy(false);
 
-It preserves the same transaction filtering and writing to disk before
-execution. However, unrecoverable changes and unrecoverable uses of reference 
-equality do not fail inside the transaction as they would upon recovery, as 
-they do when this is "true", which is still the default setting.
+However, unrecoverable changes to the prevalent system and unrecoverable uses
+of reference equality inside transactions will not fail fast as they would upon
+recovery, and as they will when this is set to "true", which is still the default.
+
+--------------------------------
+Transaction filtering is no more
+
+Transaction filtering is no longer a feature in Prevayler. Calls to
+PrevaylerFactory#configureTransactionFiltering(boolean) will no longer compile.
+ 
+
 
 
 ===========================================
