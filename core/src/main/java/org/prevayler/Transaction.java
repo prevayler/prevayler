@@ -9,9 +9,9 @@ import java.util.Date;
 
 /** An atomic Transaction to be executed on a Prevalent System.
  * <br>
- * <br>To be recoverable, <b>any changes to the observable state of a Prevalent System must be encapsulated in Transactions and performed via</b> <code>prevalentSystem</code>.
+ * <br>To be recoverable, <b>any changes to the observable state of a Prevalent System must be encapsulated in Transactions and performed via</b> <code>prevalentSystem</code> in each Transaction.
  * <br>
- * <br>Upon recovery execution, everything outside <code>prevalentSystem</code> will be a freshly deserialized copy. So in addition to the above rule, changes and non-changes to <code>prevalentSystem</code> <b>must never depend on reference equality between anything in it and anything outside it</b> except if and after such reference equality has been expressly made inside <code>executeOn</code>.
+ * <br>Upon recovery execution, everything outside <code>prevalentSystem</code> will be a freshly deserialized copy. So in addition to the above rule, <b>changes and non-changes to</b> <code>prevalentSystem</code> <b>must never depend upon reference equality between anything in it and anything outside it</b> except if and after such reference equality has been expressly made inside <code>executeOn</code>.
  * <br>
  * <br>Applications which observe the above 2 rules guarantee full recoverability for their Prevalent Systems.
  * <br>
