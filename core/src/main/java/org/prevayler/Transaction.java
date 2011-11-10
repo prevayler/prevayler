@@ -7,7 +7,7 @@ package org.prevayler;
 import java.io.Serializable;
 import java.util.Date;
 
-/** An atomic Transaction to be executed on a Prevalent System.
+/** An atomic transaction to be executed on a Prevalent System.
  * <br>
  * <br>To be recoverable, <b>any changes to the observable state of a Prevalent System must be encapsulated in Transactions and performed via</b> <code>prevalentSystem</code> <b>in each Transaction</b>.
  * <br>
