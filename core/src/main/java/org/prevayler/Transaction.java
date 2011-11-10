@@ -11,9 +11,10 @@ import java.util.Date;
  * <br>
  * <br>To be recoverable, <b>any changes to the observable state of a Prevalent System must be encapsulated in Transactions and performed via</b> <code>prevalentSystem</code>.
  * <br>
- * <br>When <code>executeOn</code> is called upon recovery after a Transaction has been deserialized, anything in <code>prevalentSystem</code> is guaranteed to be reference-<i>inequal</i> against anything outside it. That's because everything outside it is a deserialized copy. So changes to <code>prevalentSystem</code> <b>must also never depend on reference equality between anything in it and anything outside it</b>.
+ * <br>Upon recovery execution, everything outside <code>prevalentSystem</code> will be a freshly deserialized copy. So in addition to the above rule, changes and non-changes to <code>prevalentSystem</code> <b>must never depend on reference equality between anything in it and anything outside it</b> except if and after such reference equality has been expressly made inside <code>executeOn</code>.
  * <br>
- * <br>The 2 rules in bold above can be boiled down to "<b>stick to the</b> <code>prevalentSystem</code>" and guarantees full recoverability in Prevayler.
+ * <br>Applications which observe the above 2 rules guarantee full recoverability for their Prevalent Systems.
+ * <br>
  * @param <P> The type of object you intend to perform the transaction on.
  */
 
