@@ -15,7 +15,7 @@ import java.util.Date;
  * <br>
  * <br>Applications which observe the above 2 rules guarantee full recoverability for their Prevalent Systems.
  * <br>
- * @param <P> The type of object you intend to perform the transaction on.
+ * @param <P> The type of object you intend to perform the transaction on. <br>
  */
 
 public interface Transaction<P> extends Serializable{
