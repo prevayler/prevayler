@@ -8,9 +8,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 /** A Transaction that also returns a result or throws an Exception after executing. <br><br>A "PersonCreation" Transaction, for example, may return the Person it created. Without this, to retrieve the newly created Person, the caller would have to issue a Query like: "What was the last Person I created?". <br><br>Looking at the Prevayler demos is by far the best way to learn how to use this class.
- * @param <P> The type of object you intend to perform the transaction and query upon.
- * <br>
- * @param <R> The type of object which should be returned.
+ * @param <P> The type of object you intend to perform the transaction and query upon. <br>
+ * @param <R> The type of object which should be returned. <br>
  * @see Transaction
  */
 public interface TransactionWithQuery<P,R> extends Serializable {

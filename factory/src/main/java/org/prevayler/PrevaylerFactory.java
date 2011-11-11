@@ -34,7 +34,7 @@ import org.prevayler.implementation.snapshot.NullSnapshotManager;
  * <br>By default, the Prevayler instances created by this class will write their Transactions to .journal files before executing them. The FileDescriptor.sync() method is called to make sure the Java file write-buffers have been written to the operating system. Many operating systems, including most recent versions of Linux and Windows, allow the hard-drive's write-cache to be disabled. This guarantees no executed Transaction will be lost in the event of a power shortage, for example.
  * <br>
  * <br>Also by default, the Prevayler instances created by this class will execute freshly deserialized copies of transactions, not the transactions themselves, so that unrecoverable changes to the prevalent system and unrecoverable uses of reference equality inside transactions will fail fast as they would upon recovery.
- * @param <P> The type of object you intend to persist.
+ * @param <P> The type of object you intend to persist. <br>
  * @see Prevayler 
  */
 public class PrevaylerFactory<P>{

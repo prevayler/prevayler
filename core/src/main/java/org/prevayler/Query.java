@@ -8,10 +8,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 /** Represents a query that can be executed on a Prevalent System.
- * @param <P> The type of object you intend to perform the query upon.
- * <br>
- * @param <R> The type of object which should be returned.
- * <br>
+ * @param <P> The type of object you intend to perform the query upon. <br>
+ * @param <R> The type of object which should be returned. <br>
  * @see Prevayler#execute(Query)
  */
 public interface Query<P,R> extends Serializable{
