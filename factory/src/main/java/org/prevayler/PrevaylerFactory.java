@@ -151,7 +151,7 @@ public class PrevaylerFactory<P>{
 	
 	/** Configures the prevalent system that will be used by the Prevayler created by this factory.
 	 * @param newPrevalentSystem If the default Serializer is used, this prevalentSystem must be Serializable. If another Serializer is used, this prevalentSystem must be compatible with it.
-     * @see #configureSnapshotSerializer(String,Serializer)
+     * @see #configureSnapshotSerializer(String, Serializer)
 	 */
 	public void configurePrevalentSystem(P newPrevalentSystem) {
 		_prevalentSystem = newPrevalentSystem;
