@@ -7,6 +7,8 @@ package org.prevayler;
 import java.util.Date;
 
 /** The same as TransactionWithQuery except it does not throw Exception when executed.
+ * @param <P> The type of object you intend to perform the transaction and query upon. <br>
+ * @param <R> The type of object which should be returned. <br>
  * @see TransactionWithQuery
  */
 public interface SureTransactionWithQuery<P,R> extends TransactionWithQuery<P,R>{
