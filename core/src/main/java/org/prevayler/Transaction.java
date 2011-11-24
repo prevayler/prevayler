@@ -13,7 +13,7 @@ import java.util.Date;
  * <br>
  * <br>Upon recovery execution, anything outside <code>prevalentSystem</code> will be a freshly deserialized copy, so cannot reference anything in the Prevalent System.
  * <br>
- * @param <P> The type or a supertype of the Prevalent System you intend to perform the transaction on. <br>
+ * @param <P> The type or any supertype of the Prevalent System you intend to perform the transaction on. <br>
  */
 
 public interface Transaction<P> extends Serializable{
