@@ -74,7 +74,7 @@ public class PrevaylerFactory<P>{
 	 */
 	public PrevaylerFactory(){}
 	
-	/** Creates a Prevayler that will use the given prevalenceBase directory to read and write its .snapshot and .journal files.
+	/** Creates a Prevayler that will use the given prevalenceBase directory to read and write its .snapshot and .journal files, using standard Java serialization. This requires that the Prevalent System and all Transaction implementations that the Prevayler uses are Java-Serializable.
 	 *  <br>
 	 * <br><i>Example:</i>
 	 * <br><code>
@@ -86,27 +86,27 @@ public class PrevaylerFactory<P>{
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 * @param prevalenceBase The directory where the .snapshot files and .journal files will be read and written.
 	 */
-	public static <P extends Serializable> Prevayler<P> createPrevayler(P newPrevalentSystem, String prevalenceBase) throws Exception {
+	public static <P> Prevayler<P> createPrevayler(P newPrevalentSystem, String prevalenceBase) throws Exception {
 		PrevaylerFactory<P> factory = new PrevaylerFactory<P>();
 		factory.configurePrevalentSystem(newPrevalentSystem);
 		factory.configurePrevalenceDirectory(prevalenceBase);
 		return factory.create();
 	}
 	
-	/** Creates a Prevayler that will use a directory called "PrevalenceBase" under the current directory to read and write its .snapshot and .journal files.
+	/** Creates a Prevayler that will use a directory called "PrevalenceBase" under the current directory to read and write its .snapshot and .journal files, using standard Java serialization. This requires that the Prevalent System and all Transaction implementations that the Prevayler uses are Java-Serializable.
  	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
  	 * @see #createPrevayler(Serializable, String)
 	 */
-	public static <P extends Serializable> Prevayler<P> createPrevayler(P newPrevalentSystem) throws Exception {
+	public static <P> Prevayler<P> createPrevayler(P newPrevalentSystem) throws Exception {
 		return createPrevayler(newPrevalentSystem, "PrevalenceBase");
 	}
 
-	/** Creates a Prevayler that will execute Transactions WITHOUT writing them to disk. Snapshots will work as "checkpoints" for the system, therefore. This is useful for stand-alone applications that have a "Save" button, for example.
+	/** Creates a Prevayler that will execute Transactions WITHOUT writing them to disk. Snapshots will work as "checkpoints" for the system, therefore. This is useful for stand-alone applications that have a "Save" button, for example. The Prevayler will use standard Java serialization for reading and writing its .snapshot files, which requires that the Prevalent System is Java-Serializable.
 	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
 	 * @param snapshotDirectory The directory where the .snapshot files will be read and written.
 	 * @see #createPrevayler(Serializable, String)
 	 */
-	public static <P extends Serializable> Prevayler<P> createCheckpointPrevayler(P newPrevalentSystem, String snapshotDirectory) {
+	public static <P> Prevayler<P> createCheckpointPrevayler(P newPrevalentSystem, String snapshotDirectory) {
 		PrevaylerFactory<P> factory = new PrevaylerFactory<P>();
 		factory.configurePrevalentSystem(newPrevalentSystem);
 		factory.configurePrevalenceDirectory(snapshotDirectory);
@@ -141,7 +141,7 @@ public class PrevaylerFactory<P>{
 
 	/** @deprecated Use createCheckpointPrevayler() instead of this method. Deprecated since Prevayler2.00.001.
 	 */
-	public static <P extends Serializable> Prevayler<P> createTransientPrevayler(P newPrevalentSystem, String snapshotDirectory) {
+	public static <P> Prevayler<P> createTransientPrevayler(P newPrevalentSystem, String snapshotDirectory) {
 		return createCheckpointPrevayler(newPrevalentSystem, snapshotDirectory);
 	}
 
