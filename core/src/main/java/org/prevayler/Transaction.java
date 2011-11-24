@@ -7,11 +7,11 @@ package org.prevayler;
 import java.io.Serializable;
 import java.util.Date;
 
-/** An atomic transaction to be executed on a Prevalent System.
+/** An atomic transaction to be executed on a Prevalent System. Any operation which changes the observable state of a Prevalent System must be encapsulated in a Transaction.
  * <br>
- * <br>To be recoverable, any changes to the observable state of a Prevalent System must be encapsulated in Transactions and performed via the given <code>prevalentSystem</code> in each Transaction.
+ * <br>IMPORTANT: Transaction objects CANNOT reference business objects directly. Instead, you must search for the business objects you need given the <code>prevalentSystem</code>. See org.prevayler.demos for usage examples.
  * <br>
- * <br>Upon recovery execution, anything outside <code>prevalentSystem</code> will be a freshly deserialized copy, so cannot reference anything in the Prevalent System.
+ * <br>Business objects referenced by a Transaction object will be mere copies of the original business objects when that transaction is recovered from the serialized journal file. This will make the transactions work when they are executed for the first time but have no effect during shutdown recovery. This is known as the prevalence baptism problem because everyone comes across it, despite this warning.
  * <br>
  * @param <P> The type or any supertype of the Prevalent System you intend to perform the transaction upon. <br>
  */
