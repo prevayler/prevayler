@@ -11,11 +11,11 @@ import java.util.Date;
 public abstract class Capsule implements Serializable {
 
 	private final byte[] _serialized;
-	private transient Object _transaction = null;
+	private transient Object _directTransaction = null;
 	
 	protected Capsule(Object transaction, Serializer journalSerializer, boolean transactionDeepCopyMode) {
 		if(transactionDeepCopyMode == false){
-			_transaction = transaction;
+			_directTransaction = transaction;
 		}
 		try {
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -53,8 +53,8 @@ public abstract class Capsule implements Serializable {
 	 */
 	public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer) {
 		Object transaction;
-		if(_transaction != null){
-			transaction = _transaction;
+		if(_directTransaction != null){
+			transaction = _directTransaction;
 		}
 		else{
 			transaction = deserialize(journalSerializer);
