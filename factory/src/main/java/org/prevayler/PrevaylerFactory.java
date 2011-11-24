@@ -74,7 +74,7 @@ public class PrevaylerFactory<P>{
 	 */
 	public PrevaylerFactory(){}
 	
-	/** Creates a Prevayler that will use the given prevalenceBase directory to read and write its .snapshot and .journal files, using standard Java serialization. This requires that the Prevalent System and all Transaction implementations that the Prevayler uses are Java-Serializable.
+	/** Creates a Prevayler that will use the given prevalenceBase directory to read and write its .snapshot and .journal files, using standard Java serialization. This requires that the Prevalent System and all Transaction implementations used by the Prevayler are Java-Serializable.
 	 *  <br>
 	 * <br><i>Example:</i>
 	 * <br><code>
@@ -93,7 +93,7 @@ public class PrevaylerFactory<P>{
 		return factory.create();
 	}
 	
-	/** Creates a Prevayler that will use a directory called "PrevalenceBase" under the current directory to read and write its .snapshot and .journal files, using standard Java serialization. This requires that the Prevalent System and all Transaction implementations that the Prevayler uses are Java-Serializable.
+	/** Creates a Prevayler that will use a directory called "PrevalenceBase" under the current directory to read and write its .snapshot and .journal files, using standard Java serialization. This requires that the Prevalent System and all Transaction implementations used by the Prevayler are Java-Serializable.
  	 * @param newPrevalentSystem The newly started, "empty" prevalent system that will be used as a starting point for every system startup, until the first snapshot is taken.
  	 * @see #createPrevayler(Serializable, String)
 	 */
