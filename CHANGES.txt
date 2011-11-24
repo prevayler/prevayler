@@ -19,7 +19,7 @@ Transactions can now be executed directly
 
 Transactions can now allow references passed in to be used naturally, allowing
 their contents to change as with Java methods. Previous versions allowed only
-a freshly deserialized copy to be executed.
+a deep copy to be executed.
 
 It is activated via:
 
