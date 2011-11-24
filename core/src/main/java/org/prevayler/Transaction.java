@@ -11,7 +11,7 @@ import java.util.Date;
  * <br>
  * <br>To be recoverable, <b>any changes to the observable state of a Prevalent System must be encapsulated in Transactions and performed via the given</b> <code>prevalentSystem</code> <b>in each Transaction</b>.
  * <br>
- * <br>Upon recovery execution, everything outside <code>prevalentSystem</code> will be a freshly deserialized copy, so cannot reference anything in the Prevalent System.
+ * <br>Upon recovery execution, anything outside <code>prevalentSystem</code> will be a freshly deserialized copy, so cannot reference anything in the Prevalent System.
  * <br>
  * @param <P> The type or a supertype of the Prevalent System you intend to perform the transaction on. <br>
  */
