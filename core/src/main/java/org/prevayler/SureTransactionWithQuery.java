@@ -7,7 +7,7 @@ package org.prevayler;
 import java.util.Date;
 
 /** The same as TransactionWithQuery except it does not throw Exception when executed.
- * @param <P> The type or a supertype of the Prevalent System you intend to perform the transaction and query upon. <br>
+ * @param <P> The type or any supertype of the Prevalent System you intend to perform the transaction and query upon. <br>
  * @param <R> The type of object which should be returned. <br>
  * @see TransactionWithQuery
  */
