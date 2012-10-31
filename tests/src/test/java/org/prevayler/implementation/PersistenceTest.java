@@ -96,22 +96,28 @@ public class PersistenceTest extends FileIOTest {
         long true2 = doDiskSyncPerformanceRun(true);
         long bestTrue = Math.min(true1, true2);
         long worstFalse = Math.max(false1, false2);
-        assertTrue(bestTrue + " should be worse than " + worstFalse, bestTrue > worstFalse);
+        // todo: This fails when executing the test from within IntelliJ IDEA
+        // todo: but not when executed from command line.
+        assertTrue(bestTrue + " should be worse than " + worstFalse + " (This test has been seen failing when executed from within IntelliJ IDEA, but should never fail when executed from command line using 'mvn install'.)", bestTrue > worstFalse);
     }
 
     private long doDiskSyncPerformanceRun(boolean journalDiskSync) throws Exception {
+
         newPrevalenceBase();
         crashRecover(journalDiskSync);
         append("a", "a");
-        long start = System.currentTimeMillis();
+        long start = System.nanoTime();
         String expected = "a";
+
         for (char c = 'b'; c <= 'z'; c++) {
             expected += c;
             append(String.valueOf(c), expected);
         }
-        long end = System.currentTimeMillis();
+
+        long end = System.nanoTime();
         crashRecover(journalDiskSync);
         verify(expected);
+
         return end - start;
     }
 
