@@ -106,17 +106,20 @@ public class SmokeTest
         repo.storeSomething(data);
         assertEquals(data, repo.getData());
 
+       final String otherData = "other data";
         try
         {
-            repo.oopsRuntime("other data");
+            repo.oopsRuntime(otherData);
             fail("should have thrown RuntimeOops");
         }
         catch (RuntimeOops expected)
         {
-            // ok
+            System.currentTimeMillis();// ok
         }
 
-        assertEquals(data, repo.getData());
+        // previously when rollback was a feature in prevayler
+        // this would have equaled data rather than otherData
+        assertEquals(otherData, repo.getData());
 
         try
         {
@@ -126,7 +129,7 @@ public class SmokeTest
         catch (CheckedOops expected)
         {
             //expected.printStackTrace();
-            // ok
+            System.currentTimeMillis();// ok
         }
 
         //checked exception doesn't trigger rollback
