@@ -9,7 +9,7 @@
 
   <groupId>org.prevayler</groupId>
   <artifactId>prevayler</artifactId>
-  <version>2.6-SNAPSHOT</version>
+  <version>2.6</version>
   <packaging>pom</packaging>
 
 
