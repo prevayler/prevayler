@@ -15,4 +15,7 @@ Thanks to Prevayler contributors:
 	Justin Sampson
 	Jon Tirsen
 	Carlos Villela
+	Karl Wettin
 	Klaus Wuestefeld
+
+(This list with more details is also available in file pom.xml)
