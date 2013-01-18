@@ -9,26 +9,25 @@
   </parent>
 
   <!-- modules inherit parent's group id and version. -->
-  <artifactId>prevayler-tutorial</artifactId>
-  <name>Prevayler Tutorial</name>
-  <description>A basic tutorial of Prevayler usage.</description>
+  <artifactId>prevayler-tutorials</artifactId>
+  <name>Prevayler tutorials</name>
+  <description>Simple isolated tutorial packages explaining features and caveats of Prevayler.</description>
+  <inceptionYear>2012</inceptionYear>
 
   <packaging>jar</packaging>
 
   <dependencies>
     <dependency>
       <groupId>org.prevayler</groupId>
-      <artifactId>prevayler-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.prevayler</groupId>
       <artifactId>prevayler-factory</artifactId>
     </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <scope>test</scope>
     </dependency>
+
   </dependencies>
 
 </project>
