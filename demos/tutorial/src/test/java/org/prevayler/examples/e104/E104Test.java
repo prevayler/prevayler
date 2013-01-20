@@ -1,71 +1,48 @@
 package org.prevayler.examples.e104;
 
-import org.junit.Ignore;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
-
-import java.util.UUID;
-
-import static org.junit.Assert.*;
+import org.prevayler.examples.common.Club;
+import org.prevayler.examples.common.Member;
+import org.prevayler.examples.common.MemberCreation;
+import org.prevayler.examples.common.NameChange;
 
 public class E104Test {
 
-  @Test(expected = java.lang.AssertionError.class)
-  public void testFailing() throws Exception {
+	Prevayler<Club> prevayler = initPrevayler();
 
-    // this test will fail, and the reason is that
-    // the aggregate entity passed down to the transaction is a business object
-    // that will be serialized, i.e. the aggregate instance will become a deep clone of the business object
-    // rather than referencing the business object in the prevalent system.
+	
+	@Test
+	public void testInitiationProblem() throws Exception {
+		Member member = createMember("John");
+		
+		prevayler.execute(new NameChange(member, "John S"));
+		assertEquals("John S", member.name());
 
-    new AbstractTest() {
-      @Override
-      protected void executeUpdateAggregateTransaction(Prevayler<Root> prevayler, Entity firstEntity, Entity secondEntity) {
-        prevayler.execute(new PrevalentInitiationProblemUpdateEntityAggregate(firstEntity.getIdentity(), secondEntity));
-      }
-    }.runTest();
-  }
+		prevayler.execute(new NameChangeWithProblem(member, "John Smith"));
+		assertEquals("John S", member.name()); //The name change did not work because transactions are serialized and deserialized by Prevayler, producing a deep clone. The person object in the transaction is no longer the object we passed in but a clone!
+		
+		prevayler.close();
+	}
 
+	
+	private Member createMember(String name) throws Exception {
+			return prevayler.execute(new MemberCreation(name));
+	}
 
-  @Test
-  public void testPassing() throws Exception {
+	
+	private static Prevayler<Club> initPrevayler() {
+		String dataPath = "target/PrevalenceBase_" + System.currentTimeMillis();
+		try {
+			return PrevaylerFactory.createPrevayler(new Club(), dataPath);
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+	}
 
-    // this will not fail as we pass down the identities of the entities,
-    // look them up in the root and then reference to the instance we found in root.
-
-    new AbstractTest() {
-      @Override
-      protected void executeUpdateAggregateTransaction(Prevayler<Root> prevayler, Entity firstEntity, Entity secondEntity) {
-        prevayler.execute(new UpdateEntityAggregate(firstEntity.getIdentity(), secondEntity.getIdentity()));
-      }
-    }.runTest();
-  }
-
-  private abstract class AbstractTest {
-
-    protected void runTest() throws Exception {
-      // Create or load existing prevalence layer from journal and/or snapshot.
-      Prevayler<Root> prevayler = PrevaylerFactory.createPrevayler(new Root(), "target/PrevalenceBase_" + System.currentTimeMillis());
-      try {
-        Entity firstEntity = prevayler.execute(new CreateEntityTransaction(UUID.randomUUID().toString()));
-        Entity secondEntity = prevayler.execute(new CreateEntityTransaction(UUID.randomUUID().toString()));
-
-        assertNull("at this point no aggregate is supposed to be set in firstEntity", firstEntity.getAggregate());
-
-        executeUpdateAggregateTransaction(prevayler, firstEntity, secondEntity);
-
-        assertNotNull("at this point an aggregate is supposed to be set in firstEntity", firstEntity.getAggregate());
-
-        assertSame("at this point we expect the aggregate in firstEntity to be the same instance as secondEntity", secondEntity, firstEntity.getAggregate());
-
-      } finally {
-        prevayler.close();
-
-      }
-    }
-
-    protected abstract void executeUpdateAggregateTransaction(Prevayler<Root> prevayler, Entity firstEntity, Entity secondEntity);
-
-  }
 }
+
+
