@@ -32,6 +32,7 @@ public class PersistentJournal implements Journal {
 	private final long _journalAgeThresholdInMillis;
 	private StopWatch _journalAgeTimer;
 
+    private final boolean _useExistingJournalIfRollFails;
     private final boolean _journalDiskSync;
 	
 	private long _nextTransaction;
@@ -45,9 +46,10 @@ public class PersistentJournal implements Journal {
 	 * @param directory
 	 * @param journalSizeThresholdInBytes Size of the current journal file beyond which it is closed and a new one started. Zero indicates no size threshold. This is useful journal backup purposes.
 	 * @param journalAgeThresholdInMillis Age of the current journal file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful journal backup purposes.
+     * @param useExistingJournalIfRollFails Whether to ignore failures rolling the journal file. When true, if opening a new journal file fails (and a current journal file is already open), append will write to the existing journal. If false, the transaction will fail. Defaults to false. Useful to tolerate a file descriptor limit exceeded scenario.
 	 */
 	public PersistentJournal(PrevaylerDirectory directory, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis,
-							 boolean journalDiskSync, String journalSuffix, Monitor monitor) throws IOException {
+							 boolean journalDiskSync, boolean useExistingJournalIfRollFails, String journalSuffix, Monitor monitor) throws IOException {
 		PrevaylerDirectory.checkValidJournalSuffix(journalSuffix);
 
 	    _monitor = monitor;
@@ -56,6 +58,7 @@ public class PersistentJournal implements Journal {
 		_journalSizeThresholdInBytes = journalSizeThresholdInBytes;
 		_journalAgeThresholdInMillis = journalAgeThresholdInMillis;
         _journalDiskSync = journalDiskSync;
+        _useExistingJournalIfRollFails = useExistingJournalIfRollFails;
 		_journalSuffix = journalSuffix;
 	}
 
@@ -125,7 +128,7 @@ public class PersistentJournal implements Journal {
         try {
             _outputJournal = new DurableOutputStream(file, _journalDiskSync);
         } catch (Exception exception) {
-            if (_outputJournal == null) {
+            if (_outputJournal == null || !_useExistingJournalIfRollFails) {
                 abort(exception, file, "creating", guide);
             }
             if (_rollFailureRequiresNotification) {
