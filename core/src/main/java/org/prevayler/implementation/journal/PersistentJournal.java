@@ -37,6 +37,7 @@ public class PersistentJournal implements Journal {
 	private long _nextTransaction;
 	private boolean _nextTransactionInitialized = false;
 	private Monitor _monitor;
+    private boolean _rollFailureRequiresNotification;
 
 	private final String _journalSuffix;
 
@@ -70,9 +71,7 @@ public class PersistentJournal implements Journal {
 			guide.checkSystemVersion(_nextTransaction);
 
 			if (!isOutputJournalStillValid()) {
-				outputJournalToClose = _outputJournal;
-				_outputJournal = createOutputJournal(_nextTransaction, guide);
-				_journalAgeTimer = StopWatch.start();
+				outputJournalToClose = rollJournalFileIfPossible(guide);
 			}
 
 			_nextTransaction++;
@@ -120,16 +119,25 @@ public class PersistentJournal implements Journal {
 	}
 
 
-	private DurableOutputStream createOutputJournal(long transactionNumber, Guided guide) {
-		File file = _directory.journalFile(transactionNumber, _journalSuffix);
-		try {
-			return new DurableOutputStream(file, _journalDiskSync);
-		} catch (Exception exception) {
-			abort(exception, file, "creating", guide);
-			return null;
-		}
-	}
-
+    private DurableOutputStream rollJournalFileIfPossible(TransactionGuide guide) {
+        DurableOutputStream outputJournalToClose = _outputJournal;
+        File file = _directory.journalFile(_nextTransaction, _journalSuffix);
+        try {
+            _outputJournal = new DurableOutputStream(file, _journalDiskSync);
+        } catch (Exception exception) {
+            if (_outputJournal == null) {
+                abort(exception, file, "creating", guide);
+            }
+            if (_rollFailureRequiresNotification) {
+                _monitor.notify(PersistentJournal.class, String.format("An IOException was thrown while creating a .journal file. The current file [%s] will continue to be used until the journal can be rolled.", _outputJournal.file()), exception);
+                _rollFailureRequiresNotification = false;
+            }
+            return null;
+        }
+        _journalAgeTimer = StopWatch.start();
+        _rollFailureRequiresNotification = true;
+        return outputJournalToClose;
+    }
 
     /** IMPORTANT: This method cannot be called while the log() method is being called in another thread.
 	 * If there are no journal files in the directory (when a snapshot is taken and all journal files are manually deleted, for example), the initialTransaction parameter in the first call to this method will define what the next transaction number will be. We have to find clearer/simpler semantics.
