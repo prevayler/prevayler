@@ -6,3 +6,4 @@ target/
 *.iml
 /tests/Test*/
 /extras/facade/Prevalence/
+.byke
