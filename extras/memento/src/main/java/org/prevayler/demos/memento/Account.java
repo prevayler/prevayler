@@ -1,6 +1,9 @@
 package org.prevayler.demos.memento;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.prevayler.util.memento.Memento;
 import org.prevayler.util.memento.MementoCollector;
 
@@ -9,13 +12,15 @@ import org.prevayler.util.memento.MementoCollector;
  */
 public class Account implements java.io.Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	private long number;
 	private String holder;
 	private long balance = 0;
-	private List transactionHistory = new ArrayList();
+	private List<Transaction> transactionHistory = new ArrayList<Transaction>();
     
-    private Account() {
-    }
+    @SuppressWarnings("unused")
+	private Account() {} //Is this used by some serializer that requires no-arg constructors?
     
 	Account(long number, String holder) throws InvalidHolder {
 		this.number = number;
@@ -28,14 +33,14 @@ public class Account implements java.io.Serializable {
   private class AccountMemento extends Memento {
     private String holder;
     private long balance;
-    private List transactionHistory;
+    private List<Transaction> transactionHistory;
     
     private AccountMemento() {
       super();
       
       holder = Account.this.holder;
       balance = Account.this.balance;
-      transactionHistory = new ArrayList(Account.this.transactionHistory);
+      transactionHistory = new ArrayList<Transaction>(Account.this.transactionHistory);
     }
     
     protected void restore() {
@@ -107,11 +112,12 @@ public class Account implements java.io.Serializable {
 		if (amount > 10000) throw new InvalidAmount("Amount maximum (10000) exceeded.");
 	}
 
-    public List transactionHistory() {
+    public List<Transaction> transactionHistory() {
         return transactionHistory;
     }
 
 	public class InvalidAmount extends Exception {
+		private static final long serialVersionUID = 1L;
 		public InvalidAmount(String message) {
 			super(message);
 		}
@@ -122,14 +128,16 @@ public class Account implements java.io.Serializable {
 	}
 
 	public class InvalidHolder extends Exception {
+		private static final long serialVersionUID = 1L;
 		public InvalidHolder() {
 			super("Invalid holder name.");
 		}
 	}
 
     private class Transaction implements java.io.Serializable {
+		private static final long serialVersionUID = 1L;
 
-        private final long amount;
+		private final long amount;
         private final Date timestamp;
 
         private Transaction(long amount, Date timestamp) {
