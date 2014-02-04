@@ -51,6 +51,7 @@ public class PrevaylerFactory<P>{
 	private long _journalSizeThreshold;
 	private long _journalAgeThreshold;
     private boolean _journalDiskSync = true;
+    private boolean _useExistingJournalIfRollFails;
 	
 	private int _serverPort = -1;
 	private String _remoteServerIpAddress;
@@ -262,6 +263,13 @@ public class PrevaylerFactory<P>{
         _journalDiskSync = journalDiskSync;
     }
 
+    /**
+     * Set to <code>true</code> to tolerate a failure to roll a journal file by continuing to append to the existing file.
+     * The default is <code>false</code>, which means fail immediately if a new journal file cannot be opened when the file age or size threshold is exceeded.
+     */
+    public void configureUseExistingJournalIfRollFails(boolean useExistingJournalIfRollFails) {
+        _useExistingJournalIfRollFails = useExistingJournalIfRollFails;
+    }
 	
 	public void configureJournalSerializer(JavaSerializer serializer) {
 		configureJournalSerializer("journal", serializer);
@@ -341,7 +349,7 @@ public class PrevaylerFactory<P>{
 			return (Journal) new TransientJournal();
 		} else {
 			PrevaylerDirectory directory = new PrevaylerDirectory(prevalenceDirectory());
-			return new PersistentJournal(directory, _journalSizeThreshold, _journalAgeThreshold, _journalDiskSync, journalSuffix(), monitor());
+			return new PersistentJournal(directory, _journalSizeThreshold, _journalAgeThreshold, _journalDiskSync, _useExistingJournalIfRollFails, journalSuffix(), monitor());
 		}
 	}
 
