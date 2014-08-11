@@ -33,19 +33,18 @@
 package org.prevayler.contrib.facade;
 
 import junit.framework.TestCase;
+
 import java.lang.reflect.Method;
 
 /**
  * @author Jay Sachs [jay@contravariant.org]
  */
 public class MethodInfoTest
-    extends TestCase
-{
-    public void testSimple()
-        throws Exception
-    {
-        Method m = String.class.getMethod("length", new Class[0]);
-        MethodInfo mi = new MethodInfo(m);
-        assertEquals("methods should be equal", m, mi.getMethod());
-    }
+    extends TestCase {
+  public void testSimple()
+      throws Exception {
+    Method m = String.class.getMethod("length", new Class[0]);
+    MethodInfo mi = new MethodInfo(m);
+    assertEquals("methods should be equal", m, mi.getMethod());
+  }
 }

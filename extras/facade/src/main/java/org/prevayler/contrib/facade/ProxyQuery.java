@@ -42,28 +42,25 @@ import org.prevayler.Query;
 /**
  * Proxy representation of a Prevayler Query
  *
- * @since 0_1
  * @author Jay Sachs [jay@contravariant.org]
  * @author Jacob Kjome [hoju@visi.com]
+ * @since 0_1
  */
 public class ProxyQuery
     extends AbstractProxy
-    implements Query<Serializable, Object>
-{
-    private static final long serialVersionUID = 7773538966349888966L;
+    implements Query<Serializable, Object> {
+  private static final long serialVersionUID = 7773538966349888966L;
 
-    /**
-     * @since 0_2
-     */
-    public ProxyQuery(Method p_method, Object[] p_args, TransactionHint p_hint)
-    {
-        super(p_method, p_args, p_hint);
-    }
+  /**
+   * @since 0_2
+   */
+  public ProxyQuery(Method p_method, Object[] p_args, TransactionHint p_hint) {
+    super(p_method, p_args, p_hint);
+  }
 
-    public Object query(Serializable p_prevalentSystem, Date p_timestamp)
-        throws Exception
-    {
-        return execute(p_prevalentSystem, p_timestamp);
-    }
+  public Object query(Serializable p_prevalentSystem, Date p_timestamp)
+      throws Exception {
+    return execute(p_prevalentSystem, p_timestamp);
+  }
 
 }

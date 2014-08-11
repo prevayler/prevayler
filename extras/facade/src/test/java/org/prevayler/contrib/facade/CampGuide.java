@@ -40,38 +40,37 @@ import java.util.Set;
  * @author Jacob Kjome [hoju@visi.com]
  */
 public interface CampGuide extends Serializable {
-    /**
-     * Adds the given camp site to this camp guide
-     */
-    public void addCampSite(CampSite site);
+  /**
+   * Adds the given camp site to this camp guide
+   */
+  public void addCampSite(CampSite site);
 
-    /**
-     * updates an existing campsite with new information
-     * 
-     * @param site
-     */
-    public void updateCampSite(CampSite site);
-    
-    /**
-     * Removes the given camp site from this camp guide
-     */
-    public void removeCampSite(CampSite site);
+  /**
+   * updates an existing campsite with new information
+   *
+   * @param site
+   */
+  public void updateCampSite(CampSite site);
 
-    /**
-     * 
-     * @param objectCode
-     * @return a camp site given its globally unique identifier which is created at CampSite instantiation
-     */
-    public CampSite getCampSite(String objectCode);
-    
-    /**
-     * Returns all camp sites in this camp guide
-     */
-    public Set getCampSites();
-    
-    /**
-     * Sets the time of the current transaction in order
-     * to apply it to added objects (optional)
-     */
-    public void setTransactionTime(Date timestamp);
+  /**
+   * Removes the given camp site from this camp guide
+   */
+  public void removeCampSite(CampSite site);
+
+  /**
+   * @param objectCode
+   * @return a camp site given its globally unique identifier which is created at CampSite instantiation
+   */
+  public CampSite getCampSite(String objectCode);
+
+  /**
+   * Returns all camp sites in this camp guide
+   */
+  public Set getCampSites();
+
+  /**
+   * Sets the time of the current transaction in order
+   * to apply it to added objects (optional)
+   */
+  public void setTransactionTime(Date timestamp);
 }

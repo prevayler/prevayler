@@ -23,8 +23,8 @@ class NumberKeeper implements java.io.Serializable {
 
   int lastNumber() {
     return numbers.isEmpty()
-      ? 0
-      : ((Integer)numbers.get(numbers.size() - 1)).intValue();
+        ? 0
+        : ((Integer) numbers.get(numbers.size() - 1)).intValue();
   }
 
 }

@@ -5,24 +5,28 @@ import org.prevayler.demos.scalability.ScalabilityTestSubject;
 
 abstract class PrevaylerScalabilitySubject implements ScalabilityTestSubject {
 
-	protected Prevayler prevayler;
-
-	
-	{System.gc();}
+  protected Prevayler prevayler;
 
 
-	public String name() { return "Prevayler"; }
+  {
+    System.gc();
+  }
 
 
-	public void replaceAllRecords(int records) {
-		try {
+  public String name() {
+    return "Prevayler";
+  }
 
-			prevayler.execute(new AllRecordsReplacement(records));
 
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException("Unexpected Exception: " + ex);
-		}
-	}
+  public void replaceAllRecords(int records) {
+    try {
+
+      prevayler.execute(new AllRecordsReplacement(records));
+
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      throw new RuntimeException("Unexpected Exception: " + ex);
+    }
+  }
 
 }

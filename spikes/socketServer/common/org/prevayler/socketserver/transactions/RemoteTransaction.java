@@ -32,27 +32,29 @@ import org.prevayler.TransactionWithQuery;
  * A default implementation of IRemoteTransaction.  Instead of implementing the interface
  * yourself, you can inherit from this class.  If you don't want a single-rooted
  * Transaction hierarchy, however, just implement the interface.
- * 
+ *
  * @author DaveO
  */
 public abstract class RemoteTransaction implements Transaction, TransactionWithQuery, IRemoteTransaction {
 
-    protected Long senderID;
-    
-	/**
-	 * Sets the connectionID.
-	 * @param connectionID The connectionID to set
-	 */
-	public void setSenderID(Long connectionID) {
-		this.senderID = connectionID;
-	}
+  protected Long senderID;
 
-    public abstract Object executeAndQuery(Object prevalentSystem, Date timestamp) throws Exception;
-    
-    public void executeOn(Object prevalentSystem, Date timestamp) {
-        try {
-            executeAndQuery(prevalentSystem, timestamp);
-        } catch (Exception e) {}
+  /**
+   * Sets the connectionID.
+   *
+   * @param connectionID The connectionID to set
+   */
+  public void setSenderID(Long connectionID) {
+    this.senderID = connectionID;
+  }
+
+  public abstract Object executeAndQuery(Object prevalentSystem, Date timestamp) throws Exception;
+
+  public void executeOn(Object prevalentSystem, Date timestamp) {
+    try {
+      executeAndQuery(prevalentSystem, timestamp);
+    } catch (Exception e) {
     }
+  }
 }
 

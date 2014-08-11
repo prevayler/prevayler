@@ -19,12 +19,12 @@
 
 /**
  * Utility class to display information on when snapshots are made.
- * 
+ *
  * Leonard Norrgard <lkn@acm.org>
  * Refactor, Finland. http://www.refactor.fi/
- * 
- * @version 	1.0
- * @author		Leonard Norrgard <lkn@acm.org>
+ *
+ * @version 1.0
+ * @author Leonard Norrgard <lkn@acm.org>
  * @see SnapshotMaker
  */
 package org.prevayler.demos.demo3;
@@ -33,26 +33,30 @@ import org.prevayler.Prevayler;
 import org.prevayler.util.SnapshotMaker;
 
 public class SimpleLogger implements SnapshotMaker.SnapshotListener {
-	public void snapshotStarted (Prevayler prevayler, long prevaylerDate, long systemDate) {
-	    System.out.println("prevayler clock date when snapshot started: " + new java.util.Date(prevaylerDate));
-	    System.out.println("system clock date when snapshot started: " + new java.util.Date(systemDate));
-	}
-	public void snapshotTaken (Prevayler prevayler, long prevaylerDate, long systemDate) {
-	    System.out.println("prevayler clock date when snapshot completed: " + new java.util.Date(prevaylerDate));
-	    System.out.println("system clock date when snapshot completed: " + new java.util.Date(systemDate));
-	}
-	public void snapshotException (Prevayler prevayler, Exception exception, long prevaylerDate, long systemDate) {
-	    System.out.println("prevayler clock date when Exception occured: " + new java.util.Date(prevaylerDate));
-	    System.out.println("system clock when Exception occured: " + new java.util.Date(systemDate));
-	    System.out.println("the exception was: " + exception);
-	}
-	public void snapshotError (Prevayler prevayler, Error error, long prevaylerDate, long systemDate) {
-	    System.out.println("prevayler clock date when Error occured: " + new java.util.Date(prevaylerDate));
-	    System.out.println("system clock date when Error occured: " + new java.util.Date(systemDate));
-	    System.out.println("the error was: " + error);
-	}
-	public void snapshotShutdown (Prevayler prevayler, long prevaylerDate, long systemDate) {
-	    System.out.println("prevayler clock date when shutting down SnapshotMaker: " + new java.util.Date(prevaylerDate));
-	    System.out.println("system clock date when shutting down SnapshotMaker: " + new java.util.Date(systemDate));
-	}
+  public void snapshotStarted(Prevayler prevayler, long prevaylerDate, long systemDate) {
+    System.out.println("prevayler clock date when snapshot started: " + new java.util.Date(prevaylerDate));
+    System.out.println("system clock date when snapshot started: " + new java.util.Date(systemDate));
+  }
+
+  public void snapshotTaken(Prevayler prevayler, long prevaylerDate, long systemDate) {
+    System.out.println("prevayler clock date when snapshot completed: " + new java.util.Date(prevaylerDate));
+    System.out.println("system clock date when snapshot completed: " + new java.util.Date(systemDate));
+  }
+
+  public void snapshotException(Prevayler prevayler, Exception exception, long prevaylerDate, long systemDate) {
+    System.out.println("prevayler clock date when Exception occured: " + new java.util.Date(prevaylerDate));
+    System.out.println("system clock when Exception occured: " + new java.util.Date(systemDate));
+    System.out.println("the exception was: " + exception);
+  }
+
+  public void snapshotError(Prevayler prevayler, Error error, long prevaylerDate, long systemDate) {
+    System.out.println("prevayler clock date when Error occured: " + new java.util.Date(prevaylerDate));
+    System.out.println("system clock date when Error occured: " + new java.util.Date(systemDate));
+    System.out.println("the error was: " + error);
+  }
+
+  public void snapshotShutdown(Prevayler prevayler, long prevaylerDate, long systemDate) {
+    System.out.println("prevayler clock date when shutting down SnapshotMaker: " + new java.util.Date(prevaylerDate));
+    System.out.println("system clock date when shutting down SnapshotMaker: " + new java.util.Date(systemDate));
+  }
 }

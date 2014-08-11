@@ -18,38 +18,38 @@ import org.prevayler.foundation.*;
 
 public class QueryExecutionTest extends FileIOTest {
 
-	public void testQuery() throws Exception {
-		LinkedList prevalentSystem = new LinkedList();
-		Prevayler<LinkedList> prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem);
-		Integer result = prevayler.execute(query());
-		assertEquals(0, result.intValue());
-	}
+  public void testQuery() throws Exception {
+    LinkedList prevalentSystem = new LinkedList();
+    Prevayler<LinkedList> prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem);
+    Integer result = prevayler.execute(query());
+    assertEquals(0, result.intValue());
+  }
 
-	private static Query<LinkedList,Integer> query() {
-		return new Query<LinkedList,Integer>() {
-			public Integer query(LinkedList prevalentSystem, Date ignored) throws Exception {
-				return new Integer(prevalentSystem.size());
-			}
-		};
-	}
+  private static Query<LinkedList, Integer> query() {
+    return new Query<LinkedList, Integer>() {
+      public Integer query(LinkedList prevalentSystem, Date ignored) throws Exception {
+        return new Integer(prevalentSystem.size());
+      }
+    };
+  }
 
-	public void testTransactionWithQuery() throws Exception {
-		LinkedList prevalentSystem = new LinkedList();
-		Prevayler<LinkedList> prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem);
-		String result = prevayler.execute(transactionWithQuery());
-		assertEquals("abc", result);
-		assertEquals("added element", prevalentSystem.get(0));
-	}
+  public void testTransactionWithQuery() throws Exception {
+    LinkedList prevalentSystem = new LinkedList();
+    Prevayler<LinkedList> prevayler = PrevaylerFactory.createTransientPrevayler(prevalentSystem);
+    String result = prevayler.execute(transactionWithQuery());
+    assertEquals("abc", result);
+    assertEquals("added element", prevalentSystem.get(0));
+  }
 
-	private static TransactionWithQuery<LinkedList,String> transactionWithQuery() {
-		return new TransactionWithQuery<LinkedList,String>() {
-			private static final long serialVersionUID = -2976662596936807721L;
+  private static TransactionWithQuery<LinkedList, String> transactionWithQuery() {
+    return new TransactionWithQuery<LinkedList, String>() {
+      private static final long serialVersionUID = -2976662596936807721L;
 
-			public String executeAndQuery(LinkedList prevalentSystem, Date timestamp) {
-				prevalentSystem.add("added element");
-				return "abc";
-			}
-		};
-	}
+      public String executeAndQuery(LinkedList prevalentSystem, Date timestamp) {
+        prevalentSystem.add("added element");
+        return "abc";
+      }
+    };
+  }
 
 }

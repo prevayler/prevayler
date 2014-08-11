@@ -17,92 +17,92 @@ import java.io.IOException;
 
 public class CentralPublisher extends AbstractPublisher {
 
-	private final PausableClock _pausableClock;
-	private final Journal _journal;
+  private final PausableClock _pausableClock;
+  private final Journal _journal;
 
-	private volatile int _pendingPublications = 0;
-	private final Object _pendingPublicationsMonitor = new Object();
+  private volatile int _pendingPublications = 0;
+  private final Object _pendingPublicationsMonitor = new Object();
 
-	private Turn _nextTurn = Turn.first();
-	private long _nextTransaction;
-	private final Object _nextTurnMonitor = new Object();
-
-
-	public CentralPublisher(Clock clock, Journal journal) {
-		super(new PausableClock(clock));
-		_pausableClock = (PausableClock) _clock; //This is just to avoid casting the inherited _clock every time.
-
-		_journal = journal;
-	}
+  private Turn _nextTurn = Turn.first();
+  private long _nextTransaction;
+  private final Object _nextTurnMonitor = new Object();
 
 
-	public void publish(Capsule capsule) {
-		synchronized (_pendingPublicationsMonitor) {  //Blocks all new subscriptions until the publication is over.
-			if (_pendingPublications == 0) _pausableClock.pause();
-			_pendingPublications++;
-		}
+  public CentralPublisher(Clock clock, Journal journal) {
+    super(new PausableClock(clock));
+    _pausableClock = (PausableClock) _clock; //This is just to avoid casting the inherited _clock every time.
 
-		try {
-			publishWithoutWorryingAboutNewSubscriptions(capsule);  // Suggestions for a better method name are welcome.  :)
-		} finally {
-			synchronized (_pendingPublicationsMonitor) {
-				_pendingPublications--;
-				if (_pendingPublications == 0) {
-					_pausableClock.resume();
-					_pendingPublicationsMonitor.notifyAll();
-				}
-			}
-		}
-	}
+    _journal = journal;
+  }
 
 
-	private void publishWithoutWorryingAboutNewSubscriptions(Capsule capsule) {
-		TransactionGuide guide = guideFor(capsule);
-		_journal.append(guide);
-		notifySubscribers(guide);
-	}
+  public void publish(Capsule capsule) {
+    synchronized (_pendingPublicationsMonitor) {  //Blocks all new subscriptions until the publication is over.
+      if (_pendingPublications == 0) _pausableClock.pause();
+      _pendingPublications++;
+    }
 
-	private TransactionGuide guideFor(Capsule capsule) {
-		synchronized (_nextTurnMonitor) {
-			TransactionTimestamp timestamp = new TransactionTimestamp(capsule, _nextTransaction, _pausableClock.realTime());
-
-			// Count this transaction
-			Turn turn = _nextTurn;
-			_nextTurn = _nextTurn.next();
-			_nextTransaction++;
-
-			return new TransactionGuide(timestamp, turn);
-		}
-	}
-
-	private void notifySubscribers(TransactionGuide guide) {
-		guide.startTurn();
-		try {
-			_pausableClock.advanceTo(guide.executionTime());
-			notifySubscribers(guide.timestamp());
-		} finally {
-			guide.endTurn();
-		}
-	}
+    try {
+      publishWithoutWorryingAboutNewSubscriptions(capsule);  // Suggestions for a better method name are welcome.  :)
+    } finally {
+      synchronized (_pendingPublicationsMonitor) {
+        _pendingPublications--;
+        if (_pendingPublications == 0) {
+          _pausableClock.resume();
+          _pendingPublicationsMonitor.notifyAll();
+        }
+      }
+    }
+  }
 
 
-	public void subscribe(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
-		synchronized (_pendingPublicationsMonitor) {
-			while (_pendingPublications != 0) Cool.wait(_pendingPublicationsMonitor);
+  private void publishWithoutWorryingAboutNewSubscriptions(Capsule capsule) {
+    TransactionGuide guide = guideFor(capsule);
+    _journal.append(guide);
+    notifySubscribers(guide);
+  }
 
-			_journal.update(subscriber, initialTransaction);
+  private TransactionGuide guideFor(Capsule capsule) {
+    synchronized (_nextTurnMonitor) {
+      TransactionTimestamp timestamp = new TransactionTimestamp(capsule, _nextTransaction, _pausableClock.realTime());
 
-			synchronized (_nextTurnMonitor) {
-				_nextTransaction = _journal.nextTransaction();
-			}
+      // Count this transaction
+      Turn turn = _nextTurn;
+      _nextTurn = _nextTurn.next();
+      _nextTransaction++;
 
-			super.addSubscriber(subscriber);
-		}
-	}
+      return new TransactionGuide(timestamp, turn);
+    }
+  }
+
+  private void notifySubscribers(TransactionGuide guide) {
+    guide.startTurn();
+    try {
+      _pausableClock.advanceTo(guide.executionTime());
+      notifySubscribers(guide.timestamp());
+    } finally {
+      guide.endTurn();
+    }
+  }
 
 
-	public void close() throws IOException {
-		_journal.close();
-	}
+  public void subscribe(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
+    synchronized (_pendingPublicationsMonitor) {
+      while (_pendingPublications != 0) Cool.wait(_pendingPublicationsMonitor);
+
+      _journal.update(subscriber, initialTransaction);
+
+      synchronized (_nextTurnMonitor) {
+        _nextTransaction = _journal.nextTransaction();
+      }
+
+      super.addSubscriber(subscriber);
+    }
+  }
+
+
+  public void close() throws IOException {
+    _journal.close();
+  }
 
 }

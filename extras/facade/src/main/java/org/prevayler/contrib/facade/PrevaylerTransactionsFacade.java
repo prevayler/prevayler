@@ -42,45 +42,40 @@ import org.prevayler.Prevayler;
 /**
  * The main class to create transaction facades.
  *
- * @since 0_1
  * @author Jay Sachs [jay@contravariant.org]
  * @author Jacob Kjome [hoju@visi.com]
+ * @since 0_1
  */
-public class PrevaylerTransactionsFacade
-{
+public class PrevaylerTransactionsFacade {
 
-    /**
-     * defaults to using a {@link TransactionHint#NOOP_TRANSACTION_HINT}
-     */
-    public static Object create(Class p_intf, Prevayler p_prevayler)
-    {
-        return create(p_intf,
-                      p_prevayler,
-                      TransactionType.SIMPLE_DETERMINER,
-                      TransactionHint.NOOP_TRANSACTION_HINT);
-    }
+  /**
+   * defaults to using a {@link TransactionHint#NOOP_TRANSACTION_HINT}
+   */
+  public static Object create(Class p_intf, Prevayler p_prevayler) {
+    return create(p_intf,
+        p_prevayler,
+        TransactionType.SIMPLE_DETERMINER,
+        TransactionHint.NOOP_TRANSACTION_HINT);
+  }
 
-    /**
-     * @since 0_2
-     */
-    public static Object create(final Class p_intf,
-                                final Prevayler p_prevayler,
-                                final TransactionType.Determiner p_determiner,
-                                final TransactionHint p_hint)
-    {
-        return Proxy.newProxyInstance
-            (p_intf.getClassLoader(),
-             new Class[] { p_intf },
-             new InvocationHandler ()
-             {
-                 public Object invoke(Object p_proxy,
-                                      Method p_method,
-                                      Object [] p_args)
-                     throws Throwable
-                 {
-                     return p_determiner.determineTransactionType(p_method)
-                         .execute(p_prevayler, p_method, p_args, p_hint);
-                 }
-             });
-    }
+  /**
+   * @since 0_2
+   */
+  public static Object create(final Class p_intf,
+                              final Prevayler p_prevayler,
+                              final TransactionType.Determiner p_determiner,
+                              final TransactionHint p_hint) {
+    return Proxy.newProxyInstance
+        (p_intf.getClassLoader(),
+            new Class[]{p_intf},
+            new InvocationHandler() {
+              public Object invoke(Object p_proxy,
+                                   Method p_method,
+                                   Object[] p_args)
+                  throws Throwable {
+                return p_determiner.determineTransactionType(p_method)
+                    .execute(p_prevayler, p_method, p_args, p_hint);
+              }
+            });
+  }
 }

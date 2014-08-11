@@ -16,13 +16,13 @@ import java.util.List;
  * @author Carlos Villela
  */
 public class ProjectManagementSystem implements Serializable {
-	private List projects;
-	
-	public ProjectManagementSystem() {
-		projects = new ArrayList();
-	}
-	
-	public List getProjects() {
-		return projects;
-	}
+  private List projects;
+
+  public ProjectManagementSystem() {
+    projects = new ArrayList();
+  }
+
+  public List getProjects() {
+    return projects;
+  }
 }

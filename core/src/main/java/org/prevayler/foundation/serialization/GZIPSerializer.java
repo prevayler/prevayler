@@ -17,28 +17,28 @@ import java.util.zip.GZIPOutputStream;
 
 public class GZIPSerializer implements Serializer {
 
-    private final Serializer _delegate;
+  private final Serializer _delegate;
 
-    private final int _bufferSize;
+  private final int _bufferSize;
 
-    public GZIPSerializer(Serializer delegate) {
-        this(delegate, 512);
-    }
+  public GZIPSerializer(Serializer delegate) {
+    this(delegate, 512);
+  }
 
-    public GZIPSerializer(Serializer delegate, int gzipBufferSize) {
-        _delegate = delegate;
-        _bufferSize = gzipBufferSize;
-    }
+  public GZIPSerializer(Serializer delegate, int gzipBufferSize) {
+    _delegate = delegate;
+    _bufferSize = gzipBufferSize;
+  }
 
-    public void writeObject(OutputStream stream, Object object) throws Exception {
-        GZIPOutputStream gzip = new GZIPOutputStream(stream, _bufferSize);
-        _delegate.writeObject(gzip, object);
-        gzip.close();
-    }
+  public void writeObject(OutputStream stream, Object object) throws Exception {
+    GZIPOutputStream gzip = new GZIPOutputStream(stream, _bufferSize);
+    _delegate.writeObject(gzip, object);
+    gzip.close();
+  }
 
-    public Object readObject(InputStream stream) throws Exception {
-        GZIPInputStream gunzip = new GZIPInputStream(stream, _bufferSize);
-        return _delegate.readObject(gunzip);
-    }
+  public Object readObject(InputStream stream) throws Exception {
+    GZIPInputStream gunzip = new GZIPInputStream(stream, _bufferSize);
+    return _delegate.readObject(gunzip);
+  }
 
 }

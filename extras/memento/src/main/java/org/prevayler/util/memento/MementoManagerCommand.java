@@ -19,61 +19,61 @@ import org.prevayler.demos.memento.Bank;
  * @author Johan Stuyts
  * @version 2.0
  */
-public class MementoManagerCommand implements TransactionWithQuery<Bank,Account>, MementoCollector {
+public class MementoManagerCommand implements TransactionWithQuery<Bank, Account>, MementoCollector {
 
-	/**
-	 * Create a memento manager transaction.
-	 * 
-	 * @param transaction The actual transaction to execute.
-	 */
-	public MementoManagerCommand(MementoTransaction transaction) {
-		this.transaction = transaction;
-	}
+  /**
+   * Create a memento manager transaction.
+   *
+   * @param transaction The actual transaction to execute.
+   */
+  public MementoManagerCommand(MementoTransaction transaction) {
+    this.transaction = transaction;
+  }
 
-	/**
-	 * Executes this transaction on the received system. See org.prevayler.demos for examples.
-	 * The returned object has to be Serializable in preparation for future versions of
-	 * Prevayler that will provide fault-tolerance through system replicas.
-	 * 
-	 * This method executes the actual transaction and restores the mementos if the execution fails.
-	 * 
-	 * @param prevalentSystem The prevalent system on which to execute the transaction.
-	 * @return The object returned by the execution of this transaction. Most commands simply return null.
-	 */
-	public Account executeAndQuery(Bank prevalentSystem, Date timestamp) throws Exception {
-		mementos = new HashMap();
-		try {
-			return transaction.execute(this, prevalentSystem);
-		} catch (Exception e) {
-			// Something went wrong. Restore the mementos.
-			Iterator iterator;
+  /**
+   * Executes this transaction on the received system. See org.prevayler.demos for examples.
+   * The returned object has to be Serializable in preparation for future versions of
+   * Prevayler that will provide fault-tolerance through system replicas.
+   * <p/>
+   * This method executes the actual transaction and restores the mementos if the execution fails.
+   *
+   * @param prevalentSystem The prevalent system on which to execute the transaction.
+   * @return The object returned by the execution of this transaction. Most commands simply return null.
+   */
+  public Account executeAndQuery(Bank prevalentSystem, Date timestamp) throws Exception {
+    mementos = new HashMap();
+    try {
+      return transaction.execute(this, prevalentSystem);
+    } catch (Exception e) {
+      // Something went wrong. Restore the mementos.
+      Iterator iterator;
 
-			iterator = mementos.values().iterator();
-			while (iterator.hasNext()) {
-				Memento memento = (Memento) iterator.next();
-				memento.restore();
-			}
+      iterator = mementos.values().iterator();
+      while (iterator.hasNext()) {
+        Memento memento = (Memento) iterator.next();
+        memento.restore();
+      }
 
-			throw e;
-		} finally {
-			mementos = null;
-		}
-	}
+      throw e;
+    } finally {
+      mementos = null;
+    }
+  }
 
-	/**
-	 * Add a memento to the memento collection. A memento will only be added if a memento
-	 * with the same owner does not exist.
-	 * 
-	 * @param memento The memento to add.
-	 */
-	public void addMemento(Memento memento) {
-		if (mementos.get(memento.getOwner()) == null) {
-			mementos.put(memento, memento);
-		}
-	}
+  /**
+   * Add a memento to the memento collection. A memento will only be added if a memento
+   * with the same owner does not exist.
+   *
+   * @param memento The memento to add.
+   */
+  public void addMemento(Memento memento) {
+    if (mementos.get(memento.getOwner()) == null) {
+      mementos.put(memento, memento);
+    }
+  }
 
-	private MementoTransaction transaction;
+  private MementoTransaction transaction;
 
-	private transient Map mementos;
+  private transient Map mementos;
 
 }

@@ -27,41 +27,45 @@ import java.io.Serializable;
 
 /**
  * A Todo business object
+ *
  * @author djo
  */
 public class Todo implements Serializable {
 
-    public Todo(int id) {
-        this.id = id;
-        desc = "";
-    }
-    
-    private int id;
+  public Todo(int id) {
+    this.id = id;
+    desc = "";
+  }
 
-    /**
-     * Returns the id.
-     * @return int
-     */
-    public int getId() {
-        return id;
-    }
+  private int id;
 
-    private String desc;
+  /**
+   * Returns the id.
+   *
+   * @return int
+   */
+  public int getId() {
+    return id;
+  }
 
-	/**
-	 * Returns the desc.
-	 * @return String
-	 */
-	public String getDesc() {
-		return desc;
-	}
+  private String desc;
 
-	/**
-	 * Sets the desc.
-	 * @param desc The desc to set
-	 */
-	public void setDesc(String desc) {
-		this.desc = desc;
-	}
+  /**
+   * Returns the desc.
+   *
+   * @return String
+   */
+  public String getDesc() {
+    return desc;
+  }
+
+  /**
+   * Sets the desc.
+   *
+   * @param desc The desc to set
+   */
+  public void setDesc(String desc) {
+    this.desc = desc;
+  }
 
 }

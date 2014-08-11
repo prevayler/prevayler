@@ -37,76 +37,77 @@ import org.prevayler.TransactionWithQuery;
 
 /**
  * Forwards commands to Prevayler from a single client for its entire session.
- * 
+ *
  * @author DaveO
  */
 public class CommandThread extends Thread {
-    private Prevayler prevayler;
-    private Socket socket;
-    private long myId;
+  private Prevayler prevayler;
+  private Socket socket;
+  private long myId;
 
-    /**
-     * Server socket thread constructor
-     */    
-    public CommandThread(Prevayler p, Socket s) {
-        prevayler = p;
-        socket = s;
-        myId = Reaper.registerCommandThread();
-    }
+  /**
+   * Server socket thread constructor
+   */
+  public CommandThread(Prevayler p, Socket s) {
+    prevayler = p;
+    socket = s;
+    myId = Reaper.registerCommandThread();
+  }
 
-    /*
-     * Request handling loop
-     */
-    private void handleRequests() throws Exception {
-        boolean done = false;
-        ObjectOutputStream o = null;
-        ObjectInputStream i = null;
+  /*
+   * Request handling loop
+   */
+  private void handleRequests() throws Exception {
+    boolean done = false;
+    ObjectOutputStream o = null;
+    ObjectInputStream i = null;
 
-        // First send the connection ID back to the client
-        o = new ObjectOutputStream(socket.getOutputStream());
-        o.writeObject(new Long(myId));
-        
-        // Now read commands in a loop until the client is done.
-        while (!done) {
-            i = new ObjectInputStream(socket.getInputStream());
-            Object t = i.readObject();
-            if (t instanceof Disconnect) {
-                socket.close();
-                done = true;
-                Reaper.reap(new Long(myId));
-            } else if (t instanceof RegisterCallback) {
-                Notification.registerCallback(myId, ((RegisterCallback)t).message );
-            } else if (t instanceof UnregisterCallback) {
-                Notification.unregisterCallback(myId, ((UnregisterCallback)t).message );
-            } else {
-            	((IRemoteTransaction)t).setSenderID(new Long(myId));
-                Serializable result;
-                TransactionWithQuery transaction = (TransactionWithQuery) t;
-                try {
-                    result = (Serializable) prevayler.execute(transaction);
-                } catch (Exception e) {
-                    result = new ThrownException(e);
-                }
-                
-                o = new ObjectOutputStream(socket.getOutputStream());
-                o.writeObject(result);
-            }
-        }
-    }
-    
-    /*
-     * Start a request handling loop and log exceptions
-     */
-    public void run() {
+    // First send the connection ID back to the client
+    o = new ObjectOutputStream(socket.getOutputStream());
+    o.writeObject(new Long(myId));
+
+    // Now read commands in a loop until the client is done.
+    while (!done) {
+      i = new ObjectInputStream(socket.getInputStream());
+      Object t = i.readObject();
+      if (t instanceof Disconnect) {
+        socket.close();
+        done = true;
+        Reaper.reap(new Long(myId));
+      } else if (t instanceof RegisterCallback) {
+        Notification.registerCallback(myId, ((RegisterCallback) t).message);
+      } else if (t instanceof UnregisterCallback) {
+        Notification.unregisterCallback(myId, ((UnregisterCallback) t).message);
+      } else {
+        ((IRemoteTransaction) t).setSenderID(new Long(myId));
+        Serializable result;
+        TransactionWithQuery transaction = (TransactionWithQuery) t;
         try {
-            handleRequests();
+          result = (Serializable) prevayler.execute(transaction);
         } catch (Exception e) {
-            Reaper.reap(new Long(myId));
-            try {
-                socket.close();
-            } catch (Exception e2) {}
-            e.printStackTrace();
+          result = new ThrownException(e);
         }
+
+        o = new ObjectOutputStream(socket.getOutputStream());
+        o.writeObject(result);
+      }
     }
+  }
+
+  /*
+   * Start a request handling loop and log exceptions
+   */
+  public void run() {
+    try {
+      handleRequests();
+    } catch (Exception e) {
+      Reaper.reap(new Long(myId));
+      try {
+        socket.close();
+      } catch (Exception e2) {
+      }
+      e.printStackTrace();
+    }
+  }
 }
 

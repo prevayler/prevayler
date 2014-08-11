@@ -39,61 +39,49 @@ import java.util.Date;
 
 
 /**
- * @since 0_1
  * @author Jay Sachs [jay@contravariant.org]
  * @author Jacob Kjome [hoju@visi.com]
+ * @since 0_1
  */
 public abstract class AbstractProxy
-    implements Serializable
-{
+    implements Serializable {
 
-    /**
-     * @since 0_2
-     */
-    protected AbstractProxy(Method p_method, Object[] p_args, TransactionHint p_hint)
-    {
-        m_methodInfo = new MethodInfo(p_method);
-        m_args = p_args;
-        m_hint = p_hint;
+  /**
+   * @since 0_2
+   */
+  protected AbstractProxy(Method p_method, Object[] p_args, TransactionHint p_hint) {
+    m_methodInfo = new MethodInfo(p_method);
+    m_args = p_args;
+    m_hint = p_hint;
+  }
+
+  private final MethodInfo m_methodInfo;
+  private final Object[] m_args;
+  private final TransactionHint m_hint;
+
+  /**
+   * @since 0_2
+   */
+  protected Object execute(Object p_prevalentSystem, Date p_timestamp)
+      throws Exception {
+    try {
+      m_hint.preExecute(p_prevalentSystem, getMethod(), m_args, p_timestamp);
+      return getMethod().invoke(p_prevalentSystem, m_args);
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (InvocationTargetException e) {
+      Throwable e2 = e.getTargetException();
+      if (e2 instanceof Exception) {
+        throw (Exception) e2;
+      } else {
+        throw (Error) e2;
+      }
     }
+  }
 
-    private final MethodInfo m_methodInfo;
-    private final Object[] m_args;
-    private final TransactionHint m_hint;
-
-    /**
-     * @since 0_2
-     */
-    protected Object execute(Object p_prevalentSystem, Date p_timestamp)
-        throws Exception
-    {
-        try
-        {
-            m_hint.preExecute(p_prevalentSystem, getMethod(), m_args, p_timestamp);
-            return getMethod().invoke(p_prevalentSystem, m_args);
-        }
-        catch (RuntimeException e)
-        {
-            throw e;
-        }
-        catch (InvocationTargetException e)
-        {
-            Throwable e2 = e.getTargetException();
-            if (e2 instanceof Exception)
-            {
-                throw (Exception) e2;
-            }
-            else
-            {
-                throw (Error) e2;
-            }
-        }
-    }
-
-    private Method getMethod()
-        throws Exception
-    {
-        return m_methodInfo.getMethod();
-    }
+  private Method getMethod()
+      throws Exception {
+    return m_methodInfo.getMethod();
+  }
 
 }

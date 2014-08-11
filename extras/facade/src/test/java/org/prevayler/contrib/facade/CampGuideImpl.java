@@ -40,77 +40,80 @@ import java.util.*;
  * @author Jacob Kjome [hoju@visi.com]
  */
 public class CampGuideImpl implements java.io.Serializable, CampGuide {
-    
-    static final long serialVersionUID = 0L;
-    
-    /** The list of camp sites */
-    private Map campSites;
-    private transient long transaction_time;
 
-    /**
-     * Creates a new camp guide
-     */
-    public CampGuideImpl() {
-        campSites = new HashMap();
-    }
+  static final long serialVersionUID = 0L;
 
-    /**
-     * Adds the given camp site to this camp guide
-     */
-    public void addCampSite(CampSite site) {
-        stampCampSite(site);
-        campSites.put(site.objectCode(), site);
-    }
+  /**
+   * The list of camp sites
+   */
+  private Map campSites;
+  private transient long transaction_time;
 
-    public void updateCampSite(CampSite site) {
-        if (!campSites.containsKey(site.objectCode())) throw new RuntimeException("Can't update non-existent camp site!  Try adding it first.");
-        addCampSite(site);
-    }
-    
-    /**
-     * Removes the given cam site from this camp guide
-     */
-    public void removeCampSite(CampSite site) {
-        campSites.remove(site.objectCode());
-    }
+  /**
+   * Creates a new camp guide
+   */
+  public CampGuideImpl() {
+    campSites = new HashMap();
+  }
 
-    public CampSite getCampSite(String objectCode) {
-        return (CampSite) campSites.get(objectCode);
+  /**
+   * Adds the given camp site to this camp guide
+   */
+  public void addCampSite(CampSite site) {
+    stampCampSite(site);
+    campSites.put(site.objectCode(), site);
+  }
+
+  public void updateCampSite(CampSite site) {
+    if (!campSites.containsKey(site.objectCode()))
+      throw new RuntimeException("Can't update non-existent camp site!  Try adding it first.");
+    addCampSite(site);
+  }
+
+  /**
+   * Removes the given cam site from this camp guide
+   */
+  public void removeCampSite(CampSite site) {
+    campSites.remove(site.objectCode());
+  }
+
+  public CampSite getCampSite(String objectCode) {
+    return (CampSite) campSites.get(objectCode);
+  }
+
+  /**
+   * Returns all camp sites in this camp guide
+   *
+   * @return an unmodifiable set of camp sites
+   */
+  public Set getCampSites() {
+    return Collections.unmodifiableSet(new HashSet(campSites.values()));
+  }
+
+  /**
+   * Set the current timestamp here in order for
+   * objects to get stamped as they are added to the
+   * prevalent system.  To work properly, this should be
+   * called from within a transaction, before the object
+   * is added to the system.  The value is not only
+   * transient, but also is reset to zero immediately
+   * after usage, so there should be no expectation of
+   * persisting this timestamp across transactions.  The
+   * value is for internal use anyway as there is no
+   * accessor method.
+   *
+   * @param timestamp
+   */
+  public void setTransactionTime(Date timestamp) {
+    if (timestamp != null) {
+      transaction_time = timestamp.getTime();
     }
-    
-    /**
-     * Returns all camp sites in this camp guide
-     * 
-     * @return an unmodifiable set of camp sites
-     */
-    public Set getCampSites() {
-        return Collections.unmodifiableSet(new HashSet(campSites.values()));
+  }
+
+  private void stampCampSite(CampSite site) {
+    if (this.transaction_time != 0) {
+      site.setTimestamp(this.transaction_time);
+      this.transaction_time = 0; //reset to zero after operation is done
     }
-    
-    /**
-     * Set the current timestamp here in order for
-     * objects to get stamped as they are added to the
-     * prevalent system.  To work properly, this should be
-     * called from within a transaction, before the object
-     * is added to the system.  The value is not only
-     * transient, but also is reset to zero immediately
-     * after usage, so there should be no expectation of
-     * persisting this timestamp across transactions.  The
-     * value is for internal use anyway as there is no
-     * accessor method.
-     * 
-     * @param timestamp
-     */
-    public void setTransactionTime(Date timestamp) {
-        if (timestamp != null) {
-            transaction_time = timestamp.getTime();
-        }
-    }
-    
-    private void stampCampSite(CampSite site) {
-        if (this.transaction_time != 0) {
-            site.setTimestamp(this.transaction_time);
-            this.transaction_time = 0; //reset to zero after operation is done
-        }
-    }
+  }
 }

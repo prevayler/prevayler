@@ -11,27 +11,28 @@ import org.prevayler.foundation.network.OldNetworkImpl;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 
 
-/** Reserved for future implementation.
+/**
+ * Reserved for future implementation.
  */
 public class ServerListener extends Thread {
 
-	private final TransactionPublisher _publisher;
-	private final ObjectServerSocket _serverSocket;
+  private final TransactionPublisher _publisher;
+  private final ObjectServerSocket _serverSocket;
 
-	//TODO Close the socket when the publisher is closed (listen for it or have the Dashboard (new idea) close this when it closes the publisher).
-	
-	public ServerListener(TransactionPublisher publisher, OldNetworkImpl network, int port) throws IOException {
-		_serverSocket = network.openObjectServerSocket(port);
-		_publisher = publisher;
-		setDaemon(true);
-		start(); //FIXME: Make sure this thread ends when Prevayler is closed.
-	} 
+  //TODO Close the socket when the publisher is closed (listen for it or have the Dashboard (new idea) close this when it closes the publisher).
 
-	public void run() {
-		try {
-			while (true) new ServerConnection(_publisher, _serverSocket.accept());
-		} catch (IOException iox) {
-			iox.printStackTrace();
-		}
-	}	
+  public ServerListener(TransactionPublisher publisher, OldNetworkImpl network, int port) throws IOException {
+    _serverSocket = network.openObjectServerSocket(port);
+    _publisher = publisher;
+    setDaemon(true);
+    start(); //FIXME: Make sure this thread ends when Prevayler is closed.
+  }
+
+  public void run() {
+    try {
+      while (true) new ServerConnection(_publisher, _serverSocket.accept());
+    } catch (IOException iox) {
+      iox.printStackTrace();
+    }
+  }
 }

@@ -15,115 +15,116 @@ import java.util.Date;
 
 public class PrevalentSystemGuard<P> implements TransactionSubscriber {
 
-	private P _prevalentSystem; // All access to field is synchronized on "this", and all access to object is synchronized on itself; "this" is always locked before the object
-	private long _systemVersion; // All access is synchronized on "this"
-	private boolean _ignoreRuntimeExceptions; // All access is synchronized on "this"
-	private final Serializer _journalSerializer;
-	
-	public PrevalentSystemGuard(P prevalentSystem, long systemVersion, Serializer journalSerializer) {
-		_prevalentSystem = prevalentSystem;
-		_systemVersion = systemVersion;
-		_ignoreRuntimeExceptions = false;
-		_journalSerializer = journalSerializer;
-	}
+  private P _prevalentSystem; // All access to field is synchronized on "this", and all access to object is synchronized on itself; "this" is always locked before the object
+  private long _systemVersion; // All access is synchronized on "this"
+  private boolean _ignoreRuntimeExceptions; // All access is synchronized on "this"
+  private final Serializer _journalSerializer;
 
-	public P prevalentSystem() {
-        synchronized (this) {
-            if (_prevalentSystem == null) {
-                throw new Error("Prevayler is no longer allowing access to the prevalent system due to an Error thrown from an earlier transaction.");
-            }
-            return _prevalentSystem;
-        }
-	}
-	
-	public void subscribeTo(TransactionPublisher publisher) throws IOException, ClassNotFoundException {
-		long initialTransaction;
-		synchronized (this) {
-			_ignoreRuntimeExceptions = true;     //During pending transaction recovery (rolling forward), RuntimeExceptions are ignored because they were already thrown and handled during the first transaction execution.
-			initialTransaction = _systemVersion + 1;
-		}
+  public PrevalentSystemGuard(P prevalentSystem, long systemVersion, Serializer journalSerializer) {
+    _prevalentSystem = prevalentSystem;
+    _systemVersion = systemVersion;
+    _ignoreRuntimeExceptions = false;
+    _journalSerializer = journalSerializer;
+  }
 
-		publisher.subscribe(this, initialTransaction);
+  public P prevalentSystem() {
+    synchronized (this) {
+      if (_prevalentSystem == null) {
+        throw new Error("Prevayler is no longer allowing access to the prevalent system due to an Error thrown from an earlier transaction.");
+      }
+      return _prevalentSystem;
+    }
+  }
 
-		synchronized (this) {
-			_ignoreRuntimeExceptions = false;
-		}
-	}
+  public void subscribeTo(TransactionPublisher publisher) throws IOException, ClassNotFoundException {
+    long initialTransaction;
+    synchronized (this) {
+      _ignoreRuntimeExceptions = true;     //During pending transaction recovery (rolling forward), RuntimeExceptions are ignored because they were already thrown and handled during the first transaction execution.
+      initialTransaction = _systemVersion + 1;
+    }
 
-	public void receive(TransactionTimestamp transactionTimestamp) {
-		Capsule capsule = transactionTimestamp.capsule();
-		long systemVersion = transactionTimestamp.systemVersion();
-		Date executionTime = transactionTimestamp.executionTime();
+    publisher.subscribe(this, initialTransaction);
 
-		synchronized (this) {
-            if (_prevalentSystem == null) {
-                throw new Error("Prevayler is no longer processing transactions due to an Error thrown from an earlier transaction.");
-            }
+    synchronized (this) {
+      _ignoreRuntimeExceptions = false;
+    }
+  }
 
-            if (systemVersion != _systemVersion + 1) {
-				throw new IllegalStateException(
-						"Attempted to apply transaction " + systemVersion + " when prevalent system was only at " + _systemVersion);
-			}
+  public void receive(TransactionTimestamp transactionTimestamp) {
+    Capsule capsule = transactionTimestamp.capsule();
+    long systemVersion = transactionTimestamp.systemVersion();
+    Date executionTime = transactionTimestamp.executionTime();
 
-			_systemVersion = systemVersion;
+    synchronized (this) {
+      if (_prevalentSystem == null) {
+        throw new Error("Prevayler is no longer processing transactions due to an Error thrown from an earlier transaction.");
+      }
 
-			try {
-				// Don't synchronize on _prevalentSystem here so that the capsule can deserialize a fresh
-				// copy of the transaction without blocking queries.
-				capsule.executeOn(_prevalentSystem, executionTime, _journalSerializer);				
-			} catch (RuntimeException rx) {
-				if (!_ignoreRuntimeExceptions) throw rx;  //TODO Guarantee that transactions received from pending transaction recovery don't ever throw RuntimeExceptions. Maybe use a wrapper for that.
-            } catch (Error error) {
-                _prevalentSystem = null;
-                throw error;
-            } finally {
-				notifyAll();
-			}
-		}
-	}
+      if (systemVersion != _systemVersion + 1) {
+        throw new IllegalStateException(
+            "Attempted to apply transaction " + systemVersion + " when prevalent system was only at " + _systemVersion);
+      }
 
-	public <R> R executeQuery(Query<? super P,R> sensitiveQuery, Clock clock) throws Exception {
-        synchronized (this) {
-            if (_prevalentSystem == null) {
-                throw new Error("Prevayler is no longer processing queries due to an Error thrown from an earlier transaction.");
-            }
+      _systemVersion = systemVersion;
 
-    		synchronized (_prevalentSystem) {
-    			return sensitiveQuery.query(_prevalentSystem, clock.time());
-    		}
-        }
-	}
+      try {
+        // Don't synchronize on _prevalentSystem here so that the capsule can deserialize a fresh
+        // copy of the transaction without blocking queries.
+        capsule.executeOn(_prevalentSystem, executionTime, _journalSerializer);
+      } catch (RuntimeException rx) {
+        if (!_ignoreRuntimeExceptions)
+          throw rx;  //TODO Guarantee that transactions received from pending transaction recovery don't ever throw RuntimeExceptions. Maybe use a wrapper for that.
+      } catch (Error error) {
+        _prevalentSystem = null;
+        throw error;
+      } finally {
+        notifyAll();
+      }
+    }
+  }
 
-	public File takeSnapshot(GenericSnapshotManager<P> snapshotManager) throws Exception {
-		synchronized (this) {
-            if (_prevalentSystem == null) {
-                throw new Error("Prevayler is no longer allowing snapshots due to an Error thrown from an earlier transaction.");
-            }
+  public <R> R executeQuery(Query<? super P, R> sensitiveQuery, Clock clock) throws Exception {
+    synchronized (this) {
+      if (_prevalentSystem == null) {
+        throw new Error("Prevayler is no longer processing queries due to an Error thrown from an earlier transaction.");
+      }
 
-			synchronized (_prevalentSystem) {
-				return snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
-			}
-		}
-	}
+      synchronized (_prevalentSystem) {
+        return sensitiveQuery.query(_prevalentSystem, clock.time());
+      }
+    }
+  }
 
-	public PrevalentSystemGuard<P> deepCopy(long systemVersion, Serializer snapshotSerializer) throws Exception {
-		synchronized (this) {
-			while (_systemVersion < systemVersion && _prevalentSystem != null) {
-				Cool.wait(this);
-			}
+  public File takeSnapshot(GenericSnapshotManager<P> snapshotManager) throws Exception {
+    synchronized (this) {
+      if (_prevalentSystem == null) {
+        throw new Error("Prevayler is no longer allowing snapshots due to an Error thrown from an earlier transaction.");
+      }
 
-            if (_prevalentSystem == null) {
-                throw new Error("Prevayler is no longer accepting transactions due to an Error thrown from an earlier transaction.");
-            }
+      synchronized (_prevalentSystem) {
+        return snapshotManager.writeSnapshot(_prevalentSystem, _systemVersion);
+      }
+    }
+  }
 
-			if (_systemVersion > systemVersion) {
-				throw new IllegalStateException("Already at " + _systemVersion + "; can't go back to " + systemVersion);
-			}
+  public PrevalentSystemGuard<P> deepCopy(long systemVersion, Serializer snapshotSerializer) throws Exception {
+    synchronized (this) {
+      while (_systemVersion < systemVersion && _prevalentSystem != null) {
+        Cool.wait(this);
+      }
 
-			synchronized (_prevalentSystem) {
-				return new PrevalentSystemGuard<P>((P)DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer);
-			}
-		}
-	}
+      if (_prevalentSystem == null) {
+        throw new Error("Prevayler is no longer accepting transactions due to an Error thrown from an earlier transaction.");
+      }
+
+      if (_systemVersion > systemVersion) {
+        throw new IllegalStateException("Already at " + _systemVersion + "; can't go back to " + systemVersion);
+      }
+
+      synchronized (_prevalentSystem) {
+        return new PrevalentSystemGuard<P>((P) DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer);
+      }
+    }
+  }
 
 }

@@ -17,7 +17,10 @@ public class Service {
   }
 
   private static Service instance = new Service();
-  private Service(){}
+
+  private Service() {
+  }
+
   public static Service getInstance() {
     return instance;
   }
@@ -39,8 +42,6 @@ public class Service {
   public void close() throws Exception {
     prevayler.close();
   }
-
-
 
 
 }

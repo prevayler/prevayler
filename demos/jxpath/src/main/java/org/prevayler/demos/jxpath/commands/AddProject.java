@@ -16,35 +16,37 @@ import org.prevayler.demos.jxpath.model.Project;
 
 /**
  * Adds a Project to the system.
- * 
+ *
  * @author Carlos Villela
  */
 public class AddProject implements Transaction<ProjectManagementSystem> {
 
-	private Project project;
+  private Project project;
 
-	public void executeOn(ProjectManagementSystem system, Date ignored) {
-		if(project != null) {	
-			system.getProjects().add(project);
-		} else {
-			throw new RuntimeException("No project to add -- please call setProject()");
-		}
-	}
+  public void executeOn(ProjectManagementSystem system, Date ignored) {
+    if (project != null) {
+      system.getProjects().add(project);
+    } else {
+      throw new RuntimeException("No project to add -- please call setProject()");
+    }
+  }
 
-	/**
-	 * Returns the project.
-	 * @return Project
-	 */
-	public Project getProject() {
-		return project;
-	}
+  /**
+   * Returns the project.
+   *
+   * @return Project
+   */
+  public Project getProject() {
+    return project;
+  }
 
-	/**
-	 * Sets the project.
-	 * @param project The project to set
-	 */
-	public void setProject(Project project) {
-		this.project = project;
-	}
+  /**
+   * Sets the project.
+   *
+   * @param project The project to set
+   */
+  public void setProject(Project project) {
+    this.project = project;
+  }
 
 }
