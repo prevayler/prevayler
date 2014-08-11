@@ -1,7 +1,8 @@
 package org.prevayler.demos.scalability.prevayler;
 
-import org.prevayler.demos.scalability.*;
 import org.prevayler.Prevayler;
+import org.prevayler.demos.scalability.Record;
+import org.prevayler.demos.scalability.TransactionConnection;
 
 class PrevaylerTransactionConnection implements TransactionConnection {
 

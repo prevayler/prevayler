@@ -23,12 +23,12 @@ package org.prevayler.socketserver.example.transactions;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-import java.util.Date;
-
 import org.prevayler.socketserver.example.server.Todo;
 import org.prevayler.socketserver.example.server.TodoList;
 import org.prevayler.socketserver.server.Notification;
 import org.prevayler.socketserver.transactions.RemoteTransaction;
+
+import java.util.Date;
 
 /**
  * Create a new Todo item

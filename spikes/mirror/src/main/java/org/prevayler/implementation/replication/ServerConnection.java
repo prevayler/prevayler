@@ -4,14 +4,14 @@
 
 package org.prevayler.implementation.replication;
 
-import java.io.IOException;
-
 import org.prevayler.foundation.network.ObjectSocket;
 import org.prevayler.implementation.Capsule;
 import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.publishing.POBox;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
+
+import java.io.IOException;
 
 
 /**

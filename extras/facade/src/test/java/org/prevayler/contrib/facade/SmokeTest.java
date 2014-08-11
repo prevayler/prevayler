@@ -32,8 +32,8 @@
 
 package org.prevayler.contrib.facade;
 
-import org.prevayler.PrevaylerFactory;
 import junit.framework.TestCase;
+import org.prevayler.PrevaylerFactory;
 
 import java.io.Serializable;
 

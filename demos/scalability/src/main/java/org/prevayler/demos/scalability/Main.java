@@ -1,11 +1,13 @@
 package org.prevayler.demos.scalability;
 
-import org.prevayler.demos.scalability.prevayler.*;
-import org.prevayler.demos.scalability.jdbc.*;
+import org.prevayler.demos.scalability.jdbc.JDBCQuerySubject;
+import org.prevayler.demos.scalability.jdbc.JDBCTransactionSubject;
+import org.prevayler.demos.scalability.prevayler.PrevaylerQuerySubject;
+import org.prevayler.demos.scalability.prevayler.PrevaylerTransactionSubject;
 import org.prevayler.foundation.serialization.JavaSerializer;
 
 import java.io.*;
-import java.util.*;
+import java.util.Properties;
 
 public class Main {
 

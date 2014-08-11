@@ -1,13 +1,13 @@
 package org.prevayler.demos.memento;
 
-import org.prevayler.util.memento.MementoTransaction;
-import org.prevayler.util.memento.MementoManagerCommand;
+import org.prevayler.Prevayler;
+import org.prevayler.PrevaylerFactory;
 import org.prevayler.demos.memento.commands.AccountCreation;
 import org.prevayler.demos.memento.commands.AccountDeletion;
 import org.prevayler.demos.memento.commands.Deposit;
 import org.prevayler.demos.memento.commands.Transfer;
-import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
+import org.prevayler.util.memento.MementoManagerCommand;
+import org.prevayler.util.memento.MementoTransaction;
 
 /**
  * A simple test of the error recovery using mementos.

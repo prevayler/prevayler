@@ -1,13 +1,12 @@
 package org.prevayler.demos.memento.commands;
 
-import java.io.Serializable;
-import javax.swing.JOptionPane;
-import java.util.Date;
-
-import org.prevayler.util.memento.MementoCollector;
-import org.prevayler.util.memento.MementoTransaction;
 import org.prevayler.demos.memento.Account;
 import org.prevayler.demos.memento.Bank;
+import org.prevayler.util.memento.MementoCollector;
+import org.prevayler.util.memento.MementoTransaction;
+
+import javax.swing.*;
+import java.util.Date;
 
 public class Deposit extends MementoTransaction {
   private long accountNumber;

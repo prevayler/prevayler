@@ -4,12 +4,12 @@
 
 package org.prevayler.implementation;
 
-import java.io.File;
-
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.FileIOTest;
+
+import java.io.File;
 
 public class ReplicationTest extends FileIOTest {
 

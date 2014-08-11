@@ -1,8 +1,8 @@
 package org.prevayler.examples.common;
 
-import java.util.Date;
-
 import org.prevayler.Transaction;
+
+import java.util.Date;
 
 public class NameChange implements Transaction<Club> {
 

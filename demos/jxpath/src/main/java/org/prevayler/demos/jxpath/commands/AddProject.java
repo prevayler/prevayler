@@ -8,11 +8,11 @@
 
 package org.prevayler.demos.jxpath.commands;
 
-import java.util.Date;
-
 import org.prevayler.Transaction;
 import org.prevayler.demos.jxpath.ProjectManagementSystem;
 import org.prevayler.demos.jxpath.model.Project;
+
+import java.util.Date;
 
 /**
  * Adds a Project to the system.

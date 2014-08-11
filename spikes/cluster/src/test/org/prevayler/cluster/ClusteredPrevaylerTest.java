@@ -1,15 +1,15 @@
 package org.prevayler.cluster;
 
-import java.io.Serializable;
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-
 import junit.framework.TestCase;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.Transaction;
 import org.prevayler.cluster.ClusteredPrevayler;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Date;
 
 public class ClusteredPrevaylerTest extends TestCase {
   private ClusteredPrevayler prevayler1;

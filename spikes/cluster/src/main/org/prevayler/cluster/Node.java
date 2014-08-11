@@ -1,13 +1,12 @@
 package org.prevayler.cluster;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Vector;
-
 import org.jgroups.*;
-import org.jgroups.util.Util;
 import org.jgroups.blocks.*;
+import org.jgroups.util.Util;
 import org.prevayler.cluster.ClusterListener;
+
+import java.io.Serializable;
+import java.util.Vector;
 
 public class Node implements RequestHandler, MessageListener, MembershipListener {
   private static final String LOCK_ID = "BroadCastLock";

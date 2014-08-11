@@ -1,11 +1,11 @@
 package org.prevayler.cluster;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import junit.framework.TestCase;
 import org.prevayler.cluster.ClusterListener;
 import org.prevayler.cluster.Node;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NodeTest extends TestCase {
   private Node node;

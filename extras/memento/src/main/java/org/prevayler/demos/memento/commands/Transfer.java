@@ -1,11 +1,9 @@
 package org.prevayler.demos.memento.commands;
 
-import java.io.Serializable;
-
-import org.prevayler.util.memento.MementoCollector;
-import org.prevayler.util.memento.MementoTransaction;
 import org.prevayler.demos.memento.Account;
 import org.prevayler.demos.memento.Bank;
+import org.prevayler.util.memento.MementoCollector;
+import org.prevayler.util.memento.MementoTransaction;
 
 public class Transfer extends MementoTransaction {
   private long sourceNumber;

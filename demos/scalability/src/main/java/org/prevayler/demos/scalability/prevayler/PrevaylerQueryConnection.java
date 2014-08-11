@@ -1,6 +1,6 @@
 package org.prevayler.demos.scalability.prevayler;
 
-import org.prevayler.demos.scalability.*;
+import org.prevayler.demos.scalability.QueryConnection;
 
 import java.util.List;
 

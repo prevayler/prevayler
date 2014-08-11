@@ -4,11 +4,11 @@
 
 package org.prevayler.implementation.replication;
 
-import java.io.IOException;
-
 import org.prevayler.foundation.network.ObjectServerSocket;
 import org.prevayler.foundation.network.OldNetworkImpl;
 import org.prevayler.implementation.publishing.TransactionPublisher;
+
+import java.io.IOException;
 
 
 /**

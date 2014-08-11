@@ -23,13 +23,13 @@ package org.prevayler.socketserver.server;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+import org.prevayler.socketserver.util.Log;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-
-import org.prevayler.socketserver.util.Log;
 
 /**
  * This object allows model objects to notify clients of changes

@@ -1,8 +1,8 @@
 package org.prevayler.examples.common;
 
-import java.util.Date;
-
 import org.prevayler.TransactionWithQuery;
+
+import java.util.Date;
 
 public class MemberCreation implements TransactionWithQuery<Club, Member> {
 

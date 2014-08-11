@@ -1,10 +1,10 @@
 package org.prevayler.cluster;
 
-import java.util.Date;
-import java.io.Serializable;
-
 import org.prevayler.Transaction;
 import org.prevayler.cluster.ClusteredPrevayler;
+
+import java.io.Serializable;
+import java.util.Date;
 
 class ClusteredTransaction<P extends Serializable> implements Serializable {
   private Transaction<P> transaction;

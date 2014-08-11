@@ -4,19 +4,9 @@ import org.prevayler.Clock;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.FileIOTest;
-import org.prevayler.foundation.serialization.DESSerializer;
-import org.prevayler.foundation.serialization.GZIPSerializer;
-import org.prevayler.foundation.serialization.JavaSerializer;
-import org.prevayler.foundation.serialization.Serializer;
-import org.prevayler.foundation.serialization.XStreamSerializer;
+import org.prevayler.foundation.serialization.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.Date;
 
 public class JournalSerializerTest extends FileIOTest {

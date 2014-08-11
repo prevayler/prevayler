@@ -1,14 +1,9 @@
 package org.prevayler.demos.scalability.prevayler;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.prevayler.demos.scalability.Record;
 import org.prevayler.demos.scalability.RecordIterator;
+
+import java.util.*;
 
 class QuerySystem implements ScalabilitySystem {
 

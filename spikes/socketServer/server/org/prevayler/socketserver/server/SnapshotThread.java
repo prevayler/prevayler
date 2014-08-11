@@ -23,10 +23,10 @@ package org.prevayler.socketserver.server;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-import java.io.IOException;
-
 import org.prevayler.Prevayler;
 import org.prevayler.socketserver.util.Log;
+
+import java.io.IOException;
 
 /**
  * @author DaveO

@@ -4,9 +4,9 @@
 
 package org.prevayler.implementation.clock;
 
-import java.util.Date;
-
 import org.prevayler.Clock;
+
+import java.util.Date;
 
 public class PausableClock implements Clock {
 

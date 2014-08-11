@@ -23,9 +23,9 @@ package org.prevayler.socketserver.server;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-import java.util.Properties;
-
 import org.prevayler.socketserver.util.Config;
+
+import java.util.Properties;
 
 /**
  * Manages the Prevayler server configuration file

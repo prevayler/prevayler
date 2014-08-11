@@ -32,9 +32,9 @@
 
 package org.prevayler.contrib.facade;
 
-import java.lang.reflect.Method;
-
 import org.prevayler.Prevayler;
+
+import java.lang.reflect.Method;
 
 
 /**

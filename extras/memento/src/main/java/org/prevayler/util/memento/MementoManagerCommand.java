@@ -4,14 +4,14 @@
 
 package org.prevayler.util.memento;
 
+import org.prevayler.TransactionWithQuery;
+import org.prevayler.demos.memento.Account;
+import org.prevayler.demos.memento.Bank;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.prevayler.TransactionWithQuery;
-import org.prevayler.demos.memento.Account;
-import org.prevayler.demos.memento.Bank;
 
 /**
  * This transaction manages the mementos and restores them in case of a failure.

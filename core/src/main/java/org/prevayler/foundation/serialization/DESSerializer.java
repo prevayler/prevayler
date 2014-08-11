@@ -10,14 +10,9 @@
 
 package org.prevayler.foundation.serialization;
 
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
+import javax.crypto.*;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.DESedeKeySpec;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;

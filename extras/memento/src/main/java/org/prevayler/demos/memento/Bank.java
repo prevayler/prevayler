@@ -1,11 +1,11 @@
 package org.prevayler.demos.memento;
 
+import org.prevayler.util.memento.Memento;
+import org.prevayler.util.memento.MementoCollector;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
-
-import org.prevayler.util.memento.Memento;
-import org.prevayler.util.memento.MementoCollector;
 
 /**
  * The Bank class without the notification to a listener and including a memento.

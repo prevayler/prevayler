@@ -1,10 +1,10 @@
 package org.prevayler.examples.e104;
 
-import java.util.Date;
-
 import org.prevayler.Transaction;
 import org.prevayler.examples.common.Club;
 import org.prevayler.examples.common.Member;
+
+import java.util.Date;
 
 public class NameChangeWithProblem implements Transaction<Club> {
 

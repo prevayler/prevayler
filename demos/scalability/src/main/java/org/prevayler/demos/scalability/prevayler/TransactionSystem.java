@@ -1,10 +1,10 @@
 package org.prevayler.demos.scalability.prevayler;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.prevayler.demos.scalability.Record;
 import org.prevayler.demos.scalability.RecordIterator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 class TransactionSystem implements ScalabilitySystem {
 

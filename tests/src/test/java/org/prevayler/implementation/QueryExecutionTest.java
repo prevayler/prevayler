@@ -4,16 +4,14 @@
 
 package org.prevayler.implementation;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.Query;
 import org.prevayler.TransactionWithQuery;
-import org.prevayler.foundation.*;
+import org.prevayler.foundation.FileIOTest;
+
+import java.util.Date;
+import java.util.LinkedList;
 
 
 public class QueryExecutionTest extends FileIOTest {

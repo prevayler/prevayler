@@ -32,11 +32,11 @@
 
 package org.prevayler.contrib.facade;
 
+import org.prevayler.Prevayler;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-
-import org.prevayler.Prevayler;
 
 
 /**

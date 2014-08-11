@@ -2,11 +2,7 @@ package org.prevayler.foundation.serialization;
 
 import org.prevayler.foundation.ObjectInputStreamWithClassLoader;
 
-import java.io.OutputStream;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 
 /**
  * Writes and reads objects using Java serialization. This serializer can be used for snapshots, journals or both.

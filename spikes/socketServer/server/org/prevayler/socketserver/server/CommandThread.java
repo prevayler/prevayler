@@ -23,17 +23,16 @@ package org.prevayler.socketserver.server;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.net.Socket;
-
+import org.prevayler.Prevayler;
+import org.prevayler.TransactionWithQuery;
 import org.prevayler.socketserver.transactions.*;
 import org.prevayler.socketserver.transactions.IRemoteTransaction;
 import org.prevayler.socketserver.transactions.ThrownException;
 
-import org.prevayler.Prevayler;
-import org.prevayler.TransactionWithQuery;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.net.Socket;
 
 /**
  * Forwards commands to Prevayler from a single client for its entire session.

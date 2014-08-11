@@ -3,8 +3,6 @@ package org.prevayler.service;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 
-import java.lang.Exception;
-
 public class Service {
 
   public static void main(String[] args) throws Exception {

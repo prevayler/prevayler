@@ -23,9 +23,9 @@ package org.prevayler.socketserver.example.client;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-import java.util.Properties;
-
 import org.prevayler.socketserver.util.Config;
+
+import java.util.Properties;
 
 /**
  * Manages the todo client configuration file

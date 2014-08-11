@@ -7,15 +7,15 @@
  */
 package org.prevayler.demos.jxpath.commands;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
 import org.prevayler.Transaction;
 import org.prevayler.demos.jxpath.ProjectManagementSystem;
 import org.prevayler.demos.jxpath.model.Project;
 import org.prevayler.demos.jxpath.model.Task;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Carlos Villela

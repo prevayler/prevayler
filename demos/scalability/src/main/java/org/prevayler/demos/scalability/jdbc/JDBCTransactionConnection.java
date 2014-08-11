@@ -2,9 +2,12 @@
 
 package org.prevayler.demos.scalability.jdbc;
 
-import org.prevayler.demos.scalability.*;
+import org.prevayler.demos.scalability.Record;
+import org.prevayler.demos.scalability.TransactionConnection;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 
 class JDBCTransactionConnection extends JDBCScalabilityConnection implements TransactionConnection {

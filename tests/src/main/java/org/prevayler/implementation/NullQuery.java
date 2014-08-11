@@ -1,9 +1,8 @@
 package org.prevayler.implementation;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import org.prevayler.Query;
+
+import java.util.Date;
 
 public class NullQuery implements Query<Object, Object> {
 

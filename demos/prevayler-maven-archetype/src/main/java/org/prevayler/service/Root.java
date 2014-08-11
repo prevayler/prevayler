@@ -1,7 +1,6 @@
 package org.prevayler.service;
 
 import java.io.Serializable;
-import java.lang.Long;
 
 public class Root implements Serializable {
 

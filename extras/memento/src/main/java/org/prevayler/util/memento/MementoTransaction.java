@@ -4,10 +4,10 @@
 
 package org.prevayler.util.memento;
 
-import java.io.Serializable;
-
 import org.prevayler.demos.memento.Account;
 import org.prevayler.demos.memento.Bank;
+
+import java.io.Serializable;
 
 /**
  * An atomic transaction to be executed on a PrevalentSystem. Any operation which changes the

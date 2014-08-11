@@ -2,10 +2,12 @@
 
 package org.prevayler.demos.scalability.jdbc;
 
-import org.prevayler.demos.scalability.*;
+import org.prevayler.demos.scalability.ScalabilityTestSubject;
 
-import java.sql.*;
 import java.io.PrintStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 
 abstract class JDBCScalabilitySubject implements ScalabilityTestSubject {

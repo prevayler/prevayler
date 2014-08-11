@@ -7,16 +7,16 @@
  */
 package org.prevayler.demos.jxpath;
 
-import java.text.SimpleDateFormat;
-import java.util.Iterator;
-
 import org.apache.commons.jxpath.JXPathContext;
+import org.prevayler.Prevayler;
+import org.prevayler.PrevaylerFactory;
 import org.prevayler.demos.jxpath.commands.AddProject;
 import org.prevayler.demos.jxpath.commands.AddTask;
 import org.prevayler.demos.jxpath.model.Project;
 import org.prevayler.demos.jxpath.model.Task;
-import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
+
+import java.text.SimpleDateFormat;
+import java.util.Iterator;
 
 
 /**

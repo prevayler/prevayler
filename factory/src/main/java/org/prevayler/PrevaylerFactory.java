@@ -5,11 +5,6 @@
 
 package org.prevayler;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.monitor.SimpleMonitor;
 import org.prevayler.foundation.network.OldNetworkImpl;
@@ -28,6 +23,11 @@ import org.prevayler.implementation.replication.ClientPublisher;
 import org.prevayler.implementation.replication.ServerListener;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 import org.prevayler.implementation.snapshot.NullSnapshotManager;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Provides easy access to all Prevayler configurations and implementations available in this distribution. Static methods are also provided as short-cuts for the most common configurations.

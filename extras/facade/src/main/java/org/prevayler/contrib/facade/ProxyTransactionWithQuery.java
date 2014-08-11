@@ -32,11 +32,11 @@
 
 package org.prevayler.contrib.facade;
 
+import org.prevayler.TransactionWithQuery;
+
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Date;
-
-import org.prevayler.TransactionWithQuery;
 
 
 /**

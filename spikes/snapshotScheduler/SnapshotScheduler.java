@@ -4,15 +4,9 @@
 
 package org.prevayler.util;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import org.prevayler.implementation.SnapshotPrevayler;
+
+import java.util.*;
 
 /**
  * SnapshotScheduler is a utility class to make snapshots of the given

@@ -1,9 +1,9 @@
 package org.prevayler.demos.scalability.prevayler;
 
+import org.prevayler.PrevaylerFactory;
+
 import java.io.File;
 import java.io.PrintStream;
-
-import org.prevayler.PrevaylerFactory;
 
 public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject {
 

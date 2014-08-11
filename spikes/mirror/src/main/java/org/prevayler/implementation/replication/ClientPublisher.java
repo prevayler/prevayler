@@ -4,9 +4,6 @@
 
 package org.prevayler.implementation.replication;
 
-import java.io.IOException;
-import java.util.Date;
-
 import org.prevayler.Clock;
 import org.prevayler.foundation.network.ObjectSocket;
 import org.prevayler.foundation.network.OldNetworkImpl;
@@ -15,6 +12,9 @@ import org.prevayler.implementation.TransactionTimestamp;
 import org.prevayler.implementation.clock.BrokenClock;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.TransactionSubscriber;
+
+import java.io.IOException;
+import java.util.Date;
 
 
 /**

@@ -23,12 +23,12 @@ package org.prevayler.socketserver.server;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-import java.io.IOException;
-import java.net.ServerSocket;
-
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.socketserver.util.Log;
+
+import java.io.IOException;
+import java.net.ServerSocket;
 
 /**
  * This is where the server starts everything

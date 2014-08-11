@@ -4,9 +4,9 @@
 
 package org.prevayler.implementation;
 
-import java.util.Date;
-
 import org.prevayler.Transaction;
+
+import java.util.Date;
 
 
 class Appendix implements Transaction<AppendingSystem> {

@@ -1,6 +1,7 @@
 package org.prevayler.demos.demo1;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**

@@ -1,9 +1,7 @@
 package org.prevayler.cluster;
 
-import java.io.IOException;
 import java.io.File;
-
-import org.prevayler.*;
+import java.io.IOException;
 
 public class ClusteredPrevayler<P extends Serializable> implements Prevayler<P>, ClusterListener {
   private PrevaylerFactory<P> factory;

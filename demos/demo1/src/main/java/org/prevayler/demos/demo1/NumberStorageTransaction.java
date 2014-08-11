@@ -1,8 +1,8 @@
 package org.prevayler.demos.demo1;
 
-import java.util.Date;
-
 import org.prevayler.Transaction;
+
+import java.util.Date;
 
 
 /**

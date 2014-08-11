@@ -8,17 +8,7 @@ import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 
 public class SnapshotSerializerTest extends FileIOTest {
 

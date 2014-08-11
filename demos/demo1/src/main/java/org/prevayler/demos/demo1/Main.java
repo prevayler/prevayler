@@ -3,7 +3,8 @@ package org.prevayler.demos.demo1;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 
 public class Main {

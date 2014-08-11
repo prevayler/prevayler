@@ -1,7 +1,7 @@
 package org.prevayler.cluster;
 
-import java.util.Date;
 import java.io.Serializable;
+import java.util.Date;
 
 class ClusteredPrevaylerState<P extends Serializable> implements Serializable {
   private P system;

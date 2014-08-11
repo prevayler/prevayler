@@ -1,9 +1,9 @@
 package org.prevayler.demos.scalability.prevayler;
 
-import java.util.Date;
-
 import org.prevayler.Transaction;
 import org.prevayler.demos.scalability.Record;
+
+import java.util.Date;
 
 class TestTransaction implements Transaction<TransactionSystem> {
 

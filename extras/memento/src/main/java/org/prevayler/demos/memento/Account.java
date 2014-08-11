@@ -1,11 +1,11 @@
 package org.prevayler.demos.memento;
 
+import org.prevayler.util.memento.Memento;
+import org.prevayler.util.memento.MementoCollector;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.prevayler.util.memento.Memento;
-import org.prevayler.util.memento.MementoCollector;
 
 /**
  * The Account class without the notification to listeners and including a memento.

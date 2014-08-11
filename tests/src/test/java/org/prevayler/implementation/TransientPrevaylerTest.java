@@ -4,13 +4,13 @@
 
 package org.prevayler.implementation;
 
-import java.io.IOException;
-import java.util.Date;
-
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.Transaction;
-import org.prevayler.foundation.*;
+import org.prevayler.foundation.FileIOTest;
+
+import java.io.IOException;
+import java.util.Date;
 
 
 public class TransientPrevaylerTest extends FileIOTest {

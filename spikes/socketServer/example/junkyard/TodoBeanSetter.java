@@ -24,12 +24,12 @@ package junkyard;
  */
 
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-
 import org.prevayler.socketserver.example.server.Todo;
 import org.prevayler.socketserver.example.server.TodoList;
 import org.prevayler.socketserver.util.Log;
+
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
 
 /**
  * A setter Transaction for Todo JavaBeans

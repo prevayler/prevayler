@@ -23,10 +23,10 @@ package junkyard;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+import org.prevayler.socketserver.transactions.RemoteTransaction;
+
 import java.beans.PropertyDescriptor;
 import java.util.Date;
-
-import org.prevayler.socketserver.transactions.RemoteTransaction;
 
 /**
  * A generic parent Transaction for setting properties of beans.

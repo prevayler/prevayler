@@ -23,10 +23,10 @@ package org.prevayler.socketserver.transactions;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-import java.util.Date;
-
 import org.prevayler.Transaction;
 import org.prevayler.TransactionWithQuery;
+
+import java.util.Date;
 
 /**
  * A default implementation of IRemoteTransaction.  Instead of implementing the interface

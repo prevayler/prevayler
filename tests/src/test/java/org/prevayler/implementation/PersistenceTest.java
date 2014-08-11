@@ -4,18 +4,17 @@
 
 package org.prevayler.implementation;
 
+import junit.framework.AssertionFailedError;
+import org.prevayler.Prevayler;
+import org.prevayler.PrevaylerFactory;
+import org.prevayler.foundation.FileIOTest;
+import org.prevayler.foundation.FileManager;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-
-import junit.framework.AssertionFailedError;
-
-import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
-import org.prevayler.foundation.FileIOTest;
-import org.prevayler.foundation.FileManager;
 
 public class PersistenceTest extends FileIOTest {
 

@@ -23,19 +23,18 @@ package org.prevayler.socketserver.client;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+import org.prevayler.Transaction;
+import org.prevayler.socketserver.server.RegisterCallback;
+import org.prevayler.socketserver.server.UnregisterCallback;
+import org.prevayler.socketserver.transactions.Disconnect;
+import org.prevayler.socketserver.transactions.ThrownException;
+import org.prevayler.socketserver.util.Log;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
-
-import org.prevayler.socketserver.server.RegisterCallback;
-import org.prevayler.socketserver.server.UnregisterCallback;
-import org.prevayler.socketserver.transactions.Disconnect;
-import org.prevayler.socketserver.transactions.ThrownException;
-
-import org.prevayler.Transaction;
-import org.prevayler.socketserver.util.Log;
 
 /**
  * Client connection class.  This class is the main interface between the

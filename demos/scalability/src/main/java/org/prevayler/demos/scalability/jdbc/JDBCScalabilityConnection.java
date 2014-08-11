@@ -1,8 +1,11 @@
 package org.prevayler.demos.scalability.jdbc;
 
-import org.prevayler.demos.scalability.*;
+import org.prevayler.demos.scalability.Record;
+import org.prevayler.demos.scalability.RecordIterator;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 
 // Contributions by Stefan Ortmanns.

@@ -5,11 +5,7 @@ import org.prevayler.foundation.serialization.Serializer;
 import org.prevayler.implementation.PrevalentSystemGuard;
 import org.prevayler.implementation.PrevaylerDirectory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;

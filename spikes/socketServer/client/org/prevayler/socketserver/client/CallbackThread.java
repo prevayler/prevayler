@@ -23,6 +23,8 @@ package org.prevayler.socketserver.client;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+import org.prevayler.socketserver.util.Log;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -31,8 +33,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Iterator;
 import java.util.LinkedList;
-
-import org.prevayler.socketserver.util.Log;
 
 /**
  * This thread receives update notifications from the remote model and propogates

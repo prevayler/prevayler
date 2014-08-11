@@ -1,7 +1,5 @@
 package org.prevayler.examples.e104;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
@@ -9,6 +7,8 @@ import org.prevayler.examples.common.Club;
 import org.prevayler.examples.common.Member;
 import org.prevayler.examples.common.MemberCreation;
 import org.prevayler.examples.common.NameChange;
+
+import static org.junit.Assert.assertEquals;
 
 public class E104Test {
 

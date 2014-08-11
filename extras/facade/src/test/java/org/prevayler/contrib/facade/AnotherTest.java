@@ -32,15 +32,14 @@
 
 package org.prevayler.contrib.facade;
 
-import java.util.Calendar;
-import java.util.Iterator;
-
 import junit.framework.TestCase;
-
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
+
+import java.util.Calendar;
+import java.util.Iterator;
 
 /**
  * @author Jacob Kjome [hoju@visi.com]

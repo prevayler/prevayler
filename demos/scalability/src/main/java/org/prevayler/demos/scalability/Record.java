@@ -1,8 +1,10 @@
 package org.prevayler.demos.scalability;
 
 import java.io.Serializable;
-import java.util.*;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Random;
 
 public class Record implements Serializable {
 
