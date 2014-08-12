@@ -15,25 +15,25 @@ import org.apache.log4j.Logger;
  */
 public class Log4jMonitor extends LoggingMonitor {
 
-    private static final String callerFQCN = LoggingMonitor.class.getName();
+  private static final String callerFQCN = LoggingMonitor.class.getName();
 
-    protected void info(Class clazz, String message) {
-        log(clazz, Level.INFO, message, null);
-    }
+  protected void info(Class clazz, String message) {
+    log(clazz, Level.INFO, message, null);
+  }
 
-    protected void error(Class clazz, String message, Exception ex) {
-        log(clazz, Level.ERROR, message, ex);
-    }
+  protected void error(Class clazz, String message, Exception ex) {
+    log(clazz, Level.ERROR, message, ex);
+  }
 
-    protected boolean isInfoEnabled(Class clazz) {
-        return logger(clazz).isInfoEnabled();
-    }
+  protected boolean isInfoEnabled(Class clazz) {
+    return logger(clazz).isInfoEnabled();
+  }
 
-    private Logger logger(Class clazz) {
-        return Logger.getLogger(clazz);
-    }
+  private Logger logger(Class clazz) {
+    return Logger.getLogger(clazz);
+  }
 
-    private void log(Class clazz, Level level, String message, Exception ex) {
-        logger(clazz).log(callerFQCN, level, message, ex);
-    }
+  private void log(Class clazz, Level level, String message, Exception ex) {
+    logger(clazz).log(callerFQCN, level, message, ex);
+  }
 }

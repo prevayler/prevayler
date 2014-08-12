@@ -9,6 +9,6 @@ import org.prevayler.implementation.TransactionTimestamp;
 
 public interface TransactionSubscriber {
 
-	public void receive(TransactionTimestamp transactionTimestamp);
+  public void receive(TransactionTimestamp transactionTimestamp);
 
 }

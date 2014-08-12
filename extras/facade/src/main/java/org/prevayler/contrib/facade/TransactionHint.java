@@ -49,18 +49,18 @@ import java.util.Date;
  * can't take advantage of certain contextual info such as the
  * Prevayler-managed Date object that is passed to each transaction.
  * This class provides access to that context.
- *
+ * <p/>
  * <p>Currently there exists only a preExecute() method which executes
  * immediately before the transactionally proxied method is invoked.
  * It might be legitimate to add a postExecute() method, but I haven't
  * found the need for it yet, so I didn't add it.</p>
- *
+ * <p/>
  * <h3>Caveat:</h3>
  * <p>Could make for non-deterministic behavior if each time
  * the app is started, it has a different transaction hint
  * defined;  maybe one set of transactions gets timestamped,
  * but then another set doesn't.  Is this acceptable?</p>
- * 
+ * <p/>
  * <h3>Answer:</h3>
  * <p>Well, the same could be said of hard coded transactions.  Transactions
  * could be modified internally, recompiled, and re-run without
@@ -69,27 +69,28 @@ import java.util.Date;
  * from the transactionally proxied method itself.
  * Might not be a real issue?</p>
  *
- * @since 0_2
  * @author Jacob Kjome [hoju@visi.com]
+ * @since 0_2
  */
 public interface TransactionHint extends Serializable {
 
-    /**
-     * A default empty transaction hint which should be used if
-     * no other transaction hint is specified
-     */
-    public static final TransactionHint NOOP_TRANSACTION_HINT =
-        new TransactionHint() {
-            private static final long serialVersionUID = -5478302343468894802L;
+  /**
+   * A default empty transaction hint which should be used if
+   * no other transaction hint is specified
+   */
+  public static final TransactionHint NOOP_TRANSACTION_HINT =
+      new TransactionHint() {
+        private static final long serialVersionUID = -5478302343468894802L;
 
-            public void preExecute(Object p_prevalentSystem, Method p_method, Object[] p_args, Date p_timestamp) throws Exception {} 
-        };
-        
-    /**
-     * This method executes just before the transactional method is invoked,
-     * so it is a good place to put any generic code that needs to be executed
-     * before any transaction
-     */
-    public void preExecute(Object p_prevalentSystem, Method p_method, Object[] p_args, Date p_timestamp) throws Exception;
+        public void preExecute(Object p_prevalentSystem, Method p_method, Object[] p_args, Date p_timestamp) throws Exception {
+        }
+      };
+
+  /**
+   * This method executes just before the transactional method is invoked,
+   * so it is a good place to put any generic code that needs to be executed
+   * before any transaction
+   */
+  public void preExecute(Object p_prevalentSystem, Method p_method, Object[] p_args, Date p_timestamp) throws Exception;
 
 }

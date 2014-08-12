@@ -12,7 +12,7 @@ public class InitializeServiceTransaction implements Serializable, Transaction<R
    * java.io.Serializable with a non changing serialVersionUID
    * will automatically handle backwards compatibility
    * if you add new non transient fields the the class.
-   **/
+   */
   private static final long serialVersionUID = 1l;
 
   public void executeOn(Root root, Date executionTime) {

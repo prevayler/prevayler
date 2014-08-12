@@ -6,14 +6,14 @@ package org.prevayler.util.memento;
 
 /**
  * The memento collector collects the mementos created before the command gets actually executed.
- * 
+ *
  * @author Johan Stuyts
  * @version 2.0
  */
 public interface MementoCollector {
   /**
    * Add a memento to the memento collection.
-   * 
+   *
    * @param memento The memento to add.
    */
   public void addMemento(Memento memento);

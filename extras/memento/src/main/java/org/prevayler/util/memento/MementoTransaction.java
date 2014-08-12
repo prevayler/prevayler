@@ -4,28 +4,28 @@
 
 package org.prevayler.util.memento;
 
-import java.io.Serializable;
-
 import org.prevayler.demos.memento.Account;
 import org.prevayler.demos.memento.Bank;
+
+import java.io.Serializable;
 
 /**
  * An atomic transaction to be executed on a PrevalentSystem. Any operation which changes the
  * observable state of a PrevalentSystem must be encapsulated as a Command.
- * 
+ * <p/>
  * This command adds the capability to create mementos of objects before they get modified. In
  * the event of a failure, these mementos are restored and the system is left in the state it
  * was in before the command got executed.
- * 
+ * <p/>
  * The execution is split in four parts:
  * <ul>
- *  <li>Find the objects: find all the objects needed for checking the precondition, creating
- *  the mementos and execution, and store them in transient fields;</li>
- *  <li>Check the precondition: verify that it is safe to execute;</li>
- *  <li>Create the mementos: create a memento for each object that is possibly going to be modified;</li>
- *  <li>Execute: modify the objects.</li>
+ * <li>Find the objects: find all the objects needed for checking the precondition, creating
+ * the mementos and execution, and store them in transient fields;</li>
+ * <li>Check the precondition: verify that it is safe to execute;</li>
+ * <li>Create the mementos: create a memento for each object that is possibly going to be modified;</li>
+ * <li>Execute: modify the objects.</li>
  * </ul>
- * 
+ *
  * @author Johan Stuyts
  * @version 2.0
  */
@@ -34,26 +34,26 @@ public abstract class MementoTransaction implements Serializable {
    * Executes this command on the received system. See prevayler.demos for examples.
    * The returned object has to be Serializable in preparation for future versions of
    * Prevayler that will provide fault-tolerance through system replicas.
-   * 
-   * @param collector The memento collector to which to add the mementos. A memento
-   * collector instead of a Prevayler instance is passed, so the command will not easily
-   * invoke subcommands through the prevayler (which is not allowed).
+   *
+   * @param collector       The memento collector to which to add the mementos. A memento
+   *                        collector instead of a Prevayler instance is passed, so the command will not easily
+   *                        invoke subcommands through the prevayler (which is not allowed).
    * @param prevalentSystem The system on which to execute the command.
    * @return The object returned by the execution of this command. Most commands simply return null.
    */
   public Account execute(MementoCollector collector, Bank prevalentSystem) throws Exception {
     findObjects(prevalentSystem);
-    
+
     checkPrecondition();
-    
+
     createMementos(collector);
-    
+
     return execute(collector);
   }
 
   /**
    * Find the objects this command modifies.
-   * 
+   *
    * @param prevalentSystem The prevalent system in which to find the objects.
    */
   protected abstract void findObjects(Bank prevalentSystem) throws Exception;
@@ -65,14 +65,14 @@ public abstract class MementoTransaction implements Serializable {
 
   /**
    * Create mementos for all objects which (possibly) get modified.
-   * 
+   *
    * @param collector The memento collector to which to add the mementos.
    */
   protected abstract void createMementos(MementoCollector collector);
 
   /**
    * Execute the actual command.
-   * 
+   *
    * @param collector The memento collector which can be used to execute subcommands.
    * @return The object returned by the execution of this command. Most commands simply return null.
    */

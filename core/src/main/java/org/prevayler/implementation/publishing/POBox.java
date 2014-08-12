@@ -11,50 +11,53 @@ import org.prevayler.implementation.TransactionTimestamp;
 import java.util.LinkedList;
 
 
-/** An assyncronous buffer for transaction subscribers. 
+/**
+ * An assyncronous buffer for transaction subscribers.
  */
 public class POBox implements TransactionSubscriber, Runnable {
 
-	private final LinkedList _queue = new LinkedList();
-	private final TransactionSubscriber _delegate;
-	
-	private final Object _emptynessMonitor = new Object();
-  
+  private final LinkedList _queue = new LinkedList();
+  private final TransactionSubscriber _delegate;
 
-	public POBox(TransactionSubscriber delegate) {
-		_delegate = delegate;
-		Cool.startDaemon(this);
-	}
+  private final Object _emptynessMonitor = new Object();
 
 
-	public synchronized void receive(TransactionTimestamp transactionTimestamp) {
-		_queue.add(transactionTimestamp);
-		notify();
-	}
+  public POBox(TransactionSubscriber delegate) {
+    _delegate = delegate;
+    Cool.startDaemon(this);
+  }
 
 
-	public void run() {
-		while (true) {
-			TransactionTimestamp notification = waitForNotification();
-			_delegate.receive(notification);
-		}
-	}
+  public synchronized void receive(TransactionTimestamp transactionTimestamp) {
+    _queue.add(transactionTimestamp);
+    notify();
+  }
 
 
-	private synchronized TransactionTimestamp waitForNotification() {
-		while (_queue.size() == 0) {
-			synchronized (_emptynessMonitor) { _emptynessMonitor.notify(); }
-			Cool.wait(this);
-		}
-		return (TransactionTimestamp)_queue.removeFirst();
-	}
+  public void run() {
+    while (true) {
+      TransactionTimestamp notification = waitForNotification();
+      _delegate.receive(notification);
+    }
+  }
 
 
-	public void waitToEmpty() {
-		synchronized (_emptynessMonitor) {
-			while (_queue.size() != 0) Cool.wait(_emptynessMonitor);
-		}
-	}
+  private synchronized TransactionTimestamp waitForNotification() {
+    while (_queue.size() == 0) {
+      synchronized (_emptynessMonitor) {
+        _emptynessMonitor.notify();
+      }
+      Cool.wait(this);
+    }
+    return (TransactionTimestamp) _queue.removeFirst();
+  }
+
+
+  public void waitToEmpty() {
+    synchronized (_emptynessMonitor) {
+      while (_queue.size() != 0) Cool.wait(_emptynessMonitor);
+    }
+  }
 
 
 }

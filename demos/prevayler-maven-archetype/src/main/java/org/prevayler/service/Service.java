@@ -3,8 +3,6 @@ package org.prevayler.service;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 
-import java.lang.Exception;
-
 public class Service {
 
   public static void main(String[] args) throws Exception {
@@ -17,7 +15,10 @@ public class Service {
   }
 
   private static Service instance = new Service();
-  private Service(){}
+
+  private Service() {
+  }
+
   public static Service getInstance() {
     return instance;
   }
@@ -39,8 +40,6 @@ public class Service {
   public void close() throws Exception {
     prevayler.close();
   }
-
-
 
 
 }

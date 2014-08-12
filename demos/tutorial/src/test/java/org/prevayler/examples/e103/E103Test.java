@@ -1,6 +1,5 @@
 package org.prevayler.examples.e103;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;

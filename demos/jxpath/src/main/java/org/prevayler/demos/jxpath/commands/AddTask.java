@@ -7,77 +7,81 @@
  */
 package org.prevayler.demos.jxpath.commands;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
 import org.prevayler.Transaction;
 import org.prevayler.demos.jxpath.ProjectManagementSystem;
 import org.prevayler.demos.jxpath.model.Project;
 import org.prevayler.demos.jxpath.model.Task;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Carlos Villela
  */
 public class AddTask implements Transaction<ProjectManagementSystem> {
 
-	private Task task;
-	private int projectId = Integer.MIN_VALUE;
+  private Task task;
+  private int projectId = Integer.MIN_VALUE;
 
-	public void executeOn(ProjectManagementSystem system, Date ignored) {
-		if(task != null && projectId != Integer.MIN_VALUE) {
+  public void executeOn(ProjectManagementSystem system, Date ignored) {
+    if (task != null && projectId != Integer.MIN_VALUE) {
 
-			List projects = system.getProjects();
-			Iterator i = projects.iterator();
-			while (i.hasNext()) {
-				Project p = (Project) i.next();
-				if(p.getId() == projectId) {
-					List tasks = p.getTasks();
-					if(tasks == null) {
-						tasks = new ArrayList();
-					}
-					tasks.add(task);
-					p.setTasks(tasks);
-					break;
-				}
-			}
-		} else {
-			throw new RuntimeException("No project to add -- please call setProject()");
-		}
-	}
+      List projects = system.getProjects();
+      Iterator i = projects.iterator();
+      while (i.hasNext()) {
+        Project p = (Project) i.next();
+        if (p.getId() == projectId) {
+          List tasks = p.getTasks();
+          if (tasks == null) {
+            tasks = new ArrayList();
+          }
+          tasks.add(task);
+          p.setTasks(tasks);
+          break;
+        }
+      }
+    } else {
+      throw new RuntimeException("No project to add -- please call setProject()");
+    }
+  }
 
-	/**
-	* Returns the projectId.
-	* @return int
-	*/
-	public int getProjectId() {
+  /**
+   * Returns the projectId.
+   *
+   * @return int
+   */
+  public int getProjectId() {
 
-		return projectId;
-	}
+    return projectId;
+  }
 
-	/**
-	* Returns the task.
-	* @return Task
-	*/
-	public Task getTask() {
+  /**
+   * Returns the task.
+   *
+   * @return Task
+   */
+  public Task getTask() {
 
-		return task;
-	}
+    return task;
+  }
 
-	/**
-	* Sets the projectId.
-	* @param projectId The projectId to set
-	*/
-	public void setProjectId(int projectId) {
-		this.projectId = projectId;
-	}
+  /**
+   * Sets the projectId.
+   *
+   * @param projectId The projectId to set
+   */
+  public void setProjectId(int projectId) {
+    this.projectId = projectId;
+  }
 
-	/**
-	* Sets the task.
-	* @param task The task to set
-	*/
-	public void setTask(Task task) {
-		this.task = task;
-	}
+  /**
+   * Sets the task.
+   *
+   * @param task The task to set
+   */
+  public void setTask(Task task) {
+    this.task = task;
+  }
 }

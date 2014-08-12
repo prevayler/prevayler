@@ -23,21 +23,22 @@ package org.prevayler.socketserver.example.transactions;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-import java.util.Date;
 import org.prevayler.socketserver.transactions.RemoteTransaction;
+
+import java.util.Date;
 
 /**
  * Return the entire current list of Todos.
- * 
+ *
  * @author djo
  */
 public class ListTodos extends RemoteTransaction {
 
-	/**
-	 * @see org.prevayler.util.TransactionWithQuery#executeAndQuery(Object, Date)
-	 */
-	public Object executeAndQuery(Object prevalentSystem, Date timestamp) throws Exception {
-		return prevalentSystem;
-	}
+  /**
+   * @see org.prevayler.util.TransactionWithQuery#executeAndQuery(Object, Date)
+   */
+  public Object executeAndQuery(Object prevalentSystem, Date timestamp) throws Exception {
+    return prevalentSystem;
+  }
 
 }

@@ -32,8 +32,9 @@
 
 package org.prevayler.contrib.facade;
 
-import org.prevayler.PrevaylerFactory;
 import junit.framework.TestCase;
+import org.prevayler.PrevaylerFactory;
+
 import java.io.Serializable;
 
 
@@ -42,102 +43,90 @@ import java.io.Serializable;
  * @author Jacob Kjome [hoju@visi.com]
  */
 public class SmokeTest
-    extends TestCase
-{
+    extends TestCase {
 
-    public static class RuntimeOops extends RuntimeException
-    {
-        private static final long serialVersionUID = 6697889650105894039L;
+  public static class RuntimeOops extends RuntimeException {
+    private static final long serialVersionUID = 6697889650105894039L;
+  }
+
+  public static class CheckedOops extends Exception {
+    private static final long serialVersionUID = -6402219678153693704L;
+  }
+
+  public static interface Repository {
+    void storeSomething(String data);
+
+    void oopsRuntime(String data);
+
+    void oopsChecked(String data) throws CheckedOops;
+
+    String getData();
+  }
+
+  public static class RepositoryImpl
+      implements Repository, Serializable {
+    private static final long serialVersionUID = -4401226206133056516L;
+
+    public void storeSomething(String p_data) {
+      m_data = p_data;
     }
 
-    public static class CheckedOops extends Exception
-    {
-        private static final long serialVersionUID = -6402219678153693704L;
+    public void oopsRuntime(String p_data) {
+      m_data = p_data;
+      throw new RuntimeOops();
     }
 
-    public static interface Repository {
-        void storeSomething(String data);
-        void oopsRuntime(String data);
-        void oopsChecked(String data) throws CheckedOops;
-        String getData();
+    public void oopsChecked(String p_data)
+        throws CheckedOops {
+      m_data = p_data;
+      throw new CheckedOops();
     }
 
-    public static class RepositoryImpl
-        implements Repository, Serializable
-    {
-        private static final long serialVersionUID = -4401226206133056516L;
-
-        public void storeSomething(String p_data)
-        {
-            m_data = p_data;
-        }
-
-        public void oopsRuntime(String p_data)
-        {
-            m_data = p_data;
-            throw new RuntimeOops();
-        }
-
-        public void oopsChecked(String p_data)
-            throws CheckedOops
-        {
-            m_data = p_data;
-            throw new CheckedOops();
-        }
-
-        public String getData()
-        {
-            return m_data;
-        }
-
-        private String m_data;
+    public String getData() {
+      return m_data;
     }
 
-    public void testAndSeeIfItSmokes()
-        throws Exception
-    {
-        Repository repo = (Repository)
-            PrevaylerTransactionsFacade.create
+    private String m_data;
+  }
+
+  public void testAndSeeIfItSmokes()
+      throws Exception {
+    Repository repo = (Repository)
+        PrevaylerTransactionsFacade.create
             (Repository.class,
-             PrevaylerFactory.createTransientPrevayler(new RepositoryImpl()));
+                PrevaylerFactory.createTransientPrevayler(new RepositoryImpl()));
 
-        assertEquals(null, repo.getData());
-        final String data = "someData";
-        repo.storeSomething(data);
-        assertEquals(data, repo.getData());
+    assertEquals(null, repo.getData());
+    final String data = "someData";
+    repo.storeSomething(data);
+    assertEquals(data, repo.getData());
 
-       final String otherData = "other data";
-        try
-        {
-            repo.oopsRuntime(otherData);
-            fail("should have thrown RuntimeOops");
-        }
-        catch (RuntimeOops expected)
-        {
-            System.currentTimeMillis();// ok
-        }
-
-        // previously when rollback was a feature in prevayler
-        // this would have equaled data rather than otherData
-        assertEquals(otherData, repo.getData());
-
-        try
-        {
-            repo.oopsChecked("more other data");
-            fail("should have thrown CheckedOops");
-        }
-        catch (CheckedOops expected)
-        {
-            //expected.printStackTrace();
-            System.currentTimeMillis();// ok
-        }
-
-        //checked exception doesn't trigger rollback
-        //it is assumed that checked exceptions are
-        //expected and should be delbt with manually
-        //where runtime exceptions are unexpected. As
-        //such, internal code may not be prepared to
-        //deal with them so Prevayler rolls back
-        assertEquals("more other data", repo.getData());
+    final String otherData = "other data";
+    try {
+      repo.oopsRuntime(otherData);
+      fail("should have thrown RuntimeOops");
+    } catch (RuntimeOops expected) {
+      System.currentTimeMillis();// ok
     }
+
+    // previously when rollback was a feature in prevayler
+    // this would have equaled data rather than otherData
+    assertEquals(otherData, repo.getData());
+
+    try {
+      repo.oopsChecked("more other data");
+      fail("should have thrown CheckedOops");
+    } catch (CheckedOops expected) {
+      //expected.printStackTrace();
+      System.currentTimeMillis();// ok
+    }
+
+    //checked exception doesn't trigger rollback
+    //it is assumed that checked exceptions are
+    //expected and should be delbt with manually
+    //where runtime exceptions are unexpected. As
+    //such, internal code may not be prepared to
+    //deal with them so Prevayler rolls back
+    assertEquals("more other data", repo.getData());
+  }
 }

@@ -32,38 +32,35 @@
 
 package org.prevayler.contrib.facade;
 
+import org.prevayler.TransactionWithQuery;
+
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Date;
-
-import org.prevayler.TransactionWithQuery;
 
 
 /**
  * Proxy representation of a Prevayler TransactionWithQuery
  *
- * @since 0_1
  * @author Jay Sachs [jay@contravariant.org]
  * @author Jacob Kjome [hoju@visi.com]
+ * @since 0_1
  */
 public class ProxyTransactionWithQuery
     extends AbstractProxy
-    implements TransactionWithQuery<Serializable, Object>
-{
-    private static final long serialVersionUID = -5012126657533926785L;
+    implements TransactionWithQuery<Serializable, Object> {
+  private static final long serialVersionUID = -5012126657533926785L;
 
-    /**
-     * @since 0_2
-     */
-    public ProxyTransactionWithQuery(Method p_method, Object[] p_args, TransactionHint p_hint)
-    {
-        super(p_method, p_args, p_hint);
-    }
+  /**
+   * @since 0_2
+   */
+  public ProxyTransactionWithQuery(Method p_method, Object[] p_args, TransactionHint p_hint) {
+    super(p_method, p_args, p_hint);
+  }
 
-    public Object executeAndQuery(Serializable p_prevalentSystem, Date p_timestamp)
-        throws Exception
-    {
-        return execute(p_prevalentSystem, p_timestamp);
-    }
+  public Object executeAndQuery(Serializable p_prevalentSystem, Date p_timestamp)
+      throws Exception {
+    return execute(p_prevalentSystem, p_timestamp);
+  }
 
 }

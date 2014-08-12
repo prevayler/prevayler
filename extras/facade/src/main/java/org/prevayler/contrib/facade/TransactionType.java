@@ -32,9 +32,9 @@
 
 package org.prevayler.contrib.facade;
 
-import java.lang.reflect.Method;
-
 import org.prevayler.Prevayler;
+
+import java.lang.reflect.Method;
 
 
 /**
@@ -43,147 +43,132 @@ import org.prevayler.Prevayler;
  * effectively, "no transaction".  Also includes the transaction type
  * <code>Determiner</code> interface and two of the most basic implementations.
  *
- * @since 0_1
  * @author Jay Sachs [jay@contravariant.org]
  * @author Jacob Kjome [hoju@visi.com]
+ * @since 0_1
  */
-public abstract class TransactionType
-{
+public abstract class TransactionType {
+  /**
+   * An interface describing a strategy for choosing a
+   * <code>TransactionType</code> for a given method.
+   *
+   * @author Jay Sachs [jay@contravariant.org]
+   * @since 0_1
+   */
+  public interface Determiner {
     /**
-     * An interface describing a strategy for choosing a
-     * <code>TransactionType</code> for a given method.
+     * Given a <code>Method</code>, determine the appropriate
+     * <code>TransactionType</code> to be used in implemented a
+     * Prevayler for that method.
      *
-     * @since 0_1
-     * @author Jay Sachs [jay@contravariant.org]
+     * @param p_method the <code>Method</code> in question
+     * @return the <code>TransactionType</code> appropriate for
+     *         that method.
      */
-    public interface Determiner
-    {
+    TransactionType determineTransactionType(Method p_method);
+  }
+
+  /**
+   * A minimal transaction type determiner which uses no heuristics. It
+   * always returns a transaction type of {@link #TRANSACTION_WITH_QUERY}.
+   */
+  public static final Determiner SIMPLE_DETERMINER = new Determiner() {
+    public TransactionType determineTransactionType(Method p_method) {
+      return TRANSACTION_WITH_QUERY;
+    }
+  };
+
+  /**
+   * A basic transaction type determiner which bases the transaction type on
+   * the return type of methods: {@link #TRANSACTION} for void methods and
+   * {@link #QUERY} otherwise.
+   */
+  public static final Determiner RETURN_TYPE_DETERMINER = new Determiner() {
+    public TransactionType determineTransactionType(Method p_method) {
+      return (p_method.getReturnType() != Void.TYPE)
+          ? QUERY
+          : TRANSACTION;
+    }
+  };
+
+  /**
+   * @since 0_2
+   */
+  public abstract Object execute(Prevayler p_prevayler,
+                                 Method p_method,
+                                 Object[] p_args,
+                                 TransactionHint p_hint)
+      throws Exception;
+
+  public String toString() {
+    return "TransactionType{" + m_name + "}";
+  }
+
+  private TransactionType(String p_name) {
+    m_name = p_name;
+  }
+
+  private final String m_name;
+
+  public static final TransactionType QUERY =
+      new TransactionType("QUERY") {
+
         /**
-         * Given a <code>Method</code>, determine the appropriate
-         * <code>TransactionType</code> to be used in implemented a
-         * Prevayler for that method.
-         *
-         * @param p_method the <code>Method</code> in question
-         *
-         * @return the <code>TransactionType</code> appropriate for
-         * that method.
+         * @since 0_2
          */
-        TransactionType determineTransactionType(Method p_method);
-    }
-
-    /**
-     * A minimal transaction type determiner which uses no heuristics. It
-     * always returns a transaction type of {@link #TRANSACTION_WITH_QUERY}.
-     */
-    public static final Determiner SIMPLE_DETERMINER = new Determiner() {
-    	public TransactionType determineTransactionType(Method p_method)
-        {
-            return TRANSACTION_WITH_QUERY;
+        public Object execute(Prevayler p_prevayler,
+                              Method p_method,
+                              Object[] p_args,
+                              TransactionHint p_hint)
+            throws Exception {
+          return p_prevayler.execute(new ProxyQuery(p_method, p_args, p_hint));
         }
-    };
+      };
 
-    /**
-     * A basic transaction type determiner which bases the transaction type on
-     * the return type of methods: {@link #TRANSACTION} for void methods and
-     * {@link #QUERY} otherwise.
-     */
-    public static final Determiner RETURN_TYPE_DETERMINER = new Determiner() {
-    	public TransactionType determineTransactionType(Method p_method)
-        {
-            return (p_method.getReturnType() != Void.TYPE)
-                ? QUERY
-                : TRANSACTION;
+  public static final TransactionType TRANSACTION_WITH_QUERY =
+      new TransactionType("TRANSACTION_WITH_QUERY") {
+
+        /**
+         * @since 0_2
+         */
+        public Object execute(Prevayler p_prevayler,
+                              Method p_method,
+                              Object[] p_args,
+                              TransactionHint p_hint)
+            throws Exception {
+          return p_prevayler.execute
+              (new ProxyTransactionWithQuery(p_method, p_args, p_hint));
         }
-    };
+      };
 
-    /**
-     * @since 0_2
-     */
-    public abstract Object execute(Prevayler p_prevayler,
-                                   Method p_method,
-                                   Object[] p_args,
-                                   TransactionHint p_hint)
-        throws Exception;
+  public static final TransactionType TRANSACTION =
+      new TransactionType("TRANSACTION") {
 
-    public String toString()
-    {
-        return "TransactionType{" + m_name + "}";
-    }
+        /**
+         * @since 0_2
+         */
+        public Object execute(Prevayler p_prevayler,
+                              Method p_method,
+                              Object[] p_args,
+                              TransactionHint p_hint)
+            throws Exception {
+          p_prevayler.execute
+              (new ProxyTransaction(p_method, p_args, p_hint));
+          return null;
+        }
+      };
 
-    private TransactionType(String p_name)
-    {
-        m_name = p_name;
-    }
-
-    private final String m_name;
-
-    public static final TransactionType QUERY =
-        new TransactionType("QUERY")
-        {
-
-            /**
-             * @since 0_2
-             */
-            public Object execute(Prevayler p_prevayler,
-                                  Method p_method,
-                                  Object[] p_args,
-                                  TransactionHint p_hint)
-                throws Exception
-            {
-                return p_prevayler.execute(new ProxyQuery(p_method, p_args, p_hint));
-            }
-        };
-
-    public static final TransactionType TRANSACTION_WITH_QUERY =
-        new TransactionType("TRANSACTION_WITH_QUERY")
-        {
-
-            /**
-             * @since 0_2
-             */
-            public Object execute(Prevayler p_prevayler,
-                                  Method p_method,
-                                  Object[] p_args,
-                                  TransactionHint p_hint)
-                throws Exception
-            {
-                return p_prevayler.execute
-                    (new ProxyTransactionWithQuery(p_method, p_args, p_hint));
-            }
-        };
-
-    public static final TransactionType TRANSACTION =
-        new TransactionType("TRANSACTION")
-        {
-
-            /**
-             * @since 0_2
-             */
-            public Object execute(Prevayler p_prevayler,
-                                  Method p_method,
-                                  Object[] p_args,
-                                  TransactionHint p_hint)
-                throws Exception
-            {
-                p_prevayler.execute
-                    (new ProxyTransaction(p_method, p_args, p_hint));
-                return null;
-            }
-        };
-
-    /**
-     * @since 0_2
-     */
-    public static final TransactionType NOOP =
-        new TransactionType("NOOP")
-        {
-            public Object execute(Prevayler p_prevayler,
-                                  Method p_method,
-                                  Object[] p_args,
-                                  TransactionHint p_hint)
-                throws Exception
-            {
-                return null;
-            }
-        };
+  /**
+   * @since 0_2
+   */
+  public static final TransactionType NOOP =
+      new TransactionType("NOOP") {
+        public Object execute(Prevayler p_prevayler,
+                              Method p_method,
+                              Object[] p_args,
+                              TransactionHint p_hint)
+            throws Exception {
+          return null;
+        }
+      };
 }

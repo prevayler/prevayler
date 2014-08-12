@@ -40,56 +40,50 @@ import java.lang.reflect.Method;
  * A <code>Serializable</code> representation of a
  * <code>Method</code>.
  *
- * @since 0_1
  * @author Jay Sachs [jay@contravariant.org]
+ * @since 0_1
  */
-public class MethodInfo implements Serializable
-{
-    private static final long serialVersionUID = -7565901432660010880L;
+public class MethodInfo implements Serializable {
+  private static final long serialVersionUID = -7565901432660010880L;
 
-    /**
-     * Construct a <code>MethodInfo</code> from the specified
-     * <code>Method</code>.
-     *
-     * @param p_method the <code>Method</code> to "wrap"
-     */
-    public MethodInfo(Method p_method)
-    {
-        m_name = p_method.getName();
-        Class[] paramTypes = p_method.getParameterTypes();
-        m_argTypes = new String[paramTypes.length];
-        for (int i = 0; i < m_argTypes.length; ++i)
-        {
-            m_argTypes[i] = paramTypes[i].getName();
-        }
-            m_className = p_method.getDeclaringClass().getName();
+  /**
+   * Construct a <code>MethodInfo</code> from the specified
+   * <code>Method</code>.
+   *
+   * @param p_method the <code>Method</code> to "wrap"
+   */
+  public MethodInfo(Method p_method) {
+    m_name = p_method.getName();
+    Class[] paramTypes = p_method.getParameterTypes();
+    m_argTypes = new String[paramTypes.length];
+    for (int i = 0; i < m_argTypes.length; ++i) {
+      m_argTypes[i] = paramTypes[i].getName();
     }
+    m_className = p_method.getDeclaringClass().getName();
+  }
 
-    /**
-     * "Reconstitute" (i.e., lookup reflectively) the
-     * <code>Method</code> represented by this object. Note that
-     * different results may occur if different
-     * <code>ClassLoader</code>s are used during construction and the
-     * invocation of this method.
-     *
-     * @return the <code>Method</code> represented by this object
-     *
-     * @exception the usual batch of reflection-based exceptions if
-     * something goes wrong
-     */
-    public Method getMethod()
-        throws Exception
-    {
-        Class [] args = new Class[m_argTypes.length];
-        for (int i = 0; i < args.length; ++i)
-        {
-            args[i] = Class.forName(m_argTypes[i]);
-        }
-        return Class.forName(m_className).getMethod(m_name, args);
+  /**
+   * "Reconstitute" (i.e., lookup reflectively) the
+   * <code>Method</code> represented by this object. Note that
+   * different results may occur if different
+   * <code>ClassLoader</code>s are used during construction and the
+   * invocation of this method.
+   *
+   * @return the <code>Method</code> represented by this object
+   * @throws the usual batch of reflection-based exceptions if
+   *             something goes wrong
+   */
+  public Method getMethod()
+      throws Exception {
+    Class[] args = new Class[m_argTypes.length];
+    for (int i = 0; i < args.length; ++i) {
+      args[i] = Class.forName(m_argTypes[i]);
     }
+    return Class.forName(m_className).getMethod(m_name, args);
+  }
 
-    private final String m_name;
-    private final String m_className;
-    private final String[] m_argTypes;
+  private final String m_name;
+  private final String m_className;
+  private final String[] m_argTypes;
 
 }

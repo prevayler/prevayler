@@ -10,16 +10,16 @@ import org.prevayler.implementation.publishing.TransactionSubscriber;
 import java.io.IOException;
 
 // START SNIPPET: journal
- 
+
 public interface Journal {
 
-	public void append(TransactionGuide guide);
+  public void append(TransactionGuide guide);
 
-	public void update(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException;
+  public void update(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException;
 
-	public void close() throws IOException;
+  public void close() throws IOException;
 
-	public long nextTransaction();
+  public long nextTransaction();
 
 }
 // END SNIPPET: journal

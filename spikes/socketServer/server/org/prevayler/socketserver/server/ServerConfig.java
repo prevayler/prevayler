@@ -23,34 +23,34 @@ package org.prevayler.socketserver.server;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-import java.util.Properties;
-
 import org.prevayler.socketserver.util.Config;
+
+import java.util.Properties;
 
 /**
  * Manages the Prevayler server configuration file
- * 
+ *
  * @author djo
  */
 public class ServerConfig extends Config {
 
-	/**
-	 * @see org.prevayler.socketserver.util.Config#getConfigHeader()
-	 */
-	public String getConfigHeader() {
-		return "Prevayler Server Config";
-	}
+  /**
+   * @see org.prevayler.socketserver.util.Config#getConfigHeader()
+   */
+  public String getConfigHeader() {
+    return "Prevayler Server Config";
+  }
 
-	/**
-	 * @see org.prevayler.socketserver.util.Config#getDefaultProps()
-	 */
-	public Properties getDefaultProps() {
-		// Init the default property values
-		Properties props = new Properties();
-		props.put("BasePort", "6000");
-		props.put("Repository", System.getProperty("user.dir") + "/prevalenceBase");
-		props.put("RootObjectClass", "");
-		return props;
-	}
+  /**
+   * @see org.prevayler.socketserver.util.Config#getDefaultProps()
+   */
+  public Properties getDefaultProps() {
+    // Init the default property values
+    Properties props = new Properties();
+    props.put("BasePort", "6000");
+    props.put("Repository", System.getProperty("user.dir") + "/prevalenceBase");
+    props.put("RootObjectClass", "");
+    return props;
+  }
 
 }

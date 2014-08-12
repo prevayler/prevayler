@@ -32,131 +32,130 @@
 
 package org.prevayler.contrib.facade;
 
-import java.util.Calendar;
-import java.util.Iterator;
-
 import junit.framework.TestCase;
-
 import org.prevayler.Prevayler;
 import org.prevayler.PrevaylerFactory;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.XStreamSerializer;
 
+import java.util.Calendar;
+import java.util.Iterator;
+
 /**
  * @author Jacob Kjome [hoju@visi.com]
  */
 public class AnotherTest extends TestCase {
-    
-    private Calendar date;
-    
-    public AnotherTest() {
-        date = Calendar.getInstance();
-        date.setTimeInMillis(23123);
-    }
-    
-    public void testCampGuideSystem() throws Exception {
-        CampGuide guide = (CampGuide)
+
+  private Calendar date;
+
+  public AnotherTest() {
+    date = Calendar.getInstance();
+    date.setTimeInMillis(23123);
+  }
+
+  public void testCampGuideSystem() throws Exception {
+    CampGuide guide = (CampGuide)
         PrevaylerTransactionsFacade.create
             (CampGuide.class,
-             PrevaylerFactory.createTransientPrevayler(new CampGuideImpl()),
-             TransactionType.SIMPLE_DETERMINER,
-             new CampGuideTransactionHint());
-        
-        addSite(guide, "Hikers'delight", CampSite.ON_SITE, 300, 100, CampSite.NOT_AVAILABLE, 2, 3, 15, 7);
-        addSite(guide, "Mountain view", CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, 3, 3, 30, 6);
-        addSite(guide, "Middle of Nowhere", CampSite.ON_SITE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, 3, 1, 15, 4);
-        addSite(guide, "Belle air", CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, 2, 3, 40, 4);
-        addSite(guide, "Lakeview", CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, 3, 3, 25, 6);
-        addSite(guide, "Wild waters", CampSite.ON_SITE, 500, 0, CampSite.NOT_AVAILABLE, 2, 2, 55, 7);
-        addSite(guide, "OpenAir Sports center", CampSite.ON_SITE, CampSite.ON_SITE, 0, 300, 1, 0, 90, 13);
-        addSite(guide, "Central city campsite", 100, 100, 400, 100, 0, 1, 70, 10);
-        addSite(guide, "Highhills outdoor resort", CampSite.ON_SITE, 200, 0, CampSite.NOT_AVAILABLE, 1, 3, 120, 12);
-        addSite(guide, "Fred's Family Farm", CampSite.ON_SITE, 150, 0, 100, 2, 2, 120, 18);
-        addSite(guide, "Holiday heaven", CampSite.ON_SITE, 200, 0, 0, 1, 2, 150, 18);
-        addSite(guide, "Summer city", 200, CampSite.ON_SITE, 0, 0, 0, 1, 720, 29);
-        addSite(guide, "Sunny sands", CampSite.ON_SITE, CampSite.ON_SITE, 0, 200, 1, 1, 300, 34);
-        addSite(guide, "Surf-n-sleep", CampSite.ON_SITE, CampSite.ON_SITE, 0, 0, 0, 1, 550, 30);
-        addSite(guide, "Dance and dream", 50, CampSite.ON_SITE, 0, 0, 1, 1, 640, 32);
-        addSite(guide, "Sunset beach resort", CampSite.ON_SITE, CampSite.ON_SITE, 0, 0, 0, 1, 800, 35);
-        
-        assertEquals("Should have been 16 camp sites", new Integer(16), new Integer(guide.getCampSites().size()));
-        
-        int i = 16;
-        for (Iterator iter = guide.getCampSites().iterator(); iter.hasNext();) {
-            CampSite site = (CampSite) iter.next();
-            //System.out.println(site);
-            site.setDistanceToSupermarket(50);
-            //System.out.println("updated: " + site.getUpdated().getTime());
-            //for (int b=100000000; b > 0; b--) {}
-            guide.updateCampSite(site);
-            //System.out.println("updated: " + guide.getCampSite(site.objectCode()).getUpdated().getTime());
-            assertEquals("object was updated, but created date should have stayed the same", new Long(site.getCreated().getTime()), new Long(guide.getCampSite(site.objectCode()).getCreated().getTime()));
-            assertFalse("object was updated, so time should have been different", new Long(site.getUpdated().getTime()).equals(new Long(guide.getCampSite(site.objectCode()).getUpdated().getTime())));
-            guide.removeCampSite(site);
-            assertNull("camp site removed, so should have been null", guide.getCampSite(site.objectCode()));
-            assertEquals("Should have been "+ --i +" camp sites", new Integer(i), new Integer(guide.getCampSites().size()));
-        }
-        assertEquals("Should have been 0", new Integer(0), new Integer(guide.getCampSites().size()));
-        
-        for (int j = 0; j < guide.getCampSites().size(); j++) {
-            //System.out.println(((CampSite)guide.getCampSites().get(i)).getUpdated());
-        }
-        
+                PrevaylerFactory.createTransientPrevayler(new CampGuideImpl()),
+                TransactionType.SIMPLE_DETERMINER,
+                new CampGuideTransactionHint());
+
+    addSite(guide, "Hikers'delight", CampSite.ON_SITE, 300, 100, CampSite.NOT_AVAILABLE, 2, 3, 15, 7);
+    addSite(guide, "Mountain view", CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, 3, 3, 30, 6);
+    addSite(guide, "Middle of Nowhere", CampSite.ON_SITE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, 3, 1, 15, 4);
+    addSite(guide, "Belle air", CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, 2, 3, 40, 4);
+    addSite(guide, "Lakeview", CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, CampSite.NOT_AVAILABLE, 3, 3, 25, 6);
+    addSite(guide, "Wild waters", CampSite.ON_SITE, 500, 0, CampSite.NOT_AVAILABLE, 2, 2, 55, 7);
+    addSite(guide, "OpenAir Sports center", CampSite.ON_SITE, CampSite.ON_SITE, 0, 300, 1, 0, 90, 13);
+    addSite(guide, "Central city campsite", 100, 100, 400, 100, 0, 1, 70, 10);
+    addSite(guide, "Highhills outdoor resort", CampSite.ON_SITE, 200, 0, CampSite.NOT_AVAILABLE, 1, 3, 120, 12);
+    addSite(guide, "Fred's Family Farm", CampSite.ON_SITE, 150, 0, 100, 2, 2, 120, 18);
+    addSite(guide, "Holiday heaven", CampSite.ON_SITE, 200, 0, 0, 1, 2, 150, 18);
+    addSite(guide, "Summer city", 200, CampSite.ON_SITE, 0, 0, 0, 1, 720, 29);
+    addSite(guide, "Sunny sands", CampSite.ON_SITE, CampSite.ON_SITE, 0, 200, 1, 1, 300, 34);
+    addSite(guide, "Surf-n-sleep", CampSite.ON_SITE, CampSite.ON_SITE, 0, 0, 0, 1, 550, 30);
+    addSite(guide, "Dance and dream", 50, CampSite.ON_SITE, 0, 0, 1, 1, 640, 32);
+    addSite(guide, "Sunset beach resort", CampSite.ON_SITE, CampSite.ON_SITE, 0, 0, 0, 1, 800, 35);
+
+    assertEquals("Should have been 16 camp sites", new Integer(16), new Integer(guide.getCampSites().size()));
+
+    int i = 16;
+    for (Iterator iter = guide.getCampSites().iterator(); iter.hasNext(); ) {
+      CampSite site = (CampSite) iter.next();
+      //System.out.println(site);
+      site.setDistanceToSupermarket(50);
+      //System.out.println("updated: " + site.getUpdated().getTime());
+      //for (int b=100000000; b > 0; b--) {}
+      guide.updateCampSite(site);
+      //System.out.println("updated: " + guide.getCampSite(site.objectCode()).getUpdated().getTime());
+      assertEquals("object was updated, but created date should have stayed the same", new Long(site.getCreated().getTime()), new Long(guide.getCampSite(site.objectCode()).getCreated().getTime()));
+      assertFalse("object was updated, so time should have been different", new Long(site.getUpdated().getTime()).equals(new Long(guide.getCampSite(site.objectCode()).getUpdated().getTime())));
+      guide.removeCampSite(site);
+      assertNull("camp site removed, so should have been null", guide.getCampSite(site.objectCode()));
+      assertEquals("Should have been " + --i + " camp sites", new Integer(i), new Integer(guide.getCampSites().size()));
+    }
+    assertEquals("Should have been 0", new Integer(0), new Integer(guide.getCampSites().size()));
+
+    for (int j = 0; j < guide.getCampSites().size(); j++) {
+      //System.out.println(((CampSite)guide.getCampSites().get(i)).getUpdated());
     }
 
-    public void testTheBaptismProblem() throws Exception {
-        PrevaylerFactory<CampGuide> factory = new PrevaylerFactory<CampGuide>();
-        factory.configureJournalSerializer(new XStreamSerializer());
-        factory.configureSnapshotSerializer(new XStreamSerializer());
-        factory.configureSnapshotSerializer(new JavaSerializer());
-        factory.configurePrevalentSystem(new CampGuideImpl());
-        Prevayler prevayler = factory.create();
-        CampGuide guide = (CampGuide)
+  }
+
+  public void testTheBaptismProblem() throws Exception {
+    PrevaylerFactory<CampGuide> factory = new PrevaylerFactory<CampGuide>();
+    factory.configureJournalSerializer(new XStreamSerializer());
+    factory.configureSnapshotSerializer(new XStreamSerializer());
+    factory.configureSnapshotSerializer(new JavaSerializer());
+    factory.configurePrevalentSystem(new CampGuideImpl());
+    Prevayler prevayler = factory.create();
+    CampGuide guide = (CampGuide)
         PrevaylerTransactionsFacade.create
             (CampGuide.class,
-             prevayler,
-             TransactionType.SIMPLE_DETERMINER,
-             new CampGuideTransactionHint());
-        
-        if (guide.getCampSites().size() == 0) {
-            System.out.println("adding single site for testing");
-            addSite(guide, "Hikers'delight", CampSite.ON_SITE, 300, 100, CampSite.NOT_AVAILABLE, 2, 3, 15, 7);
-        }
-                
-        for (Iterator iter = guide.getCampSites().iterator(); iter.hasNext();) {
-            CampSite site = (CampSite) iter.next();
-            assertTrue("Baptism issue! Transaction doesn't reflect upated value", date.getTimeInMillis() == site.getSomeDate().getTimeInMillis());
-            System.out.println(site.getSomeDate().getTime());
-            date.add(Calendar.DATE, 1); //move forward a day
-            site.setSomeDate(date);
-            guide.updateCampSite(site);
-            System.out.println(site.getSomeDate().getTime());
-            date.add(Calendar.DATE, -1); //move back to standard original date
-            site.setSomeDate(date);
-            guide.updateCampSite(site);
-            System.out.println(site.getSomeDate().getTime());
-        }
+                prevayler,
+                TransactionType.SIMPLE_DETERMINER,
+                new CampGuideTransactionHint());
 
+    if (guide.getCampSites().size() == 0) {
+      System.out.println("adding single site for testing");
+      addSite(guide, "Hikers'delight", CampSite.ON_SITE, 300, 100, CampSite.NOT_AVAILABLE, 2, 3, 15, 7);
     }
-    
-    /**
-     * Adds a camp site with the given features to the given camp guide
-     */
-    private void addSite(CampGuide guide, String name, 
-        int playground, int supermarket, int swimmingPool, int disco, 
-        int quiet, int beauty, int size, int price) {
-        CampSite site = new CampSite(name);
-        site.setDistanceToPlayground(playground);
-        site.setDistanceToSupermarket(supermarket);
-        site.setDistanceToSwimmingPool(swimmingPool);
-        site.setDistanceToDisco(disco);
-        site.setQuietIndication(quiet);
-        site.setBeautyIndication(beauty);
-        site.setSize(size);
-        site.setPriceIndication(price);
-        site.setSomeDate(date);
-        guide.addCampSite(site);
-        //System.out.println(site.getUpdated());
+
+    for (Iterator iter = guide.getCampSites().iterator(); iter.hasNext(); ) {
+      CampSite site = (CampSite) iter.next();
+      assertTrue("Baptism issue! Transaction doesn't reflect upated value", date.getTimeInMillis() == site.getSomeDate().getTimeInMillis());
+      System.out.println(site.getSomeDate().getTime());
+      date.add(Calendar.DATE, 1); //move forward a day
+      site.setSomeDate(date);
+      guide.updateCampSite(site);
+      System.out.println(site.getSomeDate().getTime());
+      date.add(Calendar.DATE, -1); //move back to standard original date
+      site.setSomeDate(date);
+      guide.updateCampSite(site);
+      System.out.println(site.getSomeDate().getTime());
     }
+
+  }
+
+  /**
+   * Adds a camp site with the given features to the given camp guide
+   */
+  private void addSite(CampGuide guide, String name,
+                       int playground, int supermarket, int swimmingPool, int disco,
+                       int quiet, int beauty, int size, int price) {
+    CampSite site = new CampSite(name);
+    site.setDistanceToPlayground(playground);
+    site.setDistanceToSupermarket(supermarket);
+    site.setDistanceToSwimmingPool(swimmingPool);
+    site.setDistanceToDisco(disco);
+    site.setQuietIndication(quiet);
+    site.setBeautyIndication(beauty);
+    site.setSize(size);
+    site.setPriceIndication(price);
+    site.setSomeDate(date);
+    guide.addCampSite(site);
+    //System.out.println(site.getUpdated());
+  }
 
 }
