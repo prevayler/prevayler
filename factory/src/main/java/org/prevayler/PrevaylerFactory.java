@@ -5,6 +5,7 @@
 
 package org.prevayler;
 
+import org.prevayler.foundation.JournalDiskSyncStrategy;
 import org.prevayler.foundation.monitor.Monitor;
 import org.prevayler.foundation.monitor.SimpleMonitor;
 import org.prevayler.foundation.network.OldNetworkImpl;
@@ -52,7 +53,7 @@ public class PrevaylerFactory<P> {
 
   private long _journalSizeThreshold;
   private long _journalAgeThreshold;
-  private boolean _journalDiskSync = true;
+  private JournalDiskSyncStrategy _journalDiskSync = new JournalDiskSyncStrategy.Always();
 
   private int _serverPort = -1;
   private String _remoteServerIpAddress;
@@ -271,8 +272,33 @@ public class PrevaylerFactory<P> {
    *                        physical disk before it is executed (using {@link java.io.FileDescriptor#sync()}).
    *                        (Many transactions may be written at once, but no transaction will be executed
    *                        before it is written to disk.)
+   * @deprecated Use {@link #configureJournalDiskSync(org.prevayler.foundation.JournalDiskSyncStrategy)}
    */
+  @Deprecated
   public void configureJournalDiskSync(boolean journalDiskSync) {
+    configureJournalDiskSync(journalDiskSync ? new JournalDiskSyncStrategy.Always() : new JournalDiskSyncStrategy.Never());
+  }
+
+  /**
+   * Configures whether the journal will sync writes to disk. The default is {@link JournalDiskSyncStrategy.Always}.
+   *
+   * @param journalDiskSync <br>
+   *                        <br>If {@link org.prevayler.foundation.JournalDiskSyncStrategy#syncFileDescriptorAfterNextTransactionBatch()}
+   *                        return <code>false</code>, transactions may execute without necessarily being written to the
+   *                        physical disk. Transactions are still flushed to the operating system before being
+   *                        executed, but FileDescriptor.sync() is never called. This increases transaction
+   *                        throughput dramatically, but allows transactions to be lost if the system
+   *                        does not shut down cleanly. Calling {@link Prevayler#close()} will close the
+   *                        underlying journal file and therefore cause all transactions to be written to
+   *                        disk.
+   *                        <br>
+   *                        <br>If {@link org.prevayler.foundation.JournalDiskSyncStrategy#syncFileDescriptorAfterNextTransactionBatch()}
+   *                        return <code>true</code> (default), every transaction is forced to be written to the
+   *                        physical disk before it is executed (using {@link java.io.FileDescriptor#sync()}).
+   *                        (Many transactions may be written at once, but no transaction will be executed
+   *                        before it is written to disk.)
+   */
+  public void configureJournalDiskSync(JournalDiskSyncStrategy journalDiskSync) {
     _journalDiskSync = journalDiskSync;
   }
 

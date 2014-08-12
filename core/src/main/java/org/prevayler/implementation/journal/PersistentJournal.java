@@ -29,7 +29,7 @@ public class PersistentJournal implements Journal {
   private final long _journalAgeThresholdInMillis;
   private StopWatch _journalAgeTimer;
 
-  private final boolean _journalDiskSync;
+  private final JournalDiskSyncStrategy _journalDiskSync;
 
   private long _nextTransaction;
   private boolean _nextTransactionInitialized = false;
@@ -43,7 +43,7 @@ public class PersistentJournal implements Journal {
    * @param journalAgeThresholdInMillis Age of the current journal file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful journal backup purposes.
    */
   public PersistentJournal(PrevaylerDirectory directory, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis,
-                           boolean journalDiskSync, String journalSuffix, Monitor monitor) throws IOException {
+                           JournalDiskSyncStrategy journalDiskSync, String journalSuffix, Monitor monitor) throws IOException {
     PrevaylerDirectory.checkValidJournalSuffix(journalSuffix);
 
     _monitor = monitor;

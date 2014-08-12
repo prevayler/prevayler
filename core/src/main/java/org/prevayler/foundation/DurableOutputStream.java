@@ -36,7 +36,7 @@ public class DurableOutputStream {
   /**
    * Immutable.
    */
-  private final boolean _journalDiskSync;
+  private final JournalDiskSyncStrategy _journalDiskSync;
 
   /**
    * All access guarded by _writeLock.
@@ -68,11 +68,24 @@ public class DurableOutputStream {
    */
   private int _fileSyncCount = 0;
 
-  public DurableOutputStream(File file, boolean journalDiskSync) throws IOException {
+  public DurableOutputStream(File file, JournalDiskSyncStrategy journalDiskSync) throws IOException {
     _file = file;
     _fileOutputStream = new FileOutputStream(file);
     _fileDescriptor = _fileOutputStream.getFD();
+
     _journalDiskSync = journalDiskSync;
+    _journalDiskSync.setDurableObjectStream(this);
+  }
+
+  /**
+   * Syncs FileDescriptor as soon as current sync-lock is released.
+   * @see org.prevayler.foundation.JournalDiskSyncStrategy#sync()
+   * @throws SyncFailedException
+   */
+  void sync() throws SyncFailedException {
+    synchronized (_syncLock) {
+      _fileDescriptor.sync();
+    }
   }
 
   public void sync(Guided guide) throws IOException {
@@ -165,7 +178,7 @@ public class DurableOutputStream {
           _inactive.reset();
           _fileOutputStream.flush();
 
-          if (_journalDiskSync) {
+          if (_journalDiskSync.syncFileDescriptorAfterNextTransactionBatch()) {
             _fileDescriptor.sync();
           }
         } catch (IOException exception) {
