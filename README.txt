@@ -13,7 +13,7 @@ Java.
 Free Software License
 =========================
 The Prevayler library is free software, distributed under a BSD license.
-See LICENCE.TXT in this directory for more details.
+See LICENSE.TXT in this directory for more details.
 
 
 Features
