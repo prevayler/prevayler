@@ -5,8 +5,12 @@
 package org.prevayler.foundation;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 public class DurableOutputStream {
+  static final int JOURNAL_PREALLOCATE_LENGTH = 1024 * 1024;
+
   /**
    * These two locks allow the two main activities of this class,
    * serializing transactions to a buffer on the one hand and flushing
@@ -32,6 +36,8 @@ public class DurableOutputStream {
    * All access guarded by _syncLock.
    */
   private final FileDescriptor _fileDescriptor;
+  private final FileChannel _fileChannel;
+  private final int _preallocateLength;
 
   /**
    * Immutable.
@@ -68,11 +74,34 @@ public class DurableOutputStream {
    */
   private int _fileSyncCount = 0;
 
-  public DurableOutputStream(File file, boolean journalDiskSync) throws IOException {
+  public DurableOutputStream(File file, boolean journalDiskSync, long journalSizeThreshold) throws IOException {
     _file = file;
     _fileOutputStream = new FileOutputStream(file);
     _fileDescriptor = _fileOutputStream.getFD();
+    _fileChannel = _fileOutputStream.getChannel();
+    _preallocateLength = journalSizeThreshold == 0 ?
+        JOURNAL_PREALLOCATE_LENGTH :
+          (int) Math.min(journalSizeThreshold-1, JOURNAL_PREALLOCATE_LENGTH);
     _journalDiskSync = journalDiskSync;
+  }
+
+  private void preallocate() throws IOException {
+    assert _fileChannel != null :  "_fileChannel is null";
+
+    long position = _fileChannel.position();
+    long size = _fileChannel.size();
+    int bufSize = _inactive.size();
+    long need = bufSize - (size - position);
+    if (need <= 0) {
+      return;
+    }
+    while (need > 0) {
+      ByteBuffer buf = ByteBuffer.allocateDirect(_preallocateLength);
+      int written = _fileChannel.write(buf, size);
+      assert written == _preallocateLength : "incomplete write";
+      need -= written;
+    }
+    _fileDescriptor.sync();
   }
 
   public void sync(Guided guide) throws IOException {
@@ -156,6 +185,9 @@ public class DurableOutputStream {
         }
 
         try {
+          // preallocate more disk space if needed
+          preallocate();
+
           // Resetting the buffer clears its contents but keeps the
           // allocated space. Therefore the buffers should quickly
           // reach a steady state of an appropriate size and then not
@@ -166,7 +198,7 @@ public class DurableOutputStream {
           _fileOutputStream.flush();
 
           if (_journalDiskSync) {
-            _fileDescriptor.sync();
+            _fileChannel.force(false);
           }
         } catch (IOException exception) {
           internalClose();
@@ -187,6 +219,9 @@ public class DurableOutputStream {
         }
 
         internalClose();
+        // remove preallocated bytes from the journal
+        if (_fileChannel != null && _fileChannel.isOpen())
+          _fileChannel.truncate(_fileChannel.position());
         _fileOutputStream.close();
       }
     }
