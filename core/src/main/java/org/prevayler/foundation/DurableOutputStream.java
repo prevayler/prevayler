@@ -35,7 +35,6 @@ public class DurableOutputStream {
   /**
    * All access guarded by _syncLock.
    */
-  private final FileDescriptor _fileDescriptor;
   private final FileChannel _fileChannel;
   private final int _preallocateLength;
 
@@ -77,7 +76,6 @@ public class DurableOutputStream {
   public DurableOutputStream(File file, boolean journalDiskSync, long journalSizeThreshold) throws IOException {
     _file = file;
     _fileOutputStream = new FileOutputStream(file);
-    _fileDescriptor = _fileOutputStream.getFD();
     _fileChannel = _fileOutputStream.getChannel();
     _preallocateLength = journalSizeThreshold == 0 ?
         JOURNAL_PREALLOCATE_LENGTH :
@@ -101,7 +99,7 @@ public class DurableOutputStream {
       assert written == _preallocateLength : "incomplete write";
       need -= written;
     }
-    _fileDescriptor.sync();
+    _fileChannel.force(true);
   }
 
   public void sync(Guided guide) throws IOException {
