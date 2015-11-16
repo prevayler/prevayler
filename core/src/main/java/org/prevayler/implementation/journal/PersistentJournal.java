@@ -121,7 +121,7 @@ public class PersistentJournal implements Journal {
   private DurableOutputStream createOutputJournal(long transactionNumber, Guided guide) {
     File file = _directory.journalFile(transactionNumber, _journalSuffix);
     try {
-      return new DurableOutputStream(file, _journalDiskSync);
+      return new DurableOutputStream(file, _journalDiskSync, _journalSizeThresholdInBytes);
     } catch (Exception exception) {
       abort(exception, file, "creating", guide);
       return null;
