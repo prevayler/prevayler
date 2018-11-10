@@ -92,13 +92,10 @@ public class DurableOutputStream {
     long need = bufSize - (size - position);
     if (need <= 0) {
       return;
+    } else if (need < _preallocateLength) {
+      need = _preallocateLength;
     }
-    while (need > 0) {
-      ByteBuffer buf = ByteBuffer.allocateDirect(_preallocateLength);
-      int written = _fileChannel.write(buf, size);
-      assert written == _preallocateLength : "incomplete write";
-      need -= written;
-    }
+    _fileChannel.write(ByteBuffer.allocate(1), size + need - 1);
     _fileChannel.force(true);
   }
 
