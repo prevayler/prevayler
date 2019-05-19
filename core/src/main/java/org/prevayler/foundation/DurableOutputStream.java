@@ -41,7 +41,7 @@ public class DurableOutputStream {
   /**
    * Immutable.
    */
-  private final boolean _journalDiskSync;
+  private final JournalDiskSyncStrategy _journalDiskSync;
 
   /**
    * All access guarded by _writeLock.
@@ -73,7 +73,7 @@ public class DurableOutputStream {
    */
   private int _fileSyncCount = 0;
 
-  public DurableOutputStream(File file, boolean journalDiskSync, long journalSizeThreshold) throws IOException {
+  public DurableOutputStream(File file, JournalDiskSyncStrategy journalDiskSync, long journalSizeThreshold) throws IOException {
     _file = file;
     _fileOutputStream = new FileOutputStream(file);
     _fileChannel = _fileOutputStream.getChannel();
@@ -81,10 +81,11 @@ public class DurableOutputStream {
         JOURNAL_PREALLOCATE_LENGTH :
           (int) Math.min(journalSizeThreshold-1, JOURNAL_PREALLOCATE_LENGTH);
     _journalDiskSync = journalDiskSync;
+    _journalDiskSync.setDurableObjectStream(this); 
   }
 
   private void preallocate() throws IOException {
-    assert _fileChannel != null :  "_fileChannel is null";
+    assert _fileChannel != null : "_fileChannel is null";
 
     long position = _fileChannel.position();
     long size = _fileChannel.size();
@@ -99,6 +100,17 @@ public class DurableOutputStream {
     _fileChannel.force(true);
   }
 
+  /**
+   * Syncs FileDescriptor as soon as current sync-lock is released.
+   * @see org.prevayler.foundation.JournalDiskSyncStrategy#sync()
+   * @throws SyncFailedException
+   */
+  void sync() throws IOException {
+    synchronized (_syncLock) {
+      _fileChannel.force(false);
+    }
+  }
+  
   public void sync(Guided guide) throws IOException {
     int thisWrite;
 
@@ -192,7 +204,7 @@ public class DurableOutputStream {
           _inactive.reset();
           _fileOutputStream.flush();
 
-          if (_journalDiskSync) {
+          if (_journalDiskSync.syncFileDescriptorAfterNextTransactionBatch()) {
             _fileChannel.force(false);
           }
         } catch (IOException exception) {

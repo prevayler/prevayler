@@ -18,7 +18,16 @@ public class ObjectInputStreamWithClassLoader extends ObjectInputStream {
     _loader = loader;
   }
 
-  protected Class resolveClass(ObjectStreamClass v) throws IOException, ClassNotFoundException {
-    return (_loader != null ? Class.forName(v.getName(), false, _loader) : super.resolveClass(v));
+  protected Class<?> resolveClass(ObjectStreamClass v) throws IOException, ClassNotFoundException {
+    if (_loader == null)
+      return super.resolveClass(v);
+    try {
+      return Class.forName(v.getName(), false, _loader);
+    } catch (ClassNotFoundException ex) {
+      Class<?> cl = super.resolveClass(v); // fall back for resolving primitive types
+      if (cl != null)
+        return cl;
+      throw ex;
+    }
   }
 }

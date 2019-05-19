@@ -20,7 +20,7 @@ import java.io.IOException;
 /**
  * A Journal that will write all transactions to .journal files.
  */
-public class PersistentJournal implements Journal {
+public class PersistentJournal<P> implements Journal<P> {
 
   private final PrevaylerDirectory _directory;
   private DurableOutputStream _outputJournal;
@@ -29,7 +29,7 @@ public class PersistentJournal implements Journal {
   private final long _journalAgeThresholdInMillis;
   private StopWatch _journalAgeTimer;
 
-  private final boolean _journalDiskSync;
+  private final JournalDiskSyncStrategy _journalDiskSync;
 
   private long _nextTransaction;
   private boolean _nextTransactionInitialized = false;
@@ -43,7 +43,7 @@ public class PersistentJournal implements Journal {
    * @param journalAgeThresholdInMillis Age of the current journal file beyond which it is closed and a new one started. Zero indicates no age threshold. This is useful journal backup purposes.
    */
   public PersistentJournal(PrevaylerDirectory directory, long journalSizeThresholdInBytes, long journalAgeThresholdInMillis,
-                           boolean journalDiskSync, String journalSuffix, Monitor monitor) throws IOException {
+      JournalDiskSyncStrategy journalDiskSync, String journalSuffix, Monitor monitor) throws IOException {
     PrevaylerDirectory.checkValidJournalSuffix(journalSuffix);
 
     _monitor = monitor;
@@ -56,7 +56,7 @@ public class PersistentJournal implements Journal {
   }
 
 
-  public void append(TransactionGuide guide) {
+  public void append(TransactionGuide<P> guide) {
     if (!_nextTransactionInitialized)
       throw new IllegalStateException("Journal.update() has to be called at least once before Journal.append().");
 
@@ -133,7 +133,7 @@ public class PersistentJournal implements Journal {
    * IMPORTANT: This method cannot be called while the log() method is being called in another thread.
    * If there are no journal files in the directory (when a snapshot is taken and all journal files are manually deleted, for example), the initialTransaction parameter in the first call to this method will define what the next transaction number will be. We have to find clearer/simpler semantics.
    */
-  public void update(TransactionSubscriber subscriber, long initialTransactionWanted) throws IOException, ClassNotFoundException {
+  public void update(TransactionSubscriber<P> subscriber, long initialTransactionWanted) throws IOException, ClassNotFoundException {
     File initialJournal = _directory.findInitialJournalFile(initialTransactionWanted);
 
     if (initialJournal == null) {
@@ -163,7 +163,7 @@ public class PersistentJournal implements Journal {
   }
 
 
-  private long recoverPendingTransactions(TransactionSubscriber subscriber, long initialTransaction, File initialJournal) throws IOException {
+  private long recoverPendingTransactions(TransactionSubscriber<P> subscriber, long initialTransaction, File initialJournal) throws IOException {
     long recoveringTransaction = PrevaylerDirectory.journalVersion(initialJournal);
     File journal = initialJournal;
     DurableInputStream input = new DurableInputStream(journal, _monitor);
@@ -178,7 +178,7 @@ public class PersistentJournal implements Journal {
                 journal + ", but only " + _journalSuffix + " files are supported");
           }
 
-          TransactionTimestamp entry = TransactionTimestamp.fromChunk(chunk);
+          TransactionTimestamp<P> entry = TransactionTimestamp.fromChunk(chunk);
 
           if (entry.systemVersion() != recoveringTransaction) {
             throw new IOException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());

@@ -39,7 +39,7 @@ import java.util.LinkedList;
 public class Notification extends Thread {
 
   // Static part of class here----------------------
-  private static LinkedList clients = new LinkedList();
+  private static List<NotificationThread> clients = new LinkedList<NotificationThread>();
 
   /**
    * Use a hash of hashes to keep track of what clients have what messages enabled
@@ -52,7 +52,7 @@ public class Notification extends Thread {
    * We do this because on most platforms it is much more expensive to unnecessarily
    * enable a bunch of threads than to look stuff up in a couple of fairly large hashes.
    */
-  private static HashMap enabledCallbacks = new HashMap();
+  private static Map<Long, Map<String, Integer>> enabledCallbacks = new HashMap<Long, Map<String, Integer>>();
 
   /**
    * Submit a callback message to be sent

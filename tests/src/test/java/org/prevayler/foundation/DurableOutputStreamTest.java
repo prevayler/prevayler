@@ -10,7 +10,7 @@ public class DurableOutputStreamTest extends FileIOTest {
 
       File file = new File(_testDirectory, "stream" + i + ".bin");
 
-      DurableOutputStream out = new DurableOutputStream(file, true, 0);
+      DurableOutputStream out = new DurableOutputStream(file, JournalDiskSyncStrategy.ALWAYS, 0);
 
       Turn myTurn = Turn.first();
       out.sync(new DummyGuide("first", myTurn));
@@ -34,7 +34,7 @@ public class DurableOutputStreamTest extends FileIOTest {
     for (int i = 0; i < 10 /*5000*/; i++) {
 //            System.out.println("i=" + i);
       File file = new File(_testDirectory, "stream" + i + ".bin");
-      DurableOutputStream out = new DurableOutputStream(file, true, 0);
+      DurableOutputStream out = new DurableOutputStream(file, JournalDiskSyncStrategy.ALWAYS, 0);
 
       Turn one = Turn.first();
       Turn two = one.next();
@@ -98,6 +98,7 @@ public class DurableOutputStreamTest extends FileIOTest {
     private final int _id;
     private final Turn _firstTurn;
     private final Turn _secondTurn;
+    @SuppressWarnings("unused")
     public Exception _ex;
 
     public Worker(DurableOutputStream out, int id, Turn firstTurn, Turn secondTurn) {

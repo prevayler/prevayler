@@ -10,7 +10,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 
-abstract class JDBCScalabilitySubject implements ScalabilityTestSubject {
+abstract class JDBCScalabilitySubject<C> implements ScalabilityTestSubject<C> {
 
   protected final String connectionURL;
   protected final String user;

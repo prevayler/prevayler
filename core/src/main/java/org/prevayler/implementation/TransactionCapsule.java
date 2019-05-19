@@ -5,11 +5,11 @@ import org.prevayler.foundation.serialization.Serializer;
 
 import java.util.Date;
 
-class TransactionCapsule<P> extends Capsule {
+class TransactionCapsule<P> extends Capsule<P, Transaction<P>> {
 
   private static final long serialVersionUID = 3283271592697928351L;
 
-  public TransactionCapsule(Transaction<? super P> transaction, Serializer journalSerializer, boolean transactionDeepCopyMode) {
+  public TransactionCapsule(Transaction<P> transaction, Serializer journalSerializer, boolean transactionDeepCopyMode) {
     super(transaction, journalSerializer, transactionDeepCopyMode);
   }
 
@@ -17,11 +17,11 @@ class TransactionCapsule<P> extends Capsule {
     super(serialized);
   }
 
-  protected void justExecute(Object transaction, Object prevalentSystem, Date executionTime) {
-    ((Transaction<P>) transaction).executeOn((P) prevalentSystem, executionTime);
+  protected void justExecute(Transaction<P> transaction, P prevalentSystem, Date executionTime) {
+    transaction.executeOn(prevalentSystem, executionTime);
   }
 
-  public Capsule cleanCopy() {
+  public Capsule<P, Transaction<P>> cleanCopy() {
     // TransactionCapsule, unlike TransactionWithQueryCapsule, is completely immutable.
     return this;
   }

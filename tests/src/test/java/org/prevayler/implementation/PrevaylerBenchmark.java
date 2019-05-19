@@ -117,7 +117,7 @@ public class PrevaylerBenchmark {
     for(int i = 0; i < NUM_TRANSACTIONS; i++) {
       String key = "key_" + 0 + "_" + i;
       String data = "data_" + 0 + "_" + i;
-      Serializable val = (Serializable) prevayler.execute(new GetQuery(key));
+      Serializable val = prevayler.execute(new GetQuery(key));
       assertEquals("Prevayler's value is different.", data, val);
     }
   }

@@ -66,7 +66,7 @@ public interface CampGuide extends Serializable {
   /**
    * Returns all camp sites in this camp guide
    */
-  public Set getCampSites();
+  public Set<CampSite> getCampSites();
 
   /**
    * Sets the time of the current transaction in order

@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class GetPerson implements Query<Root, Person> {
 
+  private static final long serialVersionUID = 3799438221680331803L;
   private String identity;
 
   public GetPerson(String identity) {

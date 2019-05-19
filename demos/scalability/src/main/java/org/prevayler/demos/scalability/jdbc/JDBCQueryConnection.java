@@ -29,8 +29,8 @@ class JDBCQueryConnection extends JDBCScalabilityConnection implements QueryConn
   }
 
 
-  public List queryByName(String name) {
-    ArrayList list = new ArrayList();
+  public List<Record> queryByName(String name) {
+    List<Record> list = new ArrayList<Record>();
     try {
       selectStatement.setString(1, name);
       ResultSet resultSet = selectStatement.executeQuery();

@@ -19,7 +19,7 @@ public class PrevaylerImpl<P> implements Prevayler<P> {
 
   private final GenericSnapshotManager<P> _snapshotManager;
 
-  private final TransactionPublisher _publisher;
+  private final TransactionPublisher<P> _publisher;
 
   private final Serializer _journalSerializer;
 
@@ -33,7 +33,7 @@ public class PrevaylerImpl<P> implements Prevayler<P> {
    * @param transactionPublisher The TransactionPublisher that will be used for publishing transactions executed with this PrevaylerImpl.
    * @param journalSerializer
    */
-  public PrevaylerImpl(GenericSnapshotManager<P> snapshotManager, TransactionPublisher transactionPublisher,
+  public PrevaylerImpl(GenericSnapshotManager<P> snapshotManager, TransactionPublisher<P> transactionPublisher,
                        Serializer journalSerializer, boolean transactionDeepCopyMode) throws IOException, ClassNotFoundException {
     _snapshotManager = snapshotManager;
 
@@ -59,31 +59,31 @@ public class PrevaylerImpl<P> implements Prevayler<P> {
   }
 
 
-  public void execute(Transaction<? super P> transaction) {
+  public void execute(Transaction<P> transaction) {
     publish(new TransactionCapsule<P>(transaction, _journalSerializer, _transactionDeepCopyMode));    //TODO Optimization: The Censor can use the actual given transaction if it is Immutable instead of deserializing a new one from the byte array, even if "_transactionDeepCopyMode" is "true"
   }
 
 
-  private void publish(Capsule capsule) {
+  private void publish(Capsule<P, ? extends TransactionBase> capsule) {
     _publisher.publish(capsule);
   }
 
 
-  public <R> R execute(Query<? super P, R> sensitiveQuery) throws Exception {
+  public <R> R execute(Query<P, R> sensitiveQuery) throws Exception {
     return _guard.executeQuery(sensitiveQuery, clock());
   }
 
 
-  public <R> R execute(TransactionWithQuery<? super P, R> transactionWithQuery) throws Exception {
-    TransactionWithQueryCapsule<? super P, R> capsule = new TransactionWithQueryCapsule<P, R>(transactionWithQuery, _journalSerializer, _transactionDeepCopyMode);
+  public <R> R execute(TransactionWithQuery<P, R> transactionWithQuery) throws Exception {
+    TransactionWithQueryCapsule<P, R> capsule = new TransactionWithQueryCapsule<P, R>(transactionWithQuery, _journalSerializer, _transactionDeepCopyMode);
     publish(capsule);
     return capsule.result();
   }
 
 
-  public <R> R execute(SureTransactionWithQuery<? super P, R> sureTransactionWithQuery) {
+  public <R> R execute(SureTransactionWithQuery<P, R> sureTransactionWithQuery) {
     try {
-      return execute((TransactionWithQuery<? super P, R>) sureTransactionWithQuery);
+      return execute((TransactionWithQuery<P, R>) sureTransactionWithQuery);
     } catch (RuntimeException runtime) {
       throw runtime;
     } catch (Exception checked) {

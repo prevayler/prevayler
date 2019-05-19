@@ -24,7 +24,7 @@ public class SnapshotSerializerTest extends FileIOTest {
   }
 
   public void testBadSuffix() {
-    PrevaylerFactory factory = new PrevaylerFactory();
+    PrevaylerFactory<Serializable> factory = new PrevaylerFactory<Serializable>();
     try {
       factory.configureSnapshotSerializer("SNAPSHOT", new JavaSerializer());
       fail();

@@ -1,5 +1,6 @@
 package org.prevayler.implementation;
 
+import org.prevayler.TransactionBase;
 import org.prevayler.foundation.Chunk;
 import org.prevayler.foundation.serialization.Serializer;
 
@@ -8,12 +9,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 
-public abstract class Capsule implements Serializable {
+public abstract class Capsule<P, T extends TransactionBase> implements Serializable {
 
+  private static final long serialVersionUID = -8253915186873598285L;
   private final byte[] _serialized;
-  private transient Object _directTransaction = null;
+  private transient T _directTransaction = null;
 
-  protected Capsule(Object transaction, Serializer journalSerializer, boolean transactionDeepCopyMode) {
+  protected Capsule(T transaction, Serializer journalSerializer, boolean transactionDeepCopyMode) {
     if (transactionDeepCopyMode == false) {
       _directTransaction = transaction;
     }
@@ -40,9 +42,10 @@ public abstract class Capsule implements Serializable {
   /**
    * Deserializes the contained Transaction or TransactionWithQuery.
    */
-  public Object deserialize(Serializer journalSerializer) {
+  @SuppressWarnings("unchecked")
+  public T deserialize(Serializer journalSerializer) {
     try {
-      return journalSerializer.readObject(new ByteArrayInputStream(_serialized));
+      return (T) journalSerializer.readObject(new ByteArrayInputStream(_serialized));
     } catch (Exception exception) {
       throw new Error("Unable to deserialize transaction", exception);
     }
@@ -51,8 +54,8 @@ public abstract class Capsule implements Serializable {
   /**
    * Executes a freshly deserialized copy of the transaction by default. If <code>configureTransactionDeepCopy</code> was set to <code>true</code> on your <code>PrevaylerFactory</code>, this will execute the transaction directly. The execution will synchronize on the prevalentSystem.
    */
-  public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer) {
-    Object transaction;
+  public void executeOn(P prevalentSystem, Date executionTime, Serializer journalSerializer) {
+    T transaction;
     if (_directTransaction != null) {
       transaction = _directTransaction;
     } else {
@@ -68,12 +71,12 @@ public abstract class Capsule implements Serializable {
    * Actually executes the Transaction or TransactionWithQuery. The caller
    * is responsible for synchronizing on the prevalentSystem.
    */
-  protected abstract void justExecute(Object transaction, Object prevalentSystem, Date executionTime);
+  protected abstract void justExecute(T transaction, P prevalentSystem, Date executionTime);
 
   /**
    * Makes a clean copy of this capsule that will have its own query result fields.
    */
-  public abstract Capsule cleanCopy();
+  public abstract Capsule<P, T> cleanCopy();
 
   Chunk toChunk() {
     Chunk chunk = new Chunk(_serialized);
@@ -81,12 +84,12 @@ public abstract class Capsule implements Serializable {
     return chunk;
   }
 
-  static Capsule fromChunk(Chunk chunk) {
+  static <P> Capsule<P, ? extends TransactionBase> fromChunk(Chunk chunk) {
     boolean withQuery = Boolean.valueOf(chunk.getParameter("withQuery")).booleanValue();
     if (withQuery) {
-      return new TransactionWithQueryCapsule(chunk.getBytes());
+      return new TransactionWithQueryCapsule<P, Object>(chunk.getBytes());
     } else {
-      return new TransactionCapsule(chunk.getBytes());
+      return new TransactionCapsule<P>(chunk.getBytes());
     }
   }
 

@@ -20,15 +20,17 @@ import java.util.List;
 public class Project
     implements Serializable {
 
+  private static final long serialVersionUID = -2877465670779650124L;
+  
   private int id;
   private String name;
-  private List tasks;
+  private List<Task> tasks;
 
   /**
    * Creates a new Project object.
    */
   public Project() {
-    tasks = new ArrayList();
+    tasks = new ArrayList<Task>();
   }
 
   /**
@@ -46,7 +48,7 @@ public class Project
    *
    * @return Task[]
    */
-  public List getTasks() {
+  public List<Task> getTasks() {
 
     return tasks;
   }
@@ -65,7 +67,7 @@ public class Project
    *
    * @param tasks The tasks to set
    */
-  public void setTasks(List tasks) {
+  public void setTasks(List<Task> tasks) {
     this.tasks = tasks;
   }
 

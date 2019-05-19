@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.util.Date;
 
 public class Withdrawal extends MementoTransaction {
+  private static final long serialVersionUID = -1938471248356260702L;
   private long accountNumber;
   private long amount;
 

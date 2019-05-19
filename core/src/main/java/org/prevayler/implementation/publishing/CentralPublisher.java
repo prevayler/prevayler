@@ -5,6 +5,7 @@
 package org.prevayler.implementation.publishing;
 
 import org.prevayler.Clock;
+import org.prevayler.TransactionBase;
 import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.Turn;
 import org.prevayler.implementation.Capsule;
@@ -15,10 +16,10 @@ import org.prevayler.implementation.journal.Journal;
 
 import java.io.IOException;
 
-public class CentralPublisher extends AbstractPublisher {
+public class CentralPublisher<P> extends AbstractPublisher<P> {
 
   private final PausableClock _pausableClock;
-  private final Journal _journal;
+  private final Journal<P> _journal;
 
   private volatile int _pendingPublications = 0;
   private final Object _pendingPublicationsMonitor = new Object();
@@ -28,7 +29,7 @@ public class CentralPublisher extends AbstractPublisher {
   private final Object _nextTurnMonitor = new Object();
 
 
-  public CentralPublisher(Clock clock, Journal journal) {
+  public CentralPublisher(Clock clock, Journal<P> journal) {
     super(new PausableClock(clock));
     _pausableClock = (PausableClock) _clock; //This is just to avoid casting the inherited _clock every time.
 
@@ -36,7 +37,7 @@ public class CentralPublisher extends AbstractPublisher {
   }
 
 
-  public void publish(Capsule capsule) {
+  public void publish(Capsule<? super P, ? extends TransactionBase> capsule) {
     synchronized (_pendingPublicationsMonitor) {  //Blocks all new subscriptions until the publication is over.
       if (_pendingPublications == 0) _pausableClock.pause();
       _pendingPublications++;
@@ -56,26 +57,26 @@ public class CentralPublisher extends AbstractPublisher {
   }
 
 
-  private void publishWithoutWorryingAboutNewSubscriptions(Capsule capsule) {
-    TransactionGuide guide = guideFor(capsule);
+  private void publishWithoutWorryingAboutNewSubscriptions(Capsule<? super P, ? extends TransactionBase> capsule) {
+    TransactionGuide<P> guide = guideFor(capsule);
     _journal.append(guide);
     notifySubscribers(guide);
   }
 
-  private TransactionGuide guideFor(Capsule capsule) {
+  private TransactionGuide<P> guideFor(Capsule<? super P, ? extends TransactionBase> capsule) {
     synchronized (_nextTurnMonitor) {
-      TransactionTimestamp timestamp = new TransactionTimestamp(capsule, _nextTransaction, _pausableClock.realTime());
+      TransactionTimestamp<P> timestamp = new TransactionTimestamp<P>(capsule, _nextTransaction, _pausableClock.realTime());
 
       // Count this transaction
       Turn turn = _nextTurn;
       _nextTurn = _nextTurn.next();
       _nextTransaction++;
 
-      return new TransactionGuide(timestamp, turn);
+      return new TransactionGuide<P>(timestamp, turn);
     }
   }
 
-  private void notifySubscribers(TransactionGuide guide) {
+  private void notifySubscribers(TransactionGuide<P> guide) {
     guide.startTurn();
     try {
       _pausableClock.advanceTo(guide.executionTime());
@@ -86,7 +87,7 @@ public class CentralPublisher extends AbstractPublisher {
   }
 
 
-  public void subscribe(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
+  public void subscribe(TransactionSubscriber<P> subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
     synchronized (_pendingPublicationsMonitor) {
       while (_pendingPublications != 0) Cool.wait(_pendingPublicationsMonitor);
 

@@ -8,16 +8,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 
-public class TransactionGuide extends Guided {
+public class TransactionGuide<P> extends Guided {
 
-  private final TransactionTimestamp _transactionTimestamp;
+  private final TransactionTimestamp<P> _transactionTimestamp;
 
-  public TransactionGuide(TransactionTimestamp transactionTimestamp, Turn pipelineTurn) {
+  public TransactionGuide(TransactionTimestamp<P> transactionTimestamp, Turn pipelineTurn) {
     super(pipelineTurn);
     _transactionTimestamp = transactionTimestamp;
   }
 
-  public TransactionTimestamp timestamp() {
+  public TransactionTimestamp<P> timestamp() {
     return _transactionTimestamp;
   }
 

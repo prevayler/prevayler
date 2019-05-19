@@ -4,12 +4,12 @@ package org.prevayler.demos.scalability;
 /**
  * Tests insert, update and delete scalability.
  */
-public class TransactionTestRun extends ScalabilityTestRun {
+public class TransactionTestRun extends ScalabilityTestRun<TransactionConnection> {
 
   private int halfTheObjects;
 
 
-  public TransactionTestRun(ScalabilityTestSubject subject, int numberOfObjects, int minThreads, int maxThreads) {
+  public TransactionTestRun(ScalabilityTestSubject<TransactionConnection> subject, int numberOfObjects, int minThreads, int maxThreads) {
     super(subject, numberOfObjects, minThreads, maxThreads);
   }
 
@@ -33,12 +33,12 @@ public class TransactionTestRun extends ScalabilityTestRun {
    * Inserts records from id 1000000 to id 1499999.
    * Every time 500000 operations have completed, all ranges are shifted up by 500000.
    */
-  protected void executeOperation(Object connection, long operationSequence) {
+  protected void executeOperation(TransactionConnection connection, long operationSequence) {
     Record recordToInsert = new Record(numberOfObjects + operationSequence);
     long idToDelete = spreadId(operationSequence);
     Record recordToUpdate = new Record(halfTheObjects + idToDelete);
 
-    ((TransactionConnection) connection).performTransaction(recordToInsert, recordToUpdate, idToDelete);
+    connection.performTransaction(recordToInsert, recordToUpdate, idToDelete);
   }
 
 

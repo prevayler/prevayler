@@ -81,8 +81,8 @@ public class AnotherTest extends TestCase {
     assertEquals("Should have been 16 camp sites", new Integer(16), new Integer(guide.getCampSites().size()));
 
     int i = 16;
-    for (Iterator iter = guide.getCampSites().iterator(); iter.hasNext(); ) {
-      CampSite site = (CampSite) iter.next();
+    for (Iterator<CampSite> iter = guide.getCampSites().iterator(); iter.hasNext(); ) {
+      CampSite site = iter.next();
       //System.out.println(site);
       site.setDistanceToSupermarket(50);
       //System.out.println("updated: " + site.getUpdated().getTime());
@@ -109,7 +109,7 @@ public class AnotherTest extends TestCase {
     factory.configureSnapshotSerializer(new XStreamSerializer());
     factory.configureSnapshotSerializer(new JavaSerializer());
     factory.configurePrevalentSystem(new CampGuideImpl());
-    Prevayler prevayler = factory.create();
+    Prevayler<CampGuide> prevayler = factory.create();
     CampGuide guide = (CampGuide)
         PrevaylerTransactionsFacade.create
             (CampGuide.class,
@@ -122,8 +122,8 @@ public class AnotherTest extends TestCase {
       addSite(guide, "Hikers'delight", CampSite.ON_SITE, 300, 100, CampSite.NOT_AVAILABLE, 2, 3, 15, 7);
     }
 
-    for (Iterator iter = guide.getCampSites().iterator(); iter.hasNext(); ) {
-      CampSite site = (CampSite) iter.next();
+    for (Iterator<CampSite> iter = guide.getCampSites().iterator(); iter.hasNext(); ) {
+      CampSite site = iter.next();
       assertTrue("Baptism issue! Transaction doesn't reflect upated value", date.getTimeInMillis() == site.getSomeDate().getTimeInMillis());
       System.out.println(site.getSomeDate().getTime());
       date.add(Calendar.DATE, 1); //move forward a day

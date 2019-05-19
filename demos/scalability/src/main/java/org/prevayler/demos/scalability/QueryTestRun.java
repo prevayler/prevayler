@@ -1,8 +1,8 @@
 package org.prevayler.demos.scalability;
 
-public class QueryTestRun extends ScalabilityTestRun {
+public class QueryTestRun extends ScalabilityTestRun<QueryConnection> {
 
-  public QueryTestRun(ScalabilityTestSubject subject, int numberOfObjects, int minThreads, int maxThreads) {
+  public QueryTestRun(ScalabilityTestSubject<QueryConnection> subject, int numberOfObjects, int minThreads, int maxThreads) {
     super(subject, numberOfObjects, minThreads, maxThreads);
   }
 
@@ -12,9 +12,9 @@ public class QueryTestRun extends ScalabilityTestRun {
   }
 
 
-  protected void executeOperation(Object connection, long operationSequence) {
+  protected void executeOperation(QueryConnection connection, long operationSequence) {
 
-    ((QueryConnection) connection).queryByName("NAME" + (operationSequence % 10000));
+    connection.queryByName("NAME" + (operationSequence % 10000));
 
   }
 }

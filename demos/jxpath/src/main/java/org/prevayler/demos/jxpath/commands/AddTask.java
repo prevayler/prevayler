@@ -22,20 +22,21 @@ import java.util.List;
  */
 public class AddTask implements Transaction<ProjectManagementSystem> {
 
+  private static final long serialVersionUID = 8755505355908225763L;
   private Task task;
   private int projectId = Integer.MIN_VALUE;
 
   public void executeOn(ProjectManagementSystem system, Date ignored) {
     if (task != null && projectId != Integer.MIN_VALUE) {
 
-      List projects = system.getProjects();
-      Iterator i = projects.iterator();
+      List<Project> projects = system.getProjects();
+      Iterator<Project> i = projects.iterator();
       while (i.hasNext()) {
-        Project p = (Project) i.next();
+        Project p = i.next();
         if (p.getId() == projectId) {
-          List tasks = p.getTasks();
+          List<Task> tasks = p.getTasks();
           if (tasks == null) {
-            tasks = new ArrayList();
+            tasks = new ArrayList<Task>();
           }
           tasks.add(task);
           p.setTasks(tasks);

@@ -13,13 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class TransientJournal implements Journal {
+public class TransientJournal<P> implements Journal<P> {
 
-  private final List journal = new ArrayList();
+  private final List<TransactionTimestamp<P>> journal = new ArrayList<TransactionTimestamp<P>>();
   private long _initialTransaction;
   private boolean _initialTransactionInitialized = false;
 
-  public void append(TransactionGuide guide) {
+  public void append(TransactionGuide<P> guide) {
     if (!_initialTransactionInitialized)
       throw new IllegalStateException("Journal.update() has to be called at least once before Journal.journal().");
 
@@ -32,7 +32,7 @@ public class TransientJournal implements Journal {
     }
   }
 
-  public synchronized void update(TransactionSubscriber subscriber, long initialTransaction) throws IOException {
+  public synchronized void update(TransactionSubscriber<P> subscriber, long initialTransaction) throws IOException {
     if (!_initialTransactionInitialized) {
       _initialTransactionInitialized = true;
       _initialTransaction = initialTransaction;
@@ -46,7 +46,7 @@ public class TransientJournal implements Journal {
       throw new IOException("The transaction journal has not yet reached transaction " + initialTransaction + ". The last logged transaction was " + (_initialTransaction + journal.size() - 1) + ".");
 
     while (i != journal.size()) {
-      TransactionTimestamp entry = (TransactionTimestamp) journal.get(i);
+      TransactionTimestamp<P> entry = journal.get(i);
       long recoveringTransaction = _initialTransaction + i;
       if (entry.systemVersion() != recoveringTransaction) {
         throw new IOException("Expected " + recoveringTransaction + " but was " + entry.systemVersion());

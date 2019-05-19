@@ -1,11 +1,12 @@
 package org.prevayler.demos.scalability.prevayler;
 
 import org.prevayler.PrevaylerFactory;
+import org.prevayler.demos.scalability.QueryConnection;
 
 import java.io.File;
 import java.io.PrintStream;
 
-public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject {
+public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject<QuerySystem, QueryConnection> {
 
   static final String PREVALENCE_BASE = "QueryTest";
 
@@ -18,8 +19,8 @@ public class PrevaylerQuerySubject extends PrevaylerScalabilitySubject {
   }
 
 
-  public Object createTestConnection() {
-    return new PrevaylerQueryConnection((QuerySystem) prevayler.prevalentSystem());
+  public QueryConnection createTestConnection() {
+    return new PrevaylerQueryConnection(prevayler.prevalentSystem());
   }
 
   public void reportResourcesUsed(PrintStream out) {

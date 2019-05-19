@@ -4,6 +4,7 @@
 
 package org.prevayler.implementation.replication;
 
+import org.prevayler.TransactionBase;
 import org.prevayler.foundation.network.ObjectSocket;
 import org.prevayler.implementation.Capsule;
 import org.prevayler.implementation.TransactionTimestamp;
@@ -17,18 +18,18 @@ import java.io.IOException;
 /**
  * Reserved for future implementation.
  */
-class ServerConnection extends Thread implements TransactionSubscriber {
+class ServerConnection<P> extends Thread implements TransactionSubscriber<P> {
 
   static final String SUBSCRIBER_UP_TO_DATE = "SubscriberUpToDate";
   static final String REMOTE_TRANSACTION = "RemoteTransaction";
 
-  private final TransactionPublisher _publisher;
-  private Capsule _remoteCapsule;
+  private final TransactionPublisher<P> _publisher;
+  private Capsule<? super P, ? extends TransactionBase> _remoteCapsule;
 
   private final ObjectSocket _remote;
   private final Thread _clockTickSender = createClockTickSender();
 
-  ServerConnection(TransactionPublisher publisher, ObjectSocket remoteSocket) throws IOException {
+  ServerConnection(TransactionPublisher<P> publisher, ObjectSocket remoteSocket) throws IOException {
     _publisher = publisher;
     _remote = remoteSocket;
     setDaemon(true);
@@ -40,7 +41,7 @@ class ServerConnection extends Thread implements TransactionSubscriber {
     try {
       long initialTransaction = ((Long) _remote.readObject()).longValue();
 
-      POBox poBox = new POBox(this);
+      POBox<P> poBox = new POBox<P>(this);
       _publisher.subscribe(poBox, initialTransaction);
       poBox.waitToEmpty();
 
@@ -81,8 +82,9 @@ class ServerConnection extends Thread implements TransactionSubscriber {
   }
 
 
+  @SuppressWarnings("unchecked")
   void publishRemoteTransaction() throws IOException, ClassNotFoundException {
-    _remoteCapsule = (Capsule) _remote.readObject();
+    _remoteCapsule = (Capsule<? super P, ? extends TransactionBase>) _remote.readObject();
     try {
       _publisher.publish(_remoteCapsule);
     } catch (RuntimeException rx) {
@@ -93,10 +95,10 @@ class ServerConnection extends Thread implements TransactionSubscriber {
   }
 
 
-  public void receive(TransactionTimestamp tt) {
+  public void receive(TransactionTimestamp<P> tt) {
 
     if (tt.capsule() == _remoteCapsule)
-      tt = new TransactionTimestamp(null, tt.systemVersion(), tt.executionTime()); //TODO This is really ugly. It is using a null capsule inside the TransactionTimestamp to signal that the remote Capsule should be executed.
+      tt = new TransactionTimestamp<P>(null, tt.systemVersion(), tt.executionTime()); //TODO This is really ugly. It is using a null capsule inside the TransactionTimestamp to signal that the remote Capsule should be executed.
 
     try {
       synchronized (_remote) {

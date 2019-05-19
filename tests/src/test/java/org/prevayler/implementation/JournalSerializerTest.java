@@ -27,7 +27,7 @@ public class JournalSerializerTest extends FileIOTest {
   }
 
   public void testBadSuffix() {
-    PrevaylerFactory factory = new PrevaylerFactory();
+    PrevaylerFactory<Serializable> factory = new PrevaylerFactory<Serializable>();
     try {
       factory.configureJournalSerializer("JOURNAL", new JavaSerializer());
       fail();
@@ -37,7 +37,7 @@ public class JournalSerializerTest extends FileIOTest {
   }
 
   public void testTryToConfigureTwo() {
-    PrevaylerFactory factory = new PrevaylerFactory();
+    PrevaylerFactory<Serializable> factory = new PrevaylerFactory<Serializable>();
     factory.configureJournalSerializer("journal", new JavaSerializer());
     try {
       factory.configureJournalSerializer("newjournal", new JavaSerializer());
@@ -128,7 +128,7 @@ public class JournalSerializerTest extends FileIOTest {
         "80;withQuery=false;systemVersion=3;executionTime=1000006\r\n" +
         "\231\377\030\0C\265w\3245\317\362\336\324\3100\214'\021\277\215\264\310\207\f\351\nK\214\223\320\367\242^\326\314\206L#\255\224\236\377Q\223\233>\207\321\267\355\375\235K;\300m\0\277\207\021\344?,o\307S\211\321)\370e\356\263\2665\365,c\356\356\371L\325\306g\376\222\004\013{R\t\371ln3\305\200Oi\200\324\340\2640\233\205\366/\322\375\247`\031\356'xa{\311:Ui\372\205\3027[\r\n",
         journalContents("journal"));
-
+    
     recover("journal", des);
   }
 

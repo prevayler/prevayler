@@ -106,128 +106,132 @@ public class Main {
 
   static private void createPropertiesFile(File file) throws IOException {
     PrintStream stream = new PrintStream(new FileOutputStream(file));
-    stream.println(
-        "###########################################################\n" +
-            "#                                                         #\n" +
-            "#      PREVAYLER VS JDBC SCALABILITY TEST PROPERTIES      #\n" +
-            "#                                                         #\n" +
-            "###########################################################\n" +
-            "\n" +
-            "NumberOfObjects = ONE_HUNDRED_THOUSAND\n" +
-            "# NumberOfObjects = ONE_MILLION\n" +
-            "# NumberOfObjects = TEN_MILLION\n" +
-            "# NumberOfObjects = TWENTY_MILLION\n" +
-            "#\n" +
-            "# The results are only valid if both Prevayler and the\n" +
-            "# database can run the tests without paging memory to disk.\n" +
-            "#\n" +
-            "# Running the tests with one hundred thousand objects\n" +
-            "# (default option) requires approx. 128MB free RAM.\n" +
-            "# The VM must be started with a sufficient maximum heap\n" +
-            "# size or you will get an OutOfMemoryError.\n" +
-            "#\n" +
-            "# Example for Linux and Windows:  java -Xmx128000000 ...\n" +
-            "#\n" +
-            "# (This can be set with the scalability.jvmarg property\n" +
-            "# in build.properties; see sample.build.properties for\n" +
-            "# examples.)\n" +
-            "#\n" +
-            "# Running the tests with one million objects requires\n" +
-            "# approx. 940MB free RAM.\n" +
-            "# Running the tests with ten million objects requires\n" +
-            "# approx. 9.4GB free RAM and a 64bit VM.\n" +
-            "#\n" +
-            "# IMPORTANT: Remember to shutdown all other non-vital\n" +
-            "# processes before running the tests. Even the database\n" +
-            "# process should be down while running the Prevayler tests\n" +
-            "# that do not use it.\n" +
-            "\n" +
-            "\n" +
-            "###########################################################\n" +
-            "# PREVAYLER QUERY TEST\n" +
-            "\n" +
-            "RunPrevaylerQueryTest = YES\n" +
-            "# RunPrevaylerQueryTest = NO\n" +
-            "\n" +
-            "PrevaylerQueryThreadsMinimum = 1\n" +
-            "PrevaylerQueryThreadsMaximum = 5\n" +
-            "# More threads can produce better results on\n" +
-            "# multi-processor machines.\n" +
-            "\n" +
-            "\n" +
-            "###########################################################\n" +
-            "# PREVAYLER TRANSACTION TEST\n" +
-            "\n" +
-            "RunPrevaylerTransactionTest = YES\n" +
-            "# RunPrevaylerTransactionTest = NO\n" +
-            "\n" +
-            "PrevaylerTransactionThreadsMinimum = 1\n" +
-            "PrevaylerTransactionThreadsMaximum = 5\n" +
-            "#\n" +
-            "# More threads can produce better results on machines with\n" +
-            "# multiple disks.\n" +
-            "\n" +
-            "TransactionTestCheckConsistency = YES\n" +
-            "# TransactionTestCheckConsistency = NO\n" +
-            "#\n" +
-            "# Verifies the integrity of the journal files produced in\n" +
-            "# your particular environment.\n" +
-            "\n" +
-            "TransactionLogDirectory = TransactionTest\n" +
-            "#\n" +
-            "# The full path name can be used. Example for Windows:\n" +
-            "# TransactionLogDirectory1 = c:\\\\temp\\\\TransactionTest\n" +
-            "# The back-slash (\\) is the escape character so you must\n" +
-            "# use two back-slashes (\\\\).\n" +
-            "\n" +
-            "PrevaylerJournalSerializer = " + JavaSerializer.class.getName() + "\n" +
-            "\n" +
-            "\n" +
-            "###########################################################\n" +
-            "# JDBC QUERY TEST\n" +
-            "\n" +
-            "RunJdbcQueryTest = NO\n" +
-            "# RunJdbcQueryTest = YES\n" +
-            "\n" +
-            "JdbcQueryThreadsMinimum = 1\n" +
-            "JdbcQueryThreadsMaximum = 5\n" +
-            "# More threads can produce better results on some machines.\n" +
-            "\n" +
-            "\n" +
-            "###########################################################\n" +
-            "# JDBC TRANSACTION TEST\n" +
-            "\n" +
-            "RunJdbcTransactionTest = NO\n" +
-            "# RunJdbcTransactionTest = YES\n" +
-            "\n" +
-            "JdbcTransactionThreadsMinimum = 1\n" +
-            "JdbcTransactionThreadsMaximum = 5\n" +
-            "# More threads can produce better results on some machines.\n" +
-            "\n" +
-            "\n" +
-            "###########################################################\n" +
-            "# JDBC CONNECTION\n" +
-            "# (necessary to run the JDBC tests)\n" +
-            "\n" +
-            "JdbcDriverClassName =\n" +
-            "JdbcConnectionURL =\n" +
-            "JdbcUser =\n" +
-            "JdbcPassword =\n" +
-            "# These two tables are necessary for the JDBC tests:\n" +
-            "# QUERY_TEST and TRANSACTION_TEST.\n" +
-            "# Both tables have the same column structure:\n" +
-            "#    ID DECIMAL,\n" +
-            "#    NAME VARCHAR2(8),\n" +
-            "#    STRING1 VARCHAR2(1000),\n" +
-            "#    BIGDECIMAL1 DECIMAL,\n" +
-            "#    BIGDECIMAL2 DECIMAL,\n" +
-            "#    DATE1 DATE,\n" +
-            "#    DATE2 DATE.\n" +
-            "\n" +
-            "# IMPORTANT: For best results, create indices on the\n" +
-            "# QUERY_TEST.NAME and TRANSACTION_TEST.ID columns.\n" +
-            "# Do not create indices on any other column.\n"
-    );
+    try {
+      stream.println(
+          "###########################################################\n" +
+              "#                                                         #\n" +
+              "#      PREVAYLER VS JDBC SCALABILITY TEST PROPERTIES      #\n" +
+              "#                                                         #\n" +
+              "###########################################################\n" +
+              "\n" +
+              "NumberOfObjects = ONE_HUNDRED_THOUSAND\n" +
+              "# NumberOfObjects = ONE_MILLION\n" +
+              "# NumberOfObjects = TEN_MILLION\n" +
+              "# NumberOfObjects = TWENTY_MILLION\n" +
+              "#\n" +
+              "# The results are only valid if both Prevayler and the\n" +
+              "# database can run the tests without paging memory to disk.\n" +
+              "#\n" +
+              "# Running the tests with one hundred thousand objects\n" +
+              "# (default option) requires approx. 128MB free RAM.\n" +
+              "# The VM must be started with a sufficient maximum heap\n" +
+              "# size or you will get an OutOfMemoryError.\n" +
+              "#\n" +
+              "# Example for Linux and Windows:  java -Xmx128000000 ...\n" +
+              "#\n" +
+              "# (This can be set with the scalability.jvmarg property\n" +
+              "# in build.properties; see sample.build.properties for\n" +
+              "# examples.)\n" +
+              "#\n" +
+              "# Running the tests with one million objects requires\n" +
+              "# approx. 940MB free RAM.\n" +
+              "# Running the tests with ten million objects requires\n" +
+              "# approx. 9.4GB free RAM and a 64bit VM.\n" +
+              "#\n" +
+              "# IMPORTANT: Remember to shutdown all other non-vital\n" +
+              "# processes before running the tests. Even the database\n" +
+              "# process should be down while running the Prevayler tests\n" +
+              "# that do not use it.\n" +
+              "\n" +
+              "\n" +
+              "###########################################################\n" +
+              "# PREVAYLER QUERY TEST\n" +
+              "\n" +
+              "RunPrevaylerQueryTest = YES\n" +
+              "# RunPrevaylerQueryTest = NO\n" +
+              "\n" +
+              "PrevaylerQueryThreadsMinimum = 1\n" +
+              "PrevaylerQueryThreadsMaximum = 5\n" +
+              "# More threads can produce better results on\n" +
+              "# multi-processor machines.\n" +
+              "\n" +
+              "\n" +
+              "###########################################################\n" +
+              "# PREVAYLER TRANSACTION TEST\n" +
+              "\n" +
+              "RunPrevaylerTransactionTest = YES\n" +
+              "# RunPrevaylerTransactionTest = NO\n" +
+              "\n" +
+              "PrevaylerTransactionThreadsMinimum = 1\n" +
+              "PrevaylerTransactionThreadsMaximum = 5\n" +
+              "#\n" +
+              "# More threads can produce better results on machines with\n" +
+              "# multiple disks.\n" +
+              "\n" +
+              "TransactionTestCheckConsistency = YES\n" +
+              "# TransactionTestCheckConsistency = NO\n" +
+              "#\n" +
+              "# Verifies the integrity of the journal files produced in\n" +
+              "# your particular environment.\n" +
+              "\n" +
+              "TransactionLogDirectory = TransactionTest\n" +
+              "#\n" +
+              "# The full path name can be used. Example for Windows:\n" +
+              "# TransactionLogDirectory1 = c:\\\\temp\\\\TransactionTest\n" +
+              "# The back-slash (\\) is the escape character so you must\n" +
+              "# use two back-slashes (\\\\).\n" +
+              "\n" +
+              "PrevaylerJournalSerializer = " + JavaSerializer.class.getName() + "\n" +
+              "\n" +
+              "\n" +
+              "###########################################################\n" +
+              "# JDBC QUERY TEST\n" +
+              "\n" +
+              "RunJdbcQueryTest = NO\n" +
+              "# RunJdbcQueryTest = YES\n" +
+              "\n" +
+              "JdbcQueryThreadsMinimum = 1\n" +
+              "JdbcQueryThreadsMaximum = 5\n" +
+              "# More threads can produce better results on some machines.\n" +
+              "\n" +
+              "\n" +
+              "###########################################################\n" +
+              "# JDBC TRANSACTION TEST\n" +
+              "\n" +
+              "RunJdbcTransactionTest = NO\n" +
+              "# RunJdbcTransactionTest = YES\n" +
+              "\n" +
+              "JdbcTransactionThreadsMinimum = 1\n" +
+              "JdbcTransactionThreadsMaximum = 5\n" +
+              "# More threads can produce better results on some machines.\n" +
+              "\n" +
+              "\n" +
+              "###########################################################\n" +
+              "# JDBC CONNECTION\n" +
+              "# (necessary to run the JDBC tests)\n" +
+              "\n" +
+              "JdbcDriverClassName =\n" +
+              "JdbcConnectionURL =\n" +
+              "JdbcUser =\n" +
+              "JdbcPassword =\n" +
+              "# These two tables are necessary for the JDBC tests:\n" +
+              "# QUERY_TEST and TRANSACTION_TEST.\n" +
+              "# Both tables have the same column structure:\n" +
+              "#    ID DECIMAL,\n" +
+              "#    NAME VARCHAR2(8),\n" +
+              "#    STRING1 VARCHAR2(1000),\n" +
+              "#    BIGDECIMAL1 DECIMAL,\n" +
+              "#    BIGDECIMAL2 DECIMAL,\n" +
+              "#    DATE1 DATE,\n" +
+              "#    DATE2 DATE.\n" +
+              "\n" +
+              "# IMPORTANT: For best results, create indices on the\n" +
+              "# QUERY_TEST.NAME and TRANSACTION_TEST.ID columns.\n" +
+              "# Do not create indices on any other column.\n"
+      );
+    } finally {
+      stream.close();
+    }
   }
 
 

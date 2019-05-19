@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.util.Date;
 
 public class Deposit extends MementoTransaction {
+  private static final long serialVersionUID = -154783426607714557L;
   private long accountNumber;
   private long amount;
 

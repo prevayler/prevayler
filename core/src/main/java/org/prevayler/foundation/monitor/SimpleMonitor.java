@@ -26,11 +26,11 @@ public class SimpleMonitor extends LoggingMonitor {
     _stream = stream;
   }
 
-  protected void info(Class clazz, String message) {
+  protected void info(Class<?> clazz, String message) {
     _stream.println("\n" + message);
   }
 
-  protected void error(Class clazz, String message, Exception ex) {
+  protected void error(Class<?> clazz, String message, Exception ex) {
     _stream.println("\n" + message);
     ex.printStackTrace(_stream);
   }

@@ -6,6 +6,7 @@ import org.prevayler.util.memento.MementoCollector;
 import org.prevayler.util.memento.MementoTransaction;
 
 public class Transfer extends MementoTransaction {
+  private static final long serialVersionUID = -6700799319722269361L;
   private long sourceNumber;
   private long destinationNumber;
   private long amount;

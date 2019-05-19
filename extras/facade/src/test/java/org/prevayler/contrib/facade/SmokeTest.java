@@ -91,7 +91,7 @@ public class SmokeTest
 
   public void testAndSeeIfItSmokes()
       throws Exception {
-    Repository repo = (Repository)
+    Repository repo = 
         PrevaylerTransactionsFacade.create
             (Repository.class,
                 PrevaylerFactory.createTransientPrevayler(new RepositoryImpl()));

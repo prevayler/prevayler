@@ -81,13 +81,12 @@ public class Main {
    * @param prevayler PrevalentSystem to query
    * @param xpathExp  XPath expression to use
    */
-  private static void list(Prevayler prevayler, String xpathExp) {
+  private static void list(Prevayler<ProjectManagementSystem> prevayler, String xpathExp) {
     System.out.println("Executing XPath expression...");
 
-    ProjectManagementSystem pms =
-        (ProjectManagementSystem) prevayler.prevalentSystem();
+    ProjectManagementSystem pms = prevayler.prevalentSystem();
     JXPathContext context = JXPathContext.newContext(pms);
-    Iterator i = context.iterate(xpathExp);
+    Iterator<?> i = context.iterate(xpathExp);
 
     while (i.hasNext()) {
 
@@ -104,7 +103,7 @@ public class Main {
    * @param name      name of the project
    */
   private static void addProject(
-      Prevayler prevayler,
+      Prevayler<ProjectManagementSystem> prevayler,
       String id,
       String name)
       throws Exception {
@@ -131,7 +130,7 @@ public class Main {
    * @param projectId project id to add this task to
    */
   private static void addTask(
-      Prevayler prevayler,
+      Prevayler<ProjectManagementSystem> prevayler,
       String id,
       String name,
       String start,

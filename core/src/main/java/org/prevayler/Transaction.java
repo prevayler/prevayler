@@ -4,7 +4,6 @@
 
 package org.prevayler;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -18,7 +17,7 @@ import java.util.Date;
  * @param <P> The type or any supertype of the Prevalent System you intend to perform the transaction upon. <br>
  */
 
-public interface Transaction<P> extends Serializable {
+public interface Transaction<P> extends TransactionBase {
 
   /**
    * This method is called by Prevayler.execute(Transaction) to execute this Transaction on the given Prevalent System. See org.prevayler.demos for usage examples.

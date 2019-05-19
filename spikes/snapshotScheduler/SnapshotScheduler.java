@@ -75,7 +75,7 @@ public class SnapshotScheduler extends TimerTask {
   private Timer timer;
   private Object sync = new Object();
 
-  private List listenerList = Collections.synchronizedList(new LinkedList());
+  private List<Listener> listenerList = Collections.synchronizedList(new LinkedList<Listener>());
 
   /**
    * Construct a SnapshotScheduler without a listener. One or more listeners can be added
@@ -272,7 +272,7 @@ public class SnapshotScheduler extends TimerTask {
 
     Iterator i = listenerList.iterator();
     while (i.hasNext()) {
-      ((Listener) i.next()).snapshotStarted(prevayler, prevaylerDate, systemDate);
+      i.next().snapshotStarted(prevayler, prevaylerDate, systemDate);
     }
   }
 
@@ -285,7 +285,7 @@ public class SnapshotScheduler extends TimerTask {
 
     Iterator i = listenerList.iterator();
     while (i.hasNext()) {
-      ((Listener) i.next()).snapshotTaken(prevayler, prevaylerDate, systemDate);
+      i.next().snapshotTaken(prevayler, prevaylerDate, systemDate);
     }
   }
 
@@ -298,7 +298,7 @@ public class SnapshotScheduler extends TimerTask {
 
     Iterator i = listenerList.iterator();
     while (i.hasNext()) {
-      ((Listener) i.next()).snapshotException(prevayler, e, prevaylerDate, systemDate);
+      i.next().snapshotException(prevayler, e, prevaylerDate, systemDate);
     }
   }
 
@@ -311,7 +311,7 @@ public class SnapshotScheduler extends TimerTask {
 
     Iterator i = listenerList.iterator();
     while (i.hasNext()) {
-      ((Listener) i.next()).snapshotError(prevayler, e, prevaylerDate, systemDate);
+      i.next().snapshotError(prevayler, e, prevaylerDate, systemDate);
     }
   }
 
@@ -324,7 +324,7 @@ public class SnapshotScheduler extends TimerTask {
 
     Iterator i = listenerList.iterator();
     while (i.hasNext()) {
-      ((Listener) i.next()).snapshotShutdown(prevayler, prevaylerDate, systemDate);
+      i.next().snapshotShutdown(prevayler, prevaylerDate, systemDate);
     }
   }
 }

@@ -39,11 +39,11 @@ public class DeepCopier {
    * object in order to respect any synchronization the caller may have around it, and a new thread is used for
    * deserializing the copy.
    */
-  public static Object deepCopyParallel(Object original, Serializer serializer) throws Exception {
+  public static <P> P deepCopyParallel(P original, Serializer serializer) throws Exception {
     PipedOutputStream outputStream = new PipedOutputStream();
     PipedInputStream inputStream = new PipedInputStream(outputStream);
 
-    Receiver receiver = new Receiver(inputStream, serializer);
+    Receiver<P> receiver = new Receiver<P>(inputStream, serializer);
 
     try {
       serializer.writeObject(outputStream, original);
@@ -54,11 +54,11 @@ public class DeepCopier {
     return receiver.getResult();
   }
 
-  private static class Receiver extends Thread {
+  private static class Receiver<P> extends Thread {
 
     private InputStream _inputStream;
     private Serializer _serializer;
-    private Object _result;
+    private P _result;
     private Exception _exception;
     private Error _error;
 
@@ -68,9 +68,10 @@ public class DeepCopier {
       start();
     }
 
+    @SuppressWarnings("unchecked")
     public void run() {
       try {
-        _result = _serializer.readObject(_inputStream);
+        _result = (P) _serializer.readObject(_inputStream);
       } catch (Exception e) {
         _exception = e;
       } catch (Error e) {
@@ -89,7 +90,7 @@ public class DeepCopier {
       }
     }
 
-    public Object getResult() throws Exception {
+    public P getResult() throws Exception {
       try {
         join();
       } catch (InterruptedException e) {

@@ -24,8 +24,9 @@ import java.io.*;
  */
 public class XStreamSerializer implements Serializer {
 
-  private ThreadLocal _xstreams = new ThreadLocal() {
-    protected Object initialValue() {
+  private ThreadLocal<XStream> _xstreams = new ThreadLocal<XStream>() {
+    @Override
+    protected XStream initialValue() {
       return createXStream();
     }
   };

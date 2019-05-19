@@ -35,13 +35,13 @@ import java.util.TreeMap;
  */
 public class TodoList implements Serializable {
 
-  private TreeMap todoList;
+  private TreeMap<Integer, Todo> todoList;
 
   private int nextID = 0;
 
   public TodoList() {
     // Init ourselves
-    todoList = new TreeMap();
+    todoList = new TreeMap<Integer, Todo>();
   }
 
   public Todo[] toArray() {
@@ -49,7 +49,7 @@ public class TodoList implements Serializable {
     int i = 0;
     Iterator iter = todoList.keySet().iterator();
     while (iter.hasNext()) {
-      results[i] = (Todo) todoList.get(iter.next());
+      results[i] = todoList.get(iter.next());
       ++i;
     }
     return results;
@@ -64,6 +64,6 @@ public class TodoList implements Serializable {
   }
 
   public Todo get(int id) {
-    return (Todo) todoList.get(new Integer(id));
+    return todoList.get(new Integer(id));
   }
 }

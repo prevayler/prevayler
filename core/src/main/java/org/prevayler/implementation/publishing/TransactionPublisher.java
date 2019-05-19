@@ -5,27 +5,28 @@
 package org.prevayler.implementation.publishing;
 
 import org.prevayler.Clock;
+import org.prevayler.TransactionBase;
 import org.prevayler.implementation.Capsule;
 
 import java.io.IOException;
 
 
-public interface TransactionPublisher {
+public interface TransactionPublisher<P> {
 
   /**
    * Updates the given subscriber with all transactions published since initialTransaction, returns and continues publishing all future transactions to him.
    */
-  public void subscribe(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException;
+  public void subscribe(TransactionSubscriber<P> subscriber, long initialTransaction) throws IOException, ClassNotFoundException;
 
   /**
    * Stops publishing future transactions to the given subscriber.
    */
-  public void cancelSubscription(TransactionSubscriber subscriber);
+  public void cancelSubscription(TransactionSubscriber<P> subscriber);
 
   /**
    * Publishes transaction to the subscribers synchronously. This method will only return after all subscribers have received transaction. Note that no guarantee can be made as to wether the subscribers have actually executed it.
    */
-  public void publish(Capsule capsule);
+  public void publish(Capsule<? super P, ? extends TransactionBase> capsule);
 
   /**
    * Returns a Clock which is consistent with the Transaction publishing time.

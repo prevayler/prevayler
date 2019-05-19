@@ -94,6 +94,7 @@ public abstract class TransactionType {
   /**
    * @since 0_2
    */
+  @SuppressWarnings("rawtypes")
   public abstract Object execute(Prevayler p_prevayler,
                                  Method p_method,
                                  Object[] p_args,
@@ -116,6 +117,7 @@ public abstract class TransactionType {
         /**
          * @since 0_2
          */
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         public Object execute(Prevayler p_prevayler,
                               Method p_method,
                               Object[] p_args,
@@ -131,6 +133,7 @@ public abstract class TransactionType {
         /**
          * @since 0_2
          */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         public Object execute(Prevayler p_prevayler,
                               Method p_method,
                               Object[] p_args,
@@ -147,6 +150,7 @@ public abstract class TransactionType {
         /**
          * @since 0_2
          */
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         public Object execute(Prevayler p_prevayler,
                               Method p_method,
                               Object[] p_args,
@@ -163,6 +167,7 @@ public abstract class TransactionType {
    */
   public static final TransactionType NOOP =
       new TransactionType("NOOP") {
+        @SuppressWarnings("rawtypes")
         public Object execute(Prevayler p_prevayler,
                               Method p_method,
                               Object[] p_args,

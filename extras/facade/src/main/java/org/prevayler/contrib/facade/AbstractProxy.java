@@ -46,6 +46,8 @@ import java.util.Date;
 public abstract class AbstractProxy
     implements Serializable {
 
+  private static final long serialVersionUID = 9121309710811270339L;
+
   /**
    * @since 0_2
    */
