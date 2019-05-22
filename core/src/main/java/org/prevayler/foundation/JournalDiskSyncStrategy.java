@@ -106,6 +106,7 @@ public abstract class JournalDiskSyncStrategy {
       }
     }
 
+    @SuppressWarnings("unused")
     public boolean isSyncFileDescriptorAfterNextTransactionBatch() {
       return syncFileDescriptorAfterNextTransactionBatch;
     }

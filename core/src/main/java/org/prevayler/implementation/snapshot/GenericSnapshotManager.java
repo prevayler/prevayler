@@ -94,7 +94,7 @@ public class GenericSnapshotManager<P> {
     Serializer serializer = _strategies.get(suffix);
     FileInputStream in = new FileInputStream(snapshotFile);
     try {
-      return (P) (serializer.readObject(in));
+      return (P) serializer.readObject(in);
     } finally {
       in.close();
     }

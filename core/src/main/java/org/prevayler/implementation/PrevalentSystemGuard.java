@@ -51,7 +51,7 @@ public class PrevalentSystemGuard<P> implements TransactionSubscriber<P> {
     }
   }
 
-  public void receive(TransactionTimestamp<P> transactionTimestamp) {
+  public void receive(TransactionTimestamp<? super P> transactionTimestamp) {
     Capsule<? super P, ? extends TransactionBase> capsule = transactionTimestamp.capsule();
     long systemVersion = transactionTimestamp.systemVersion();
     Date executionTime = transactionTimestamp.executionTime();
@@ -123,7 +123,7 @@ public class PrevalentSystemGuard<P> implements TransactionSubscriber<P> {
       }
 
       synchronized (_prevalentSystem) {
-        return new PrevalentSystemGuard<P>((P) DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer);
+        return new PrevalentSystemGuard<P>(DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer);
       }
     }
   }

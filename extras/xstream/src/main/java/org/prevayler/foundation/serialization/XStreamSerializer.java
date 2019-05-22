@@ -48,7 +48,7 @@ public class XStreamSerializer implements Serializer {
   }
 
   private XStream getXStream() {
-    return (XStream) _xstreams.get();
+    return _xstreams.get();
   }
 
   public void writeObject(OutputStream stream, Object object) throws IOException {

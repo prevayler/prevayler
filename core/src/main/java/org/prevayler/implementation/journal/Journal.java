@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public interface Journal<P> {
 
-  public void append(TransactionGuide<P> guide);
+  public void append(TransactionGuide<? super P> guide);
 
   public void update(TransactionSubscriber<P> subscriber, long initialTransaction) throws IOException, ClassNotFoundException;
 

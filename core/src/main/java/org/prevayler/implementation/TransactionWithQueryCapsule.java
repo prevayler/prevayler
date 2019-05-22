@@ -21,7 +21,7 @@ class TransactionWithQueryCapsule<P, R> extends Capsule<P, TransactionWithQuery<
 
   protected void justExecute(TransactionWithQuery<? super P, R> transaction, P prevalentSystem, Date executionTime) {
     try {
-      _queryResult = transaction.executeAndQuery((P) prevalentSystem, executionTime);
+      _queryResult = transaction.executeAndQuery(prevalentSystem, executionTime);
     } catch (RuntimeException rx) {
       _queryException = rx;
       throw rx;   //This is necessary because of the rollback feature.

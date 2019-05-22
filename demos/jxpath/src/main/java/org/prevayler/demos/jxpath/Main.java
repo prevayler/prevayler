@@ -90,7 +90,7 @@ public class Main {
 
     while (i.hasNext()) {
 
-      Object obj = (Object) i.next();
+      Object obj = i.next();
       System.out.println(obj.toString());
     }
   }

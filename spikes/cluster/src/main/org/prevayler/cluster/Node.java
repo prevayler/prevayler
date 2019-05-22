@@ -179,10 +179,10 @@ public class Node implements RequestHandler, MessageListener, MembershipListener
 
   public Address getMasterAddress() {
     try {
-      Vector members = channel.getView().getMembers();
-      Address master = (Address) members.firstElement();
+      Vector<Address> members = channel.getView().getMembers();
+      Address master = members.firstElement();
       channel.getState(master, 1000);
-      return (Address) channel.getView().getMembers().firstElement();
+      return channel.getView().getMembers().firstElement();
     } catch (Exception e) {
       throw new RuntimeException(e.toString());
     }

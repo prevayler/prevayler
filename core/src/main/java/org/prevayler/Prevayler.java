@@ -33,7 +33,7 @@ public interface Prevayler<P> {
    *
    * @see org.prevayler.PrevaylerFactory
    */
-  public void execute(Transaction<P> transaction);
+  public void execute(Transaction<? super P> transaction);
 
   /**
    * Executes the given sensitiveQuery on the prevalentSystem(). A sensitiveQuery is a Query that would be affected by the concurrent execution of a Transaction or other sensitiveQuery. This method synchronizes on the prevalentSystem() to execute the sensitiveQuery. It is therefore guaranteed that no other Transaction or sensitiveQuery is executed at the same time.
@@ -42,7 +42,7 @@ public interface Prevayler<P> {
    * @return The result returned by the execution of the sensitiveQuery on the prevalentSystem().
    * @throws Exception The Exception thrown by the execution of the sensitiveQuery on the prevalentSystem().
    */
-  public <R> R execute(Query<P, R> sensitiveQuery) throws Exception;
+  public <R> R execute(Query<? super P, R> sensitiveQuery) throws Exception;
 
   /**
    * Executes the given transactionWithQuery on the prevalentSystem().
@@ -52,14 +52,14 @@ public interface Prevayler<P> {
    * @throws Exception The Exception thrown by the execution of the sensitiveQuery on the prevalentSystem().
    * @see org.prevayler.PrevaylerFactory
    */
-  public <R> R execute(TransactionWithQuery<P, R> transactionWithQuery) throws Exception;
+  public <R> R execute(TransactionWithQuery<? super P, R> transactionWithQuery) throws Exception;
 
   /**
    * The same as execute(TransactionWithQuery<P,R>) except no Exception is thrown.
    *
    * @return The result returned by the execution of the sureTransactionWithQuery on the prevalentSystem().
    */
-  public <R> R execute(SureTransactionWithQuery<P, R> sureTransactionWithQuery);
+  public <R> R execute(SureTransactionWithQuery<? super P, R> sureTransactionWithQuery);
 
   /**
    * Produces a complete serialized image of the underlying PrevalentSystem.

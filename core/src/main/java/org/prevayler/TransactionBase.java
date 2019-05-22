@@ -11,7 +11,6 @@ import java.io.Serializable;
  * Used to limit the valid types (via ...<code>? extends TransactionBase</code>...)
  * in classes/methods/parameters referring to either of the two types using generics
  *      
- * @author Christian Klemke
  * @see Transaction
  * @see TransactionWithQuery
  */

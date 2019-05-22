@@ -46,19 +46,19 @@ import java.util.Date;
  * @author Jacob Kjome [hoju@visi.com]
  * @since 0_1
  */
-public class ProxyTransaction
-    extends AbstractProxy
-    implements Transaction<Serializable> {
+public class ProxyTransaction<P>
+    extends AbstractProxy<P, Serializable>
+    implements Transaction<P> {
   private static final long serialVersionUID = -3720257876251185011L;
 
   /**
    * @since 0_2
    */
-  public ProxyTransaction(Method p_method, Object[] p_args, TransactionHint p_hint) {
+  public ProxyTransaction(Method p_method, Object[] p_args, TransactionHint<P> p_hint) {
     super(p_method, p_args, p_hint);
   }
 
-  public void executeOn(Serializable p_prevalentSystem, Date p_timestamp) {
+  public void executeOn(P p_prevalentSystem, Date p_timestamp) {
     try {
       execute(p_prevalentSystem, p_timestamp);
     } catch (Exception e) {

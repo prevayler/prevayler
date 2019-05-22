@@ -47,9 +47,9 @@ public class ServerConfig extends Config {
   public Properties getDefaultProps() {
     // Init the default property values
     Properties props = new Properties();
-    props.put("BasePort", "6000");
-    props.put("Repository", System.getProperty("user.dir") + "/prevalenceBase");
-    props.put("RootObjectClass", "");
+    props.setProperty("BasePort", "6000");
+    props.setProperty("Repository", System.getProperty("user.dir") + "/prevalenceBase");
+    props.setProperty("RootObjectClass", "");
     return props;
   }
 

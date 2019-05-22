@@ -56,7 +56,7 @@ public class PersistentJournal<P> implements Journal<P> {
   }
 
 
-  public void append(TransactionGuide<P> guide) {
+  public void append(TransactionGuide<? super P> guide) {
     if (!_nextTransactionInitialized)
       throw new IllegalStateException("Journal.update() has to be called at least once before Journal.append().");
 

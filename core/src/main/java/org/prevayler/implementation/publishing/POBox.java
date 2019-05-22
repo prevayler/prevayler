@@ -16,7 +16,7 @@ import java.util.LinkedList;
  */
 public class POBox<P> implements TransactionSubscriber<P>, Runnable {
 
-  private final LinkedList<TransactionTimestamp<P>> _queue = new LinkedList<TransactionTimestamp<P>>();
+  private final LinkedList<TransactionTimestamp<? super P>> _queue = new LinkedList<TransactionTimestamp<? super P>>();
   private final TransactionSubscriber<P> _delegate;
 
   private final Object _emptynessMonitor = new Object();
@@ -28,7 +28,7 @@ public class POBox<P> implements TransactionSubscriber<P>, Runnable {
   }
 
 
-  public synchronized void receive(TransactionTimestamp<P> transactionTimestamp) {
+  public synchronized void receive(TransactionTimestamp<? super P> transactionTimestamp) {
     _queue.add(transactionTimestamp);
     notify();
   }
@@ -36,13 +36,13 @@ public class POBox<P> implements TransactionSubscriber<P>, Runnable {
 
   public void run() {
     while (true) {
-      TransactionTimestamp<P> notification = waitForNotification();
+      TransactionTimestamp<? super P> notification = waitForNotification();
       _delegate.receive(notification);
     }
   }
 
 
-  private synchronized TransactionTimestamp<P> waitForNotification() {
+  private synchronized TransactionTimestamp<? super P> waitForNotification() {
     while (_queue.size() == 0) {
       synchronized (_emptynessMonitor) {
         _emptynessMonitor.notify();

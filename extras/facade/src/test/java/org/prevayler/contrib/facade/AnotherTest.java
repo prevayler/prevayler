@@ -54,7 +54,7 @@ public class AnotherTest extends TestCase {
   }
 
   public void testCampGuideSystem() throws Exception {
-    CampGuide guide = (CampGuide)
+    CampGuide guide = 
         PrevaylerTransactionsFacade.create
             (CampGuide.class,
                 PrevaylerFactory.createTransientPrevayler(new CampGuideImpl()),
@@ -110,7 +110,7 @@ public class AnotherTest extends TestCase {
     factory.configureSnapshotSerializer(new JavaSerializer());
     factory.configurePrevalentSystem(new CampGuideImpl());
     Prevayler<CampGuide> prevayler = factory.create();
-    CampGuide guide = (CampGuide)
+    CampGuide guide = 
         PrevaylerTransactionsFacade.create
             (CampGuide.class,
                 prevayler,

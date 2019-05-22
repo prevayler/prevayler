@@ -46,14 +46,14 @@ public class Main {
   private static void initPrevayler() throws Exception {
     // Set up the repository location
     //String prevalenceBase = System.getProperty("user.dir") + "/prevalenceBase";
-    String prevalenceBase = (String) ServerConfig.properties.get("Repository");
+    String prevalenceBase = ServerConfig.properties.getProperty("Repository");
     Log.message("Snapshot/log file dir: " + prevalenceBase);
 
     // Set up the default port
-    port = Integer.parseInt((String) ServerConfig.properties.get("BasePort"));
+    port = Integer.parseInt(ServerConfig.properties.getProperty("BasePort"));
 
     // Set up the root object class
-    String rootObjectClassName = (String) ServerConfig.properties.get("RootObjectClass");
+    String rootObjectClassName = (ServerConfig.properties.getProperty("RootObjectClass");
     Class rootObjectClass = Class.forName(rootObjectClassName);
 
     // Create an instance of the root object class and start the server

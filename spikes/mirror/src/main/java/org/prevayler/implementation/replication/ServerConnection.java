@@ -24,7 +24,7 @@ class ServerConnection<P> extends Thread implements TransactionSubscriber<P> {
   static final String REMOTE_TRANSACTION = "RemoteTransaction";
 
   private final TransactionPublisher<P> _publisher;
-  private Capsule<? super P, ? extends TransactionBase> _remoteCapsule;
+  private Capsule<P, ? extends TransactionBase> _remoteCapsule;
 
   private final ObjectSocket _remote;
   private final Thread _clockTickSender = createClockTickSender();
@@ -84,7 +84,7 @@ class ServerConnection<P> extends Thread implements TransactionSubscriber<P> {
 
   @SuppressWarnings("unchecked")
   void publishRemoteTransaction() throws IOException, ClassNotFoundException {
-    _remoteCapsule = (Capsule<? super P, ? extends TransactionBase>) _remote.readObject();
+    _remoteCapsule = (Capsule<P, ? extends TransactionBase>) _remote.readObject();
     try {
       _publisher.publish(_remoteCapsule);
     } catch (RuntimeException rx) {
@@ -95,7 +95,7 @@ class ServerConnection<P> extends Thread implements TransactionSubscriber<P> {
   }
 
 
-  public void receive(TransactionTimestamp<P> tt) {
+  public void receive(TransactionTimestamp<? super P> tt) {
 
     if (tt.capsule() == _remoteCapsule)
       tt = new TransactionTimestamp<P>(null, tt.systemVersion(), tt.executionTime()); //TODO This is really ugly. It is using a null capsule inside the TransactionTimestamp to signal that the remote Capsule should be executed.

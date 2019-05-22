@@ -16,9 +16,8 @@ import org.prevayler.implementation.journal.Journal;
 
 import java.io.IOException;
 
-public class CentralPublisher<P> extends AbstractPublisher<P> {
+public class CentralPublisher<P> extends AbstractPublisher<P, PausableClock> {
 
-  private final PausableClock _pausableClock;
   private final Journal<P> _journal;
 
   private volatile int _pendingPublications = 0;
@@ -31,15 +30,13 @@ public class CentralPublisher<P> extends AbstractPublisher<P> {
 
   public CentralPublisher(Clock clock, Journal<P> journal) {
     super(new PausableClock(clock));
-    _pausableClock = (PausableClock) _clock; //This is just to avoid casting the inherited _clock every time.
-
     _journal = journal;
   }
 
 
   public void publish(Capsule<? super P, ? extends TransactionBase> capsule) {
     synchronized (_pendingPublicationsMonitor) {  //Blocks all new subscriptions until the publication is over.
-      if (_pendingPublications == 0) _pausableClock.pause();
+      if (_pendingPublications == 0) _clock.pause();
       _pendingPublications++;
     }
 
@@ -49,7 +46,7 @@ public class CentralPublisher<P> extends AbstractPublisher<P> {
       synchronized (_pendingPublicationsMonitor) {
         _pendingPublications--;
         if (_pendingPublications == 0) {
-          _pausableClock.resume();
+          _clock.resume();
           _pendingPublicationsMonitor.notifyAll();
         }
       }
@@ -58,14 +55,14 @@ public class CentralPublisher<P> extends AbstractPublisher<P> {
 
 
   private void publishWithoutWorryingAboutNewSubscriptions(Capsule<? super P, ? extends TransactionBase> capsule) {
-    TransactionGuide<P> guide = guideFor(capsule);
+    TransactionGuide<? super P> guide = guideFor(capsule);
     _journal.append(guide);
     notifySubscribers(guide);
   }
 
-  private TransactionGuide<P> guideFor(Capsule<? super P, ? extends TransactionBase> capsule) {
+  private TransactionGuide<? super P> guideFor(Capsule<? super P, ? extends TransactionBase> capsule) {
     synchronized (_nextTurnMonitor) {
-      TransactionTimestamp<P> timestamp = new TransactionTimestamp<P>(capsule, _nextTransaction, _pausableClock.realTime());
+      TransactionTimestamp<P> timestamp = new TransactionTimestamp<P>(capsule, _nextTransaction, _clock.realTime());
 
       // Count this transaction
       Turn turn = _nextTurn;
@@ -76,10 +73,10 @@ public class CentralPublisher<P> extends AbstractPublisher<P> {
     }
   }
 
-  private void notifySubscribers(TransactionGuide<P> guide) {
+  private void notifySubscribers(TransactionGuide<? super P> guide) {
     guide.startTurn();
     try {
-      _pausableClock.advanceTo(guide.executionTime());
+      _clock.advanceTo(guide.executionTime());
       notifySubscribers(guide.timestamp());
     } finally {
       guide.endTurn();

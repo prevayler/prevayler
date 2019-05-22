@@ -16,13 +16,13 @@ import java.util.List;
 /**
  * This class provides basic subscriber addition and notification.
  */
-public abstract class AbstractPublisher<P> implements TransactionPublisher<P> {
+public abstract class AbstractPublisher<P, C extends Clock> implements TransactionPublisher<P> {
 
-  protected final Clock _clock;
+  protected final C _clock;
   private final List<TransactionSubscriber<P>> _subscribers = new LinkedList<TransactionSubscriber<P>>();
 
 
-  public AbstractPublisher(Clock clock) {
+  public AbstractPublisher(C clock) {
     _clock = clock;
   }
 
@@ -38,7 +38,7 @@ public abstract class AbstractPublisher<P> implements TransactionPublisher<P> {
     _subscribers.remove(subscriber);
   }
 
-  protected synchronized void notifySubscribers(TransactionTimestamp<P> transactionTimestamp) {
+  protected synchronized void notifySubscribers(TransactionTimestamp<? super P> transactionTimestamp) {
     Iterator<TransactionSubscriber<P>> i = _subscribers.iterator();
     while (i.hasNext()) i.next().receive(transactionTimestamp);
   }
