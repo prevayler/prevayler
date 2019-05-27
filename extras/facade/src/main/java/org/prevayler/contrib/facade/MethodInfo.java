@@ -75,7 +75,7 @@ public class MethodInfo implements Serializable {
    */
   public Method getMethod()
       throws Exception {
-    Class<?>[] args = new Class[m_argTypes.length];
+    Class<?>[] args = new Class<?>[m_argTypes.length];
     for (int i = 0; i < args.length; ++i) {
       args[i] = Class.forName(m_argTypes[i]);
     }

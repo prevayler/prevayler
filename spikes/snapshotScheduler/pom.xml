@@ -13,7 +13,7 @@
 	<!-- modules inherit parent's group id and version. -->
 	<artifactId>prevayler-snapshot-scheduler</artifactId>
 	<name>Prevayler Snapshot Scheduler</name>
-	<description>An implementation of a scheduler for Prevayler snahpshots.</description>
+	<description>An implementation of a scheduler for Prevayler snapshots.</description>
 
 	<packaging>jar</packaging>
 

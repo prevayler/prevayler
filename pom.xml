@@ -145,6 +145,12 @@
       </roles>
     </developer>
     <developer>
+      <name>Christian Klemke</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
       <id>frederic.langlet</id>
       <name>Frederic Langlet</name>
       <!--<email></email>-->
@@ -350,12 +356,19 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>3.8.1</version>
         <configuration>
           <encoding>UTF-8</encoding>
           <source>1.6</source>
           <target>1.6</target>
-          <optimize>true</optimize>
+          <fork>true</fork> <!-- enables usage of compilerArgs -->
+          <showWarnings>true</showWarnings>
+          <failOnWarning>true</failOnWarning>
+          <compilerArgs>
+            <arg>-Xlint:all</arg>
+            <arg>-Xlint:-options</arg> <!-- suppresses bootclasspath warning when using higher-version Java compiler than target -->
+            <arg>-Xlint:-path</arg> <!-- suppresses warnings when running tests due to modules that do not have any test classes -->
+          </compilerArgs>
         </configuration>
       </plugin>
 

@@ -77,7 +77,7 @@ public class Reaper {
    * @param id The ID of the command thread that died.
    */
   public static void reap(Long id) {
-    NotificationThread thread = (NotificationThread) notificationThreads.get(id);
+    NotificationThread thread = notificationThreads.get(id);
     if (thread != null) {
       if (thread.isAlive())
         thread.interrupt();

@@ -69,7 +69,7 @@ public class PrevaylerTransactionsFacade {
                               final TransactionHint<P> p_hint) {
     return (P) Proxy.newProxyInstance
         (p_intf.getClassLoader(),
-            new Class[]{p_intf},
+            new Class<?>[]{p_intf},
             new InvocationHandler() {
               public Object invoke(Object p_proxy,
                                    Method p_method,
