@@ -84,7 +84,7 @@ public class DurableOutputStream {
   }
 
   private void preallocate() throws IOException {
-    assert _fileChannel != null :  "_fileChannel is null";
+    assert _fileChannel != null : "_fileChannel is null";
 
     long position = _fileChannel.position();
     long size = _fileChannel.size();

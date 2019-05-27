@@ -1,13 +1,14 @@
 package org.prevayler.demos.scalability.prevayler;
 
 import org.prevayler.PrevaylerFactory;
+import org.prevayler.demos.scalability.TransactionConnection;
 import org.prevayler.foundation.serialization.Serializer;
 
 import java.io.File;
 import java.io.PrintStream;
 
 
-public class PrevaylerTransactionSubject extends PrevaylerScalabilitySubject {
+public class PrevaylerTransactionSubject extends PrevaylerScalabilitySubject<TransactionSystem, TransactionConnection> {
 
   private final String _journalDirectory;
   private final String _journalSerializer;
@@ -19,7 +20,7 @@ public class PrevaylerTransactionSubject extends PrevaylerScalabilitySubject {
     initializePrevayler();
   }
 
-  public Object createTestConnection() {
+  public TransactionConnection createTestConnection() {
     return new PrevaylerTransactionConnection(prevayler);
   }
 

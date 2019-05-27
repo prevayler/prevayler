@@ -24,8 +24,9 @@ import java.io.*;
  */
 public class XStreamSerializer implements Serializer {
 
-  private ThreadLocal _xstreams = new ThreadLocal() {
-    protected Object initialValue() {
+  private ThreadLocal<XStream> _xstreams = new ThreadLocal<XStream>() {
+    @Override
+    protected XStream initialValue() {
       return createXStream();
     }
   };
@@ -47,7 +48,7 @@ public class XStreamSerializer implements Serializer {
   }
 
   private XStream getXStream() {
-    return (XStream) _xstreams.get();
+    return _xstreams.get();
   }
 
   public void writeObject(OutputStream stream, Object object) throws IOException {

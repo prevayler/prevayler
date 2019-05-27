@@ -12,8 +12,9 @@ import java.util.*;
  */
 public class Bank implements java.io.Serializable {
 
+  private static final long serialVersionUID = 6025629369302269753L;
   private long nextAccountNumber = 1;
-  private Map accountsByNumber = new HashMap();
+  private Map<Long, Account> accountsByNumber = new HashMap<Long, Account>();
 
   /**
    * The memento of bank. Only (persistent) changeable fields/containers need to be stored.
@@ -21,13 +22,13 @@ public class Bank implements java.io.Serializable {
    */
   private class BankMemento extends Memento {
     private long nextAccountNumber;
-    private Map accountsByNumber;
+    private Map<Long, Account> accountsByNumber;
 
     private BankMemento() {
       super();
 
       nextAccountNumber = Bank.this.nextAccountNumber;
-      accountsByNumber = new HashMap(Bank.this.accountsByNumber);
+      accountsByNumber = new HashMap<Long, Account>(Bank.this.accountsByNumber);
     }
 
     protected void restore() {
@@ -56,16 +57,17 @@ public class Bank implements java.io.Serializable {
   }
 
   public void deleteAccount(long number) throws AccountNotFound {
+    @SuppressWarnings("unused")
     Account account = findAccount(number);
     accountsByNumber.remove(new Long(number));
   }
 
-  public List accounts() {
-    List accounts = new ArrayList(accountsByNumber.values());
+  public List<Account> accounts() {
+    List<Account> accounts = new ArrayList<Account>(accountsByNumber.values());
 
-    Collections.sort(accounts, new Comparator() {
-      public int compare(Object acc1, Object acc2) {
-        return ((Account) acc1).number() < ((Account) acc2).number() ? -1 : 1;
+    Collections.sort(accounts, new Comparator<Account>() {
+      public int compare(Account acc1, Account acc2) {
+        return acc1.number() < acc2.number() ? -1 : 1;
       }
     });
 
@@ -87,10 +89,12 @@ public class Bank implements java.io.Serializable {
   }
 
   private Account searchAccount(long number) {
-    return (Account) accountsByNumber.get(new Long(number));
+    return accountsByNumber.get(new Long(number));
   }
 
   public class AccountNotFound extends Exception {
+    private static final long serialVersionUID = 4463910784646858052L;
+
     AccountNotFound(long number) {
       super("Account not found: " + Account.numberString(number) + ".\nMight have been deleted.");
     }
@@ -99,7 +103,7 @@ public class Bank implements java.io.Serializable {
   public String toString() {
     StringWriter stringWriter = new StringWriter();
     PrintWriter writer = new PrintWriter(stringWriter);
-    Iterator iterator;
+    Iterator<Account> iterator;
 
     iterator = accountsByNumber.values().iterator();
     while (iterator.hasNext()) {

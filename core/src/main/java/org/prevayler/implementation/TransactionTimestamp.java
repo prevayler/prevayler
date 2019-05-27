@@ -4,30 +4,31 @@
 
 package org.prevayler.implementation;
 
+import org.prevayler.TransactionBase;
 import org.prevayler.foundation.Chunk;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class TransactionTimestamp implements Serializable {
+public class TransactionTimestamp<P> implements Serializable {
 
   static final long serialVersionUID = 1L;
 
-  private final Capsule _capsule;
+  private final Capsule<? super P, ? extends TransactionBase> _capsule;
   private final long _systemVersion;
   private final long _executionTime;
 
-  public TransactionTimestamp(Capsule capsule, long systemVersion, Date executionTime) {
+  public TransactionTimestamp(Capsule<? super P, ? extends TransactionBase> capsule, long systemVersion, Date executionTime) {
     this(capsule, systemVersion, executionTime.getTime());
   }
 
-  private TransactionTimestamp(Capsule capsule, long systemVersion, long executionTime) {
+  private TransactionTimestamp(Capsule<? super P, ? extends TransactionBase> capsule, long systemVersion, long executionTime) {
     _capsule = capsule;
     _systemVersion = systemVersion;
     _executionTime = executionTime;
   }
 
-  public Capsule capsule() {
+  public Capsule<? super P, ? extends TransactionBase> capsule() {
     return _capsule;
   }
 
@@ -39,8 +40,8 @@ public class TransactionTimestamp implements Serializable {
     return new Date(_executionTime);
   }
 
-  public TransactionTimestamp cleanCopy() {
-    return new TransactionTimestamp(_capsule.cleanCopy(), _systemVersion, _executionTime);
+  public TransactionTimestamp<P> cleanCopy() {
+    return new TransactionTimestamp<P>(_capsule.cleanCopy(), _systemVersion, _executionTime);
   }
 
   public Chunk toChunk() {
@@ -50,11 +51,11 @@ public class TransactionTimestamp implements Serializable {
     return chunk;
   }
 
-  public static TransactionTimestamp fromChunk(Chunk chunk) {
-    Capsule capsule = Capsule.fromChunk(chunk);
+  public static <P> TransactionTimestamp<P> fromChunk(Chunk chunk) {
+    Capsule<P, ? extends TransactionBase> capsule = Capsule.fromChunk(chunk);
     long systemVersion = Long.parseLong(chunk.getParameter("systemVersion"));
     long executionTime = Long.parseLong(chunk.getParameter("executionTime"));
-    return new TransactionTimestamp(capsule, systemVersion, executionTime);
+    return new TransactionTimestamp<P>(capsule, systemVersion, executionTime);
   }
 
 }

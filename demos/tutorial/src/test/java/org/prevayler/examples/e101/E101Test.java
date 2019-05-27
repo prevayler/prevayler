@@ -34,6 +34,8 @@ public class E101Test {
 
       assertTrue("There are not supposed to be any persons in the root at this point!",
           prevayler.execute(new Query<Root, Boolean>() {
+            private static final long serialVersionUID = -96319481126700055L;
+
             public Boolean query(Root prevalentSystem, Date executionTime) throws Exception {
               return prevalentSystem.getPersons().isEmpty();
             }

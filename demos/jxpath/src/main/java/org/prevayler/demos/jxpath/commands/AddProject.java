@@ -21,6 +21,7 @@ import java.util.Date;
  */
 public class AddProject implements Transaction<ProjectManagementSystem> {
 
+  private static final long serialVersionUID = 4290539264132235963L;
   private Project project;
 
   public void executeOn(ProjectManagementSystem system, Date ignored) {

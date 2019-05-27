@@ -12,17 +12,20 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.prevayler.demos.jxpath.model.Project;
+
 /**
  * @author Carlos Villela
  */
 public class ProjectManagementSystem implements Serializable {
-  private List projects;
+  private static final long serialVersionUID = -7896364970243693794L;
+  private List<Project> projects;
 
   public ProjectManagementSystem() {
-    projects = new ArrayList();
+    projects = new ArrayList<Project>();
   }
 
-  public List getProjects() {
+  public List<Project> getProjects() {
     return projects;
   }
 }

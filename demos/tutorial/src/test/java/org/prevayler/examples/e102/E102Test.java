@@ -44,12 +44,16 @@ public class E102Test {
       final String identityOfEntityWhenInitiallyCreated = entity.getIdentity();
 
       assertSame("entity and query response is supposed to be the same instance", entity, prevayler.execute(new Query<Root, Entity>() {
+        private static final long serialVersionUID = 2345967443241959260L;
+
         public Entity query(Root prevalentSystem, Date executionTime) throws Exception {
           return prevalentSystem.getEntities().get(identityOfEntityWhenInitiallyCreated);
         }
       }));
 
       assertEquals("only one entity is supposed to exist in the root", 1, (int) prevayler.execute(new Query<Root, Integer>() {
+        private static final long serialVersionUID = -3193756627974872039L;
+
         public Integer query(Root prevalentSystem, Date executionTime) throws Exception {
           return prevalentSystem.getEntities().size();
         }
@@ -60,12 +64,16 @@ public class E102Test {
       prevayler = PrevaylerFactory.createPrevayler(new Root(), dataPath);
 
       assertEquals("only one entity is supposed to exist in the root", 1, (int) prevayler.execute(new Query<Root, Integer>() {
+        private static final long serialVersionUID = -4739548462309688139L;
+
         public Integer query(Root prevalentSystem, Date executionTime) throws Exception {
           return prevalentSystem.getEntities().size();
         }
       }));
 
       String identityOfTheOnlyEntityInRoot = prevayler.execute(new Query<Root, String>() {
+        private static final long serialVersionUID = -449826861014013447L;
+
         public String query(Root prevalentSystem, Date executionTime) throws Exception {
           return prevalentSystem.getEntities().values().iterator().next().getIdentity();
         }

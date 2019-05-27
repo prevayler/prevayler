@@ -51,7 +51,7 @@ public class PrevaylerBenchmark {
 
     @Override
     public void executeOn(Map<String, Serializable> prevalentSystem, Date executionTime) {
-      Map<String, Serializable> map = castTo(prevalentSystem);
+      Map<String, Serializable> map = prevalentSystem;
       map.put(key, value);
     }
 
@@ -73,7 +73,7 @@ public class PrevaylerBenchmark {
     @Override
     public Serializable query(Map<String, Serializable> prevalentSystem, Date executionTime)
         throws Exception {
-      Map<String, Serializable> map = castTo(prevalentSystem);
+      Map<String, Serializable> map = prevalentSystem;
       return map.get(key);
     }
   }
@@ -83,7 +83,7 @@ public class PrevaylerBenchmark {
     deletePrevaylerDirectory();
 
     prevayler = createPrevayler(true);
-    Map<String, Serializable> map = castTo(prevayler.prevalentSystem());
+    Map<String, Serializable> map = prevayler.prevalentSystem();
     assertEquals("Prevayler size", 0, map.size());
     LOG.info("Created empty prevayler");
   }
@@ -117,7 +117,7 @@ public class PrevaylerBenchmark {
     for(int i = 0; i < NUM_TRANSACTIONS; i++) {
       String key = "key_" + 0 + "_" + i;
       String data = "data_" + 0 + "_" + i;
-      Serializable val = (Serializable) prevayler.execute(new GetQuery(key));
+      Serializable val = prevayler.execute(new GetQuery(key));
       assertEquals("Prevayler's value is different.", data, val);
     }
   }
@@ -135,15 +135,6 @@ public class PrevaylerBenchmark {
     if(prevaylerDir.exists())
       assertTrue("Cannot delete prevayler directory",
           delete(prevaylerDir, true));
-  }
-
-  /**
-   * Cast anything to the return type to suppress "unchecked" warning.
-   */
-  private static <T> T castTo(Object obj) {
-    @SuppressWarnings("unchecked")
-    T typed = (T)obj;
-    return typed;
   }
 
   /**

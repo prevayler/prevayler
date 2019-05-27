@@ -11,21 +11,21 @@ import java.util.List;
 class NumberKeeper implements java.io.Serializable {
 
   private static final long serialVersionUID = 2253937139530882022L;
-  private final List numbers = new ArrayList();
+  private final List<Integer> numbers = new ArrayList<Integer>();
 
 
   void keep(int nextNumber) {
     numbers.add(new Integer(nextNumber));
   }
 
-  List numbers() {
+  List<Integer> numbers() {
     return numbers;
   }
 
   int lastNumber() {
     return numbers.isEmpty()
         ? 0
-        : ((Integer) numbers.get(numbers.size() - 1)).intValue();
+        : numbers.get(numbers.size() - 1);
   }
 
 }

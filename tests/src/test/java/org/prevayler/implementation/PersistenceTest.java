@@ -170,7 +170,7 @@ public class PersistenceTest extends FileIOTest {
     }
 
     try {
-      _prevayler.execute(new NullQuery());
+      _prevayler.execute(new NullQuery<AppendingSystem>());
       fail();
     } catch (AssertionFailedError failed) {
       throw failed;
@@ -290,8 +290,8 @@ public class PersistenceTest extends FileIOTest {
     assertEquals(setOfFiles(filenames), directory.necessaryFiles());
   }
 
-  private Set setOfFiles(String[] filenames) {
-    Set set = new HashSet();
+  private Set<File> setOfFiles(String[] filenames) {
+    Set<File> set = new HashSet<File>();
     for (int i = 0; i < filenames.length; i++) {
       set.add(new File(prevalenceBase(), filenames[i]));
     }
@@ -350,6 +350,7 @@ public class PersistenceTest extends FileIOTest {
   }
 
 
+  @SuppressWarnings("unused")
   private static void out(Object obj) {
     if (false) System.out.println(obj);   //Change this line to see what the test is doing.
   }

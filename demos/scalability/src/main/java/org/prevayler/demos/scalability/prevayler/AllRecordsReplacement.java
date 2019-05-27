@@ -5,7 +5,7 @@ import org.prevayler.demos.scalability.RecordIterator;
 
 import java.util.Date;
 
-class AllRecordsReplacement implements Transaction<ScalabilitySystem> {
+class AllRecordsReplacement<S extends ScalabilitySystem> implements Transaction<S> {
 
   private static final long serialVersionUID = 6283032417365727408L;
   private final int _records;
@@ -14,7 +14,7 @@ class AllRecordsReplacement implements Transaction<ScalabilitySystem> {
     _records = records;
   }
 
-  public void executeOn(ScalabilitySystem system, Date ignored) {
+  public void executeOn(S system, Date ignored) {
     system.replaceAllRecords(new RecordIterator(_records));
   }
 }

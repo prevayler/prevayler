@@ -30,6 +30,8 @@ import java.io.Serializable;
  * @version 2.0
  */
 public abstract class MementoTransaction implements Serializable {
+  private static final long serialVersionUID = -8115982819320312932L;
+
   /**
    * Executes this command on the received system. See prevayler.demos for examples.
    * The returned object has to be Serializable in preparation for future versions of

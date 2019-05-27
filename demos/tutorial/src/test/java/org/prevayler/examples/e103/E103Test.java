@@ -38,6 +38,8 @@ public class E103Test {
       prevayler = PrevaylerFactory.createPrevayler(new Root(), dataPath);
 
       long timestampAfterRestart = prevayler.execute(new Query<Root, Long>() {
+        private static final long serialVersionUID = 2206397764164885775L;
+
         public Long query(Root prevalentSystem, Date executionTime) throws Exception {
           return prevalentSystem.getEntities().get(entity.getIdentity()).getCreated();
         }

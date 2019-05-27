@@ -6,6 +6,8 @@ import org.prevayler.util.memento.MementoCollector;
 import org.prevayler.util.memento.MementoTransaction;
 
 public class AccountDeletion extends MementoTransaction {
+  private static final long serialVersionUID = -3883591469544966498L;
+
   private final long accountNumber;
 
   /**

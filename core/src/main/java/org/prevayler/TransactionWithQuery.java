@@ -4,7 +4,6 @@
 
 package org.prevayler;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -14,7 +13,7 @@ import java.util.Date;
  * @param <R> The type of object which should be returned. <br>
  * @see Transaction
  */
-public interface TransactionWithQuery<P, R> extends Serializable {
+public interface TransactionWithQuery<P, R> extends TransactionBase {
 
   /**
    * Performs the necessary modifications on the given prevalentSystem and also returns an object or throws an Exception.

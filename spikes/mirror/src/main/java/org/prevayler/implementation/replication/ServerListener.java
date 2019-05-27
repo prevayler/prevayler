@@ -14,14 +14,14 @@ import java.io.IOException;
 /**
  * Reserved for future implementation.
  */
-public class ServerListener extends Thread {
+public class ServerListener<P> extends Thread {
 
-  private final TransactionPublisher _publisher;
+  private final TransactionPublisher<P> _publisher;
   private final ObjectServerSocket _serverSocket;
 
   //TODO Close the socket when the publisher is closed (listen for it or have the Dashboard (new idea) close this when it closes the publisher).
 
-  public ServerListener(TransactionPublisher publisher, OldNetworkImpl network, int port) throws IOException {
+  public ServerListener(TransactionPublisher<P> publisher, OldNetworkImpl network, int port) throws IOException {
     _serverSocket = network.openObjectServerSocket(port);
     _publisher = publisher;
     setDaemon(true);
@@ -30,7 +30,7 @@ public class ServerListener extends Thread {
 
   public void run() {
     try {
-      while (true) new ServerConnection(_publisher, _serverSocket.accept());
+      while (true) new ServerConnection<P>(_publisher, _serverSocket.accept());
     } catch (IOException iox) {
       iox.printStackTrace();
     }

@@ -38,16 +38,16 @@ import java.util.Date;
 /**
  * @author Jacob Kjome [hoju@visi.com]
  */
-public class CampGuideTransactionHint implements TransactionHint {
+public class CampGuideTransactionHint implements TransactionHint<CampGuide> {
 
   private static final long serialVersionUID = 1644083066884927855L;
 
   /**
    * @see org.prevayler.contrib.facade.TransactionHint#preExecute(java.lang.Object, java.lang.reflect.Method, java.lang.Object[], java.util.Date)
    */
-  public void preExecute(Object p_prevalentSystem, Method p_method,
+  public void preExecute(CampGuide p_prevalentSystem, Method p_method,
                          Object[] p_args, Date p_timestamp) throws Exception {
-    ((CampGuide) p_prevalentSystem).setTransactionTime(p_timestamp);
+    p_prevalentSystem.setTransactionTime(p_timestamp);
   }
 
 }

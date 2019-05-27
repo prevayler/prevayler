@@ -158,10 +158,8 @@ public class PrevaylerDirectory {
       }
     });
 
-    Arrays.sort(journals, new Comparator() {
-      public int compare(Object o1, Object o2) {
-        File f1 = (File) o1;
-        File f2 = (File) o2;
+    Arrays.sort(journals, new Comparator<File>() {
+      public int compare(File f1, File f2) {
         return new Long(journalVersion(f1)).compareTo(new Long(journalVersion(f2)));
       }
     });
@@ -198,7 +196,7 @@ public class PrevaylerDirectory {
    * Necessary files include the latest snapshot file and any journal files
    * potentially containing transactions after that snapshot version.
    */
-  public Set necessaryFiles() throws IOException {
+  public Set<File> necessaryFiles() throws IOException {
     File[] allFiles = _directory.listFiles();
     if (allFiles == null) {
       throw new IOException("Error reading file list from directory " + _directory);
@@ -206,7 +204,7 @@ public class PrevaylerDirectory {
     File latestSnapshot = latestSnapshot();
     long systemVersion = latestSnapshot == null ? 0 : snapshotVersion(latestSnapshot);
     File initialJournal = findInitialJournalFile(systemVersion + 1);
-    Set neededFiles = new TreeSet();
+    Set<File> neededFiles = new TreeSet<File>();
     if (latestSnapshot != null) {
       neededFiles.add(latestSnapshot);
     }

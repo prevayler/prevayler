@@ -11,11 +11,11 @@ import java.io.IOException;
 
 // START SNIPPET: journal
 
-public interface Journal {
+public interface Journal<P> {
 
-  public void append(TransactionGuide guide);
+  public void append(TransactionGuide<? super P> guide);
 
-  public void update(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException;
+  public void update(TransactionSubscriber<P> subscriber, long initialTransaction) throws IOException, ClassNotFoundException;
 
   public void close() throws IOException;
 

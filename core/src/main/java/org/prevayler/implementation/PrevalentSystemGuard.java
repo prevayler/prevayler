@@ -2,6 +2,7 @@ package org.prevayler.implementation;
 
 import org.prevayler.Clock;
 import org.prevayler.Query;
+import org.prevayler.TransactionBase;
 import org.prevayler.foundation.Cool;
 import org.prevayler.foundation.DeepCopier;
 import org.prevayler.foundation.serialization.Serializer;
@@ -13,7 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-public class PrevalentSystemGuard<P> implements TransactionSubscriber {
+public class PrevalentSystemGuard<P> implements TransactionSubscriber<P> {
 
   private P _prevalentSystem; // All access to field is synchronized on "this", and all access to object is synchronized on itself; "this" is always locked before the object
   private long _systemVersion; // All access is synchronized on "this"
@@ -36,7 +37,7 @@ public class PrevalentSystemGuard<P> implements TransactionSubscriber {
     }
   }
 
-  public void subscribeTo(TransactionPublisher publisher) throws IOException, ClassNotFoundException {
+  public void subscribeTo(TransactionPublisher<P> publisher) throws IOException, ClassNotFoundException {
     long initialTransaction;
     synchronized (this) {
       _ignoreRuntimeExceptions = true;     //During pending transaction recovery (rolling forward), RuntimeExceptions are ignored because they were already thrown and handled during the first transaction execution.
@@ -50,8 +51,8 @@ public class PrevalentSystemGuard<P> implements TransactionSubscriber {
     }
   }
 
-  public void receive(TransactionTimestamp transactionTimestamp) {
-    Capsule capsule = transactionTimestamp.capsule();
+  public void receive(TransactionTimestamp<? super P> transactionTimestamp) {
+    Capsule<? super P, ? extends TransactionBase> capsule = transactionTimestamp.capsule();
     long systemVersion = transactionTimestamp.systemVersion();
     Date executionTime = transactionTimestamp.executionTime();
 
@@ -122,7 +123,7 @@ public class PrevalentSystemGuard<P> implements TransactionSubscriber {
       }
 
       synchronized (_prevalentSystem) {
-        return new PrevalentSystemGuard<P>((P) DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer);
+        return new PrevalentSystemGuard<P>(DeepCopier.deepCopyParallel(_prevalentSystem, snapshotSerializer), _systemVersion, _journalSerializer);
       }
     }
   }

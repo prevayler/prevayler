@@ -12,9 +12,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class ClusteredPrevaylerTest extends TestCase {
-  private ClusteredPrevayler prevayler1;
-  private ClusteredPrevayler prevayler2;
-  private PrevaylerFactory factory;
+  private ClusteredPrevayler<ListSystem> prevayler1;
+  private ClusteredPrevayler<ListSystem> prevayler2;
+  private PrevaylerFactory<ListSystem> factory;
   private File prevalenceBase;
 
   protected void setUp() throws Exception {
@@ -35,7 +35,7 @@ public class ClusteredPrevaylerTest extends TestCase {
 
 
   public void testReplicationOfTransactions() throws Exception {
-    Transaction transaction = new AddToList("Hello World");
+    Transaction<P> transaction = new AddToList("Hello World");
     prevayler1.execute(transaction);
     assertAllSystemsEqual();
   }
@@ -59,7 +59,7 @@ public class ClusteredPrevaylerTest extends TestCase {
     prevayler1.close();
     prevayler1 = createPrevayler("1");
     assertAllSystemsEqual();
-    assertEquals("Hello WorldAnd some more worlds...", ((ListSystem) prevayler1.prevalentSystem()).text.toString());
+    assertEquals("Hello WorldAnd some more worlds...", prevayler1.prevalentSystem().text.toString());
   }
 
   public void testRestartingClusterWillKeepData() throws Exception {
@@ -71,7 +71,7 @@ public class ClusteredPrevaylerTest extends TestCase {
 
     prevayler1.execute(new AddToList("Hello world is persistent"));
     assertNotNull(new File(prevalenceBase("new1")).list());
-    assertEquals("Hello world is persistent", ((ListSystem) prevayler1.prevalentSystem()).text.toString());
+    assertEquals("Hello world is persistent", prevayler1.prevalentSystem().text.toString());
     assertAllSystemsEqual();
 
     prevayler1.close();
@@ -80,7 +80,7 @@ public class ClusteredPrevaylerTest extends TestCase {
     prevayler1 = createPrevayler("1");
     prevayler2 = createPrevayler("2");
 
-    assertEquals("Hello world is persistent", ((ListSystem) prevayler1.prevalentSystem()).text.toString());
+    assertEquals("Hello world is persistent", prevayler1.prevalentSystem().text.toString());
     assertAllSystemsEqual();
   }
 
@@ -92,7 +92,7 @@ public class ClusteredPrevaylerTest extends TestCase {
     t2.start();
     t1.join();
     t2.join();
-    assertEquals(20, ((ListSystem) prevayler1.prevalentSystem()).text.length());
+    assertEquals(20, prevayler1.prevalentSystem().text.length());
     assertAllSystemsEqual();
     System.out.println(prevayler1.prevalentSystem());
   }
@@ -114,7 +114,7 @@ public class ClusteredPrevaylerTest extends TestCase {
   }
 
   private void assertObjectsInSystemNotSame() {
-    assertNotSame(((ListSystem) prevayler1.prevalentSystem()).text, ((ListSystem) prevayler2.prevalentSystem()).text);
+    assertNotSame(prevayler1.prevalentSystem().text, prevayler2.prevalentSystem().text);
   }
 
   private ClusteredPrevayler createPrevayler(String name) throws Exception {
@@ -133,15 +133,15 @@ public class ClusteredPrevaylerTest extends TestCase {
     return dir;
   }
 
-  private static class AddToList implements Transaction {
+  private static class AddToList implements Transaction<ListSystem> {
     private final String string;
 
     public AddToList(String string) {
       this.string = string;
     }
 
-    public void executeOn(Object prevalentSystem, Date executionTime) {
-      ListSystem list = (ListSystem) prevalentSystem;
+    public void executeOn(ListSystem prevalentSystem, Date executionTime) {
+      ListSystem list = prevalentSystem;
       list.add(string, executionTime);
     }
   }

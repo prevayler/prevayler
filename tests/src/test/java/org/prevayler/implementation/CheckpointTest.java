@@ -72,6 +72,7 @@ public class CheckpointTest extends FileIOTest {
     return _prevayler.prevalentSystem();
   }
 
+  @SuppressWarnings("unused")
   private static void out(Object obj) {
     if (false) System.out.println(obj);   //Change this line to see what the test is doing.
   }

@@ -83,6 +83,8 @@ public class E105Test {
         prevayler = PrevaylerFactory.createPrevayler(new Root(), dataPath);
 
         entity = prevayler.execute(new Query<Root, Entity>() {
+          private static final long serialVersionUID = -4272231312465955589L;
+
           public Entity query(Root prevalentSystem, Date executionTime) throws Exception {
             return prevalentSystem.getEntities().get(identity);
           }

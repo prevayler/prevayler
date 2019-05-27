@@ -13,6 +13,7 @@ class NumberStorageTransaction implements Transaction<NumberKeeper> {
   private static final long serialVersionUID = -2023934810496653301L;
   private int _numberToKeep;
 
+  @SuppressWarnings("unused")
   private NumberStorageTransaction() {
   } //Necessary for Skaringa XML serialization
 

@@ -6,9 +6,9 @@ import org.prevayler.demos.scalability.TransactionConnection;
 
 class PrevaylerTransactionConnection implements TransactionConnection {
 
-  private final Prevayler prevayler;
+  private final Prevayler<TransactionSystem> prevayler;
 
-  PrevaylerTransactionConnection(Prevayler prevayler) {
+  PrevaylerTransactionConnection(Prevayler<TransactionSystem> prevayler) {
     this.prevayler = prevayler;
   }
 

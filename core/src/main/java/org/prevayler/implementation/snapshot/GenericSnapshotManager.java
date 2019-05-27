@@ -12,15 +12,15 @@ import java.util.Map;
 
 public class GenericSnapshotManager<P> {
 
-  private Map _strategies;
+  private Map<String, ? extends Serializer> _strategies;
   private String _primarySuffix;
   private PrevaylerDirectory _directory;
   private PrevalentSystemGuard<P> _recoveredPrevalentSystem;
 
-  public GenericSnapshotManager(Map snapshotSerializers, String primarySnapshotSuffix, P newPrevalentSystem, PrevaylerDirectory directory, Serializer journalSerializer)
+  public GenericSnapshotManager(Map<String, ? extends Serializer> snapshotSerializers, String primarySnapshotSuffix, P newPrevalentSystem, PrevaylerDirectory directory, Serializer journalSerializer)
       throws Exception {
-    for (Iterator iterator = snapshotSerializers.keySet().iterator(); iterator.hasNext(); ) {
-      String suffix = (String) iterator.next();
+    for (Iterator<String> iterator = snapshotSerializers.keySet().iterator(); iterator.hasNext(); ) {
+      String suffix = iterator.next();
       PrevaylerDirectory.checkValidSnapshotSuffix(suffix);
     }
 
@@ -51,7 +51,7 @@ public class GenericSnapshotManager<P> {
 
 
   public Serializer primarySerializer() {
-    return (Serializer) _strategies.get(_primarySuffix);
+    return _strategies.get(_primarySuffix);
   }
 
   public PrevalentSystemGuard<P> recoveredPrevalentSystem() {
@@ -85,15 +85,16 @@ public class GenericSnapshotManager<P> {
     return _directory.snapshotFile(version, _primarySuffix);
   }
 
+  @SuppressWarnings("unchecked")
   private P readSnapshot(File snapshotFile) throws Exception {
     String suffix = snapshotFile.getName().substring(snapshotFile.getName().indexOf('.') + 1);
     if (!_strategies.containsKey(suffix)) throw new IOException(
         snapshotFile.toString() + " cannot be read; only " + _strategies.keySet().toString() + " supported");
 
-    Serializer serializer = (Serializer) _strategies.get(suffix);
+    Serializer serializer = _strategies.get(suffix);
     FileInputStream in = new FileInputStream(snapshotFile);
     try {
-      return (P) (serializer.readObject(in));
+      return (P) serializer.readObject(in);
     } finally {
       in.close();
     }

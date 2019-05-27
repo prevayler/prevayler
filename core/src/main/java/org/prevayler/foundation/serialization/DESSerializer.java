@@ -20,8 +20,9 @@ import java.security.spec.KeySpec;
 
 public class DESSerializer implements Serializer {
 
-  private ThreadLocal _ciphers = new ThreadLocal() {
-    protected Object initialValue() {
+  private ThreadLocal<Cipher> _ciphers = new ThreadLocal<Cipher>() {
+    @Override
+    protected Cipher initialValue() {
       try {
         return Cipher.getInstance(_triple ? "DESede" : "DES");
       } catch (GeneralSecurityException e) {
@@ -49,8 +50,8 @@ public class DESSerializer implements Serializer {
       throw new IllegalArgumentException("Key must be 8 or 24 bytes");
     }
     KeySpec keySpec = _triple ?
-        (KeySpec) new DESedeKeySpec(key) :
-        (KeySpec) new DESKeySpec(key);
+        new DESedeKeySpec(key) :
+        new DESKeySpec(key);
     _key = SecretKeyFactory.getInstance(_triple ? "DESede" : "DES").generateSecret(keySpec);
   }
 
@@ -71,7 +72,7 @@ public class DESSerializer implements Serializer {
 
   private Cipher getCipher() throws GeneralSecurityException {
     try {
-      return (Cipher) _ciphers.get();
+      return _ciphers.get();
     } catch (RuntimeException e) {
       if (e.getCause() instanceof GeneralSecurityException) {
         throw (GeneralSecurityException) e.getCause();

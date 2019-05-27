@@ -5,7 +5,7 @@ import org.prevayler.foundation.serialization.Serializer;
 
 import java.util.Date;
 
-class TransactionWithQueryCapsule<P, R> extends Capsule {
+class TransactionWithQueryCapsule<P, R> extends Capsule<P, TransactionWithQuery<? super P, R>> {
 
   private static final long serialVersionUID = 78811627002206298L;
   private transient R _queryResult;
@@ -19,9 +19,9 @@ class TransactionWithQueryCapsule<P, R> extends Capsule {
     super(serialized);
   }
 
-  protected void justExecute(Object transaction, Object prevalentSystem, Date executionTime) {
+  protected void justExecute(TransactionWithQuery<? super P, R> transaction, P prevalentSystem, Date executionTime) {
     try {
-      _queryResult = ((TransactionWithQuery<P, R>) transaction).executeAndQuery((P) prevalentSystem, executionTime);
+      _queryResult = transaction.executeAndQuery(prevalentSystem, executionTime);
     } catch (RuntimeException rx) {
       _queryException = rx;
       throw rx;   //This is necessary because of the rollback feature.
@@ -35,7 +35,7 @@ class TransactionWithQueryCapsule<P, R> extends Capsule {
     return _queryResult;
   }
 
-  public Capsule cleanCopy() {
+  public Capsule<P, TransactionWithQuery<? super P, R>> cleanCopy() {
     return new TransactionWithQueryCapsule<P, R>(serialized());
   }
 

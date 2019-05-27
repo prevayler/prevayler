@@ -6,6 +6,8 @@ import org.prevayler.util.memento.MementoCollector;
 import org.prevayler.util.memento.MementoTransaction;
 
 public class AccountCreation extends MementoTransaction {
+  private static final long serialVersionUID = 591298522015413614L;
+
   private final String holder;
 
   /**

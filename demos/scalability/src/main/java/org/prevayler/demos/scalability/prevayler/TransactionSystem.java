@@ -9,7 +9,7 @@ import java.util.Map;
 class TransactionSystem implements ScalabilitySystem {
 
   private static final long serialVersionUID = 461535927650714306L;
-  private final Map recordsById = new HashMap();
+  private final Map<Long, Record> recordsById = new HashMap<Long, Record>();
 
   public void performTransaction(Record recordToInsert, Record recordToUpdate, long idToDelete) {
     synchronized (recordsById) {
@@ -20,7 +20,7 @@ class TransactionSystem implements ScalabilitySystem {
   }
 
   private Object put(Record newRecord) {
-    Object key = new Long(newRecord.getId());
+    Long key = new Long(newRecord.getId());
     return recordsById.put(key, newRecord);
   }
 

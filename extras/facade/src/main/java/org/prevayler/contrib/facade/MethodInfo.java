@@ -54,7 +54,7 @@ public class MethodInfo implements Serializable {
    */
   public MethodInfo(Method p_method) {
     m_name = p_method.getName();
-    Class[] paramTypes = p_method.getParameterTypes();
+    Class<?>[] paramTypes = p_method.getParameterTypes();
     m_argTypes = new String[paramTypes.length];
     for (int i = 0; i < m_argTypes.length; ++i) {
       m_argTypes[i] = paramTypes[i].getName();
@@ -75,7 +75,7 @@ public class MethodInfo implements Serializable {
    */
   public Method getMethod()
       throws Exception {
-    Class[] args = new Class[m_argTypes.length];
+    Class<?>[] args = new Class[m_argTypes.length];
     for (int i = 0; i < args.length; ++i) {
       args[i] = Class.forName(m_argTypes[i]);
     }

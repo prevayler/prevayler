@@ -34,7 +34,6 @@ package org.prevayler.contrib.facade;
 
 import org.prevayler.Query;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Date;
 
@@ -46,19 +45,19 @@ import java.util.Date;
  * @author Jacob Kjome [hoju@visi.com]
  * @since 0_1
  */
-public class ProxyQuery
-    extends AbstractProxy
-    implements Query<Serializable, Object> {
+public class ProxyQuery<P, R>
+    extends AbstractProxy<P, R>
+    implements Query<P, R> {
   private static final long serialVersionUID = 7773538966349888966L;
 
   /**
    * @since 0_2
    */
-  public ProxyQuery(Method p_method, Object[] p_args, TransactionHint p_hint) {
+  public ProxyQuery(Method p_method, Object[] p_args, TransactionHint<P> p_hint) {
     super(p_method, p_args, p_hint);
   }
 
-  public Object query(Serializable p_prevalentSystem, Date p_timestamp)
+  public R query(P p_prevalentSystem, Date p_timestamp)
       throws Exception {
     return execute(p_prevalentSystem, p_timestamp);
   }

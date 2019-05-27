@@ -21,6 +21,8 @@ import java.util.Map;
  */
 public class MementoManagerCommand implements TransactionWithQuery<Bank, Account>, MementoCollector {
 
+  private static final long serialVersionUID = 6054044442295561603L;
+
   /**
    * Create a memento manager transaction.
    *
@@ -41,16 +43,16 @@ public class MementoManagerCommand implements TransactionWithQuery<Bank, Account
    * @return The object returned by the execution of this transaction. Most commands simply return null.
    */
   public Account executeAndQuery(Bank prevalentSystem, Date timestamp) throws Exception {
-    mementos = new HashMap();
+    mementos = new HashMap<Memento, Memento>();
     try {
       return transaction.execute(this, prevalentSystem);
     } catch (Exception e) {
       // Something went wrong. Restore the mementos.
-      Iterator iterator;
+      Iterator<Memento> iterator;
 
       iterator = mementos.values().iterator();
       while (iterator.hasNext()) {
-        Memento memento = (Memento) iterator.next();
+        Memento memento = iterator.next();
         memento.restore();
       }
 
@@ -74,6 +76,6 @@ public class MementoManagerCommand implements TransactionWithQuery<Bank, Account
 
   private MementoTransaction transaction;
 
-  private transient Map mementos;
+  private transient Map<Memento, Memento> mementos;
 
 }

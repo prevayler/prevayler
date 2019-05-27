@@ -19,6 +19,9 @@
   <modules>
     <module>mirror</module>
     <module>mirror-tests</module>
+    <module>cluster</module>
+    <module>snapshotScheduler</module>
+    <module>socketServer</module>
   </modules>
 
 

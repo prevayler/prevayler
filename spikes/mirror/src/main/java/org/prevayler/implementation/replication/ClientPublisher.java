@@ -5,6 +5,7 @@
 package org.prevayler.implementation.replication;
 
 import org.prevayler.Clock;
+import org.prevayler.TransactionBase;
 import org.prevayler.foundation.network.ObjectSocket;
 import org.prevayler.foundation.network.OldNetworkImpl;
 import org.prevayler.implementation.Capsule;
@@ -20,14 +21,14 @@ import java.util.Date;
 /**
  * Reserved for future implementation.
  */
-public class ClientPublisher implements TransactionPublisher {
+public class ClientPublisher<P> implements TransactionPublisher<P> {
 
   private final BrokenClock _clock = new BrokenClock();
 
-  private TransactionSubscriber _subscriber;
+  private TransactionSubscriber<P> _subscriber;
   private final Object _upToDateMonitor = new Object();
 
-  private Capsule _myCapsule;
+  private Capsule<? super P, ? extends TransactionBase> _myCapsule;
   private final Object _myCapsuleMonitor = new Object();
   private RuntimeException _myTransactionRuntimeException;
   private Error _myTransactionError;
@@ -57,7 +58,7 @@ public class ClientPublisher implements TransactionPublisher {
   }
 
 
-  public synchronized void subscribe(TransactionSubscriber subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
+  public synchronized void subscribe(TransactionSubscriber<P> subscriber, long initialTransaction) throws IOException, ClassNotFoundException {
     if (_subscriber != null)
       throw new UnsupportedOperationException("The current implementation can only support one subscriber. Future implementations will support more.");
     _subscriber = subscriber;
@@ -68,13 +69,13 @@ public class ClientPublisher implements TransactionPublisher {
   }
 
 
-  public void cancelSubscription(TransactionSubscriber subscriber) {
+  public void cancelSubscription(TransactionSubscriber<P> subscriber) {
     throw new UnsupportedOperationException("Removing subscribers is not yet supported by the current implementation.");
   }
 
 
   //TODO Remove synchronized allowing multiple transactions to be sent at a time.
-  public synchronized void publish(Capsule capsule) {
+  public synchronized void publish(Capsule<? super P, ? extends TransactionBase> capsule) {
     if (_subscriber == null)
       throw new IllegalStateException("To publish a transaction, this ClientPublisher needs a registered subscriber.");
     synchronized (_myCapsuleMonitor) {
@@ -131,19 +132,20 @@ public class ClientPublisher implements TransactionPublisher {
       return;
     }
 
-    TransactionTimestamp transactionTimestamp = (TransactionTimestamp) transactionCandidate;
+    @SuppressWarnings("unchecked")
+    TransactionTimestamp<P> transactionTimestamp = (TransactionTimestamp<P>) transactionCandidate;
     Date timestamp = transactionTimestamp.executionTime();
     long systemVersion = transactionTimestamp.systemVersion();
 
     _clock.advanceTo(timestamp);
 
     if (transactionTimestamp.capsule() == null) {
-      _subscriber.receive(new TransactionTimestamp(_myCapsule, systemVersion, timestamp));
+      _subscriber.receive(new TransactionTimestamp<P>(_myCapsule, systemVersion, timestamp));
       notifyMyTransactionMonitor();
       return;
     }
 
-    _subscriber.receive(new TransactionTimestamp(transactionTimestamp.capsule(), systemVersion, timestamp));
+    _subscriber.receive(new TransactionTimestamp<P>(transactionTimestamp.capsule(), systemVersion, timestamp));
   }
 
 

@@ -17,23 +17,23 @@ public class Log4jMonitor extends LoggingMonitor {
 
   private static final String callerFQCN = LoggingMonitor.class.getName();
 
-  protected void info(Class clazz, String message) {
+  protected void info(Class<?> clazz, String message) {
     log(clazz, Level.INFO, message, null);
   }
 
-  protected void error(Class clazz, String message, Exception ex) {
+  protected void error(Class<?> clazz, String message, Exception ex) {
     log(clazz, Level.ERROR, message, ex);
   }
 
-  protected boolean isInfoEnabled(Class clazz) {
+  protected boolean isInfoEnabled(Class<?> clazz) {
     return logger(clazz).isInfoEnabled();
   }
 
-  private Logger logger(Class clazz) {
+  private Logger logger(Class<?> clazz) {
     return Logger.getLogger(clazz);
   }
 
-  private void log(Class clazz, Level level, String message, Exception ex) {
+  private void log(Class<?> clazz, Level level, String message, Exception ex) {
     logger(clazz).log(callerFQCN, level, message, ex);
   }
 }

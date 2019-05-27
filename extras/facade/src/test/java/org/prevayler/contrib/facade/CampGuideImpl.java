@@ -46,14 +46,14 @@ public class CampGuideImpl implements java.io.Serializable, CampGuide {
   /**
    * The list of camp sites
    */
-  private Map campSites;
+  private Map<String, CampSite> campSites;
   private transient long transaction_time;
 
   /**
    * Creates a new camp guide
    */
   public CampGuideImpl() {
-    campSites = new HashMap();
+    campSites = new HashMap<String, CampSite>();
   }
 
   /**
@@ -78,7 +78,7 @@ public class CampGuideImpl implements java.io.Serializable, CampGuide {
   }
 
   public CampSite getCampSite(String objectCode) {
-    return (CampSite) campSites.get(objectCode);
+    return campSites.get(objectCode);
   }
 
   /**
@@ -86,8 +86,8 @@ public class CampGuideImpl implements java.io.Serializable, CampGuide {
    *
    * @return an unmodifiable set of camp sites
    */
-  public Set getCampSites() {
-    return Collections.unmodifiableSet(new HashSet(campSites.values()));
+  public Set<CampSite> getCampSites() {
+    return Collections.unmodifiableSet(new HashSet<CampSite>(campSites.values()));
   }
 
   /**

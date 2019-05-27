@@ -98,6 +98,7 @@ public class DurableOutputStreamTest extends FileIOTest {
     private final int _id;
     private final Turn _firstTurn;
     private final Turn _secondTurn;
+    @SuppressWarnings("unused")
     public Exception _ex;
 
     public Worker(DurableOutputStream out, int id, Turn firstTurn, Turn secondTurn) {

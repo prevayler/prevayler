@@ -23,11 +23,11 @@ public class Chunking {
 
   public static void writeChunk(OutputStream stream, Chunk chunk) throws IOException {
     stream.write(Integer.toHexString(chunk.getBytes().length).toUpperCase().getBytes(ASCII));
-    Iterator iterator = chunk.getParameters().entrySet().iterator();
+    Iterator<Map.Entry<String, String>> iterator = chunk.getParameters().entrySet().iterator();
     while (iterator.hasNext()) {
-      Map.Entry entry = (Map.Entry) iterator.next();
-      String name = (String) entry.getKey();
-      String value = (String) entry.getValue();
+      Map.Entry<String, String> entry = iterator.next();
+      String name = entry.getKey();
+      String value = entry.getValue();
       if (!validToken(name)) {
         throw new IOException("Invalid parameter name '" + name + "'");
       }
@@ -59,7 +59,7 @@ public class Chunking {
 
     int size = Integer.parseInt(tokenizer.nextToken(), 16);
 
-    Map parameters = new LinkedHashMap();
+    Map<String, String> parameters = new LinkedHashMap<String, String>();
     while (tokenizer.hasMoreTokens()) {
       String name = tokenizer.nextToken();
       String value = tokenizer.nextToken();

@@ -3,9 +3,9 @@ package org.prevayler.demos.scalability.prevayler;
 import org.prevayler.Prevayler;
 import org.prevayler.demos.scalability.ScalabilityTestSubject;
 
-abstract class PrevaylerScalabilitySubject implements ScalabilityTestSubject {
+abstract class PrevaylerScalabilitySubject<S extends ScalabilitySystem, C> implements ScalabilityTestSubject<C> {
 
-  protected Prevayler prevayler;
+  protected Prevayler<S> prevayler;
 
 
   {
@@ -21,7 +21,7 @@ abstract class PrevaylerScalabilitySubject implements ScalabilityTestSubject {
   public void replaceAllRecords(int records) {
     try {
 
-      prevayler.execute(new AllRecordsReplacement(records));
+      prevayler.execute(new AllRecordsReplacement<S>(records));
 
     } catch (Exception ex) {
       ex.printStackTrace();

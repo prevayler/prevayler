@@ -9,6 +9,7 @@ public class AppendTransactionWithQuery implements TransactionWithQuery<StringBu
   private static final long serialVersionUID = 7725358482908916942L;
   public String toAdd;
 
+  @SuppressWarnings("unused")
   private AppendTransactionWithQuery() {
     // Skaringa requires a default constructor, but XStream does not.
   }

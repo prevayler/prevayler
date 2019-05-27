@@ -43,13 +43,15 @@ import java.util.Date;
  * @author Jacob Kjome [hoju@visi.com]
  * @since 0_1
  */
-public abstract class AbstractProxy
+public abstract class AbstractProxy<P, R>
     implements Serializable {
+
+  private static final long serialVersionUID = 9121309710811270339L;
 
   /**
    * @since 0_2
    */
-  protected AbstractProxy(Method p_method, Object[] p_args, TransactionHint p_hint) {
+  protected AbstractProxy(Method p_method, Object[] p_args, TransactionHint<P> p_hint) {
     m_methodInfo = new MethodInfo(p_method);
     m_args = p_args;
     m_hint = p_hint;
@@ -57,16 +59,17 @@ public abstract class AbstractProxy
 
   private final MethodInfo m_methodInfo;
   private final Object[] m_args;
-  private final TransactionHint m_hint;
+  private final TransactionHint<P> m_hint;
 
   /**
    * @since 0_2
    */
-  protected Object execute(Object p_prevalentSystem, Date p_timestamp)
+  @SuppressWarnings("unchecked")
+  protected R execute(P p_prevalentSystem, Date p_timestamp)
       throws Exception {
     try {
       m_hint.preExecute(p_prevalentSystem, getMethod(), m_args, p_timestamp);
-      return getMethod().invoke(p_prevalentSystem, m_args);
+      return (R) getMethod().invoke(p_prevalentSystem, m_args);
     } catch (RuntimeException e) {
       throw e;
     } catch (InvocationTargetException e) {

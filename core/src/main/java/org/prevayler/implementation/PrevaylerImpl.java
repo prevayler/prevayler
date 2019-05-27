@@ -19,7 +19,7 @@ public class PrevaylerImpl<P> implements Prevayler<P> {
 
   private final GenericSnapshotManager<P> _snapshotManager;
 
-  private final TransactionPublisher _publisher;
+  private final TransactionPublisher<P> _publisher;
 
   private final Serializer _journalSerializer;
 
@@ -33,7 +33,7 @@ public class PrevaylerImpl<P> implements Prevayler<P> {
    * @param transactionPublisher The TransactionPublisher that will be used for publishing transactions executed with this PrevaylerImpl.
    * @param journalSerializer
    */
-  public PrevaylerImpl(GenericSnapshotManager<P> snapshotManager, TransactionPublisher transactionPublisher,
+  public PrevaylerImpl(GenericSnapshotManager<P> snapshotManager, TransactionPublisher<P> transactionPublisher,
                        Serializer journalSerializer, boolean transactionDeepCopyMode) throws IOException, ClassNotFoundException {
     _snapshotManager = snapshotManager;
 
@@ -64,7 +64,7 @@ public class PrevaylerImpl<P> implements Prevayler<P> {
   }
 
 
-  private void publish(Capsule capsule) {
+  private void publish(Capsule<? super P, ? extends TransactionBase> capsule) {
     _publisher.publish(capsule);
   }
 
@@ -83,7 +83,7 @@ public class PrevaylerImpl<P> implements Prevayler<P> {
 
   public <R> R execute(SureTransactionWithQuery<? super P, R> sureTransactionWithQuery) {
     try {
-      return execute((TransactionWithQuery<? super P, R>) sureTransactionWithQuery);
+      return execute(sureTransactionWithQuery);
     } catch (RuntimeException runtime) {
       throw runtime;
     } catch (Exception checked) {
