@@ -15,7 +15,7 @@ class NumberKeeper implements java.io.Serializable {
 
 
   void keep(int nextNumber) {
-    numbers.add(new Integer(nextNumber));
+    numbers.add(nextNumber);
   }
 
   List<Integer> numbers() {

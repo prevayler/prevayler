@@ -69,8 +69,8 @@ public class Notification extends Thread {
     while (i.hasNext()) {
       client = i.next();
       if (client.isAlive()) {
-        if (enabledCallbacks.containsKey(client.getSocketId())) {
-          Map<String, Integer> callbacks = enabledCallbacks.get(client.getSocketId());
+        if (enabledCallbacks.containsKey(Long.valueOf(client.getSocketId()))) {
+          Map<String, Integer> callbacks = enabledCallbacks.get(Long.valueOf(client.getSocketId()));
           if (callbacks.containsKey(message)) {
             client.submit(senderID, message, obj);
           }
@@ -92,23 +92,22 @@ public class Notification extends Thread {
    * @param message The message the client wants to receive
    */
   public static void registerCallback(long myId, String message) {
-    Long id = new Long(myId);
     Map<String, Integer> callbacks;
 
     // Get the hash of enabled callbacks for this connection ID
-    if (enabledCallbacks.containsKey(id)) {
-      callbacks = enabledCallbacks.get(id);
+    if (enabledCallbacks.containsKey(myId)) {
+      callbacks = enabledCallbacks.get(myId);
     } else {
       callbacks = new HashMap<String, Integer>();
-      enabledCallbacks.put(id, callbacks);
+      enabledCallbacks.put(myId, callbacks);
     }
 
     // If this message isn't already registered, register it
     if (!callbacks.containsKey(message)) {
-      callbacks.put(message, new Integer(1));
+      callbacks.put(message, 1);
     } else {
       Integer numInterested = callbacks.get(message);
-      callbacks.put(message, new Integer(numInterested.intValue() + 1));
+      callbacks.put(message, numInterested.intValue() + 1);
     }
   }
 
@@ -119,12 +118,11 @@ public class Notification extends Thread {
    * @param message The message in which the connection is no longer interested
    */
   public static void unregisterCallback(long myId, String message) {
-    Long id = new Long(myId);
     Map<String, Integer> callbacks = null;
 
     // Get the hash of enabled callbacks for this connection ID
-    if (enabledCallbacks.containsKey(id)) {
-      callbacks = enabledCallbacks.get(id);
+    if (enabledCallbacks.containsKey(myId)) {
+      callbacks = enabledCallbacks.get(myId);
     }
 
     // Decrement the count of interested parties in this callback or remove it if nobody is interested
@@ -138,7 +136,7 @@ public class Notification extends Thread {
         }
         // Otherwise, decrement the number of interested parties
         else {
-          callbacks.put(message, new Integer(numInterested.intValue() - 1));
+          callbacks.put(message, numInterested.intValue() - 1);
         }
       }
     }

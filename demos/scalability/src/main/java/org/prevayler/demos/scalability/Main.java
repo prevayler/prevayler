@@ -337,7 +337,7 @@ public class Main {
 
   static private int intProperty(String name) {
     try {
-      return Integer.valueOf(property(name)).intValue();
+      return Integer.valueOf(property(name));
     } catch (NumberFormatException nfx) {
       out("NumberFormatException reading property " + name);
       throw nfx;

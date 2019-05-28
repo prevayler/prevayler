@@ -63,7 +63,7 @@ public class CommandThread<P> extends Thread {
 
     // First send the connection ID back to the client
     o = new ObjectOutputStream(socket.getOutputStream());
-    o.writeObject(new Long(myId));
+    o.writeObject(Long.valueOf(myId));
 
     // Now read commands in a loop until the client is done.
     while (!done) {
@@ -72,13 +72,13 @@ public class CommandThread<P> extends Thread {
       if (t instanceof Disconnect) {
         socket.close();
         done = true;
-        Reaper.reap(new Long(myId));
+        Reaper.reap(myId);
       } else if (t instanceof RegisterCallback) {
         Notification.registerCallback(myId, ((RegisterCallback) t).message);
       } else if (t instanceof UnregisterCallback) {
         Notification.unregisterCallback(myId, ((UnregisterCallback) t).message);
       } else {
-        ((IRemoteTransaction) t).setSenderID(new Long(myId));
+        ((IRemoteTransaction) t).setSenderID(myId);
         Serializable result;
         @SuppressWarnings("unchecked")
         TransactionWithQuery<P, ?> transaction = (TransactionWithQuery<P, ?>) t;
@@ -101,7 +101,7 @@ public class CommandThread<P> extends Thread {
     try {
       handleRequests();
     } catch (Exception e) {
-      Reaper.reap(new Long(myId));
+      Reaper.reap(myId);
       try {
         socket.close();
       } catch (Exception e2) {

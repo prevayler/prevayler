@@ -5,7 +5,7 @@ import org.prevayler.Prevayler;
 /**
  * To get informed when a Prevayler snapshot is made, implement this interface
  * and add your listener either using the SnapshotScheduler constructor or using
- * {@link SnapshotScheduler#addListener(SnapshotScheduler.SnapshotListener) addListener}.
+ * {@link SnapshotScheduler#addListener(SnapshotListener) addListener}.
  */
 public interface SnapshotListener<P> {
   /**

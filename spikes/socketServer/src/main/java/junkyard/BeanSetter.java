@@ -64,8 +64,6 @@ public abstract class BeanSetter<P, R, X> extends RemoteTransaction<P, R> {
    * Method callSetter.
    *
    * @param object
-   * @param field
-   * @param value
    * @throws Exception
    */
   protected void callSetter(Object object) throws Exception {

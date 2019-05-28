@@ -76,7 +76,7 @@ public class CallbackThread extends Thread {
   /**
    * Express disinterest in previously interesting callbacks
    *
-   * @param The handle to the callback that you got when you created it
+   * @param callback The handle to the callback that you got when you created it
    */
   public synchronized void unregisterCallback(CallbackNode callback) {
     Iterator<CallbackNode> i = callbacks.iterator();

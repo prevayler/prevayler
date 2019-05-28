@@ -56,7 +56,7 @@ public class NotificationThread extends Thread {
   /**
    * Constructor NotificationThread.
    *
-   * @param socket
+   * @param s
    */
   public NotificationThread(Socket s) throws IOException, ClassNotFoundException {
     socket = s;

@@ -28,7 +28,7 @@ public class QueryExecutionTest extends FileIOTest {
       private static final long serialVersionUID = -9053395276292652684L;
 
       public Integer query(LinkedList<String> prevalentSystem, Date ignored) throws Exception {
-        return new Integer(prevalentSystem.size());
+        return prevalentSystem.size();
       }
     };
   }
