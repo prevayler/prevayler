@@ -68,9 +68,10 @@ public class Notification extends Thread {
     Iterator<NotificationThread> i = clients.iterator();
     while (i.hasNext()) {
       client = i.next();
+      Long id = client.getSocketId();
       if (client.isAlive()) {
-        if (enabledCallbacks.containsKey(Long.valueOf(client.getSocketId()))) {
-          Map<String, Integer> callbacks = enabledCallbacks.get(Long.valueOf(client.getSocketId()));
+        if (enabledCallbacks.containsKey(id)) {
+          Map<String, Integer> callbacks = enabledCallbacks.get(id);
           if (callbacks.containsKey(message)) {
             client.submit(senderID, message, obj);
           }
@@ -80,7 +81,7 @@ public class Notification extends Thread {
         i.remove();
 
         // ...and remove any callbacks registered for it
-        enabledCallbacks.remove(client.getSocketId());
+        enabledCallbacks.remove(id);
       }
     }
   }
@@ -93,13 +94,13 @@ public class Notification extends Thread {
    */
   public static void registerCallback(long myId, String message) {
     Map<String, Integer> callbacks;
-
+    Long id = myId;
     // Get the hash of enabled callbacks for this connection ID
-    if (enabledCallbacks.containsKey(myId)) {
-      callbacks = enabledCallbacks.get(myId);
+    if (enabledCallbacks.containsKey(id)) {
+      callbacks = enabledCallbacks.get(id);
     } else {
       callbacks = new HashMap<String, Integer>();
-      enabledCallbacks.put(myId, callbacks);
+      enabledCallbacks.put(id, callbacks);
     }
 
     // If this message isn't already registered, register it
@@ -119,10 +120,10 @@ public class Notification extends Thread {
    */
   public static void unregisterCallback(long myId, String message) {
     Map<String, Integer> callbacks = null;
-
+    Long id = myId;
     // Get the hash of enabled callbacks for this connection ID
-    if (enabledCallbacks.containsKey(myId)) {
-      callbacks = enabledCallbacks.get(myId);
+    if (enabledCallbacks.containsKey(id)) {
+      callbacks = enabledCallbacks.get(id);
     }
 
     // Decrement the count of interested parties in this callback or remove it if nobody is interested

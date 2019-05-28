@@ -58,7 +58,7 @@ public class Bank implements java.io.Serializable {
 
   public void deleteAccount(long number) throws AccountNotFound {
     findAccount(number);
-    accountsByNumber.remove(number);
+    accountsByNumber.remove(Long.valueOf(number));
   }
 
   public List<Account> accounts() {
@@ -88,7 +88,7 @@ public class Bank implements java.io.Serializable {
   }
 
   private Account searchAccount(long number) {
-    return accountsByNumber.get(number);
+    return accountsByNumber.get(Long.valueOf(number));
   }
 
   public class AccountNotFound extends Exception {
