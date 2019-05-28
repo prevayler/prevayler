@@ -37,21 +37,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 
-
 /**
  * @author Jay Sachs [jay@contravariant.org]
  * @author Jacob Kjome [hoju@visi.com]
  * @since 0_1
  */
-public abstract class AbstractProxy<P, R>
-    implements Serializable {
+public abstract class AbstractProxy<P> implements Serializable {
 
   private static final long serialVersionUID = 9121309710811270339L;
 
   /**
    * @since 0_2
    */
-  protected AbstractProxy(Method p_method, Object[] p_args, TransactionHint<P> p_hint) {
+  protected AbstractProxy(Method p_method, Object[] p_args, TransactionHint<? super P> p_hint) {
     m_methodInfo = new MethodInfo(p_method);
     m_args = p_args;
     m_hint = p_hint;
@@ -59,17 +57,16 @@ public abstract class AbstractProxy<P, R>
 
   private final MethodInfo m_methodInfo;
   private final Object[] m_args;
-  private final TransactionHint<P> m_hint;
+  private final TransactionHint<? super P> m_hint;
 
   /**
    * @since 0_2
    */
-  @SuppressWarnings("unchecked")
-  protected R execute(P p_prevalentSystem, Date p_timestamp)
+  protected Object execute(P p_prevalentSystem, Date p_timestamp)
       throws Exception {
     try {
       m_hint.preExecute(p_prevalentSystem, getMethod(), m_args, p_timestamp);
-      return (R) getMethod().invoke(p_prevalentSystem, m_args);
+      return getMethod().invoke(p_prevalentSystem, m_args);
     } catch (RuntimeException e) {
       throw e;
     } catch (InvocationTargetException e) {
@@ -82,8 +79,7 @@ public abstract class AbstractProxy<P, R>
     }
   }
 
-  private Method getMethod()
-      throws Exception {
+  private Method getMethod() throws Exception {
     return m_methodInfo.getMethod();
   }
 

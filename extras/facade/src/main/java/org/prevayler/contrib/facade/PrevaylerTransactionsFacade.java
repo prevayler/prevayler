@@ -51,23 +51,21 @@ public class PrevaylerTransactionsFacade {
   /**
    * defaults to using a {@link TransactionHint#NOOP_TRANSACTION_HINT}
    */
-  @SuppressWarnings("unchecked")
   public static <P> P create(Class<P> p_intf, Prevayler<? extends P> p_prevayler) {
     return create(p_intf,
         p_prevayler,
         TransactionType.SIMPLE_DETERMINER,
-        (TransactionHint<P>) TransactionHint.NOOP_TRANSACTION_HINT);
+        TransactionHint.NOOP_TRANSACTION_HINT);
   }
 
   /**
    * @since 0_2
    */
-  @SuppressWarnings("unchecked")
   public static <P> P create(final Class<P> p_intf,
-                              final Prevayler<? extends P> p_prevayler,
-                              final TransactionType.Determiner p_determiner,
-                              final TransactionHint<P> p_hint) {
-    return (P) Proxy.newProxyInstance
+                             final Prevayler<? extends P> p_prevayler,
+                             final TransactionType.Determiner p_determiner,
+                             final TransactionHint<? super P> p_hint) {
+    return p_intf.cast(Proxy.newProxyInstance
         (p_intf.getClassLoader(),
             new Class<?>[]{p_intf},
             new InvocationHandler() {
@@ -78,6 +76,6 @@ public class PrevaylerTransactionsFacade {
                 return p_determiner.determineTransactionType(p_method)
                     .execute(p_prevayler, p_method, p_args, p_hint);
               }
-            });
+            }));
   }
 }

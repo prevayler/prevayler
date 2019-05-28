@@ -36,7 +36,6 @@ import org.prevayler.Prevayler;
 
 import java.lang.reflect.Method;
 
-
 /**
  * A "smart" enumerated type enumerating the three kinds of
  * transactions that Prevayler supports plus one that is,
@@ -48,6 +47,7 @@ import java.lang.reflect.Method;
  * @since 0_1
  */
 public abstract class TransactionType {
+
   /**
    * An interface describing a strategy for choosing a
    * <code>TransactionType</code> for a given method.
@@ -94,11 +94,10 @@ public abstract class TransactionType {
   /**
    * @since 0_2
    */
-  @SuppressWarnings("rawtypes")
-  public abstract Object execute(Prevayler p_prevayler,
-                                 Method p_method,
-                                 Object[] p_args,
-                                 TransactionHint p_hint)
+  public abstract <P> Object execute(Prevayler<? extends P> p_prevayler,
+                                     Method p_method,
+                                     Object[] p_args,
+                                     TransactionHint<? super P> p_hint)
       throws Exception;
 
   public String toString() {
@@ -117,13 +116,12 @@ public abstract class TransactionType {
         /**
          * @since 0_2
          */
-        @SuppressWarnings({ "rawtypes", "unchecked" })
-        public Object execute(Prevayler p_prevayler,
-                              Method p_method,
-                              Object[] p_args,
-                              TransactionHint p_hint)
+        public <P> Object execute(Prevayler<? extends P> p_prevayler,
+                                  Method p_method,
+                                  Object[] p_args,
+                                  TransactionHint<? super P> p_hint)
             throws Exception {
-          return p_prevayler.execute(new ProxyQuery(p_method, p_args, p_hint));
+          return p_prevayler.execute(new ProxyQuery<P>(p_method, p_args, p_hint));
         }
       };
 
@@ -133,14 +131,12 @@ public abstract class TransactionType {
         /**
          * @since 0_2
          */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        public Object execute(Prevayler p_prevayler,
-                              Method p_method,
-                              Object[] p_args,
-                              TransactionHint p_hint)
+        public <P> Object execute(Prevayler<? extends P> p_prevayler,
+                                  Method p_method,
+                                  Object[] p_args,
+                                  TransactionHint<? super P> p_hint)
             throws Exception {
-          return p_prevayler.execute
-              (new ProxyTransactionWithQuery(p_method, p_args, p_hint));
+          return p_prevayler.execute(new ProxyTransactionWithQuery<P>(p_method, p_args, p_hint));
         }
       };
 
@@ -150,14 +146,12 @@ public abstract class TransactionType {
         /**
          * @since 0_2
          */
-        @SuppressWarnings({ "rawtypes", "unchecked" })
-        public Object execute(Prevayler p_prevayler,
-                              Method p_method,
-                              Object[] p_args,
-                              TransactionHint p_hint)
+        public <P> Object execute(Prevayler<? extends P> p_prevayler,
+                                  Method p_method,
+                                  Object[] p_args,
+                                  TransactionHint<? super P> p_hint)
             throws Exception {
-          p_prevayler.execute
-              (new ProxyTransaction(p_method, p_args, p_hint));
+          p_prevayler.execute(new ProxyTransaction<P>(p_method, p_args, p_hint));
           return null;
         }
       };
@@ -167,13 +161,13 @@ public abstract class TransactionType {
    */
   public static final TransactionType NOOP =
       new TransactionType("NOOP") {
-        @SuppressWarnings("rawtypes")
-        public Object execute(Prevayler p_prevayler,
-                              Method p_method,
-                              Object[] p_args,
-                              TransactionHint p_hint)
+        public <P> Object execute(Prevayler<? extends P> p_prevayler,
+                                  Method p_method,
+                                  Object[] p_args,
+                                  TransactionHint<? super P> p_hint)
             throws Exception {
           return null;
         }
       };
+
 }
