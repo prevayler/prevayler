@@ -65,16 +65,16 @@ public class ReplicationTest extends FileIOTest {
 
 /* //TODO Test replication chaining.
   public void testChaining() throws Exception {
-		serverCrashRecover(2);
-		clientWithServerCrashRecover(2, 3);
-		clientCrashRecover(3);
-		clientAppend("a", "a");
-		clientAppend("b", "ab");
-		serverAppend("c", "abc");
-	}
+    serverCrashRecover(2);
+    clientWithServerCrashRecover(2, 3);
+    clientCrashRecover(3);
+    clientAppend("a", "a");
+    clientAppend("b", "ab");
+    serverAppend("c", "abc");
+  }
 */
 
-//	 TODO Test Prevayler.execute() on the "clientWithServer" (middle of the replication chain).
+// TODO Test Prevayler.execute() on the "clientWithServer" (middle of the replication chain).
 
 
   private void serverAppend(String appendix, String expectedResult) {

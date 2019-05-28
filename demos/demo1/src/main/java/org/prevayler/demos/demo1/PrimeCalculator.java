@@ -44,8 +44,8 @@ class PrimeCalculator {
       /*int factor = 2;
         candidate = candidate / 2;
         while (factor < candidate) {
-        	if (candidate % factor == 0) return false;
-        	factor++;
+          if (candidate % factor == 0) return false;
+          factor++;
         }
         return true;*/
 
