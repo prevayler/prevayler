@@ -44,20 +44,19 @@ import java.util.Date;
  * @author Jacob Kjome [hoju@visi.com]
  * @since 0_1
  */
-public class ProxyTransactionWithQuery<P, R>
-    extends AbstractProxy<P, R>
-    implements TransactionWithQuery<P, R> {
+public class ProxyTransactionWithQuery<P> extends AbstractProxy<P>
+    implements TransactionWithQuery<P, Object> {
+
   private static final long serialVersionUID = -5012126657533926785L;
 
   /**
    * @since 0_2
    */
-  public ProxyTransactionWithQuery(Method p_method, Object[] p_args, TransactionHint<P> p_hint) {
+  public ProxyTransactionWithQuery(Method p_method, Object[] p_args, TransactionHint<? super P> p_hint) {
     super(p_method, p_args, p_hint);
   }
 
-  public R executeAndQuery(P p_prevalentSystem, Date p_timestamp)
-      throws Exception {
+  public Object executeAndQuery(P p_prevalentSystem, Date p_timestamp) throws Exception {
     return execute(p_prevalentSystem, p_timestamp);
   }
 

@@ -51,15 +51,14 @@ public class Bank implements java.io.Serializable {
 
   public Account createAccount(String holder) throws Account.InvalidHolder {
     Account account = new Account(nextAccountNumber, holder);
-    accountsByNumber.put(new Long(nextAccountNumber++), account);
+    accountsByNumber.put(nextAccountNumber++, account);
 
     return account;
   }
 
   public void deleteAccount(long number) throws AccountNotFound {
-    @SuppressWarnings("unused")
-    Account account = findAccount(number);
-    accountsByNumber.remove(new Long(number));
+    findAccount(number);
+    accountsByNumber.remove(number);
   }
 
   public List<Account> accounts() {
@@ -89,7 +88,7 @@ public class Bank implements java.io.Serializable {
   }
 
   private Account searchAccount(long number) {
-    return accountsByNumber.get(new Long(number));
+    return accountsByNumber.get(number);
   }
 
   public class AccountNotFound extends Exception {

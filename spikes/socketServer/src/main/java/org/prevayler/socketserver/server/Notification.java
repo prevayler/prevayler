@@ -67,7 +67,7 @@ public class Notification extends Thread {
 
     Iterator<NotificationThread> i = clients.iterator();
     while (i.hasNext()) {
-      client = (NotificationThread) i.next();
+      client = i.next();
       if (client.isAlive()) {
         if (enabledCallbacks.containsKey(client.getSocketId())) {
           Map<String, Integer> callbacks = enabledCallbacks.get(client.getSocketId());
@@ -107,7 +107,7 @@ public class Notification extends Thread {
     if (!callbacks.containsKey(message)) {
       callbacks.put(message, new Integer(1));
     } else {
-      Integer numInterested = (Integer) callbacks.get(message);
+      Integer numInterested = callbacks.get(message);
       callbacks.put(message, new Integer(numInterested.intValue() + 1));
     }
   }
@@ -130,7 +130,7 @@ public class Notification extends Thread {
     // Decrement the count of interested parties in this callback or remove it if nobody is interested
     if (callbacks != null) {
       if (callbacks.containsKey(message)) {
-        Integer numInterested = (Integer) callbacks.get(message);
+        Integer numInterested = callbacks.get(message);
 
         // If nobody is interested, remove the callback
         if (numInterested.intValue() == 1) {

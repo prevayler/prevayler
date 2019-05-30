@@ -38,7 +38,6 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Date;
 
-
 /**
  * Proxy representation of a Prevayler Transaction
  *
@@ -46,15 +45,14 @@ import java.util.Date;
  * @author Jacob Kjome [hoju@visi.com]
  * @since 0_1
  */
-public class ProxyTransaction<P>
-    extends AbstractProxy<P, Serializable>
-    implements Transaction<P> {
+public class ProxyTransaction<P> extends AbstractProxy<P> implements Transaction<P> {
+
   private static final long serialVersionUID = -3720257876251185011L;
 
   /**
    * @since 0_2
    */
-  public ProxyTransaction(Method p_method, Object[] p_args, TransactionHint<P> p_hint) {
+  public ProxyTransaction(Method p_method, Object[] p_args, TransactionHint<? super P> p_hint) {
     super(p_method, p_args, p_hint);
   }
 

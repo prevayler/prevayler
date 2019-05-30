@@ -78,9 +78,8 @@ public interface TransactionHint<P> extends Serializable {
    * A default empty transaction hint which should be used if
    * no other transaction hint is specified
    */
-  @SuppressWarnings("rawtypes")
-  public static final TransactionHint NOOP_TRANSACTION_HINT =
-      new TransactionHint() {
+  public static final TransactionHint<Object> NOOP_TRANSACTION_HINT =
+      new TransactionHint<Object>() {
         private static final long serialVersionUID = -5478302343468894802L;
 
         public void preExecute(Object p_prevalentSystem, Method p_method, Object[] p_args, Date p_timestamp) throws Exception {

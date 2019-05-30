@@ -1,4 +1,4 @@
-//	Copyright (C) 2002 Refactor, Finland. http://www.refactor.fi/
+//  Copyright (C) 2002 Refactor, Finland. http://www.refactor.fi/
 //
 //  This file is part of AddingMachine, an example program for Prevayler.
 //

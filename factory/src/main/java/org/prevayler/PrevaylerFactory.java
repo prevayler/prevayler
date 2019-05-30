@@ -189,6 +189,7 @@ public class PrevaylerFactory<P> {
    * @deprecated Use createCheckpointPrevayler() instead of this method.
    *             Deprecated since Prevayler2.00.001.
    */
+  @Deprecated
   public static <P> Prevayler<P> createTransientPrevayler(P newPrevalentSystem, String snapshotDirectory) {
     return createCheckpointPrevayler(newPrevalentSystem, snapshotDirectory);
   }
