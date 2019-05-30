@@ -7,3 +7,4 @@ target/
 /tests/Test*/
 /extras/facade/Prevalence/
 .byke
+.idea/
