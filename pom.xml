@@ -191,6 +191,12 @@
       </roles>
     </developer>
     <developer>
+      <name>Christian Stein</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
       <id>jon.tirsen</id>
       <name>Jon Tirsen</name>
       <!--<email></email>-->

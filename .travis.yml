@@ -1,5 +1,14 @@
 language: java
-jdk: openjdk8
+
+addons:
+  apt:
+    packages:
+      - openjdk-6-jdk
+
+jdk:
+  - openjdk6
+  - openjdk8
+  - openjdk11
 
 cache:
   directories:
