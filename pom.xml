@@ -42,6 +42,27 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <profiles>
+    <profile>
+      <id>use-javac-source-and-target</id>
+      <activation>
+        <jdk>(,1.9)</jdk>
+      </activation>
+      <properties>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+      </properties>
+    </profile>
+    <profile>
+      <id>use-javac-release</id>
+      <activation>
+        <jdk>[1.9,)</jdk>
+      </activation>
+      <properties>
+        <maven.compiler.release>6</maven.compiler.release>
+      </properties>
+    </profile>
+  </profiles>
 
   <mailingLists>
     <mailingList>
@@ -186,6 +207,12 @@
       <id>justin.sampson</id>
       <name>Justin Sampson</name>
       <!--<email></email>-->
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Christian Stein</name>
       <roles>
         <role>Contributor</role>
       </roles>
@@ -358,8 +385,6 @@
         <version>3.8.1</version>
         <configuration>
           <encoding>UTF-8</encoding>
-          <source>1.6</source>
-          <target>1.6</target>
           <fork>true</fork> <!-- enables usage of compilerArgs -->
           <showWarnings>true</showWarnings>
           <failOnWarning>true</failOnWarning>
