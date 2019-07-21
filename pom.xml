@@ -364,8 +364,9 @@
         <version>3.8.1</version>
         <configuration>
           <encoding>UTF-8</encoding>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>6</source>
+          <target>6</target>
+          <release>6</release>
           <fork>true</fork> <!-- enables usage of compilerArgs -->
           <showWarnings>true</showWarnings>
           <failOnWarning>true</failOnWarning>
