@@ -42,6 +42,25 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <profiles>
+    <profile>
+      <activation>
+        <jdk>(,1.9)</jdk>
+      </activation>
+      <properties>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+      </properties>
+    </profile>
+    <profile>
+      <activation>
+        <jdk>[1.9,)</jdk>
+      </activation>
+      <properties>
+        <maven.compiler.release>6</maven.compiler.release>
+      </properties>
+    </profile>
+  </profiles>
 
   <mailingLists>
     <mailingList>
@@ -364,9 +383,6 @@
         <version>3.8.1</version>
         <configuration>
           <encoding>UTF-8</encoding>
-          <source>6</source>
-          <target>6</target>
-          <release>6</release>
           <fork>true</fork> <!-- enables usage of compilerArgs -->
           <showWarnings>true</showWarnings>
           <failOnWarning>true</failOnWarning>
