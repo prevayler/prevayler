@@ -44,6 +44,7 @@
 
   <profiles>
     <profile>
+      <id>use-javac-source-and-target</id>
       <activation>
         <jdk>(,1.9)</jdk>
       </activation>
@@ -53,6 +54,7 @@
       </properties>
     </profile>
     <profile>
+      <id>use-javac-release</id>
       <activation>
         <jdk>[1.9,)</jdk>
       </activation>
