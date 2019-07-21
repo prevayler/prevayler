@@ -32,7 +32,7 @@
   <licenses>
     <license>
       <name>BSD</name>
-      <url>https://github.com/jsampson/prevayler/blob/master/LICENSE.txt</url>
+      <url>https://github.com/prevayler/prevayler/blob/master/LICENSE.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -71,12 +71,12 @@
 
   <issueManagement>
     <system>github</system>
-    <url>https://github.com/jsampson/prevayler/issues</url>
+    <url>https://github.com/prevayler/prevayler/issues</url>
   </issueManagement>
 
   <scm>
-    <connection>scm:git:git://github.com/jsampson/prevayler.git</connection>
-    <developerConnection>scm:git:git@github.com:jsampson/prevayler.git</developerConnection>
+    <connection>scm:git:git://github.com/prevayler/prevayler.git</connection>
+    <developerConnection>scm:git:git@github.com:prevayler/prevayler.git</developerConnection>
   </scm>
 
   <developers>
