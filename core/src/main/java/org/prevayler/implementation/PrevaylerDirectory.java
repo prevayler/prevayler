@@ -160,7 +160,7 @@ public class PrevaylerDirectory {
 
     Arrays.sort(journals, new Comparator<File>() {
       public int compare(File f1, File f2) {
-        return new Long(journalVersion(f1)).compareTo(new Long(journalVersion(f2)));
+        return Long.valueOf(journalVersion(f1)).compareTo(Long.valueOf(journalVersion(f2)));
       }
     });
 

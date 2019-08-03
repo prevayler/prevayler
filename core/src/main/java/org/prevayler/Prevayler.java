@@ -55,7 +55,7 @@ public interface Prevayler<P> {
   public <R> R execute(TransactionWithQuery<? super P, R> transactionWithQuery) throws Exception;
 
   /**
-   * The same as execute(TransactionWithQuery<P,R>) except no Exception is thrown.
+   * The same as execute(TransactionWithQuery&lt;P, R&gt;) except no Exception is thrown.
    *
    * @return The result returned by the execution of the sureTransactionWithQuery on the prevalentSystem().
    */

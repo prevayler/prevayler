@@ -63,15 +63,15 @@ public class NodeTest extends TestCase {
     int numberOfMessages = 100;
     for (int i = 0; i < numberOfMessages; i++) {
       if (numberOfMessages % 2 == 0) {
-        node.broadcast(new Integer(i));
+        node.broadcast(Integer.valueOf(i));
       } else {
-        node2.broadcast(new Integer(i));
+        node2.broadcast(Integer.valueOf(i));
       }
     }
     node2.shutdown();
     assertEquals(100, receivedMessages.size());
     for (int i = 0; i < numberOfMessages; i++) {
-      assertEquals(new Integer(i), receivedMessages.get(i));
+      assertEquals(Integer.valueOf(i), receivedMessages.get(i));
     }
   }
 

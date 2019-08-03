@@ -63,7 +63,7 @@ public class ClientPublisher<P> implements TransactionPublisher<P> {
       throw new UnsupportedOperationException("The current implementation can only support one subscriber. Future implementations will support more.");
     _subscriber = subscriber;
     synchronized (_upToDateMonitor) {
-      _server.writeObject(new Long(initialTransaction));
+      _server.writeObject(Long.valueOf(initialTransaction));
       wait(_upToDateMonitor);
     }
   }

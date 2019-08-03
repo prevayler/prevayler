@@ -15,13 +15,12 @@ class TransactionSystem implements ScalabilitySystem {
     synchronized (recordsById) {
       put(recordToInsert);
       put(recordToUpdate);
-      recordsById.remove(new Long(idToDelete));
+      recordsById.remove(Long.valueOf(idToDelete));
     }
   }
 
   private Object put(Record newRecord) {
-    Long key = new Long(newRecord.getId());
-    return recordsById.put(key, newRecord);
+    return recordsById.put(newRecord.getId(), newRecord);
   }
 
   public void replaceAllRecords(RecordIterator newRecords) {

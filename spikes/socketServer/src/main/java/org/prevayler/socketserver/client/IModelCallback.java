@@ -32,7 +32,7 @@ public interface IModelCallback {
   /**
    * Called when the event in which interest was registered happened
    *
-   * @param The name of the event that happened
+   * @param name The name of the event that happened
    */
   public abstract void happened(Long connectionID, String name, Object obj);
 }

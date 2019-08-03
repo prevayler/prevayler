@@ -78,7 +78,7 @@ public class AnotherTest extends TestCase {
     addSite(guide, "Dance and dream", 50, CampSite.ON_SITE, 0, 0, 1, 1, 640, 32);
     addSite(guide, "Sunset beach resort", CampSite.ON_SITE, CampSite.ON_SITE, 0, 0, 0, 1, 800, 35);
 
-    assertEquals("Should have been 16 camp sites", new Integer(16), new Integer(guide.getCampSites().size()));
+    assertEquals("Should have been 16 camp sites", 16, guide.getCampSites().size());
 
     int i = 16;
     for (Iterator<CampSite> iter = guide.getCampSites().iterator(); iter.hasNext(); ) {
@@ -89,13 +89,13 @@ public class AnotherTest extends TestCase {
       //for (int b=100000000; b > 0; b--) {}
       guide.updateCampSite(site);
       //System.out.println("updated: " + guide.getCampSite(site.objectCode()).getUpdated().getTime());
-      assertEquals("object was updated, but created date should have stayed the same", new Long(site.getCreated().getTime()), new Long(guide.getCampSite(site.objectCode()).getCreated().getTime()));
-      assertFalse("object was updated, so time should have been different", new Long(site.getUpdated().getTime()).equals(new Long(guide.getCampSite(site.objectCode()).getUpdated().getTime())));
+      assertEquals("object was updated, but created date should have stayed the same", site.getCreated().getTime(), guide.getCampSite(site.objectCode()).getCreated().getTime());
+      assertFalse("object was updated, so time should have been different", Long.valueOf(site.getUpdated().getTime()).equals(Long.valueOf(guide.getCampSite(site.objectCode()).getUpdated().getTime())));
       guide.removeCampSite(site);
       assertNull("camp site removed, so should have been null", guide.getCampSite(site.objectCode()));
-      assertEquals("Should have been " + --i + " camp sites", new Integer(i), new Integer(guide.getCampSites().size()));
+      assertEquals("Should have been " + --i + " camp sites", i, guide.getCampSites().size());
     }
-    assertEquals("Should have been 0", new Integer(0), new Integer(guide.getCampSites().size()));
+    assertEquals("Should have been 0", 0, guide.getCampSites().size());
 
     for (int j = 0; j < guide.getCampSites().size(); j++) {
       //System.out.println(((CampSite)guide.getCampSites().get(i)).getUpdated());

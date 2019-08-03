@@ -17,7 +17,7 @@ public interface TransactionWithQuery<P, R> extends TransactionBase {
 
   /**
    * Performs the necessary modifications on the given prevalentSystem and also returns an object or throws an Exception.
-   * This method is called by Prevayler.execute(TransactionWithQuery<P,R>) to execute this TransactionWithQuery on the given Prevalent System. See org.prevayler.demos for usage examples.
+   * This method is called by Prevayler.execute(TransactionWithQuery&lt;P, R&gt;) to execute this TransactionWithQuery on the given Prevalent System. See org.prevayler.demos for usage examples.
    *
    * @param prevalentSystem The system on which this TransactionWithQuery will execute.
    * @param executionTime   The time at which this TransactionWithQuery is being executed. Every Transaction executes completely within a single moment in time. Logically, a Prevalent System's time does not pass during the execution of a Transaction.
