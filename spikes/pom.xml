@@ -18,7 +18,6 @@
 
   <modules>
     <module>mirror</module>
-    <module>mirror-tests</module>
   </modules>
 
 
