@@ -319,6 +319,7 @@
             <arg>-Xlint:all</arg>
             <arg>-Xlint:-options</arg> <!-- suppresses bootclasspath warning when using higher-version Java compiler than target -->
             <arg>-Xlint:-path</arg> <!-- suppresses warnings when running tests due to modules that do not have any test classes -->
+            <arg>-Xlint:-processing</arg> <!-- suppresses warnings when running tests due to annotations that don't need processing-->
           </compilerArgs>
         </configuration>
       </plugin>
