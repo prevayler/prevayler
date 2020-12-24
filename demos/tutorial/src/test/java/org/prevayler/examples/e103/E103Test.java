@@ -6,10 +6,12 @@ import org.prevayler.PrevaylerFactory;
 import org.prevayler.Query;
 import org.prevayler.TransactionWithQuery;
 
+import java.io.File;
 import java.util.Date;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class E103Test {
 
@@ -24,9 +26,15 @@ public class E103Test {
   }
 
   private void runTest(TransactionWithQuery<Root, Entity> createEntityTransaction) throws Exception {
+    String dataPath = "target/E103TestData";
+    File dataDir = new File(dataPath);
+    dataDir.mkdirs();
+    for (File dataFile : dataDir.listFiles()) {
+        assertTrue(dataFile.toString().endsWith(".journal"));
+        dataFile.delete();
+    }
 
     // Create or load existing prevalence layer from journal and/or snapshot.
-    String dataPath = "target/PrevalenceBase_" + System.currentTimeMillis();
     Prevayler<Root> prevayler = PrevaylerFactory.createPrevayler(new Root(), dataPath);
 
     try {
@@ -35,6 +43,7 @@ public class E103Test {
 
       // close and reopen prevalence so the journal is replayed
       prevayler.close();
+      Thread.sleep(1);
       prevayler = PrevaylerFactory.createPrevayler(new Root(), dataPath);
 
       long timestampAfterRestart = prevayler.execute(new Query<Root, Long>() {
@@ -49,10 +58,7 @@ public class E103Test {
 
     } finally {
       prevayler.close();
-
     }
-
-
   }
 
 }
